@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+.git
+client/public/sw.js
+client/package-lock.json
+server/package-lock.json

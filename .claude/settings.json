@@ -1,0 +1,88 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pre-tool-branch-guard.cjs",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-write-prettier.cjs",
+            "timeout": 30000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-test-gate.cjs",
+            "timeout": 180000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-review-gate.cjs",
+            "timeout": 60000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/stop-security-gate.cjs",
+            "timeout": 60000
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm test*)",
+      "Bash(npm run test*)",
+      "Bash(npm run type-check*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run build*)",
+      "Bash(npm run dev*)",
+      "Bash(npm install*)",
+      "Bash(npm ci*)",
+      "Bash(npm audit*)",
+      "Bash(npx --no-install prettier*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git fetch*)",
+      "Bash(git pull*)",
+      "Bash(git checkout*)",
+      "Bash(git switch*)",
+      "Bash(git branch*)",
+      "Bash(git rev-parse*)",
+      "Bash(git ls-files*)",
+      "Bash(node *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(rg *)",
+      "Bash(grep *)"
+    ]
+  }
+}

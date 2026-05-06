@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client:
+    name: Client (type-check + build + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - name: Type-check
+        run: npm run type-check
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Bundle size summary
+        run: |
+          echo "## Client bundle" >> $GITHUB_STEP_SUMMARY
+          du -sh dist 2>/dev/null | awk '{print "- Total: "$1}' >> $GITHUB_STEP_SUMMARY || true
+          find dist -name '*.js' -size +500k -printf '- ⚠️ %p (%s bytes)\n' >> $GITHUB_STEP_SUMMARY || true
+
+  server:
+    name: Server (type-check + build + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Type-check
+        run: npm run type-check
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  audit:
+    name: npm audit (high+)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Audit client
+        working-directory: client
+        run: npm audit --audit-level=high || true
+      - name: Audit server
+        working-directory: server
+        run: npm audit --audit-level=high || true
+
+  secrets-scan:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: latest
