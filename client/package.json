@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "echo \"No client tests yet — pridaj Vitest cez /implement\" && exit 0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
