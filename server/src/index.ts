@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import analyzeRouter from './routes/analyze';
+import episodesRouter from './routes/episodes';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 
@@ -15,7 +16,6 @@ app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
 // Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
-
 
 app.use((req, res, next) => {
   const startTime = Date.now();
@@ -40,6 +40,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/analyze', analyzeRouter);
+app.use('/api/episodes', episodesRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

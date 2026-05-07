@@ -1,5 +1,10 @@
 import { AnalysisRequest, AnalysisResult, FileExtractionResult, PetProfile } from '../types';
 import { logger } from '../utils/logger';
+import type {
+  EpisodeCategory,
+  HealthEpisodeRecord,
+  SimilarEpisodeSummary,
+} from '../types/healthEpisode';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
@@ -103,4 +108,61 @@ export async function analyzeAttachment(
   });
 
   return responsePayload;
+}
+
+interface SimilarSummaryRequest {
+  symptomTitle: string;
+  symptomDescription: string;
+  category: EpisodeCategory;
+}
+
+function stripAttachments(episodes: HealthEpisodeRecord[]) {
+  return episodes.map((e) => ({
+    id: e.id,
+    symptomTitle: e.symptomTitle,
+    symptomDescription: e.symptomDescription,
+    category: e.category,
+    startedAt: e.startedAt,
+    endedAt: e.endedAt,
+    outcome: e.outcome,
+    severity: e.severity,
+    whatWorked: e.whatWorked,
+    whatDidntWork: e.whatDidntWork,
+    lessonsLearned: e.lessonsLearned,
+  }));
+}
+
+export async function fetchSimilarEpisodeSummary(
+  currentEpisode: SimilarSummaryRequest,
+  pastEpisodes: HealthEpisodeRecord[]
+): Promise<SimilarEpisodeSummary> {
+  const payload = {
+    currentEpisode,
+    pastEpisodes: stripAttachments(pastEpisodes),
+  };
+
+  logger.info('Odosielam similar-summary na backend', {
+    category: currentEpisode.category,
+    pastCount: pastEpisodes.length,
+  });
+
+  const res = await fetch(`${BASE_URL}/api/episodes/similar-summary`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string; code?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === 'string'
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    logger.error('similar-summary zlyhalo', { status: res.status });
+    throw new Error(message);
+  }
+
+  return (await res.json()) as SimilarEpisodeSummary;
 }
