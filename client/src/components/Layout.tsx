@@ -27,6 +27,7 @@ import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Pets as PetsIcon,
+  MenuBook as MenuBookIcon,
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 240;
@@ -36,6 +37,7 @@ const NAV_ITEMS = [
   { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
   { label: 'História', icon: <HistoryIcon />, path: '/historia' },
   { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
+  { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
   { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
   { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
 ];
@@ -53,9 +55,11 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const navigate = useNavigate();
   const location = useLocation();
 
-  const currentNavIndex = NAV_ITEMS.findIndex((item) => item.path === '/zdravotny-pas'
-    ? location.pathname.startsWith('/zdravotny-pas')
-    : item.path === location.pathname);
+  const currentNavIndex = NAV_ITEMS.findIndex((item) =>
+    item.path === '/zdravotny-pas'
+      ? location.pathname.startsWith('/zdravotny-pas')
+      : item.path === location.pathname
+  );
 
   const handleNav = (path: string) => {
     navigate(path);
@@ -80,7 +84,11 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         {NAV_ITEMS.map((item) => (
           <ListItemButton
             key={item.path}
-            selected={item.path === '/zdravotny-pas' ? location.pathname.startsWith('/zdravotny-pas') : location.pathname === item.path}
+            selected={
+              item.path === '/zdravotny-pas'
+                ? location.pathname.startsWith('/zdravotny-pas')
+                : location.pathname === item.path
+            }
             onClick={() => handleNav(item.path)}
             sx={{
               borderRadius: 2,
@@ -93,13 +101,30 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               },
             }}
           >
-            <ListItemIcon sx={{ minWidth: 40, color: (item.path === '/zdravotny-pas' ? location.pathname.startsWith('/zdravotny-pas') : location.pathname === item.path) ? 'primary.main' : undefined }}>
+            <ListItemIcon
+              sx={{
+                minWidth: 40,
+                color: (
+                  item.path === '/zdravotny-pas'
+                    ? location.pathname.startsWith('/zdravotny-pas')
+                    : location.pathname === item.path
+                )
+                  ? 'primary.main'
+                  : undefined,
+              }}
+            >
               {item.icon}
             </ListItemIcon>
             <ListItemText
               primary={item.label}
               primaryTypographyProps={{
-                fontWeight: (item.path === '/zdravotny-pas' ? location.pathname.startsWith('/zdravotny-pas') : location.pathname === item.path) ? 600 : 400,
+                fontWeight: (
+                  item.path === '/zdravotny-pas'
+                    ? location.pathname.startsWith('/zdravotny-pas')
+                    : location.pathname === item.path
+                )
+                  ? 600
+                  : 400,
               }}
             />
           </ListItemButton>
