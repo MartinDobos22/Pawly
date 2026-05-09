@@ -76,9 +76,16 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         }}
       >
         <PetsIcon color="primary" sx={{ fontSize: 28 }} />
-        <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
+        <Typography variant="h6" noWrap sx={{ fontWeight: 700, flex: 1 }}>
           GranuleCheck
         </Typography>
+        <IconButton
+          onClick={onToggleTheme}
+          size="small"
+          aria-label={darkMode ? 'Svetlý režim' : 'Tmavý režim'}
+        >
+          {darkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+        </IconButton>
       </Toolbar>
       <List sx={{ px: 1, pt: 1, flex: 1 }}>
         {NAV_ITEMS.map((item) => (
@@ -187,51 +194,45 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
 
       {/* Main content area */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <AppBar
-          position="sticky"
-          elevation={0}
-          sx={{
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-            borderBottom: `1px solid ${theme.palette.divider}`,
-            display: { print: 'none' },
-          }}
-        >
-          <Toolbar>
-            {!isDesktop && (
+        {!isDesktop && (
+          <AppBar
+            position="sticky"
+            elevation={0}
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              display: { print: 'none' },
+            }}
+          >
+            <Toolbar>
               <IconButton edge="start" onClick={() => setMobileDrawerOpen(true)} sx={{ mr: 1 }}>
                 <MenuIcon />
               </IconButton>
-            )}
-            {!isDesktop && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PetsIcon color="primary" sx={{ fontSize: 24 }} />
                 <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
                   GranuleCheck
                 </Typography>
               </Box>
-            )}
-            <Box sx={{ flex: 1 }} />
-            <IconButton onClick={onToggleTheme} color="inherit">
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+              <Box sx={{ flex: 1 }} />
+              <IconButton onClick={onToggleTheme} color="inherit">
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+        )}
 
         <Box
           component="main"
           sx={{
             flex: 1,
-            p: { xs: 2, sm: 3 },
+            p: { xs: 2, md: 3 },
             pb: { xs: 10, md: 3 },
-            maxWidth: 900,
-            mx: 'auto',
             width: '100%',
             '@media print': {
-              maxWidth: '100%',
               p: 0,
               pb: 0,
-              mx: 0,
               minWidth: '100%',
             },
           }}
