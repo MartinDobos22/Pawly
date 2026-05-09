@@ -3,14 +3,13 @@ import {
   Alert,
   Box,
   Button,
+  Card,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   Typography,
-  alpha,
-  useTheme,
 } from '@mui/material';
 import {
   HealthAndSafety as HealthIcon,
@@ -62,8 +61,6 @@ const WIZARD_DEFAULTS: WizardState = {
 };
 
 export default function HealthPassportPage() {
-  const theme = useTheme();
-
   // ── Dog selection ──────────────────────────────────────────────────────────
   const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
@@ -355,17 +352,8 @@ export default function HealthPassportPage() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
-      {/* ── Page header M3 ────────────────────────────────────────────────── */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.primary.main, 0.03)} 100%)`,
-          borderRadius: 4,
-          p: { xs: 2.5, md: 3 },
-          mb: 2.5,
-          border: '1px solid',
-          borderColor: alpha(theme.palette.primary.main, 0.12),
-        }}
-      >
+      {/* ── Page header — flat outlined ───────────────────────────────────── */}
+      <Card sx={{ mb: 2, p: { xs: 2, md: 2.5 } }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           alignItems={{ xs: 'flex-start', md: 'center' }}
@@ -375,20 +363,20 @@ export default function HealthPassportPage() {
           <Stack direction="row" alignItems="center" gap={1.5}>
             <Box
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 3,
-                bgcolor: alpha(theme.palette.primary.main, 0.12),
+                width: 40,
+                height: 40,
+                borderRadius: 1,
+                bgcolor: 'action.hover',
                 color: 'primary.main',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <HealthIcon sx={{ fontSize: 26 }} />
+              <HealthIcon sx={{ fontSize: 22 }} />
             </Box>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
                 Zdravotný pas
               </Typography>
               {selectedDog && (
@@ -405,8 +393,7 @@ export default function HealthPassportPage() {
             {dogProfiles.length > 1 && (
               <FormControl size="small" sx={{ minWidth: 180 }}>
                 <InputLabel>Pes</InputLabel>
-                <Select value={selectedDogId} label="Pes" onChange={(e) => setSelectedDogId(e.target.value)}
-                  sx={{ borderRadius: 2.5 }}>
+                <Select value={selectedDogId} label="Pes" onChange={(e) => setSelectedDogId(e.target.value)}>
                   {dogProfiles.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
                 </Select>
               </FormControl>
@@ -415,7 +402,6 @@ export default function HealthPassportPage() {
               variant="contained"
               startIcon={<AddIcon />}
               onClick={() => setWizardOpen(true)}
-              sx={{ borderRadius: 2.5, fontWeight: 700 }}
             >
               Pridať záznam
             </Button>
@@ -423,13 +409,12 @@ export default function HealthPassportPage() {
               variant="outlined"
               startIcon={<CardIcon />}
               href="/karta-pre-veterinara"
-              sx={{ borderRadius: 2.5, fontWeight: 600 }}
             >
               Karta
             </Button>
           </Stack>
         </Stack>
-      </Box>
+      </Card>
 
       {/* ── Status overview ────────────────────────────────────────────────── */}
       <HealthStatusOverview
@@ -460,22 +445,13 @@ export default function HealthPassportPage() {
       </Box>
 
       {/* ── Timeline ──────────────────────────────────────────────────────── */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          p: { xs: 2, md: 2.5 },
-          border: '1px solid',
-          borderColor: 'divider',
-          boxShadow: 'none',
-        }}
-      >
+      <Card sx={{ p: { xs: 2, md: 2.5 } }}>
         <HealthTimeline
           timeline={timeline}
           onOpenDetail={handleOpenDetail}
           onExportPdf={handleExportPdf}
         />
-      </Box>
+      </Card>
 
       {/* ── Wizard dialog ────────────────────────────────────────────────── */}
       <AddRecordWizard
