@@ -1,10 +1,4 @@
-import {
-  Box,
-  Card,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material';
 import { ReceiptLong as ReceiptIcon } from '@mui/icons-material';
 import type { ExpenseRecord } from '../../types/dogHealth';
 import { today } from './utils.ts';
@@ -42,8 +36,8 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
   const maxAmount = Math.max(...categorySums.map((c) => c.amount), 1);
 
   return (
-    <Card sx={{ p: 2, height: '100%' }}>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+    <Card sx={{ p: 1.5, height: '100%' }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
         <ReceiptIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Výdavky
@@ -54,8 +48,8 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
         sx={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap: 1.5,
-          mb: 2,
+          gap: 1,
+          mb: 1.5,
         }}
       >
         {[
@@ -71,12 +65,18 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
               borderColor: 'divider',
             }}
           >
-            <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', lineHeight: 1.2 }}>
+            <Typography
+              variant="overline"
+              sx={{ color: 'text.secondary', display: 'block', lineHeight: 1.2 }}
+            >
               {label}
             </Typography>
             <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', lineHeight: 1.4 }}>
               {value.toFixed(0)}
-              <Typography component="span" sx={{ fontWeight: 400, fontSize: '0.8rem', color: 'text.secondary', ml: 0.5 }}>
+              <Typography
+                component="span"
+                sx={{ fontWeight: 400, fontSize: '0.8rem', color: 'text.secondary', ml: 0.5 }}
+              >
                 €
               </Typography>
             </Typography>

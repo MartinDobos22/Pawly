@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
   MedicalServices as VetIcon,
@@ -71,8 +65,8 @@ export default function UpcomingTasksCard({
   const todayDoseLogs = doseLogs.filter((log) => log.date === todayStr);
 
   return (
-    <Card sx={{ p: 2, height: '100%' }}>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+    <Card sx={{ p: 1.5, height: '100%' }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
         <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Najbližšie úlohy
