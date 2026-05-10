@@ -7,13 +7,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   Stack,
   TextField,
   Typography,
   alpha,
-  useTheme,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -24,7 +22,6 @@ import {
 import { useEffect, useState } from 'react';
 import type { VetVisitRecord } from '../../types/dogHealth';
 import AiFormattedText from '../AiFormattedText';
-import { today } from './utils.ts';
 
 interface VisitDraft {
   date: string;
@@ -46,7 +43,6 @@ interface VisitDetailDialogProps {
 }
 
 export default function VisitDetailDialog({ visit, open, onClose, onSave, onDelete }: VisitDetailDialogProps) {
-  const theme = useTheme();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<VisitDraft>({
     date: '', clinicName: '', vetName: '', reason: '',

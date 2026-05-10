@@ -13,7 +13,6 @@ import {
   TextField,
   Typography,
   alpha,
-  useTheme,
 } from '@mui/material';
 import { Close as CloseIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
@@ -27,7 +26,7 @@ import type {
   ExpenseCategory,
 } from '../../types/dogHealth';
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
-import { computeIntervalDaysFromDates, today } from './utils.ts';
+import { today } from './utils.ts';
 
 export type RecordDetailType = 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION' | 'DIET' | 'EXPENSE';
 
@@ -67,7 +66,6 @@ export default function TimelineRecordDetailDialog({
   state, open, vaccination, deworming, ectoparasite, medication, diet, expense,
   onClose, onSaveVaccination, onSaveDeworming, onSaveEcto, onSaveMedication, onSaveDiet, onSaveExpense, onDelete,
 }: TimelineRecordDetailDialogProps) {
-  const theme = useTheme();
   const [editing, setEditing] = useState(false);
 
   const [vacDraft, setVacDraft] = useState<VacDraft>({ name: '', type: 'OTHER', dateApplied: today(), validUntil: '', batchNumber: '' });
