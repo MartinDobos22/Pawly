@@ -1,0 +1,119 @@
+import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
+import type { AiDetectedDraftRecord } from '../hpTypes';
+
+export interface VisitBasicsValues {
+  date: string;
+  clinicName: string;
+  reason: string;
+  mainCategory: string;
+  subcategory: string;
+}
+
+export interface ClinicalNotesValues {
+  findings: string;
+  diagnosis: string;
+  recommendations: string;
+}
+
+export interface VaccinationFieldsValues {
+  name: string;
+  type: VaccinationRecord['type'];
+  validUntil: string;
+  batchNumber: string;
+}
+
+export interface DewormingFieldsValues {
+  product: string;
+  validUntil: string;
+  intervalDays: number;
+}
+
+export interface EctoFieldsValues {
+  product: string;
+  form: EctoparasiteRecord['form'];
+  validUntil: string;
+  intervalDays: number;
+}
+
+export interface MedicationFieldsValues {
+  name: string;
+  reason: string;
+  dose: string;
+  frequency: string;
+  endDate: string;
+}
+
+export interface DietFieldsValues {
+  foodName: string;
+  reactionNotes: string;
+  suitabilityStatus: NonNullable<DietEntry['suitabilityStatus']>;
+}
+
+export type LinkedKind = 'vaccination' | 'deworming' | 'ecto' | 'medication' | 'diet';
+
+export interface LinkedRecordsValues {
+  vaccination?: VaccinationFieldsValues;
+  deworming?: DewormingFieldsValues;
+  ecto?: EctoFieldsValues;
+  medication?: MedicationFieldsValues;
+  diet?: DietFieldsValues;
+}
+
+export interface ExpensesValues {
+  totalExpense: string;
+  extraMedicationExpense: string;
+  extraFoodExpense: string;
+  nextCheckDate: string;
+}
+
+export type FieldKey =
+  | 'basics.date'
+  | 'basics.clinicName'
+  | 'linked.vaccination.name'
+  | 'linked.deworming.product'
+  | 'linked.ecto.product'
+  | 'linked.medication.name'
+  | 'linked.diet.foodName'
+  | 'expenses.totalExpense'
+  | 'expenses.extraMedicationExpense'
+  | 'expenses.extraFoodExpense';
+
+export type ErrorMap = Partial<Record<FieldKey, string>>;
+
+export interface ManualFormState {
+  basics: VisitBasicsValues;
+  clinical: ClinicalNotesValues;
+  linked: LinkedRecordsValues;
+  expenses: ExpensesValues;
+  submitAttempted: boolean;
+}
+
+export type AiStep = 0 | 1 | 2;
+
+export interface AiAttachmentDraft {
+  fileName: string;
+  mimeType: string;
+  base64Data: string;
+}
+
+export interface AiVisitDraftValues {
+  date: string;
+  clinicName: string;
+  diagnosis: string;
+  recommendations: string;
+}
+
+export interface AiFormState {
+  step: AiStep;
+  attachmentFile: File | null;
+  attachmentError: string;
+  attachmentPreviewUrl: string;
+  attachmentLabel: string;
+  pendingAttachment: AiAttachmentDraft | null;
+  selectedMainCategory: string;
+  selectedSubcategory: string;
+  aiDetectedRecords: AiDetectedDraftRecord[];
+  useVisitDetailsFromManual: boolean;
+  visitDraft: AiVisitDraftValues;
+  feedback: string | null;
+}

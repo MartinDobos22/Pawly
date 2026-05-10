@@ -1,7 +1,6 @@
 import type { TimelineEvent } from '../../types/dogHealth';
 import {
   Biotech as BiotechIcon,
-  CalendarMonth as CalendarMonthIcon,
   EventNote as EventNoteIcon,
   MedicalServices as MedicalServicesIcon,
   Medication as MedicationIcon,

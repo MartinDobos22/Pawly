@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -31,82 +31,26 @@ import type {
   VetVisitRecord,
 } from '../types/dogHealth';
 
-import { useAnalyze } from '../hooks/useAnalyze';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { VetVisitHelper } from '../utils/vetVisitHelper';
+import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
-import AddRecordWizard from '../components/healthPassport/AddRecordWizard';
+import AddRecord from '../components/healthPassport/AddRecord';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
 
 // Utilities and types
 import {
-  uid,
-  today,
-  plusDays,
   statusByDate,
-  normalizeDateInput,
-  inferAiTargetType,
   computeIntervalDaysFromDates,
   escapeHtml,
 } from '../components/healthPassport/utils';
-import {
-  VISIT_CATEGORY_OPTIONS,
-  EXAM_SUBCATEGORY_TO_ALIAS,
-  MAX_FILE_SIZE_BYTES,
-  SUPPORTED_FILE_TYPES,
-  TIMELINE_TYPE_META,
-  EXPORTABLE_TIMELINE_TYPES,
-} from '../components/healthPassport/constants';
-import type {
-  AiDetectedDraftRecord,
-  AiDetectedRecordType,
-  WizardState,
-} from '../components/healthPassport/hpTypes';
-
-const WIZARD_DEFAULTS: WizardState = {
-  date: today(),
-  clinicName: '',
-  reason: '',
-  findings: '',
-  diagnosis: '',
-  recommendations: '',
-  nextCheckDate: '',
-  addVaccination: false,
-  vaccineName: '',
-  vaccineType: 'RABIES',
-  vaccineValidUntil: plusDays(today(), 365),
-  addDeworming: false,
-  dewormProduct: '',
-  dewormValidUntil: plusDays(today(), 90),
-  dewormInterval: 90,
-  addEcto: false,
-  ectoProduct: '',
-  ectoForm: 'TABLET',
-  ectoValidUntil: plusDays(today(), 30),
-  ectoInterval: 30,
-  addMedication: false,
-  medName: '',
-  medReason: '',
-  medDose: '',
-  medFrequency: '2x denne',
-  medEndDate: '',
-  addDiet: false,
-  foodName: '',
-  reactionNotes: '',
-  suitabilityStatus: 'SUITABLE',
-  attachmentLabel: '',
-  attachmentUrl: '',
-  totalExpense: '',
-  extraMedicationExpense: '',
-  extraFoodExpense: '',
-};
+import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 
 export default function HealthPassportPage() {
   // ── Dog selection ──────────────────────────────────────────────────────────
@@ -245,241 +189,33 @@ export default function HealthPassportPage() {
     return t.sort((a, b) => b.date.localeCompare(a.date));
   }, [dogVaccinations, dogDewormings, dogEctos, dogVisits, dogMeds, dogDiet, dogExpenses]);
 
-  // ── Wizard state ────────────────────────────────────────────────────────────
+  // ── Wizard / dialog state ──────────────────────────────────────────────────
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardStep, setWizardStep] = useState(0);
-  const [wizard, setWizard] = useState<WizardState>(WIZARD_DEFAULTS);
-  const [selectedMainCategory, setSelectedMainCategory] = useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('');
-
-  // ── Attachment state ────────────────────────────────────────────────────────
-  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
-  const [attachmentPreviewUrl, setAttachmentPreviewUrl] = useState('');
-  const [attachmentError, setAttachmentError] = useState('');
-  const [pendingAttachment, setPendingAttachment] = useState<{
-    fileName: string;
-    mimeType: string;
-    base64Data: string;
-  } | null>(null);
-
-  // ── AI state ─────────────────────────────────────────────────────────────────
-  const [aiDetectedRecords, setAiDetectedRecords] = useState<AiDetectedDraftRecord[]>([]);
-  const [aiRecordUseVisitDetails, setAiRecordUseVisitDetails] = useState(true);
-  const [aiRecordDraft, setAiRecordDraft] = useState({
-    date: today(),
-    clinicName: '',
-    diagnosis: '',
-    recommendations: '',
-  });
-  const [aiRecordFeedback, setAiRecordFeedback] = useState<string | null>(null);
-
-  const { analyzeFile, fileResult, loadingFile, error: fileAnalyzeError } = useAnalyze();
-
-  // ── Dialog state ────────────────────────────────────────────────────────────
   const [selectedVisitId, setSelectedVisitId] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<RecordDetailState | null>(null);
 
-  // ── AI detected records effect ──────────────────────────────────────────────
-  useEffect(() => {
-    if (!fileResult?.healthPassportInterpretation?.vaccinations) {
-      setAiDetectedRecords([]);
-      return;
-    }
-    const records = fileResult.healthPassportInterpretation.vaccinations.map((item, index) => {
-      const targetType = inferAiTargetType(item.disease, item.vaccineName);
-      const date = normalizeDateInput(item.dateAdministered);
-      const fallback = targetType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
-      return {
-        id: `${Date.now()}-${index}`,
-        sourceConfidence: item.confidence,
-        sourceDisease: item.disease,
-        targetType,
-        productName: item.vaccineName || item.disease || 'Neznámy záznam',
-        date,
-        validUntil: normalizeDateInput(item.validUntil ?? fallback),
-        batchNumber: item.batchNumber ?? '',
-        intervalDays: targetType === 'ECTOPARASITE' ? 30 : 90,
-      };
-    });
-    setAiDetectedRecords(records);
-  }, [fileResult]);
-
-  // ── Attachment file handler ─────────────────────────────────────────────────
-  const handleAttachmentFileChange = useCallback((file: File | null) => {
-    if (!file) {
-      setAttachmentFile(null);
-      setAttachmentPreviewUrl('');
-      setAttachmentError('');
-      setPendingAttachment(null);
-      return;
-    }
-    if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-      setAttachmentError('Nepodporovaný typ súboru.');
-      return;
-    }
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      setAttachmentError('Súbor je príliš veľký (max 5 MB).');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const raw = typeof reader.result === 'string' ? reader.result : '';
-      const base64Data = raw.split(',')[1] ?? '';
-      if (!base64Data) {
-        setAttachmentError('Nepodarilo sa načítať súbor.');
-        return;
-      }
-      setAttachmentPreviewUrl(raw);
-      setAttachmentFile(file);
-      setAttachmentError('');
-      setPendingAttachment({ fileName: file.name, mimeType: file.type, base64Data });
-    };
-    reader.onerror = () => setAttachmentError('Nepodarilo sa načítať súbor.');
-    reader.readAsDataURL(file);
-  }, []);
-
-  const handleAnalyzeAttachment = useCallback(async () => {
-    const selectedExamAlias = selectedSubcategory
-      ? EXAM_SUBCATEGORY_TO_ALIAS[selectedSubcategory]
-      : '';
-    if (!selectedExamAlias || !pendingAttachment) return;
-    await analyzeFile(pendingAttachment, selectedExamAlias);
-  }, [selectedSubcategory, pendingAttachment, analyzeFile]);
-
-  // ── Wizard save ─────────────────────────────────────────────────────────────
-  const handleSaveWizard = useCallback(() => {
-    if (!selectedDogId || !wizard.clinicName.trim()) return;
-    const bundle = VetVisitHelper.createWizardVisitBundle({
-      dogId: selectedDogId,
-      draft: wizard,
-      mainCategory: selectedMainCategory,
-      subcategory: selectedSubcategory,
-      attachmentDraft: {
-        attachmentLabel: wizard.attachmentLabel,
-        attachmentUrl: wizard.attachmentUrl,
-        attachmentPreviewUrl,
-        attachmentFileName: attachmentFile?.name,
-      },
-      currentDietEntryId: dogDiet[0]?.id,
-      plusDays,
-      uid,
-    });
-    setVisits((p) => [...p, bundle.visit]);
-    if (bundle.vaccinations.length) setVaccinations((p) => [...p, ...bundle.vaccinations]);
-    if (bundle.dewormings.length) setDewormings((p) => [...p, ...bundle.dewormings]);
-    if (bundle.ectos.length) setEctos((p) => [...p, ...bundle.ectos]);
-    if (bundle.medications.length) setMedications((p) => [...p, ...bundle.medications]);
-    if (bundle.doseLogs.length) setDoseLogs((p) => [...p, ...bundle.doseLogs]);
-    if (bundle.dietEntries.length) setDietEntries((p) => [...p, ...bundle.dietEntries]);
-    if (bundle.expenses.length) setExpenses((p) => [...p, ...bundle.expenses]);
-    // Reset
-    setWizardOpen(false);
-    setWizardStep(0);
-    setWizard({
-      ...WIZARD_DEFAULTS,
-      date: today(),
-      vaccineValidUntil: plusDays(today(), 365),
-      dewormValidUntil: plusDays(today(), 90),
-      ectoValidUntil: plusDays(today(), 30),
-    });
-    setAttachmentFile(null);
-    setAttachmentPreviewUrl('');
-    setAttachmentError('');
-    setPendingAttachment(null);
-    setSelectedMainCategory('');
-    setSelectedSubcategory('');
-  }, [
-    selectedDogId,
-    wizard,
-    selectedMainCategory,
-    selectedSubcategory,
-    attachmentPreviewUrl,
-    attachmentFile,
-    dogDiet,
-    setVisits,
-    setVaccinations,
-    setDewormings,
-    setEctos,
-    setMedications,
-    setDoseLogs,
-    setDietEntries,
-    setExpenses,
-  ]);
-
-  // ── AI record save ──────────────────────────────────────────────────────────
-  const selectedExamAlias = selectedSubcategory
-    ? EXAM_SUBCATEGORY_TO_ALIAS[selectedSubcategory]
-    : '';
-  const hasSelectedAiRecords = aiDetectedRecords.some((r) => r.targetType !== 'SKIP');
-  const aiRecordValues = aiRecordUseVisitDetails
-    ? {
-        date: wizard.date,
-        clinicName: wizard.clinicName,
-        diagnosis: wizard.diagnosis,
-        recommendations: wizard.recommendations,
-      }
-    : aiRecordDraft;
-  const canCreateAiRecord = Boolean(
-    selectedDogId &&
-    aiRecordValues.clinicName.trim() &&
-    (selectedSubcategory || fileResult?.examAnalysis?.examType || hasSelectedAiRecords)
-  );
-
-  const handleSaveAiRecord = useCallback(() => {
-    if (!canCreateAiRecord || !selectedDogId) return;
-    const aiSummary = [
-      fileResult?.contextAnalysis?.summary ? `Kontext: ${fileResult.contextAnalysis.summary}` : '',
-      fileResult?.examAnalysis?.analysis ? `AI analýza: ${fileResult.examAnalysis.analysis}` : '',
+  const dispatchBundle = useCallback(
+    (bundle: VisitBundle) => {
+      setVisits((p) => [...p, bundle.visit]);
+      if (bundle.vaccinations.length) setVaccinations((p) => [...p, ...bundle.vaccinations]);
+      if (bundle.dewormings.length) setDewormings((p) => [...p, ...bundle.dewormings]);
+      if (bundle.ectos.length) setEctos((p) => [...p, ...bundle.ectos]);
+      if (bundle.medications.length) setMedications((p) => [...p, ...bundle.medications]);
+      if (bundle.doseLogs.length) setDoseLogs((p) => [...p, ...bundle.doseLogs]);
+      if (bundle.dietEntries.length) setDietEntries((p) => [...p, ...bundle.dietEntries]);
+      if (bundle.expenses.length) setExpenses((p) => [...p, ...bundle.expenses]);
+    },
+    [
+      setVisits,
+      setVaccinations,
+      setDewormings,
+      setEctos,
+      setMedications,
+      setDoseLogs,
+      setDietEntries,
+      setExpenses,
     ]
-      .filter(Boolean)
-      .join('\n\n');
-    const selectedRecords = aiDetectedRecords
-      .filter((r) => r.targetType !== 'SKIP')
-      .map((r) => ({
-        ...r,
-        intervalDays: r.intervalDays || (r.targetType === 'ECTOPARASITE' ? 30 : 90),
-      }));
-    const bundle = VetVisitHelper.createAiVisitBundle({
-      dogId: selectedDogId,
-      draft: aiRecordValues,
-      selectedVisitMainCategory: selectedMainCategory,
-      selectedVisitSubcategory: selectedSubcategory,
-      examType: fileResult?.examAnalysis?.examType,
-      aiSummary,
-      selectedRecords,
-      attachmentDraft: {
-        attachmentLabel: wizard.attachmentLabel,
-        attachmentUrl: wizard.attachmentUrl,
-        attachmentPreviewUrl,
-        attachmentFileName: attachmentFile?.name,
-      },
-      plusDays,
-      uid,
-    });
-    setVisits((p) => [...p, bundle.visit]);
-    if (bundle.vaccinations.length) setVaccinations((p) => [...p, ...bundle.vaccinations]);
-    if (bundle.dewormings.length) setDewormings((p) => [...p, ...bundle.dewormings]);
-    if (bundle.ectos.length) setEctos((p) => [...p, ...bundle.ectos]);
-    if (bundle.medications.length) setMedications((p) => [...p, ...bundle.medications]);
-    setAiRecordFeedback('AI výsledok bol uložený ako zdravotný záznam.');
-    setAiDetectedRecords((p) => p.map((r) => ({ ...r, targetType: 'SKIP' })));
-  }, [
-    canCreateAiRecord,
-    selectedDogId,
-    fileResult,
-    aiDetectedRecords,
-    aiRecordValues,
-    selectedMainCategory,
-    selectedSubcategory,
-    wizard,
-    attachmentPreviewUrl,
-    attachmentFile,
-    setVisits,
-    setVaccinations,
-    setDewormings,
-    setEctos,
-    setMedications,
-  ]);
+  );
 
   // ── Timeline open detail ────────────────────────────────────────────────────
   const handleOpenDetail = useCallback((event: TimelineEvent) => {
@@ -848,45 +584,13 @@ export default function HealthPassportPage() {
         </Stack>
       </Box>
 
-      {/* ── Wizard dialog ────────────────────────────────────────────────── */}
-      <AddRecordWizard
+      {/* ── Add record dialog ────────────────────────────────────────────── */}
+      <AddRecord
         open={wizardOpen}
-        step={wizardStep}
-        wizard={wizard}
-        selectedMainCategory={selectedMainCategory}
-        selectedSubcategory={selectedSubcategory}
-        attachmentFile={attachmentFile}
-        attachmentPreviewUrl={attachmentPreviewUrl}
-        attachmentError={attachmentError}
-        pendingAttachment={pendingAttachment}
-        loadingFile={loadingFile}
-        fileResult={fileResult}
-        fileAnalyzeError={fileAnalyzeError}
-        aiDetectedRecords={aiDetectedRecords}
-        aiRecordUseVisitDetails={aiRecordUseVisitDetails}
-        aiRecordDraft={aiRecordDraft}
-        aiRecordFeedback={aiRecordFeedback}
-        canCreateAiRecord={canCreateAiRecord}
+        dogId={selectedDogId}
+        currentDietEntryId={dogDiet[0]?.id}
         onClose={() => setWizardOpen(false)}
-        onNext={() => setWizardStep((s) => s + 1)}
-        onBack={() => setWizardStep((s) => s - 1)}
-        onSave={handleSaveWizard}
-        onWizardChange={(patch) => setWizard((p) => ({ ...p, ...patch }))}
-        onMainCategoryChange={(val) => {
-          setSelectedMainCategory(val);
-          setSelectedSubcategory('');
-        }}
-        onSubcategoryChange={(val) => {
-          setSelectedSubcategory(val);
-        }}
-        onAttachmentFileChange={handleAttachmentFileChange}
-        onAnalyzeAttachment={handleAnalyzeAttachment}
-        onAiDetectedRecordChange={(id, patch) =>
-          setAiDetectedRecords((p) => p.map((r) => (r.id === id ? { ...r, ...patch } : r)))
-        }
-        onAiRecordUseVisitDetailsChange={setAiRecordUseVisitDetails}
-        onAiRecordDraftChange={(patch) => setAiRecordDraft((p) => ({ ...p, ...patch }))}
-        onSaveAiRecord={handleSaveAiRecord}
+        onSave={dispatchBundle}
       />
 
       {/* ── Visit detail dialog ──────────────────────────────────────────── */}
