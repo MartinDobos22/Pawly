@@ -1,30 +1,61 @@
-import { useEffect, useImperativeHandle, useMemo, useState, forwardRef } from 'react';
-import { Alert, Box, Button, Stack } from '@mui/material';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type ReactNode,
+} from 'react';
 
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
-import { sectionsWithErrors, useAddRecordForm, validateManualForm } from './useAddRecordForm';
-import VisitBasics from './sections/VisitBasics';
-import ClinicalNotes from './sections/ClinicalNotes';
-import LinkedRecords from './sections/LinkedRecords';
-import Expenses from './sections/Expenses';
+import type { ErrorMap, ManualFormState } from './formTypes';
+import {
+  sectionsWithErrors,
+  useAddRecordForm,
+  validateManualForm,
+  type ManualFormAction,
+} from './useAddRecordForm';
 
-export interface ManualEntryHandle {
-  reset: () => void;
+interface ManualEntryContextValue {
+  state: ManualFormState;
+  dispatch: Dispatch<ManualFormAction>;
+  errors: ErrorMap;
+  errorCount: number;
+  clinicalOpen: boolean;
+  setClinicalOpen: (next: boolean) => void;
+  linkedOpen: boolean;
+  setLinkedOpen: (next: boolean) => void;
+  expensesOpen: boolean;
+  setExpensesOpen: (next: boolean) => void;
+  submit: () => void;
+  cancel: () => void;
 }
 
-interface ManualEntryProps {
+const ManualEntryContext = createContext<ManualEntryContextValue | null>(null);
+
+export function useManualEntry(): ManualEntryContextValue {
+  const ctx = useContext(ManualEntryContext);
+  if (!ctx) throw new Error('useManualEntry must be used inside ManualEntryProvider');
+  return ctx;
+}
+
+interface ManualEntryProviderProps {
   dogId: string;
   currentDietEntryId?: string;
   onSave: (bundle: VisitBundle) => void;
   onCancel: () => void;
+  children: ReactNode;
 }
 
-function ManualEntryInner(
-  { dogId, currentDietEntryId, onSave, onCancel }: ManualEntryProps,
-  ref: React.Ref<ManualEntryHandle>
-) {
+export default function ManualEntryProvider({
+  dogId,
+  currentDietEntryId,
+  onSave,
+  onCancel,
+  children,
+}: ManualEntryProviderProps) {
   const { state, dispatch, errors, buildBundle, reset, markSubmitAttempted } = useAddRecordForm();
-
   const [clinicalOpen, setClinicalOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(false);
   const [expensesOpen, setExpensesOpen] = useState(false);
@@ -38,9 +69,7 @@ function ManualEntryInner(
     if (sectionErrors.expenses) setExpensesOpen(true);
   }, [state.submitAttempted, sectionErrors.linked, sectionErrors.expenses]);
 
-  useImperativeHandle(ref, () => ({ reset }), [reset]);
-
-  const handleSubmit = () => {
+  const submit = () => {
     markSubmitAttempted();
     const validationErrors = validateManualForm(state);
     if (Object.keys(validationErrors).length > 0) return;
@@ -49,65 +78,20 @@ function ManualEntryInner(
     reset();
   };
 
-  return (
-    <Stack spacing={1.25}>
-      {state.submitAttempted && errorCount > 0 && (
-        <Alert severity="error">
-          Doplňte {errorCount} {errorCount === 1 ? 'povinné pole' : 'povinné polia'}.
-        </Alert>
-      )}
+  const value: ManualEntryContextValue = {
+    state,
+    dispatch,
+    errors,
+    errorCount,
+    clinicalOpen,
+    setClinicalOpen,
+    linkedOpen,
+    setLinkedOpen,
+    expensesOpen,
+    setExpensesOpen,
+    submit,
+    cancel: onCancel,
+  };
 
-      <VisitBasics
-        values={state.basics}
-        errors={errors}
-        onChange={(field, value) => dispatch({ type: 'SET_BASICS_FIELD', field, value })}
-      />
-
-      <ClinicalNotes
-        values={state.clinical}
-        expanded={clinicalOpen}
-        onExpand={setClinicalOpen}
-        onChange={(field, value) => dispatch({ type: 'SET_CLINICAL_FIELD', field, value })}
-      />
-
-      <LinkedRecords
-        values={state.linked}
-        errors={errors}
-        expanded={linkedOpen}
-        onExpand={setLinkedOpen}
-        dispatch={dispatch}
-      />
-
-      <Expenses
-        values={state.expenses}
-        errors={errors}
-        expanded={expensesOpen}
-        onExpand={setExpensesOpen}
-        onChange={(field, value) => dispatch({ type: 'SET_EXPENSE_FIELD', field, value })}
-      />
-
-      <Box
-        sx={{
-          position: 'sticky',
-          bottom: 0,
-          bgcolor: 'background.paper',
-          pt: 1.5,
-          mt: 0.5,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 1,
-        }}
-      >
-        <Button onClick={onCancel}>Zrušiť</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          Uložiť záznam
-        </Button>
-      </Box>
-    </Stack>
-  );
+  return <ManualEntryContext.Provider value={value}>{children}</ManualEntryContext.Provider>;
 }
-
-const ManualEntry = forwardRef(ManualEntryInner);
-export default ManualEntry;
