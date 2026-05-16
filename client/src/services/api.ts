@@ -110,6 +110,40 @@ export async function analyzeAttachment(
   return responsePayload;
 }
 
+export async function extractTextFromImage(attachment: {
+  fileName: string;
+  mimeType: string;
+  base64Data: string;
+}): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
+  logger.info('Odosielam súbor na OCR extrakciu', {
+    fileName: attachment.fileName,
+    mimeType: attachment.mimeType,
+    base64Length: attachment.base64Data.length,
+  });
+
+  const res = await fetch(`${BASE_URL}/api/extract-text`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ attachment }),
+  });
+
+  if (!res.ok) {
+    logger.error('OCR extrakcia zlyhala', { status: res.status });
+    const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+    throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
+  }
+
+  const payload = (await res.json()) as {
+    extractedText: string;
+    source: 'google-vision' | 'openai' | 'pdf-parser' | 'none';
+  };
+  logger.info('OCR extrakcia dokončená', {
+    source: payload.source,
+    extractedTextLength: payload.extractedText.length,
+  });
+  return payload;
+}
+
 interface SimilarSummaryRequest {
   symptomTitle: string;
   symptomDescription: string;

@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import analyzeRouter from './routes/analyze';
 import episodesRouter from './routes/episodes';
+import extractTextRouter from './routes/extractText';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 
@@ -41,6 +42,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/analyze', analyzeRouter);
 app.use('/api/episodes', episodesRouter);
+app.use('/api/extract-text', extractTextRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {
