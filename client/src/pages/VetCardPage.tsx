@@ -35,492 +35,296 @@ const formatDateShort = (value?: string) => {
 };
 
 const PRINT_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+  @page { size: A4; margin: 14mm; }
 
   * { box-sizing: border-box; }
 
   :root {
-    --green-900: #14532d;
-    --green-700: #15803d;
-    --green-500: #22c55e;
-    --green-100: #dcfce7;
-    --green-50: #f0fdf4;
-    --slate-900: #0f172a;
-    --slate-700: #334155;
-    --slate-500: #64748b;
-    --slate-300: #cbd5e1;
-    --slate-100: #f1f5f9;
-    --slate-50: #f8fafc;
-    --amber-500: #f59e0b;
-    --amber-100: #fef3c7;
-    --red-600: #dc2626;
-    --red-100: #fee2e2;
-    --blue-600: #2563eb;
-    --blue-100: #dbeafe;
-    --white: #ffffff;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
-    --radius: 14px;
-    --radius-sm: 8px;
+    --ink: #1a1a1a;
+    --ink-2: #4a4a4a;
+    --ink-3: #7a7a7a;
+    --rule: #d0d0d0;
+    --rule-soft: #ececec;
+    --bg-row: #fafafa;
+    --accent: #15402a;
+    --valid: #15803d;
+    --warning: #b45309;
+    --expired: #b91c1c;
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    background: var(--slate-50);
-    color: var(--slate-900);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: #fff;
     margin: 0;
     padding: 0;
+    font-size: 12px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    font-size: 14px;
-    line-height: 1.6;
   }
 
-  .page-wrap {
-    max-width: 860px;
+  .doc {
+    max-width: 720px;
     margin: 0 auto;
-    padding: 32px 24px;
   }
 
-  /* ── HEADER ─────────────────────────────────────── */
-  .header {
-    background: linear-gradient(135deg, var(--green-900) 0%, #1a4731 60%, #0f3422 100%);
-    border-radius: var(--radius);
-    padding: 36px 40px;
-    margin-bottom: 24px;
+  /* ── HEADER ─────────────────────────────── */
+  .doc-head {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+
+  .head-strip {
     display: flex;
-    align-items: flex-start;
-    gap: 28px;
-    color: white;
-    position: relative;
-    overflow: hidden;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 14px;
   }
 
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.04);
+  .head-strip .label {
+    color: var(--accent);
   }
 
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -60px; left: 30%;
-    width: 280px; height: 280px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.03);
-  }
-
-  .avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.12);
-    border: 2.5px solid rgba(255,255,255,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    flex-shrink: 0;
-  }
-
-  .header-info { flex: 1; }
   .dog-name {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    font-weight: 400;
-    line-height: 1;
-    margin: 0 0 6px;
-    letter-spacing: -0.5px;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
   }
 
   .dog-meta {
-    font-size: 15px;
-    color: rgba(255,255,255,0.75);
-    font-weight: 400;
-    margin: 0 0 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 16px;
-  }
-
-  .dog-meta span { display: flex; align-items: center; gap: 5px; }
-
-  .header-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 12px;
-    border-radius: 999px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    color: var(--ink-2);
+    margin-bottom: 8px;
   }
 
-  .badge-valid   { background: var(--green-100); color: var(--green-700); }
-  .badge-warning { background: var(--amber-100); color: #92400e; }
-  .badge-expired { background: var(--red-100);   color: var(--red-600); }
-  .badge-neutral { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
-
-  .generated-at {
-    margin-top: 16px;
+  .head-badges {
     font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+
+  .head-badges .b-sep { color: var(--rule); margin: 0 6px; }
+  .head-badges .b-allergies { color: var(--expired); font-weight: 600; }
+  .head-badges .b-chronic { color: var(--accent); font-weight: 600; }
+  .head-badges .b-meds { color: var(--warning); font-weight: 600; }
+
+  /* ── BLOCK ─────────────────────────────── */
+  .block {
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+  }
+
+  .block-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--rule);
   }
 
-  /* ── SECTION CARD ────────────────────────────────── */
-  .section {
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 16px;
-    border: 1px solid rgba(0,0,0,0.05);
-    overflow: hidden;
-  }
-
-  .section-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 18px 24px 16px;
-    border-bottom: 1px solid var(--slate-100);
-  }
-
-  .section-icon {
-    width: 34px; height: 34px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    flex-shrink: 0;
-  }
-
-  .icon-green  { background: var(--green-100); }
-  .icon-blue   { background: var(--blue-100); }
-  .icon-amber  { background: var(--amber-100); }
-  .icon-red    { background: var(--red-100); }
-  .icon-slate  { background: var(--slate-100); }
-
-  .section-title {
-    font-size: 14px;
+  .sub-label {
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--slate-500);
-    margin: 0;
+    color: var(--ink-3);
+    margin: 8px 0 4px;
   }
 
-  .section-body { padding: 20px 24px; }
+  .sub-label.warn { color: var(--expired); }
 
-  /* ── GRID ROW ────────────────────────────────────── */
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
+  .tags {
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.7;
   }
-
-  .info-field label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--slate-500);
-    margin-bottom: 3px;
-  }
-
-  .info-field .value {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--slate-900);
-  }
-
-  /* ── TAG CHIPS ───────────────────────────────────── */
-  .tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 
   .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 999px;
+    display: inline-block;
+    border: 1px solid var(--rule);
+    padding: 1px 8px;
+    border-radius: 3px;
+    margin: 0 4px 4px 0;
+    font-size: 11px;
+    color: var(--ink);
+  }
+
+  .tag.tag-red { border-color: var(--expired); color: var(--expired); }
+  .tag.tag-amber { border-color: var(--warning); color: var(--warning); }
+  .tag.tag-blue { border-color: var(--accent); color: var(--accent); }
+  .tag.tag-slate { border-color: var(--rule); color: var(--ink-2); }
+
+  .notes {
     font-size: 12px;
-    font-weight: 500;
+    color: var(--ink-2);
+    line-height: 1.55;
   }
 
-  .tag-red    { background: var(--red-100);   color: var(--red-600); }
-  .tag-amber  { background: var(--amber-100); color: #92400e; }
-  .tag-blue   { background: var(--blue-100);  color: var(--blue-600); }
-  .tag-slate  { background: var(--slate-100); color: var(--slate-700); }
-  .tag-green  { background: var(--green-100); color: var(--green-700); }
-
-  /* ── VACCINE ROW ─────────────────────────────────── */
-  .vaccine-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--slate-100);
-  }
-  .vaccine-row:last-child { border-bottom: none; }
-
-  .vaccine-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--slate-900);
+  /* ── DATA TABLE ─────────────────────────── */
+  .data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
   }
 
-  .vaccine-dates {
-    font-size: 12px;
-    color: var(--slate-500);
-    margin-top: 2px;
-  }
-
-  /* ── MEDICATION ROW ──────────────────────────────── */
-  .med-row {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--slate-100);
-  }
-  .med-row:last-child { border-bottom: none; }
-
-  .med-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--green-500);
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-
-  .med-name { font-size: 14px; font-weight: 600; color: var(--slate-900); }
-  .med-detail { font-size: 12px; color: var(--slate-500); margin-top: 2px; }
-
-  /* ── VISIT CARD ──────────────────────────────────── */
-  .visit-card {
-    background: var(--slate-50);
-    border: 1px solid var(--slate-200, #e2e8f0);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    margin-bottom: 12px;
-  }
-  .visit-card:last-child { margin-bottom: 0; }
-
-  .visit-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .visit-date {
-    font-size: 12px;
+  .data thead th {
+    text-align: left;
     font-weight: 700;
-    color: var(--green-700);
-    background: var(--green-100);
-    padding: 3px 10px;
-    border-radius: 999px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 8px;
   }
 
-  .visit-clinic {
-    font-size: 12px;
-    color: var(--slate-500);
-    background: var(--slate-100);
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-weight: 500;
+  .data tbody tr { page-break-inside: avoid; }
+
+  .data tbody td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink);
+    vertical-align: top;
   }
+
+  .data tbody tr:nth-child(even) td { background: var(--bg-row); }
+  .data tbody tr:last-child td { border-bottom: none; }
+
+  .data td.muted { color: var(--ink-3); }
+  .data td.bold { font-weight: 600; }
+  .data td.nowrap { white-space: nowrap; }
+
+  .empty {
+    font-size: 11px;
+    color: var(--ink-3);
+    font-style: italic;
+    padding: 4px 0;
+  }
+
+  /* ── VISIT BLOCKS ────────────────────────── */
+  .visit {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+    background: #fff;
+  }
+
+  .visit-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+  }
+
+  .visit-date { font-weight: 700; color: var(--ink); }
+  .visit-clinic { font-weight: 500; }
 
   .visit-reason {
-    font-size: 13px;
+    font-size: 12px;
+    color: var(--ink);
     font-weight: 600;
-    color: var(--slate-700);
     margin-bottom: 8px;
   }
 
   .visit-section-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--slate-500);
-    margin: 8px 0 3px;
-  }
-
-  .visit-text {
-    font-size: 13px;
-    color: var(--slate-700);
-    line-height: 1.55;
-  }
-
-  /* ── TIMELINE ────────────────────────────────────── */
-  .timeline-item {
-    display: flex;
-    gap: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--slate-100);
-    align-items: flex-start;
-  }
-  .timeline-item:last-child { border-bottom: none; }
-
-  .tl-date {
-    font-size: 11px;
-    color: var(--slate-500);
-    font-weight: 600;
-    white-space: nowrap;
-    min-width: 80px;
-    padding-top: 2px;
-  }
-
-  .tl-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-
-  .tl-content { flex: 1; }
-  .tl-title { font-size: 13px; font-weight: 600; color: var(--slate-900); }
-  .tl-sub   { font-size: 12px; color: var(--slate-500); margin-top: 1px; }
-
-  /* ── FOOTER ──────────────────────────────────────── */
-  .footer {
-    text-align: center;
-    padding: 20px;
-    color: var(--slate-400, #94a3b8);
-    font-size: 12px;
-    letter-spacing: 0.03em;
-  }
-
-  /* ── PRINT ───────────────────────────────────────── */
-  @media print {
-    body { background: white; }
-    .page-wrap { max-width: 100%; padding: 16px; }
-    .section { box-shadow: none; break-inside: avoid; }
-    .visit-card { break-inside: avoid; }
-    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .tag   { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .md-table { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-
-  @page { margin: 12mm; size: A4; }
-
-  /* ── MARKDOWN RENDERED CONTENT ─── */
-  .visit-md { color: var(--slate-700); }
-
-  .visit-md .md-p {
-    margin: 0 0 8px;
-    font-size: 13px;
-    line-height: 1.65;
-    color: var(--slate-700);
-  }
-  .visit-md .md-p:last-child { margin-bottom: 0; }
-
-  .visit-md .md-h {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--slate-900);
-    margin: 10px 0 4px;
-  }
-
-  .visit-md .md-ul,
-  .visit-md .md-ol {
-    margin: 4px 0 8px;
-    padding-left: 0;
-    list-style: none;
-  }
-
-  .visit-md .md-ul li {
-    font-size: 13px;
-    color: var(--slate-700);
-    line-height: 1.55;
-    padding: 2px 0 2px 18px;
-    position: relative;
-  }
-  .visit-md .md-ul li::before {
-    content: '';
-    position: absolute;
-    left: 4px;
-    top: 10px;
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--green-700);
-  }
-
-  .visit-md .md-ol {
-    counter-reset: md-ol;
-  }
-  .visit-md .md-ol li {
-    font-size: 13px;
-    color: var(--slate-700);
-    line-height: 1.55;
-    padding: 2px 0 2px 28px;
-    position: relative;
-    counter-increment: md-ol;
-  }
-  .visit-md .md-ol li::before {
-    content: counter(md-ol);
-    position: absolute;
-    left: 0;
-    top: 3px;
-    width: 19px; height: 19px;
-    border-radius: 50%;
-    background: var(--green-100);
-    color: var(--green-700);
     font-size: 10px;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 8px 0 2px;
   }
 
-  .visit-md .md-table {
+  .visit-md {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  /* ── MARKDOWN inside visits ───────────────── */
+  .visit-md p.md-p {
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  .visit-md .md-h {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 8px 0 4px;
+  }
+
+  .visit-md ul.md-ul, .visit-md ol.md-ol {
+    margin: 4px 0;
+    padding-left: 18px;
+  }
+
+  .visit-md ul.md-ul li, .visit-md ol.md-ol li {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 2px;
+  }
+
+  .visit-md table.md-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 8px 0;
-    font-size: 12px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--slate-300);
-  }
-  .visit-md .md-table th {
-    background: var(--slate-100);
-    color: var(--slate-900);
-    font-weight: 700;
-    padding: 7px 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--slate-300);
+    margin: 6px 0;
     font-size: 11px;
-    letter-spacing: 0.03em;
+    border: 1px solid var(--rule);
+  }
+
+  .visit-md table.md-table th {
+    background: var(--bg-row);
+    color: var(--ink);
+    font-weight: 600;
+    padding: 5px 8px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .visit-md table.md-table td {
+    padding: 5px 8px;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .visit-md table.md-table tr:last-child td { border-bottom: none; }
+  .visit-md strong { color: var(--ink); font-weight: 600; }
+
+  /* ── FOOTER ─────────────────────────────── */
+  .doc-foot {
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid var(--rule);
+    font-size: 10px;
+    color: var(--ink-3);
+    text-align: right;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
-  .visit-md .md-table td {
-    padding: 7px 10px;
-    color: var(--slate-700);
-    border-bottom: 1px solid var(--slate-100);
-    vertical-align: top;
+
+  @media print {
+    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   }
-  .visit-md .md-table tr:last-child td { border-bottom: none; }
-  .visit-md .md-table tr:nth-child(even) td { background: var(--slate-50); }
 `;
 
 function statusBadge(date: string | undefined, soonDays = 30): { cls: string; label: string } {
@@ -783,48 +587,103 @@ export default function VetCardPage() {
     const tagHtml = (items: string[], cls: string) =>
       items.map((x) => `<span class="tag ${cls}">${x}</span>`).join('');
 
+    const statusColorVar = (cls: string) =>
+      cls === 'badge-valid'
+        ? 'var(--valid)'
+        : cls === 'badge-warning'
+          ? 'var(--warning)'
+          : 'var(--expired)';
+
+    const vaccineRow = (
+      type: string,
+      name: string,
+      batch: string | undefined,
+      applied: string | undefined,
+      until: string | undefined,
+      s: { cls: string; label: string }
+    ) =>
+      `<tr>
+        <td class="muted nowrap">${type}</td>
+        <td>
+          <div class="bold">${name}</div>
+          ${batch ? `<div class="muted" style="font-size:10px">šarža ${batch}</div>` : ''}
+        </td>
+        <td class="muted nowrap">${applied ? formatDateShort(applied) : '–'}</td>
+        <td class="muted nowrap">${until ? formatDateShort(until) : '–'}</td>
+        <td class="nowrap bold" style="color:${statusColorVar(s.cls)}">${s.label}</td>
+      </tr>`;
+
     const vaccineRows = [
       data.rabies
-        ? `<div class="vaccine-row"><div><div class="vaccine-name">Besnota (Rabies)</div><div class="vaccine-dates">Podaná ${formatDate(data.rabies.dateApplied)} · šarža ${data.rabies.batchNumber ?? '–'}</div></div><span class="badge ${besnota.cls}">${besnota.label}</span></div>`
+        ? vaccineRow(
+            'Besnota',
+            'Rabies',
+            data.rabies.batchNumber,
+            data.rabies.dateApplied,
+            data.rabies.validUntil,
+            besnota
+          )
         : '',
       data.combined
-        ? `<div class="vaccine-row"><div><div class="vaccine-name">Kombinovaná vakcína</div><div class="vaccine-dates">Podaná ${formatDate(data.combined.dateApplied)} · šarža ${data.combined.batchNumber ?? '–'}</div></div><span class="badge ${kombinov.cls}">${kombinov.label}</span></div>`
+        ? vaccineRow(
+            'Kombinovaná',
+            'Kombinovaná vakcína',
+            data.combined.batchNumber,
+            data.combined.dateApplied,
+            data.combined.validUntil,
+            kombinov
+          )
         : '',
-      ...(data.otherVax ?? []).map((v) => {
-        const s = statusBadge(v.validUntil);
-        return `<div class="vaccine-row"><div><div class="vaccine-name">${v.name}</div><div class="vaccine-dates">Podaná ${formatDate(v.dateApplied)}</div></div><span class="badge ${s.cls}">${s.label}</span></div>`;
-      }),
+      ...(data.otherVax ?? []).map((v) =>
+        vaccineRow(
+          'Vakcína',
+          v.name,
+          v.batchNumber,
+          v.dateApplied,
+          v.validUntil,
+          statusBadge(v.validUntil)
+        )
+      ),
       data.lastDeworming
-        ? `<div class="vaccine-row"><div><div class="vaccine-name">Odčervenie: ${data.lastDeworming.productName}</div><div class="vaccine-dates">Podané ${formatDate(data.lastDeworming.dateGiven)}</div></div><span class="badge ${dew.cls}">${dew.label}</span></div>`
+        ? vaccineRow(
+            'Odčervenie',
+            data.lastDeworming.productName,
+            undefined,
+            data.lastDeworming.dateGiven,
+            data.lastDeworming.nextDueDate,
+            dew
+          )
         : '',
       data.lastEcto
-        ? `<div class="vaccine-row"><div><div class="vaccine-name">Antiparazitikum: ${data.lastEcto.productName}</div><div class="vaccine-dates">Podané ${formatDate(data.lastEcto.dateGiven)}</div></div><span class="badge ${ecto.cls}">${ecto.label}</span></div>`
+        ? vaccineRow(
+            'Antiparazitikum',
+            data.lastEcto.productName,
+            undefined,
+            data.lastEcto.dateGiven,
+            data.lastEcto.nextDueDate,
+            ecto
+          )
         : '',
     ]
       .filter(Boolean)
       .join('');
 
-    const medRows = data.activeMeds.length
-      ? data.activeMeds
-          .map(
-            (m) => `
-        <div class="med-row">
-          <div class="med-dot"></div>
-          <div>
-            <div class="med-name">${m.name}</div>
-            <div class="med-detail">${m.dose} · ${m.frequency}${m.reason ? ` · Dôvod: ${m.reason}` : ''}</div>
-          </div>
-        </div>`
-          )
-          .join('')
-      : '<div style="color:#64748b;font-size:14px;padding:4px 0;">Bez aktívnych liekov</div>';
+    const medRows = data.activeMeds
+      .map(
+        (m) => `<tr>
+          <td class="bold">${m.name}</td>
+          <td class="muted nowrap">${m.dose || '–'}</td>
+          <td class="muted nowrap">${m.frequency || '–'}</td>
+          <td class="muted">${m.reason || '–'}</td>
+        </tr>`
+      )
+      .join('');
 
-    const visitCards = data.significantVisits.length
-      ? data.significantVisits
-          .map(
-            (v) => `
-        <div class="visit-card">
-          <div class="visit-header">
+    const visitCards = data.significantVisits
+      .map(
+        (v) => `
+        <div class="visit">
+          <div class="visit-head">
             <span class="visit-date">${formatDate(v.date)}</span>
             <span class="visit-clinic">${v.clinicName ?? 'Bez kliniky'}${v.aiExamType ? ` · ${v.aiExamType}` : ''}</span>
           </div>
@@ -833,21 +692,19 @@ export default function VetCardPage() {
           ${v.findings ? `<div class="visit-section-label">Nález</div><div class="visit-md">${mdToHtml(v.findings)}</div>` : ''}
           ${v.recommendations ? `<div class="visit-section-label">Odporúčania</div><div class="visit-md">${mdToHtml(v.recommendations)}</div>` : ''}
         </div>`
-          )
-          .join('')
-      : '<div style="color:#64748b;font-size:14px;">Bez záznamov</div>';
+      )
+      .join('');
 
     const timelineItems = data.timeline
       .map(
-        (item) =>
-          `<div class="timeline-item">
-        <div class="tl-date">${formatDateShort(item.date)}</div>
-        <div class="tl-dot" style="background:${TIMELINE_TYPE_META[item.type].hex}"></div>
-        <div class="tl-content">
-          <div class="tl-title">${item.title}</div>
-          ${item.subtitle ? `<div class="tl-sub">${item.subtitle}</div>` : ''}
-        </div>
-      </div>`
+        (item) => `<tr>
+          <td class="muted nowrap" style="width:90px">${formatDateShort(item.date)}</td>
+          <td class="bold nowrap" style="width:130px">${TIMELINE_TYPE_META[item.type].label}</td>
+          <td>
+            ${item.title}
+            ${item.subtitle ? `<div class="muted" style="font-size:10px">${item.subtitle}</div>` : ''}
+          </td>
+        </tr>`
       )
       .join('');
 
@@ -857,181 +714,196 @@ export default function VetCardPage() {
     const heroBadges = sections.identity
       ? [
           allergyCount
-            ? `<span class="badge badge-neutral">⚠ ${allergyCount} ${allergyCount === 1 ? 'alergia' : 'alergií'}</span>`
+            ? `<span class="b-allergies">${allergyCount} ${allergyCount === 1 ? 'alergia' : allergyCount < 5 ? 'alergie' : 'alergií'}</span>`
             : '',
           chronicCount
-            ? `<span class="badge badge-neutral">🩺 ${chronicCount} chronických diagnóz</span>`
+            ? `<span class="b-chronic">${chronicCount} ${chronicCount === 1 ? 'chronická diagnóza' : chronicCount < 5 ? 'chronické diagnózy' : 'chronických diagnóz'}</span>`
             : '',
           data.activeMeds.length
-            ? `<span class="badge badge-neutral">💊 ${data.activeMeds.length} aktívnych liekov</span>`
+            ? `<span class="b-meds">${data.activeMeds.length} ${data.activeMeds.length === 1 ? 'aktívny liek' : data.activeMeds.length < 5 ? 'aktívne lieky' : 'aktívnych liekov'}</span>`
             : '',
         ]
           .filter(Boolean)
-          .join('')
+          .join('<span class="b-sep">·</span>')
       : '';
+
+    const metaParts = [
+      dog.breed,
+      age != null ? `${age} r.` : '',
+      dog.weightKg != null ? `${dog.weightKg} kg` : '',
+      dog.sex && dog.sex !== 'UNKNOWN' ? (dog.sex === 'MALE' ? 'Samec' : 'Samica') : '',
+      dog.microchipNumber ? `Čip: ${dog.microchipNumber}` : '',
+      dog.passportNumber ? `Pas: ${dog.passportNumber}` : '',
+    ].filter(Boolean);
 
     const html = `<!DOCTYPE html>
 <html lang="sk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Karta pre veterinára – ${dog.name}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Klinická karta – ${dog.name}</title>
   <style>${PRINT_STYLES}</style>
 </head>
 <body>
-<div class="page-wrap">
+<div class="doc">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="avatar">🐾</div>
-    <div class="header-info">
-      <h1 class="dog-name">${dog.name}</h1>
-      <div class="dog-meta">
-        ${dog.breed ? `<span>🐕 ${dog.breed}</span>` : ''}
-        ${age != null ? `<span>🎂 ${age} rokov</span>` : ''}
-        ${dog.weightKg != null ? `<span>⚖️ ${dog.weightKg} kg</span>` : ''}
-        ${dog.sex && dog.sex !== 'UNKNOWN' ? `<span>${dog.sex === 'MALE' ? '♂' : '♀'} ${dog.sex === 'MALE' ? 'Samec' : 'Samica'}</span>` : ''}
-        ${dog.microchipNumber ? `<span>📟 Čip: ${dog.microchipNumber}</span>` : ''}
-        ${dog.passportNumber ? `<span>📘 Pas: ${dog.passportNumber}</span>` : ''}
-      </div>
-      ${heroBadges ? `<div class="header-badges">${heroBadges}</div>` : ''}
-      <div class="generated-at">Vygenerované: ${new Date().toLocaleString('sk-SK')} · GranuleCheck</div>
+  <header class="doc-head">
+    <div class="head-strip">
+      <span class="label">Klinická karta zvieraťa</span>
+      <span>${new Date().toLocaleDateString('sk-SK')}</span>
     </div>
-  </div>
+    <h1 class="dog-name">${dog.name}</h1>
+    ${
+      sections.identity
+        ? `
+    <div class="dog-meta">${metaParts.join(' · ') || '–'}</div>
+    ${heroBadges ? `<div class="head-badges">${heroBadges}</div>` : ''}`
+        : ''
+    }
+  </header>
 
   ${
     sections.conditions
       ? `
-  <!-- IDENTITA + DIAGNÓZY -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-icon icon-blue">🪪</div>
-      <h2 class="section-title">Zdravotný profil</h2>
-    </div>
-    <div class="section-body">
-      ${
-        dog.chronicConditions?.length || dog.healthConditions.length
-          ? `
-        <div style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Chronické diagnózy</div>
-          <div class="tag-wrap">
-            ${tagHtml(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions, 'tag-blue')}
-          </div>
-        </div>`
-          : ''
-      }
-
-      ${
-        dog.allergies.length
-          ? `
-        <div style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">⚠️ Alergie</div>
-          <div class="tag-wrap">${tagHtml(dog.allergies, 'tag-red')}</div>
-        </div>`
-          : ''
-      }
-
-      ${
-        dog.intolerances.length
-          ? `
-        <div style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Intolerancie</div>
-          <div class="tag-wrap">${tagHtml(dog.intolerances, 'tag-amber')}</div>
-        </div>`
-          : ''
-      }
-
-      ${
-        dog.procedures?.length
-          ? `
-        <div style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:6px;">Výkony / operácie</div>
-          <div class="tag-wrap">${tagHtml(
-            dog.procedures.map((p) => `${p.title}${p.date ? ` (${p.date})` : ''}`),
-            'tag-slate'
-          )}</div>
-        </div>`
-          : ''
-      }
-
-      ${
+  <section class="block">
+    <h2 class="block-title">Zdravotný profil</h2>
+    ${
+      dog.chronicConditions?.length || dog.healthConditions.length
+        ? `
+    <div class="sub-label">Chronické diagnózy</div>
+    <div class="tags">${tagHtml(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions, 'tag-blue')}</div>`
+        : ''
+    }
+    ${
+      dog.allergies.length
+        ? `
+    <div class="sub-label warn">Alergie</div>
+    <div class="tags">${tagHtml(dog.allergies, 'tag-red')}</div>`
+        : ''
+    }
+    ${
+      dog.intolerances.length
+        ? `
+    <div class="sub-label">Intolerancie</div>
+    <div class="tags">${tagHtml(dog.intolerances, 'tag-amber')}</div>`
+        : ''
+    }
+    ${
+      dog.procedures?.length
+        ? `
+    <div class="sub-label">Výkony / operácie</div>
+    <div class="tags">${tagHtml(
+      dog.procedures.map((p) => `${p.title}${p.date ? ` (${p.date})` : ''}`),
+      'tag-slate'
+    )}</div>`
+        : ''
+    }
+    ${
+      dog.notes
+        ? `
+    <div class="sub-label">Poznámky majiteľa</div>
+    <div class="notes">${dog.notes}</div>`
+        : ''
+    }
+    ${
+      !(
+        dog.chronicConditions?.length ||
+        dog.healthConditions.length ||
+        dog.allergies.length ||
+        dog.intolerances.length ||
+        dog.procedures?.length ||
         dog.notes
-          ? `
-        <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:4px;">Poznámky majiteľa</div>
-          <div style="font-size:13px;color:#334155;line-height:1.55;">${dog.notes}</div>
-        </div>`
-          : ''
-      }
-    </div>
-  </div>`
+      )
+        ? '<div class="empty">Žiadne klinické záznamy v profile</div>'
+        : ''
+    }
+  </section>`
       : ''
   }
 
   ${
     sections.medications
       ? `
-  <!-- LIEKY -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-icon icon-green">💊</div>
-      <h2 class="section-title">Aktívne lieky a doplnky</h2>
-    </div>
-    <div class="section-body">${medRows}</div>
-  </div>`
+  <section class="block">
+    <h2 class="block-title">Aktívne lieky a doplnky</h2>
+    ${
+      data.activeMeds.length
+        ? `
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Názov</th>
+          <th>Dávkovanie</th>
+          <th>Frekvencia</th>
+          <th>Dôvod</th>
+        </tr>
+      </thead>
+      <tbody>${medRows}</tbody>
+    </table>`
+        : '<div class="empty">Bez aktívnych liekov</div>'
+    }
+  </section>`
       : ''
   }
 
   ${
     sections.prevention
       ? `
-  <!-- PREVENTÍVNA STAROSTLIVOSŤ -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-icon icon-green">💉</div>
-      <h2 class="section-title">Preventívna starostlivosť</h2>
-    </div>
-    <div class="section-body">
-      ${vaccineRows || '<div style="color:#64748b;font-size:14px;">Žiadne záznamy</div>'}
-    </div>
-  </div>`
+  <section class="block">
+    <h2 class="block-title">Preventívna starostlivosť</h2>
+    ${
+      vaccineRows
+        ? `
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Typ</th>
+          <th>Názov</th>
+          <th>Podané</th>
+          <th>Platné do</th>
+          <th>Stav</th>
+        </tr>
+      </thead>
+      <tbody>${vaccineRows}</tbody>
+    </table>`
+        : '<div class="empty">Žiadne záznamy</div>'
+    }
+  </section>`
       : ''
   }
 
   ${
     sections.visits && data.significantVisits.length
       ? `
-  <!-- NÁVŠTEVY VETERINÁRA -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-icon icon-blue">🏥</div>
-      <h2 class="section-title">Posledné klinické záznamy</h2>
-    </div>
-    <div class="section-body">${visitCards}</div>
-  </div>`
+  <section class="block">
+    <h2 class="block-title">Posledné klinické záznamy</h2>
+    ${visitCards}
+  </section>`
       : ''
   }
 
   ${
     sections.history && data.timeline.length
       ? `
-  <!-- TIMELINE -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-icon icon-slate">📅</div>
-      <h2 class="section-title">Klinická história (${data.timeline.length})</h2>
-    </div>
-    <div class="section-body">${timelineItems}</div>
-  </div>`
+  <section class="block">
+    <h2 class="block-title">Klinická história (${data.timeline.length})</h2>
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Dátum</th>
+          <th>Typ</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>${timelineItems}</tbody>
+    </table>
+  </section>`
       : ''
   }
 
-  <div class="footer">
-    GranuleCheck · Karta vygenerovaná pre potreby veterinára · ${new Date().toLocaleDateString('sk-SK')}
-  </div>
+  <footer class="doc-foot">
+    GranuleCheck · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
+  </footer>
 
 </div>
 </body>
