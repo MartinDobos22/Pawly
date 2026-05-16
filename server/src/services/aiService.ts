@@ -118,15 +118,21 @@ function buildUserMessage(composition: string, petProfile?: PetProfile): string 
 
     if (petProfile.allergies.length > 0) {
       msg += `\n### ⚠️ ALERGIE (KRITICKÁ KONTROLA!):\n`;
-      petProfile.allergies.forEach(a => { msg += `- ${a}\n`; });
+      petProfile.allergies.forEach((a) => {
+        msg += `- ${a}\n`;
+      });
     }
     if (petProfile.intolerances.length > 0) {
       msg += `\n### ⚠️ INTOLERANCIE (KRITICKÁ KONTROLA!):\n`;
-      petProfile.intolerances.forEach(i => { msg += `- ${i}\n`; });
+      petProfile.intolerances.forEach((i) => {
+        msg += `- ${i}\n`;
+      });
     }
     if (petProfile.healthConditions.length > 0) {
       msg += `\n### ZDRAVOTNÉ STAVY:\n`;
-      petProfile.healthConditions.forEach(h => { msg += `- ${h}\n`; });
+      petProfile.healthConditions.forEach((h) => {
+        msg += `- ${h}\n`;
+      });
     }
     if (petProfile.notes) {
       msg += `\n### POZNÁMKY OD MAJITEĽA:\n${petProfile.notes}\n`;
@@ -153,7 +159,6 @@ function extractTextFromPdfBuffer(buffer: Buffer): string {
 
   return text;
 }
-
 
 async function extractTextFromImageWithGoogleVision(attachment: AttachmentInput): Promise<string> {
   const apiKey = process.env.GOOGLE_VISION_API_KEY;
@@ -203,7 +208,8 @@ async function normalizeExtractedTextWithOpenAI(text: string): Promise<string> {
       messages: [
         {
           role: 'system',
-          content: 'Uprav OCR text bez zmeny významu: oprav iba zjavné OCR chyby, zachovaj jazyk a štruktúru. Vráť iba čistý text.',
+          content:
+            'Uprav OCR text bez zmeny významu: oprav iba zjavné OCR chyby, zachovaj jazyk a štruktúru. Vráť iba čistý text.',
         },
         {
           role: 'user',
@@ -232,7 +238,10 @@ async function extractTextFromImageWithOpenAI(attachment: AttachmentInput): Prom
         {
           role: 'user',
           content: [
-            { type: 'text', text: 'Prepíš všetok čitateľný text zo zdravotného dokumentu zvieraťa. Vráť iba čistý text bez komentárov.' },
+            {
+              type: 'text',
+              text: 'Prepíš všetok čitateľný text zo zdravotného dokumentu zvieraťa. Vráť iba čistý text bez komentárov.',
+            },
             { type: 'image_url', image_url: { url: dataUrl } },
           ],
         },
@@ -271,8 +280,20 @@ interface HealthPassportInterpretation {
 }
 
 const FEED_RELATED_KEYWORDS = [
-  'zloženie', 'granule', 'krmivo', 'protein', 'tuk', 'vláknina', 'popol', 'ingrediencie',
-  'kuracie', 'hovädzie', 'losos', 'kukurica', 'pšenica', 'mäsová múčka',
+  'zloženie',
+  'granule',
+  'krmivo',
+  'protein',
+  'tuk',
+  'vláknina',
+  'popol',
+  'ingrediencie',
+  'kuracie',
+  'hovädzie',
+  'losos',
+  'kukurica',
+  'pšenica',
+  'mäsová múčka',
 ];
 
 function looksLikeFeedComposition(text: string): boolean {
@@ -282,7 +303,9 @@ function looksLikeFeedComposition(text: string): boolean {
   return hits >= 2 || (hits >= 1 && hasPercentages);
 }
 
-async function analyzeDocumentContextWithOpenAI(text: string): Promise<DocumentContextAnalysis | null> {
+async function analyzeDocumentContextWithOpenAI(
+  text: string
+): Promise<DocumentContextAnalysis | null> {
   const client = getOpenAIClient();
   if (!client) return null;
 
@@ -318,11 +341,18 @@ Formát:
     const analysis: DocumentContextAnalysis = {
       documentType: typeof parsed.documentType === 'string' ? parsed.documentType : 'ine',
       confidence:
-        parsed.confidence === 'high' || parsed.confidence === 'medium' || parsed.confidence === 'low'
+        parsed.confidence === 'high' ||
+        parsed.confidence === 'medium' ||
+        parsed.confidence === 'low'
           ? parsed.confidence
           : 'low',
-      summary: typeof parsed.summary === 'string' ? parsed.summary : 'Kontext dokumentu sa nepodarilo spoľahlivo určiť.',
-      keyFindings: Array.isArray(parsed.keyFindings) ? parsed.keyFindings.filter((x): x is string => typeof x === 'string') : [],
+      summary:
+        typeof parsed.summary === 'string'
+          ? parsed.summary
+          : 'Kontext dokumentu sa nepodarilo spoľahlivo určiť.',
+      keyFindings: Array.isArray(parsed.keyFindings)
+        ? parsed.keyFindings.filter((x): x is string => typeof x === 'string')
+        : [],
       recommendedActions: Array.isArray(parsed.recommendedActions)
         ? parsed.recommendedActions.filter((x): x is string => typeof x === 'string')
         : [],
@@ -368,13 +398,15 @@ async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias)
     ],
   });
 
-  return response.choices[0]?.message?.content?.trim() ?? 'Nepodarilo sa vytvoriť analýzu dokumentu.';
+  return (
+    response.choices[0]?.message?.content?.trim() ?? 'Nepodarilo sa vytvoriť analýzu dokumentu.'
+  );
 }
 
 export async function analyzeVetFile(
   alias: ExamAlias,
   imageUrls: string[],
-  extraNote?: string,
+  extraNote?: string
 ): Promise<string | null> {
   const client = getOpenAIClient();
   if (!client) {
@@ -405,14 +437,23 @@ export async function analyzeVetFile(
   return completion.choices[0]?.message?.content ?? null;
 }
 
-
 function looksLikeHealthPassport(text: string): boolean {
   const lowered = text.toLowerCase();
-  const keywords = ['zdravotný pas', 'vaccination', 'vakc', 'rabies', 'veterin', 'passport', 'očkov'];
+  const keywords = [
+    'zdravotný pas',
+    'vaccination',
+    'vakc',
+    'rabies',
+    'veterin',
+    'passport',
+    'očkov',
+  ];
   return keywords.filter((k) => lowered.includes(k)).length >= 2;
 }
 
-async function interpretHealthPassportWithOpenAI(text: string): Promise<HealthPassportInterpretation | null> {
+async function interpretHealthPassportWithOpenAI(
+  text: string
+): Promise<HealthPassportInterpretation | null> {
   const client = getOpenAIClient();
   if (!client) return null;
 
@@ -458,7 +499,10 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
     const rawVaccinations = Array.isArray(parsed.vaccinations) ? parsed.vaccinations : [];
 
     return {
-      summary: typeof parsed.summary === 'string' ? parsed.summary : 'Z textu sa nepodarilo spoľahlivo vytvoriť zhrnutie očkovaní.',
+      summary:
+        typeof parsed.summary === 'string'
+          ? parsed.summary
+          : 'Z textu sa nepodarilo spoľahlivo vytvoriť zhrnutie očkovaní.',
       aiUnderstanding:
         typeof parsed.aiUnderstanding === 'string'
           ? parsed.aiUnderstanding
@@ -468,7 +512,9 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
           if (!item || typeof item !== 'object') return null;
           const i = item as Record<string, unknown>;
           const confidence: 'high' | 'medium' | 'low' =
-            i.confidence === 'high' || i.confidence === 'medium' || i.confidence === 'low' ? i.confidence : 'low';
+            i.confidence === 'high' || i.confidence === 'medium' || i.confidence === 'low'
+              ? i.confidence
+              : 'low';
           return {
             disease: typeof i.disease === 'string' ? i.disease : '',
             vaccineName: typeof i.vaccineName === 'string' ? i.vaccineName : '',
@@ -489,11 +535,50 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
   }
 }
 
+export async function extractRawTextFromAttachment(
+  attachment: AttachmentInput
+): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
+  const supportedMimeTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ];
+  if (!supportedMimeTypes.includes(attachment.mimeType)) {
+    throw new Error('Podporované sú len PDF, JPG, PNG a WEBP súbory.');
+  }
+
+  if (attachment.mimeType === 'application/pdf') {
+    const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
+    return { extractedText: pdfText.trim(), source: pdfText ? 'pdf-parser' : 'none' };
+  }
+
+  const visionText = await extractTextFromImageWithGoogleVision(attachment);
+  if (visionText) {
+    const normalized = await normalizeExtractedTextWithOpenAI(visionText);
+    return { extractedText: normalized || visionText, source: 'google-vision' };
+  }
+
+  const openaiText = await extractTextFromImageWithOpenAI(attachment);
+  if (openaiText) {
+    return { extractedText: openaiText, source: 'openai' };
+  }
+
+  return { extractedText: '', source: 'none' };
+}
+
 export async function extractTextFromAttachment(
   attachment: AttachmentInput,
-  examAlias?: ExamAlias,
+  examAlias?: ExamAlias
 ): Promise<FileExtractionResult> {
-  const supportedMimeTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const supportedMimeTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ];
   if (!supportedMimeTypes.includes(attachment.mimeType)) {
     throw new Error('Podporované sú len PDF, JPG, PNG a WEBP súbory.');
   }
@@ -505,15 +590,19 @@ export async function extractTextFromAttachment(
   if (attachment.mimeType === 'application/pdf') {
     const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
     if (!pdfText) {
-      throw new Error('Z PDF sa nepodarilo získať text. Skúste kvalitnejší export alebo fotku dokumentu.');
+      throw new Error(
+        'Z PDF sa nepodarilo získať text. Skúste kvalitnejší export alebo fotku dokumentu.'
+      );
     }
 
     const normalizedPdfText = await normalizeExtractedTextWithOpenAI(pdfText);
 
     const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedPdfText);
-    const shouldRunFeedAnalysis = contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedPdfText);
+    const shouldRunFeedAnalysis =
+      contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedPdfText);
     const shouldInterpretPassport =
-      contextAnalysis?.documentType === 'veterinarna-sprava' || looksLikeHealthPassport(normalizedPdfText);
+      contextAnalysis?.documentType === 'veterinarna-sprava' ||
+      looksLikeHealthPassport(normalizedPdfText);
     const healthPassportInterpretation = shouldInterpretPassport
       ? await interpretHealthPassportWithOpenAI(normalizedPdfText)
       : null;
@@ -547,7 +636,8 @@ export async function extractTextFromAttachment(
 
   const textFromVision = await extractTextFromImageWithGoogleVision(attachment);
   const textFromOpenAIImage = await extractTextFromImageWithOpenAI(attachment);
-  const bestText = textFromVision.length >= textFromOpenAIImage.length ? textFromVision : textFromOpenAIImage;
+  const bestText =
+    textFromVision.length >= textFromOpenAIImage.length ? textFromVision : textFromOpenAIImage;
 
   if (!bestText) {
     throw new Error('Z obrázka sa nepodarilo prečítať text. Nahrajte ostrejšiu fotku.');
@@ -556,9 +646,11 @@ export async function extractTextFromAttachment(
   const normalizedText = await normalizeExtractedTextWithOpenAI(bestText);
 
   const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedText);
-  const shouldRunFeedAnalysis = contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedText);
+  const shouldRunFeedAnalysis =
+    contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedText);
   const shouldInterpretPassport =
-    contextAnalysis?.documentType === 'veterinarna-sprava' || looksLikeHealthPassport(normalizedText);
+    contextAnalysis?.documentType === 'veterinarna-sprava' ||
+    looksLikeHealthPassport(normalizedText);
   const healthPassportInterpretation = shouldInterpretPassport
     ? await interpretHealthPassportWithOpenAI(normalizedText)
     : null;
@@ -569,10 +661,15 @@ export async function extractTextFromAttachment(
         examType: EXAM_ALIAS_TO_TYPE[examAlias],
         analysis: await analyzeExamDocumentWithOpenAI(normalizedText, examAlias),
       }
-      : undefined;
+    : undefined;
 
   logger.info('Backend spracoval obrázkovú prílohu', {
-    source: textFromVision && textFromOpenAIImage ? 'google-vision+openai' : textFromVision ? 'google-vision' : 'openai',
+    source:
+      textFromVision && textFromOpenAIImage
+        ? 'google-vision+openai'
+        : textFromVision
+          ? 'google-vision'
+          : 'openai',
     contextDocumentType: contextAnalysis?.documentType ?? null,
     examAlias: examAnalysis?.examAlias ?? null,
     examType: examAnalysis?.examType ?? null,
@@ -582,7 +679,12 @@ export async function extractTextFromAttachment(
 
   return {
     extractedText: normalizedText,
-    source: textFromVision && textFromOpenAIImage ? 'google-vision+openai' : textFromVision ? 'google-vision' : 'openai',
+    source:
+      textFromVision && textFromOpenAIImage
+        ? 'google-vision+openai'
+        : textFromVision
+          ? 'google-vision'
+          : 'openai',
     contextAnalysis: contextAnalysis ?? undefined,
     healthPassportInterpretation: healthPassportInterpretation ?? undefined,
     feedAnalysis: shouldRunFeedAnalysis ? await callAiModel(normalizedText) : undefined,
@@ -593,53 +695,53 @@ export async function extractTextFromAttachment(
 // ── Mock fallback (old logic preserved) ──────────────────────────────────────
 
 const INGREDIENT_DB: Record<string, { category: Ingredient['category']; qualityNum: number }> = {
-  'kurací': { category: 'protein', qualityNum: 9 },
-  'kuracie': { category: 'protein', qualityNum: 9 },
-  'kuřecí': { category: 'protein', qualityNum: 9 },
-  'kura': { category: 'protein', qualityNum: 9 },
-  'morka': { category: 'protein', qualityNum: 8 },
-  'morčacie': { category: 'protein', qualityNum: 8 },
-  'hovädzie': { category: 'protein', qualityNum: 8 },
-  'hovězí': { category: 'protein', qualityNum: 8 },
-  'jahňacie': { category: 'protein', qualityNum: 9 },
-  'jehněčí': { category: 'protein', qualityNum: 9 },
-  'losos': { category: 'protein', qualityNum: 10 },
-  'ryba': { category: 'protein', qualityNum: 9 },
-  'tuniak': { category: 'protein', qualityNum: 9 },
-  'kačacie': { category: 'protein', qualityNum: 8 },
-  'kačica': { category: 'protein', qualityNum: 8 },
-  'divina': { category: 'protein', qualityNum: 9 },
-  'jelenie': { category: 'protein', qualityNum: 9 },
-  'králik': { category: 'protein', qualityNum: 8 },
-  'mäso': { category: 'protein', qualityNum: 7 },
-  'maso': { category: 'protein', qualityNum: 7 },
+  kurací: { category: 'protein', qualityNum: 9 },
+  kuracie: { category: 'protein', qualityNum: 9 },
+  kuřecí: { category: 'protein', qualityNum: 9 },
+  kura: { category: 'protein', qualityNum: 9 },
+  morka: { category: 'protein', qualityNum: 8 },
+  morčacie: { category: 'protein', qualityNum: 8 },
+  hovädzie: { category: 'protein', qualityNum: 8 },
+  hovězí: { category: 'protein', qualityNum: 8 },
+  jahňacie: { category: 'protein', qualityNum: 9 },
+  jehněčí: { category: 'protein', qualityNum: 9 },
+  losos: { category: 'protein', qualityNum: 10 },
+  ryba: { category: 'protein', qualityNum: 9 },
+  tuniak: { category: 'protein', qualityNum: 9 },
+  kačacie: { category: 'protein', qualityNum: 8 },
+  kačica: { category: 'protein', qualityNum: 8 },
+  divina: { category: 'protein', qualityNum: 9 },
+  jelenie: { category: 'protein', qualityNum: 9 },
+  králik: { category: 'protein', qualityNum: 8 },
+  mäso: { category: 'protein', qualityNum: 7 },
+  maso: { category: 'protein', qualityNum: 7 },
   'dehydrované mäso': { category: 'protein', qualityNum: 8 },
   'čerstvé mäso': { category: 'protein', qualityNum: 10 },
   'mäsová múčka': { category: 'protein', qualityNum: 4 },
   'mäsové múčky': { category: 'protein', qualityNum: 3 },
   'vedľajšie živočíšne produkty': { category: 'protein', qualityNum: 2 },
   'hydrolyzovaný proteín': { category: 'protein', qualityNum: 5 },
-  'vajce': { category: 'protein', qualityNum: 7 },
-  'vajcia': { category: 'protein', qualityNum: 7 },
-  'ryža': { category: 'carb', qualityNum: 6 },
+  vajce: { category: 'protein', qualityNum: 7 },
+  vajcia: { category: 'protein', qualityNum: 7 },
+  ryža: { category: 'carb', qualityNum: 6 },
   'hnedá ryža': { category: 'carb', qualityNum: 7 },
   'sladké zemiaky': { category: 'carb', qualityNum: 8 },
-  'batáty': { category: 'carb', qualityNum: 8 },
-  'zemiaky': { category: 'carb', qualityNum: 6 },
-  'hrášok': { category: 'carb', qualityNum: 7 },
-  'šošovica': { category: 'carb', qualityNum: 7 },
-  'cícer': { category: 'carb', qualityNum: 7 },
-  'ovos': { category: 'carb', qualityNum: 6 },
-  'jačmeň': { category: 'carb', qualityNum: 5 },
-  'pšenica': { category: 'carb', qualityNum: 3 },
-  'kukurica': { category: 'carb', qualityNum: 3 },
-  'obilniny': { category: 'carb', qualityNum: 3 },
-  'obilnín': { category: 'carb', qualityNum: 3 },
+  batáty: { category: 'carb', qualityNum: 8 },
+  zemiaky: { category: 'carb', qualityNum: 6 },
+  hrášok: { category: 'carb', qualityNum: 7 },
+  šošovica: { category: 'carb', qualityNum: 7 },
+  cícer: { category: 'carb', qualityNum: 7 },
+  ovos: { category: 'carb', qualityNum: 6 },
+  jačmeň: { category: 'carb', qualityNum: 5 },
+  pšenica: { category: 'carb', qualityNum: 3 },
+  kukurica: { category: 'carb', qualityNum: 3 },
+  obilniny: { category: 'carb', qualityNum: 3 },
+  obilnín: { category: 'carb', qualityNum: 3 },
   'pšeničná múčka': { category: 'carb', qualityNum: 2 },
   'kukuričná múčka': { category: 'carb', qualityNum: 2 },
   'kukuričný lepok': { category: 'carb', qualityNum: 1 },
   'pšeničný lepok': { category: 'carb', qualityNum: 1 },
-  'sója': { category: 'carb', qualityNum: 2 },
+  sója: { category: 'carb', qualityNum: 2 },
   'sójová múčka': { category: 'carb', qualityNum: 1 },
   'lososový olej': { category: 'fat', qualityNum: 10 },
   'rybí olej': { category: 'fat', qualityNum: 9 },
@@ -649,31 +751,31 @@ const INGREDIENT_DB: Record<string, { category: Ingredient['category']; qualityN
   'slnečnicový olej': { category: 'fat', qualityNum: 5 },
   'ľanový olej': { category: 'fat', qualityNum: 8 },
   'kokosový olej': { category: 'fat', qualityNum: 6 },
-  'repa': { category: 'fiber', qualityNum: 7 },
+  repa: { category: 'fiber', qualityNum: 7 },
   'repný rezok': { category: 'fiber', qualityNum: 7 },
-  'celulóza': { category: 'fiber', qualityNum: 4 },
-  'jablko': { category: 'fiber', qualityNum: 8 },
-  'mrkva': { category: 'fiber', qualityNum: 8 },
-  'tekvica': { category: 'fiber', qualityNum: 8 },
-  'špenát': { category: 'fiber', qualityNum: 7 },
-  'brusnice': { category: 'fiber', qualityNum: 8 },
-  'čučoriedky': { category: 'fiber', qualityNum: 8 },
-  'vitamín': { category: 'additive', qualityNum: 7 },
-  'minerály': { category: 'additive', qualityNum: 7 },
-  'probiotik': { category: 'additive', qualityNum: 9 },
-  'prebiotik': { category: 'additive', qualityNum: 8 },
-  'glukozamín': { category: 'additive', qualityNum: 8 },
-  'chondroitín': { category: 'additive', qualityNum: 8 },
-  'taurín': { category: 'additive', qualityNum: 7 },
-  'konzervant': { category: 'additive', qualityNum: 3 },
-  'farbivo': { category: 'additive', qualityNum: 1 },
+  celulóza: { category: 'fiber', qualityNum: 4 },
+  jablko: { category: 'fiber', qualityNum: 8 },
+  mrkva: { category: 'fiber', qualityNum: 8 },
+  tekvica: { category: 'fiber', qualityNum: 8 },
+  špenát: { category: 'fiber', qualityNum: 7 },
+  brusnice: { category: 'fiber', qualityNum: 8 },
+  čučoriedky: { category: 'fiber', qualityNum: 8 },
+  vitamín: { category: 'additive', qualityNum: 7 },
+  minerály: { category: 'additive', qualityNum: 7 },
+  probiotik: { category: 'additive', qualityNum: 9 },
+  prebiotik: { category: 'additive', qualityNum: 8 },
+  glukozamín: { category: 'additive', qualityNum: 8 },
+  chondroitín: { category: 'additive', qualityNum: 8 },
+  taurín: { category: 'additive', qualityNum: 7 },
+  konzervant: { category: 'additive', qualityNum: 3 },
+  farbivo: { category: 'additive', qualityNum: 1 },
   'umelé farbivo': { category: 'additive', qualityNum: 0 },
-  'aróma': { category: 'additive', qualityNum: 2 },
-  'cukor': { category: 'additive', qualityNum: 0 },
-  'soľ': { category: 'additive', qualityNum: 2 },
-  'antioxidant': { category: 'additive', qualityNum: 6 },
-  'tokoferol': { category: 'additive', qualityNum: 8 },
-  'rozmarín': { category: 'additive', qualityNum: 8 },
+  aróma: { category: 'additive', qualityNum: 2 },
+  cukor: { category: 'additive', qualityNum: 0 },
+  soľ: { category: 'additive', qualityNum: 2 },
+  antioxidant: { category: 'additive', qualityNum: 6 },
+  tokoferol: { category: 'additive', qualityNum: 8 },
+  rozmarín: { category: 'additive', qualityNum: 8 },
 };
 
 function numToQuality(q: number): Ingredient['quality'] {
@@ -698,7 +800,10 @@ function detectIngredients(composition: string): Ingredient[] {
     if (normalized.includes(key) && !matched.has(key)) {
       matched.add(key);
       const info = INGREDIENT_DB[key];
-      const percentRegex = new RegExp(`${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^,]*?(\\d{1,2})\\s*%`, 'i');
+      const percentRegex = new RegExp(
+        `${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^,]*?(\\d{1,2})\\s*%`,
+        'i'
+      );
       const percentMatch = normalized.match(percentRegex);
 
       found.push({
@@ -722,19 +827,25 @@ function calculateScore(ingredients: Ingredient[]): number {
   let score = 50;
 
   if (proteins.length > 0) {
-    const avg = proteins.reduce((s, p) => s + (INGREDIENT_DB[p.name.toLowerCase()]?.qualityNum ?? 5), 0) / proteins.length;
+    const avg =
+      proteins.reduce((s, p) => s + (INGREDIENT_DB[p.name.toLowerCase()]?.qualityNum ?? 5), 0) /
+      proteins.length;
     score += avg * 2;
     if (proteins.length >= 2) score += 5;
   } else {
     score -= 15;
   }
   if (carbs.length > 0) {
-    const avg = carbs.reduce((s, c) => s + (INGREDIENT_DB[c.name.toLowerCase()]?.qualityNum ?? 5), 0) / carbs.length;
+    const avg =
+      carbs.reduce((s, c) => s + (INGREDIENT_DB[c.name.toLowerCase()]?.qualityNum ?? 5), 0) /
+      carbs.length;
     if (avg < 4) score -= 10;
     else if (avg > 6) score += 5;
   }
   if (fats.length > 0) {
-    const avg = fats.reduce((s, f) => s + (INGREDIENT_DB[f.name.toLowerCase()]?.qualityNum ?? 5), 0) / fats.length;
+    const avg =
+      fats.reduce((s, f) => s + (INGREDIENT_DB[f.name.toLowerCase()]?.qualityNum ?? 5), 0) /
+      fats.length;
     score += avg;
   }
   if (fibers.length > 0) score += Math.min(fibers.length * 2, 8);
@@ -752,7 +863,8 @@ function generateMockPros(ingredients: Ingredient[], score: number): string[] {
   const fibers = ingredients.filter((i) => i.category === 'fiber');
   const fats = ingredients.filter((i) => i.category === 'fat');
   if (proteins.length >= 2) pros.push('Viacero zdrojov živočíšnych proteínov');
-  else if (proteins.length === 1) pros.push(`Obsahuje ${proteins[0].name.toLowerCase()} ako zdroj proteínu`);
+  else if (proteins.length === 1)
+    pros.push(`Obsahuje ${proteins[0].name.toLowerCase()} ako zdroj proteínu`);
   if (proteins.some((p) => (INGREDIENT_DB[p.name.toLowerCase()]?.qualityNum ?? 0) >= 8))
     pros.push('Kvalitné zdroje proteínov (mäso/ryba vysokej kvality)');
   if (fibers.length >= 2) pros.push('Bohaté na vlákninu z prírodných zdrojov (ovocie, zelenina)');
@@ -760,7 +872,12 @@ function generateMockPros(ingredients: Ingredient[], score: number): string[] {
     pros.push('Kvalitné zdroje omega mastných kyselín');
   if (ingredients.some((i) => i.name.toLowerCase().includes('probiotik')))
     pros.push('Obsahuje probiotiká pre zdravé trávenie');
-  if (ingredients.some((i) => i.name.toLowerCase().includes('glukozamín') || i.name.toLowerCase().includes('chondroitín')))
+  if (
+    ingredients.some(
+      (i) =>
+        i.name.toLowerCase().includes('glukozamín') || i.name.toLowerCase().includes('chondroitín')
+    )
+  )
     pros.push('Podpora kĺbov (glukozamín/chondroitín)');
   if (score >= 70) pros.push('Celkovo vyvážené zloženie');
   if (pros.length === 0) pros.push('Základné nutričné hodnoty sú prítomné');
@@ -783,7 +900,8 @@ function generateMockCons(ingredients: Ingredient[], score: number): string[] {
   if (ingredients.some((i) => i.name.toLowerCase() === 'cukor'))
     cons.push('Obsahuje pridaný cukor – zbytočné a nezdravé');
   if (score < 50) cons.push('Celkovo nízka kvalita zloženia');
-  if (cons.length === 0 && score < 90) cons.push('Zloženie je v poriadku, ale existujú lepšie alternatívy na trhu');
+  if (cons.length === 0 && score < 90)
+    cons.push('Zloženie je v poriadku, ale existujú lepšie alternatívy na trhu');
   return cons;
 }
 
@@ -791,15 +909,34 @@ function generateMockRecommendation(ingredients: Ingredient[], score: number) {
   const suitableFor: string[] = [];
   const notRecommendedFor: string[] = [];
   const proteins = ingredients.filter((i) => i.category === 'protein');
-  const hasGrains = ingredients.some((i) => i.category === 'carb' && (INGREDIENT_DB[i.name.toLowerCase()]?.qualityNum ?? 5) <= 3);
-  const hasFish = ingredients.some((i) => ['losos', 'ryba', 'tuniak'].includes(i.name.toLowerCase()));
-  const hasJoint = ingredients.some((i) => i.name.toLowerCase().includes('glukozamín') || i.name.toLowerCase().includes('chondroitín'));
-  if (score >= 70) { suitableFor.push('Dospelé psy'); if (proteins.length >= 2) suitableFor.push('Aktívne psy'); }
+  const hasGrains = ingredients.some(
+    (i) => i.category === 'carb' && (INGREDIENT_DB[i.name.toLowerCase()]?.qualityNum ?? 5) <= 3
+  );
+  const hasFish = ingredients.some((i) =>
+    ['losos', 'ryba', 'tuniak'].includes(i.name.toLowerCase())
+  );
+  const hasJoint = ingredients.some(
+    (i) =>
+      i.name.toLowerCase().includes('glukozamín') || i.name.toLowerCase().includes('chondroitín')
+  );
+  if (score >= 70) {
+    suitableFor.push('Dospelé psy');
+    if (proteins.length >= 2) suitableFor.push('Aktívne psy');
+  }
   if (score >= 80) suitableFor.push('Šteňatá (od 6 mesiacov)');
-  if (hasFish) { suitableFor.push('Psy s citlivou kožou'); suitableFor.push('Psy s alergiami'); }
-  if (hasJoint) { suitableFor.push('Staršie psy'); suitableFor.push('Veľké plemená'); }
+  if (hasFish) {
+    suitableFor.push('Psy s citlivou kožou');
+    suitableFor.push('Psy s alergiami');
+  }
+  if (hasJoint) {
+    suitableFor.push('Staršie psy');
+    suitableFor.push('Veľké plemená');
+  }
   if (!hasGrains) suitableFor.push('Psy s citlivým trávením');
-  if (score < 50) { notRecommendedFor.push('Šteňatá'); notRecommendedFor.push('Psy s alergiami'); }
+  if (score < 50) {
+    notRecommendedFor.push('Šteňatá');
+    notRecommendedFor.push('Psy s alergiami');
+  }
   if (hasGrains) notRecommendedFor.push('Psy s gluténovou intoleranciou');
   if (score < 60) notRecommendedFor.push('Aktívne a pracovné psy');
   if (proteins.length === 0) notRecommendedFor.push('Rastúce šteňatá');
@@ -822,20 +959,26 @@ function generateMockSummary(ingredients: Ingredient[], score: number): string {
 // Simple allergen keyword mapping for mock detection
 const ALLERGEN_KEYWORDS: Record<string, string[]> = {
   'kura/kuriatko': ['kurací', 'kuracie', 'kuřecí', 'kura', 'kuracia', 'hydrolyzovaný kurací'],
-  'hovädzie': ['hovädzie', 'hovězí', 'hovädzia'],
-  'jahňacie': ['jahňacie', 'jehněčí', 'jahňacia'],
-  'ryby': ['losos', 'ryba', 'tuniak', 'rybí', 'lososový'],
-  'vajcia': ['vajce', 'vajcia'],
-  'pšenica': ['pšenica', 'pšeničná', 'pšeničný'],
-  'kukurica': ['kukurica', 'kukuričná', 'kukuričný'],
-  'sója': ['sója', 'sójová', 'sójový'],
+  hovädzie: ['hovädzie', 'hovězí', 'hovädzia'],
+  jahňacie: ['jahňacie', 'jehněčí', 'jahňacia'],
+  ryby: ['losos', 'ryba', 'tuniak', 'rybí', 'lososový'],
+  vajcia: ['vajce', 'vajcia'],
+  pšenica: ['pšenica', 'pšeničná', 'pšeničný'],
+  kukurica: ['kukurica', 'kukuričná', 'kukuričný'],
+  sója: ['sója', 'sójová', 'sójový'],
   'mliečne produkty': ['mlieko', 'mliečne', 'srvátka', 'kaszeín', 'laktóza'],
-  'lepok': ['lepok', 'pšenica', 'pšeničná', 'jačmeň', 'raž', 'obilniny'],
-  'laktóza': ['mlieko', 'mliečne', 'srvátka', 'laktóza'],
-  'obilniny': ['obilniny', 'obilnín', 'pšenica', 'kukurica', 'jačmeň', 'raž'],
+  lepok: ['lepok', 'pšenica', 'pšeničná', 'jačmeň', 'raž', 'obilniny'],
+  laktóza: ['mlieko', 'mliečne', 'srvátka', 'laktóza'],
+  obilniny: ['obilniny', 'obilnín', 'pšenica', 'kukurica', 'jačmeň', 'raž'],
 };
 
-function detectMockAllergens(composition: string, petProfile: PetProfile): { allergenWarnings: AnalysisResult['allergenWarnings']; healthWarnings: AnalysisResult['healthWarnings'] } {
+function detectMockAllergens(
+  composition: string,
+  petProfile: PetProfile
+): {
+  allergenWarnings: AnalysisResult['allergenWarnings'];
+  healthWarnings: AnalysisResult['healthWarnings'];
+} {
   const normalized = normalizeText(composition);
   const allergenWarnings: AnalysisResult['allergenWarnings'] = [];
   const healthWarnings: AnalysisResult['healthWarnings'] = [];
@@ -860,20 +1003,55 @@ function detectMockAllergens(composition: string, petProfile: PetProfile): { all
   for (const condition of petProfile.healthConditions) {
     const nc = normalizeText(condition);
     if (nc.includes('obezit') && (normalized.includes('tuk') || normalized.includes('olej'))) {
-      healthWarnings.push({ severity: 'high', condition, message: 'Krmivo obsahuje tukové zložky — zvážte nízkokalorické krmivo pre zviera s obezitou.' });
-    } else if (nc.includes('oblič') && normalized.match(/proteín|mäso|maso|kurací|hovädzie|jahňacie|losos/)) {
-      healthWarnings.push({ severity: 'high', condition, message: 'Vysoký obsah proteínov môže zaťažovať obličky. Konzultujte s veterinárom.' });
-    } else if (nc.includes('diabetes') && (normalized.includes('cukor') || normalized.includes('kukurica') || normalized.includes('pšenica'))) {
-      healthWarnings.push({ severity: 'high', condition, message: 'Krmivo obsahuje jednoduché sacharidy nevhodné pre zviera s diabetom.' });
-    } else if (nc.includes('tráveni') && (normalized.includes('kukurica') || normalized.includes('sója') || normalized.includes('obilniny'))) {
-      healthWarnings.push({ severity: 'moderate', condition, message: 'Obilniny a sója môžu zhoršiť citlivé trávenie.' });
+      healthWarnings.push({
+        severity: 'high',
+        condition,
+        message:
+          'Krmivo obsahuje tukové zložky — zvážte nízkokalorické krmivo pre zviera s obezitou.',
+      });
+    } else if (
+      nc.includes('oblič') &&
+      normalized.match(/proteín|mäso|maso|kurací|hovädzie|jahňacie|losos/)
+    ) {
+      healthWarnings.push({
+        severity: 'high',
+        condition,
+        message: 'Vysoký obsah proteínov môže zaťažovať obličky. Konzultujte s veterinárom.',
+      });
+    } else if (
+      nc.includes('diabetes') &&
+      (normalized.includes('cukor') ||
+        normalized.includes('kukurica') ||
+        normalized.includes('pšenica'))
+    ) {
+      healthWarnings.push({
+        severity: 'high',
+        condition,
+        message: 'Krmivo obsahuje jednoduché sacharidy nevhodné pre zviera s diabetom.',
+      });
+    } else if (
+      nc.includes('tráveni') &&
+      (normalized.includes('kukurica') ||
+        normalized.includes('sója') ||
+        normalized.includes('obilniny'))
+    ) {
+      healthWarnings.push({
+        severity: 'moderate',
+        condition,
+        message: 'Obilniny a sója môžu zhoršiť citlivé trávenie.',
+      });
     }
   }
 
   return { allergenWarnings, healthWarnings };
 }
 
-function generateMockPersonalizedNote(petProfile: PetProfile, score: number, allergenCount: number, healthWarningCount: number): AnalysisResult['personalizedNote'] {
+function generateMockPersonalizedNote(
+  petProfile: PetProfile,
+  score: number,
+  allergenCount: number,
+  healthWarningCount: number
+): AnalysisResult['personalizedNote'] {
   let verdict: string;
   let explanation: string;
 
@@ -894,7 +1072,10 @@ function generateMockPersonalizedNote(petProfile: PetProfile, score: number, all
   return { petName: petProfile.name, overallVerdict: verdict, explanation };
 }
 
-async function callMockModel(composition: string, petProfile?: PetProfile): Promise<AnalysisResult> {
+async function callMockModel(
+  composition: string,
+  petProfile?: PetProfile
+): Promise<AnalysisResult> {
   await new Promise((r) => setTimeout(r, 500 + Math.random() * 500));
   const ingredients = detectIngredients(composition);
   const score = calculateScore(ingredients);
@@ -907,7 +1088,12 @@ async function callMockModel(composition: string, petProfile?: PetProfile): Prom
     const warnings = detectMockAllergens(composition, petProfile);
     allergenWarnings = warnings.allergenWarnings;
     healthWarnings = warnings.healthWarnings;
-    personalizedNote = generateMockPersonalizedNote(petProfile, score, allergenWarnings.length, healthWarnings.length);
+    personalizedNote = generateMockPersonalizedNote(
+      petProfile,
+      score,
+      allergenWarnings.length,
+      healthWarnings.length
+    );
   }
 
   return {
@@ -931,22 +1117,39 @@ function getOpenAIClient(): OpenAI | null {
   return new OpenAI({ apiKey });
 }
 
-const VALID_CATEGORIES = new Set(['protein', 'carb', 'fat', 'fiber', 'additive', 'mineral', 'vitamin']);
+const VALID_CATEGORIES = new Set([
+  'protein',
+  'carb',
+  'fat',
+  'fiber',
+  'additive',
+  'mineral',
+  'vitamin',
+]);
 const VALID_QUALITIES = new Set(['excellent', 'good', 'average', 'poor', 'harmful']);
 const VALID_SEVERITIES = new Set(['critical', 'high', 'moderate']);
 
 function validateAndSanitize(raw: unknown): AnalysisResult {
   const data = raw as Record<string, unknown>;
 
-  const score = Math.max(0, Math.min(100, typeof data.score === 'number' ? Math.round(data.score) : 50));
-  const pros = Array.isArray(data.pros) ? data.pros.filter((p): p is string => typeof p === 'string') : ['Analýza dokončená'];
-  const cons = Array.isArray(data.cons) ? data.cons.filter((c): c is string => typeof c === 'string') : [];
+  const score = Math.max(
+    0,
+    Math.min(100, typeof data.score === 'number' ? Math.round(data.score) : 50)
+  );
+  const pros = Array.isArray(data.pros)
+    ? data.pros.filter((p): p is string => typeof p === 'string')
+    : ['Analýza dokončená'];
+  const cons = Array.isArray(data.cons)
+    ? data.cons.filter((c): c is string => typeof c === 'string')
+    : [];
 
   const recommendation = (() => {
     const rec = data.recommendation as Record<string, unknown> | undefined;
     return {
       suitableFor: Array.isArray(rec?.suitableFor) ? (rec.suitableFor as string[]) : [],
-      notRecommendedFor: Array.isArray(rec?.notRecommendedFor) ? (rec.notRecommendedFor as string[]) : [],
+      notRecommendedFor: Array.isArray(rec?.notRecommendedFor)
+        ? (rec.notRecommendedFor as string[])
+        : [],
     };
   })();
 
@@ -967,20 +1170,27 @@ function validateAndSanitize(raw: unknown): AnalysisResult {
 
   const allergenWarnings = Array.isArray(data.allergenWarnings)
     ? data.allergenWarnings
-        .filter((w: Record<string, unknown>) => w && typeof w.allergen === 'string' && typeof w.message === 'string')
+        .filter(
+          (w: Record<string, unknown>) =>
+            w && typeof w.allergen === 'string' && typeof w.message === 'string'
+        )
         .map((w: Record<string, unknown>) => ({
           severity: VALID_SEVERITIES.has(w.severity as string)
             ? (w.severity as 'critical' | 'high' | 'moderate')
             : 'critical',
           allergen: w.allergen as string,
-          ingredientName: typeof w.ingredientName === 'string' ? w.ingredientName : 'Neznáma ingrediencia',
+          ingredientName:
+            typeof w.ingredientName === 'string' ? w.ingredientName : 'Neznáma ingrediencia',
           message: w.message as string,
         }))
     : [];
 
   const healthWarnings = Array.isArray(data.healthWarnings)
     ? data.healthWarnings
-        .filter((w: Record<string, unknown>) => w && typeof w.condition === 'string' && typeof w.message === 'string')
+        .filter(
+          (w: Record<string, unknown>) =>
+            w && typeof w.condition === 'string' && typeof w.message === 'string'
+        )
         .map((w: Record<string, unknown>) => ({
           severity: VALID_SEVERITIES.has(w.severity as string)
             ? (w.severity as 'critical' | 'high' | 'moderate')
@@ -1038,7 +1248,10 @@ async function callOpenAI(composition: string, petProfile?: PetProfile): Promise
 
 let modeLogged = false;
 
-export async function callAiModel(composition: string, petProfile?: PetProfile): Promise<AnalysisResult> {
+export async function callAiModel(
+  composition: string,
+  petProfile?: PetProfile
+): Promise<AnalysisResult> {
   if (composition.length > 5000) {
     throw new Error('Zloženie je príliš dlhé (max 5000 znakov).');
   }

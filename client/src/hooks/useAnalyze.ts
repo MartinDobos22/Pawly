@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { analyzeAttachment, analyzeComposition } from '../services/api';
+import { analyzeAttachment, analyzeComposition, extractTextFromImage } from '../services/api';
 import { AnalysisRequest, AnalysisResult, FileExtractionResult, PetProfile } from '../types';
 import { logger } from '../utils/logger';
 
@@ -8,6 +8,8 @@ export function useAnalyze() {
   const [fileResult, setFileResult] = useState<FileExtractionResult | null>(null);
   const [loadingText, setLoadingText] = useState(false);
   const [loadingFile, setLoadingFile] = useState(false);
+  const [extractingText, setExtractingText] = useState(false);
+  const [extractError, setExtractError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const analyze = useCallback(async (composition: string, petProfile?: PetProfile) => {
@@ -67,24 +69,58 @@ export function useAnalyze() {
     }
   }, []);
 
+  const extractTextOnly = useCallback(async (attachment: {
+    fileName: string;
+    mimeType: string;
+    base64Data: string;
+  }): Promise<string | null> => {
+    setExtractingText(true);
+    setExtractError(null);
+
+    logger.info('Používateľ spustil OCR extrakciu zo súboru', {
+      fileName: attachment.fileName,
+      mimeType: attachment.mimeType,
+    });
+
+    try {
+      const { extractedText } = await extractTextFromImage(attachment);
+      logger.info('Hook useAnalyze prijal výsledok OCR', {
+        extractedTextLength: extractedText.length,
+      });
+      return extractedText;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Nepodarilo sa extrahovať text';
+      setExtractError(message);
+      logger.error('Hook useAnalyze zachytil chybu OCR extrakcie', { message });
+      return null;
+    } finally {
+      setExtractingText(false);
+    }
+  }, []);
+
   const reset = useCallback(() => {
     logger.info('Resetujem stav analýzy v useAnalyze');
     setResult(null);
     setFileResult(null);
     setError(null);
+    setExtractError(null);
     setLoadingText(false);
     setLoadingFile(false);
+    setExtractingText(false);
   }, []);
 
   return {
     analyze,
     analyzeFile,
+    extractTextOnly,
     result,
     fileResult,
     loadingText,
     loadingFile,
+    extractingText,
     loading: loadingText || loadingFile,
     error,
+    extractError,
     reset,
   };
 }
