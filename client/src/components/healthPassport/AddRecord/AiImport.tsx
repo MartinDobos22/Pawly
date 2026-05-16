@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
 import type { AiDetectedDraftRecord } from '../hpTypes';
@@ -7,10 +7,11 @@ import { useAiImport as useAiImportInternal } from './useAiImport';
 
 interface AiImportContextValue {
   state: AiFormState;
-  loadingFile: boolean;
-  fileAnalyzeError: string | null;
+  maxAttachments: number;
   setStep: (step: AiStep) => void;
-  setAttachmentFile: (file: File | null) => Promise<void>;
+  addAttachments: (files: File[]) => Promise<void>;
+  removeAttachment: (id: string) => void;
+  clearAttachments: () => void;
   setAttachmentLabel: (value: string) => void;
   setMainCategory: (value: string) => void;
   setSubcategory: (value: string) => void;
@@ -44,8 +45,11 @@ export default function AiImportProvider({
 }: AiImportProviderProps) {
   const {
     state,
+    maxAttachments,
     setStep,
-    setAttachmentFile,
+    addAttachments,
+    removeAttachment,
+    clearAttachments,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,
@@ -54,16 +58,7 @@ export default function AiImportProvider({
     analyze,
     buildBundle,
     reset,
-    loadingFile,
-    fileAnalyzeError,
-    fileResult,
   } = useAiImportInternal();
-
-  useEffect(() => {
-    if (fileResult && state.step === 0) {
-      setStep(1);
-    }
-  }, [fileResult, state.step, setStep]);
 
   const submit = () => {
     if (!state.visitDraft.clinicName.trim()) return;
@@ -74,10 +69,11 @@ export default function AiImportProvider({
 
   const value: AiImportContextValue = {
     state,
-    loadingFile,
-    fileAnalyzeError,
+    maxAttachments,
     setStep,
-    setAttachmentFile,
+    addAttachments,
+    removeAttachment,
+    clearAttachments,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,

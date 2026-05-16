@@ -451,11 +451,21 @@ function looksLikeHealthPassport(text: string): boolean {
   return keywords.filter((k) => lowered.includes(k)).length >= 2;
 }
 
-async function interpretHealthPassportWithOpenAI(
+const MAX_PASSPORT_TEXT_CHARS = 24000;
+
+export async function interpretHealthPassportWithOpenAI(
   text: string
 ): Promise<HealthPassportInterpretation | null> {
   const client = getOpenAIClient();
   if (!client) return null;
+
+  const trimmedText = text.slice(0, MAX_PASSPORT_TEXT_CHARS);
+  if (text.length > MAX_PASSPORT_TEXT_CHARS) {
+    logger.warn('Text pasu prekročil limit, orezávam', {
+      originalLength: text.length,
+      truncatedTo: MAX_PASSPORT_TEXT_CHARS,
+    });
+  }
 
   try {
     const response = await client.chat.completions.create({
@@ -466,6 +476,7 @@ async function interpretHealthPassportWithOpenAI(
         {
           role: 'system',
           content: `Si veterinárny asistent. Z textu zdravotného pasu zvieraťa priprav detailný rozbor očkovaní.
+Text môže pochádzať z viacerých strán pasu spojených dohromady (oddelené "---"). Deduplikuj záznamy — ak je tá istá vakcína spomenutá na viacerých stranách, vráť ju iba raz.
 Vráť iba JSON v tvare:
 {
   "summary": "stručné zhrnutie",
@@ -488,7 +499,7 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
         },
         {
           role: 'user',
-          content: text.slice(0, 12000),
+          content: trimmedText,
         },
       ],
     });

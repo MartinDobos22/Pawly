@@ -144,6 +144,44 @@ export async function extractTextFromImage(attachment: {
   return payload;
 }
 
+export interface PassportInterpretation {
+  summary?: string;
+  aiUnderstanding?: string;
+  vaccinations: Array<{
+    disease: string;
+    vaccineName: string;
+    dateAdministered: string;
+    validUntil?: string;
+    batchNumber?: string;
+    veterinarian?: string;
+    manufacturer?: string;
+    confidence: 'high' | 'medium' | 'low';
+    notes?: string;
+  }>;
+}
+
+export async function interpretPassportText(text: string): Promise<PassportInterpretation> {
+  logger.info('Odosielam text pasu na AI interpretáciu', { textLength: text.length });
+
+  const res = await fetch(`${BASE_URL}/api/interpret-passport`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+
+  if (!res.ok) {
+    logger.error('Interpretácia pasu zlyhala', { status: res.status });
+    const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+    throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
+  }
+
+  const payload = (await res.json()) as PassportInterpretation;
+  logger.info('Interpretácia pasu prijatá', {
+    vaccinationsCount: payload.vaccinations?.length ?? 0,
+  });
+  return payload;
+}
+
 interface SimilarSummaryRequest {
   symptomTitle: string;
   symptomDescription: string;

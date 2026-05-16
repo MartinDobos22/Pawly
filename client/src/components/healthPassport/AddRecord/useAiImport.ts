@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 
-import { useAnalyze } from '../../../hooks/useAnalyze';
+import { extractTextFromImage, interpretPassportText } from '../../../services/api';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { AiDetectedDraftRecord } from '../hpTypes';
-import { EXAM_SUBCATEGORY_TO_ALIAS, MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
+import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
 import { inferAiTargetType, normalizeDateInput, plusDays, today, uid } from '../utils';
 
-import type { AiAttachmentDraft, AiFormState, AiStep, AiVisitDraftValues } from './formTypes';
+import type {
+  AiAttachmentEntry,
+  AiFormState,
+  AiStep,
+  AiVisitDraftValues,
+  AnalyzeProgress,
+} from './formTypes';
+
+const MAX_ATTACHMENTS = 8;
 
 const INITIAL_VISIT_DRAFT: AiVisitDraftValues = {
   date: today(),
@@ -17,11 +25,11 @@ const INITIAL_VISIT_DRAFT: AiVisitDraftValues = {
 
 export const INITIAL_AI_STATE: AiFormState = {
   step: 0,
-  attachmentFile: null,
+  attachments: [],
   attachmentError: '',
-  attachmentPreviewUrl: '',
   attachmentLabel: '',
-  pendingAttachment: null,
+  analyzeError: '',
+  analyzeProgress: null,
   selectedMainCategory: '',
   selectedSubcategory: '',
   aiDetectedRecords: [],
@@ -32,14 +40,13 @@ export const INITIAL_AI_STATE: AiFormState = {
 
 type AiAction =
   | { type: 'SET_STEP'; step: AiStep }
-  | {
-      type: 'SET_ATTACHMENT';
-      file: File | null;
-      previewUrl: string;
-      pending: AiAttachmentDraft | null;
-    }
+  | { type: 'ADD_ATTACHMENTS'; entries: AiAttachmentEntry[] }
+  | { type: 'REMOVE_ATTACHMENT'; id: string }
+  | { type: 'CLEAR_ATTACHMENTS' }
   | { type: 'SET_ATTACHMENT_ERROR'; message: string }
   | { type: 'SET_ATTACHMENT_LABEL'; label: string }
+  | { type: 'SET_ANALYZE_PROGRESS'; progress: AnalyzeProgress | null }
+  | { type: 'SET_ANALYZE_ERROR'; message: string }
   | { type: 'SET_MAIN_CATEGORY'; value: string }
   | { type: 'SET_SUBCATEGORY'; value: string }
   | { type: 'SET_AI_RECORDS'; records: AiDetectedDraftRecord[] }
@@ -52,24 +59,25 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
   switch (action.type) {
     case 'SET_STEP':
       return { ...state, step: action.step };
-    case 'SET_ATTACHMENT':
+    case 'ADD_ATTACHMENTS': {
+      const next = [...state.attachments, ...action.entries].slice(0, MAX_ATTACHMENTS);
+      return { ...state, attachments: next, attachmentError: '' };
+    }
+    case 'REMOVE_ATTACHMENT':
       return {
         ...state,
-        attachmentFile: action.file,
-        attachmentPreviewUrl: action.previewUrl,
-        pendingAttachment: action.pending,
-        attachmentError: '',
+        attachments: state.attachments.filter((a) => a.id !== action.id),
       };
+    case 'CLEAR_ATTACHMENTS':
+      return { ...state, attachments: [], attachmentError: '' };
     case 'SET_ATTACHMENT_ERROR':
-      return {
-        ...state,
-        attachmentError: action.message,
-        attachmentFile: null,
-        attachmentPreviewUrl: '',
-        pendingAttachment: null,
-      };
+      return { ...state, attachmentError: action.message };
     case 'SET_ATTACHMENT_LABEL':
       return { ...state, attachmentLabel: action.label };
+    case 'SET_ANALYZE_PROGRESS':
+      return { ...state, analyzeProgress: action.progress };
+    case 'SET_ANALYZE_ERROR':
+      return { ...state, analyzeError: action.message, analyzeProgress: null };
     case 'SET_MAIN_CATEGORY':
       return { ...state, selectedMainCategory: action.value, selectedSubcategory: '' };
     case 'SET_SUBCATEGORY':
@@ -80,7 +88,7 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
       return {
         ...state,
         aiDetectedRecords: state.aiDetectedRecords.map((r) =>
-          r.id === action.id ? { ...r, ...action.patch } : r
+          r.id === action.id ? { ...r, ...action.patch } : r,
         ),
       };
     case 'SET_VISIT_DRAFT_FIELD':
@@ -119,103 +127,159 @@ interface BuildContext {
 
 export function useAiImport() {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
-  const { analyzeFile, fileResult, loadingFile, error: fileAnalyzeError } = useAnalyze();
-
-  useEffect(() => {
-    const records = fileResult?.healthPassportInterpretation?.vaccinations;
-    if (!records || records.length === 0) {
-      return;
-    }
-    const drafts: AiDetectedDraftRecord[] = records.map((item, index) => {
-      const targetType = inferAiTargetType(item.disease, item.vaccineName);
-      const date = normalizeDateInput(item.dateAdministered);
-      const fallback = targetType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
-      return {
-        id: `${Date.now()}-${index}`,
-        sourceConfidence: item.confidence,
-        sourceDisease: item.disease,
-        targetType,
-        productName: item.vaccineName || item.disease || 'Neznámy záznam',
-        date,
-        validUntil: normalizeDateInput(item.validUntil ?? fallback),
-        batchNumber: item.batchNumber ?? '',
-        intervalDays: targetType === 'ECTOPARASITE' ? 30 : 90,
-      };
-    });
-    dispatch({ type: 'SET_AI_RECORDS', records: drafts });
-  }, [fileResult]);
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
-  const setAttachmentFile = useCallback(async (file: File | null) => {
-    if (!file) {
-      dispatch({ type: 'SET_ATTACHMENT', file: null, previewUrl: '', pending: null });
-      return;
-    }
-    if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-      dispatch({ type: 'SET_ATTACHMENT_ERROR', message: 'Nepodporovaný typ súboru.' });
-      return;
-    }
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      dispatch({ type: 'SET_ATTACHMENT_ERROR', message: 'Súbor je príliš veľký (max 5 MB).' });
-      return;
-    }
-    try {
-      const { previewUrl, base64 } = await readFileAsBase64(file);
-      dispatch({
-        type: 'SET_ATTACHMENT',
-        file,
-        previewUrl,
-        pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
-      dispatch({ type: 'SET_ATTACHMENT_ERROR', message });
-    }
-  }, []);
+  const addAttachmentFiles = useCallback(
+    async (files: File[], currentCount: number) => {
+      if (files.length === 0) return;
+
+      if (currentCount >= MAX_ATTACHMENTS) {
+        dispatch({
+          type: 'SET_ATTACHMENT_ERROR',
+          message: `Maximálne ${MAX_ATTACHMENTS} strán pasu.`,
+        });
+        return;
+      }
+
+      const available = MAX_ATTACHMENTS - currentCount;
+      const toProcess = files.slice(0, available);
+      const accepted: AiAttachmentEntry[] = [];
+      let lastError = '';
+
+      for (const file of toProcess) {
+        if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
+          lastError = `Nepodporovaný typ súboru: ${file.name}`;
+          continue;
+        }
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          lastError = `Súbor je príliš veľký (max 5 MB): ${file.name}`;
+          continue;
+        }
+        try {
+          const { previewUrl, base64 } = await readFileAsBase64(file);
+          accepted.push({
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            file,
+            previewUrl,
+            pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
+          });
+        } catch (err) {
+          lastError = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
+        }
+      }
+
+      if (accepted.length > 0) {
+        dispatch({ type: 'ADD_ATTACHMENTS', entries: accepted });
+      }
+      if (lastError) {
+        dispatch({ type: 'SET_ATTACHMENT_ERROR', message: lastError });
+      }
+      if (files.length > available) {
+        dispatch({
+          type: 'SET_ATTACHMENT_ERROR',
+          message: `Maximum ${MAX_ATTACHMENTS} strán pasu — nadbytočné súbory boli ignorované.`,
+        });
+      }
+    },
+    [],
+  );
+
+  const addAttachments = useCallback(
+    (files: File[]) => addAttachmentFiles(files, state.attachments.length),
+    [addAttachmentFiles, state.attachments.length],
+  );
+
+  const removeAttachment = useCallback(
+    (id: string) => dispatch({ type: 'REMOVE_ATTACHMENT', id }),
+    [],
+  );
+
+  const clearAttachments = useCallback(() => dispatch({ type: 'CLEAR_ATTACHMENTS' }), []);
 
   const setAttachmentLabel = useCallback(
     (label: string) => dispatch({ type: 'SET_ATTACHMENT_LABEL', label }),
-    []
+    [],
   );
   const setMainCategory = useCallback(
     (value: string) => dispatch({ type: 'SET_MAIN_CATEGORY', value }),
-    []
+    [],
   );
   const setSubcategory = useCallback(
     (value: string) => dispatch({ type: 'SET_SUBCATEGORY', value }),
-    []
+    [],
   );
   const updateAiRecord = useCallback(
     (id: string, patch: Partial<AiDetectedDraftRecord>) =>
       dispatch({ type: 'UPDATE_AI_RECORD', id, patch }),
-    []
+    [],
   );
   const setVisitDraftField = useCallback(
     (field: keyof AiVisitDraftValues, value: string) =>
       dispatch({ type: 'SET_VISIT_DRAFT_FIELD', field, value }),
-    []
+    [],
   );
 
   const analyze = useCallback(async () => {
-    if (!state.pendingAttachment) return;
-    const examAlias = state.selectedSubcategory
-      ? EXAM_SUBCATEGORY_TO_ALIAS[state.selectedSubcategory]
-      : undefined;
-    await analyzeFile(state.pendingAttachment, examAlias);
-  }, [analyzeFile, state.pendingAttachment, state.selectedSubcategory]);
+    if (state.attachments.length === 0) return;
+
+    dispatch({ type: 'SET_ANALYZE_ERROR', message: '' });
+
+    try {
+      const texts: string[] = [];
+      for (let i = 0; i < state.attachments.length; i++) {
+        dispatch({
+          type: 'SET_ANALYZE_PROGRESS',
+          progress: { done: i, total: state.attachments.length, stage: 'ocr' },
+        });
+        const { extractedText } = await extractTextFromImage(state.attachments[i].pending);
+        if (extractedText.trim()) texts.push(extractedText.trim());
+      }
+
+      if (texts.length === 0) {
+        dispatch({
+          type: 'SET_ANALYZE_ERROR',
+          message: 'Z dokumentov sa nepodarilo extrahovať žiadny text.',
+        });
+        return;
+      }
+
+      dispatch({
+        type: 'SET_ANALYZE_PROGRESS',
+        progress: { done: state.attachments.length, total: state.attachments.length, stage: 'interpret' },
+      });
+
+      const combined = texts.join('\n\n---\n\n');
+      const { vaccinations } = await interpretPassportText(combined);
+
+      const drafts: AiDetectedDraftRecord[] = (vaccinations ?? []).map((item, index) => {
+        const targetType = inferAiTargetType(item.disease, item.vaccineName);
+        const date = normalizeDateInput(item.dateAdministered);
+        const fallback = targetType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
+        return {
+          id: `${Date.now()}-${index}`,
+          sourceConfidence: item.confidence,
+          sourceDisease: item.disease,
+          targetType,
+          productName: item.vaccineName || item.disease || 'Neznámy záznam',
+          date,
+          validUntil: normalizeDateInput(item.validUntil ?? fallback),
+          batchNumber: item.batchNumber ?? '',
+          intervalDays: targetType === 'ECTOPARASITE' ? 30 : 90,
+        };
+      });
+
+      dispatch({ type: 'SET_AI_RECORDS', records: drafts });
+      dispatch({ type: 'SET_ANALYZE_PROGRESS', progress: null });
+      dispatch({ type: 'SET_STEP', step: 1 });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Analýza pasu zlyhala.';
+      dispatch({ type: 'SET_ANALYZE_ERROR', message });
+    }
+  }, [state.attachments]);
 
   const buildBundle = useCallback(
     (ctx: BuildContext): VisitBundle => {
-      const aiSummary = [
-        fileResult?.contextAnalysis?.summary
-          ? `Kontext: ${fileResult.contextAnalysis.summary}`
-          : '',
-        fileResult?.examAnalysis?.analysis ? `AI analýza: ${fileResult.examAnalysis.analysis}` : '',
-      ]
-        .filter(Boolean)
-        .join('\n\n');
-
       const selectedRecords = state.aiDetectedRecords
         .filter((r) => r.targetType !== 'SKIP')
         .map((r) => ({
@@ -228,42 +292,54 @@ export function useAiImport() {
           intervalDays: r.intervalDays || (r.targetType === 'ECTOPARASITE' ? 30 : 90),
         }));
 
+      const aiSummary = state.attachments.length
+        ? `AI import zo ${state.attachments.length} ${
+            state.attachments.length === 1 ? 'strany' : 'strán'
+          } zdravotného pasu`
+        : '';
+
+      const attachmentDrafts = state.attachments.map((entry, idx) => ({
+        attachmentLabel:
+          state.attachments.length > 1
+            ? `${state.attachmentLabel || 'Zdravotný pas'} — strana ${idx + 1}`
+            : state.attachmentLabel || entry.pending.fileName,
+        attachmentUrl: '',
+        attachmentPreviewUrl: entry.previewUrl,
+        attachmentFileName: entry.pending.fileName,
+      }));
+
       return VetVisitHelper.createAiVisitBundle({
         dogId: ctx.dogId,
         draft: state.visitDraft,
         selectedVisitMainCategory: state.selectedMainCategory,
         selectedVisitSubcategory: state.selectedSubcategory,
-        examType: ctx.examType ?? fileResult?.examAnalysis?.examType,
+        examType: ctx.examType,
         aiSummary,
         selectedRecords,
-        attachmentDraft: {
-          attachmentLabel: state.attachmentLabel || state.pendingAttachment?.fileName || '',
-          attachmentUrl: '',
-          attachmentPreviewUrl: state.attachmentPreviewUrl,
-          attachmentFileName: state.pendingAttachment?.fileName,
-        },
+        attachmentDrafts,
         plusDays,
         uid,
       });
     },
     [
-      fileResult,
       state.aiDetectedRecords,
+      state.attachments,
       state.attachmentLabel,
-      state.attachmentPreviewUrl,
-      state.pendingAttachment,
       state.selectedMainCategory,
       state.selectedSubcategory,
       state.visitDraft,
-    ]
+    ],
   );
 
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
 
   return {
     state,
+    maxAttachments: MAX_ATTACHMENTS,
     setStep,
-    setAttachmentFile,
+    addAttachments,
+    removeAttachment,
+    clearAttachments,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,
@@ -272,8 +348,5 @@ export function useAiImport() {
     analyze,
     buildBundle,
     reset,
-    loadingFile,
-    fileAnalyzeError,
-    fileResult,
   };
 }

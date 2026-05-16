@@ -96,6 +96,21 @@ export interface AiAttachmentDraft {
   base64Data: string;
 }
 
+export interface AiAttachmentEntry {
+  id: string;
+  file: File;
+  previewUrl: string;
+  pending: AiAttachmentDraft;
+}
+
+export type AnalyzeStage = 'ocr' | 'interpret';
+
+export interface AnalyzeProgress {
+  done: number;
+  total: number;
+  stage: AnalyzeStage;
+}
+
 export interface AiVisitDraftValues {
   date: string;
   clinicName: string;
@@ -105,11 +120,11 @@ export interface AiVisitDraftValues {
 
 export interface AiFormState {
   step: AiStep;
-  attachmentFile: File | null;
+  attachments: AiAttachmentEntry[];
   attachmentError: string;
-  attachmentPreviewUrl: string;
   attachmentLabel: string;
-  pendingAttachment: AiAttachmentDraft | null;
+  analyzeError: string;
+  analyzeProgress: AnalyzeProgress | null;
   selectedMainCategory: string;
   selectedSubcategory: string;
   aiDetectedRecords: AiDetectedDraftRecord[];

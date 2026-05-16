@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import analyzeRouter from './routes/analyze';
 import episodesRouter from './routes/episodes';
 import extractTextRouter from './routes/extractText';
+import interpretPassportRouter from './routes/interpretPassport';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
 
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 app.use('/api/analyze', analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', extractTextRouter);
+app.use('/api/interpret-passport', interpretPassportRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {
