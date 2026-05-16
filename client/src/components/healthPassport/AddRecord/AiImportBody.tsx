@@ -4,6 +4,7 @@ import {
   Card,
   FormControl,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   Stack,
@@ -19,13 +20,14 @@ import { useAiImportContext } from './AiImport';
 import AttachmentUpload from './AttachmentUpload';
 import AiRecordsReview from './AiRecordsReview';
 
-const STEP_LABELS = ['Nahrať dokument', 'Skontrolovať záznamy', 'Potvrdiť a uložiť'];
+const STEP_LABELS = ['Nahrať strany', 'Skontrolovať záznamy', 'Potvrdiť a uložiť'];
 
 export default function AiImportBody() {
   const {
     state,
-    fileAnalyzeError,
-    setAttachmentFile,
+    maxAttachments,
+    addAttachments,
+    removeAttachment,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,
@@ -35,6 +37,13 @@ export default function AiImportBody() {
 
   const subOptions =
     VISIT_CATEGORY_OPTIONS.find((opt) => opt.main === state.selectedMainCategory)?.sub ?? [];
+
+  const progress = state.analyzeProgress;
+  const progressPercent = progress
+    ? progress.stage === 'interpret'
+      ? 100
+      : Math.round((progress.done / progress.total) * 100)
+    : 0;
 
   return (
     <Stack spacing={1.5}>
@@ -50,17 +59,21 @@ export default function AiImportBody() {
         <Card sx={{ p: 2 }}>
           <Stack spacing={1.5}>
             <Typography variant="body2" color="text.secondary">
-              Nahraj dokument (zdravotný pas, výsledok testu) a vyber typ vyšetrenia. AI z neho
-              extrahuje záznamy.
+              Nahraj viacero strán zdravotného pasu (alebo iný dokument). AI z nich extrahuje
+              všetky očkovania naraz a v ďalšom kroku ti dá unified zoznam na schválenie.
             </Typography>
 
             <Box
-              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                gap: 1.5,
+              }}
             >
               <FormControl size="small">
-                <InputLabel>Hlavná kategória</InputLabel>
+                <InputLabel>Hlavná kategória (voliteľné)</InputLabel>
                 <Select
-                  label="Hlavná kategória"
+                  label="Hlavná kategória (voliteľné)"
                   value={state.selectedMainCategory}
                   onChange={(e) => setMainCategory(e.target.value)}
                 >
@@ -94,17 +107,32 @@ export default function AiImportBody() {
             </Box>
 
             <AttachmentUpload
-              file={state.attachmentFile}
-              previewUrl={state.attachmentPreviewUrl}
+              attachments={state.attachments}
               error={state.attachmentError}
               label={state.attachmentLabel}
+              maxFiles={maxAttachments}
               onLabelChange={setAttachmentLabel}
-              onFileChange={(file) => {
-                void setAttachmentFile(file);
+              onAddFiles={(files) => {
+                void addAttachments(files);
               }}
+              onRemove={removeAttachment}
             />
 
-            {fileAnalyzeError && <Alert severity="error">{fileAnalyzeError}</Alert>}
+            {progress && (
+              <Box>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>
+                  {progress.stage === 'ocr'
+                    ? `Spracovávam stranu ${Math.min(progress.done + 1, progress.total)} z ${progress.total}…`
+                    : 'Interpretujem záznamy…'}
+                </Typography>
+                <LinearProgress
+                  variant={progress.stage === 'interpret' ? 'indeterminate' : 'determinate'}
+                  value={progressPercent}
+                />
+              </Box>
+            )}
+
+            {state.analyzeError && <Alert severity="error">{state.analyzeError}</Alert>}
           </Stack>
         </Card>
       )}

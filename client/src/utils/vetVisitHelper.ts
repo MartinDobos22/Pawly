@@ -89,7 +89,8 @@ interface AiVisitBundleInput {
   examType?: string;
   aiSummary: string;
   selectedRecords: AiDetectedRecordInput[];
-  attachmentDraft: VisitAttachmentDraft;
+  attachmentDraft?: VisitAttachmentDraft;
+  attachmentDrafts?: VisitAttachmentDraft[];
   plusDays: (date: string, days: number) => string;
   uid: () => string;
 }
@@ -138,6 +139,18 @@ export class VetVisitHelper {
       fileName: draft.attachmentFileName || undefined,
       createdAt,
     }];
+  }
+
+  static buildAttachments(
+    drafts: VisitAttachmentDraft[],
+    fallbackLabel: string,
+    createdAt: string,
+    uid: () => string,
+  ): AttachmentRef[] | undefined {
+    const refs = drafts.flatMap(
+      (draft) => VetVisitHelper.buildAttachment(draft, fallbackLabel, createdAt, uid) ?? [],
+    );
+    return refs.length > 0 ? refs : undefined;
   }
 
   static createWizardVisitBundle(input: WizardVisitBundleInput): VisitBundle {
@@ -271,12 +284,19 @@ export class VetVisitHelper {
   }
 
   static createAiVisitBundle(input: AiVisitBundleInput): VisitBundle {
-    const { dogId, draft, selectedVisitMainCategory, selectedVisitSubcategory, examType, aiSummary, selectedRecords, attachmentDraft, plusDays, uid } = input;
+    const { dogId, draft, selectedVisitMainCategory, selectedVisitSubcategory, examType, aiSummary, selectedRecords, attachmentDraft, attachmentDrafts, plusDays, uid } = input;
     const visitId = uid();
     const createdAt = new Date().toISOString();
     const reasonSource = selectedVisitSubcategory || examType || 'AI import zdravotného pasu';
     const reason = VetVisitHelper.buildVisitReason(selectedVisitMainCategory, reasonSource, '');
-    const attachments = VetVisitHelper.buildAttachment(attachmentDraft, 'AI analyzovaný dokument', createdAt, uid);
+    const drafts = attachmentDrafts && attachmentDrafts.length > 0
+      ? attachmentDrafts
+      : attachmentDraft
+        ? [attachmentDraft]
+        : [];
+    const attachments = drafts.length > 0
+      ? VetVisitHelper.buildAttachments(drafts, 'AI analyzovaný dokument', createdAt, uid)
+      : undefined;
 
     const vaccinations: VaccinationRecord[] = [];
     const dewormings: DewormingRecord[] = [];
