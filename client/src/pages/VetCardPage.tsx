@@ -1,4 +1,13 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { Print as PrintIcon } from '@mui/icons-material';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -349,7 +358,10 @@ export default function VetCardPage() {
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
 
-  const dog = profiles.find((p) => p.animalType === 'dog');
+  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
+  const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
+
+  const dog = dogProfiles.find((p) => p.id === selectedDogId) ?? dogProfiles[0];
   const dogId = dog?.id;
 
   const data = useMemo(() => {
@@ -1003,14 +1015,32 @@ export default function VetCardPage() {
             Klinický prehľad pre veterinárnu prax
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          onClick={handlePrint}
-          startIcon={<PrintIcon />}
-          disabled={!Object.values(exportSections).some(Boolean)}
-        >
-          Export PDF
-        </Button>
+        <Stack direction="row" gap={1.5} alignItems="center">
+          {dogProfiles.length > 1 && (
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>Pes</InputLabel>
+              <Select
+                value={selectedDogId}
+                label="Pes"
+                onChange={(e) => setSelectedDogId(e.target.value)}
+              >
+                {dogProfiles.map((p) => (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          <Button
+            variant="contained"
+            onClick={handlePrint}
+            startIcon={<PrintIcon />}
+            disabled={!Object.values(exportSections).some(Boolean)}
+          >
+            Export PDF
+          </Button>
+        </Stack>
       </Stack>
 
       <Box sx={{ mb: 2.5 }}>
