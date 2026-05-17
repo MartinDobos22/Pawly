@@ -337,7 +337,7 @@ const PRINT_STYLES = `
 `;
 
 function statusBadge(date: string | undefined, soonDays = 30): { cls: string; label: string } {
-  if (!date) return { cls: 'badge-expired', label: 'Neznáme' };
+  if (!date) return { cls: 'badge-unknown', label: 'Nezadané' };
   const now = new Date();
   const t = new Date(date);
   const diff = Math.ceil((t.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -604,7 +604,9 @@ export default function VetCardPage() {
         ? 'var(--valid)'
         : cls === 'badge-warning'
           ? 'var(--warning)'
-          : 'var(--expired)';
+          : cls === 'badge-unknown'
+            ? 'var(--ink-3)'
+            : 'var(--expired)';
 
     const vaccineRow = (
       type: string,
@@ -994,7 +996,9 @@ export default function VetCardPage() {
         ? { bgcolor: 'rgba(245,158,11,0.14)', color: 'warning.main' }
         : cls === 'badge-expired'
           ? { bgcolor: 'rgba(220,38,38,0.12)', color: 'error.main' }
-          : { bgcolor: 'rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.9)' }),
+          : cls === 'badge-unknown'
+            ? { bgcolor: 'action.hover', color: 'text.secondary' }
+            : { bgcolor: 'rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.9)' }),
   });
 
   return (

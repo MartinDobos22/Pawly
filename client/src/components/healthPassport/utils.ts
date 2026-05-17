@@ -11,7 +11,11 @@ export const plusDays = (date: string, days: number) => {
   return d.toISOString().slice(0, 10);
 };
 
-export const computeIntervalDaysFromDates = (dateGiven: string, validUntil: string, fallback: number) => {
+export const computeIntervalDaysFromDates = (
+  dateGiven: string,
+  validUntil: string,
+  fallback: number
+) => {
   if (!validUntil) return fallback;
   const start = new Date(dateGiven).getTime();
   const end = new Date(validUntil).getTime();
@@ -42,7 +46,10 @@ export const normalizeDateInput = (value: string) => {
   return today();
 };
 
-export const inferAiTargetType = (disease: string, vaccineName: string): 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' => {
+export const inferAiTargetType = (
+  disease: string,
+  vaccineName: string
+): 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' => {
   const value = `${disease} ${vaccineName}`.toLowerCase();
   if (KNOWN_DEWORMING_KEYWORDS.some((k) => value.includes(k))) return 'DEWORMING';
   if (KNOWN_ECTOPARASITE_KEYWORDS.some((k) => value.includes(k))) return 'ECTOPARASITE';
@@ -60,12 +67,14 @@ export const escapeHtml = (value: string) =>
 export const statusColor = (status: ValidityStatus) => {
   if (status === 'VALID') return 'success';
   if (status === 'EXPIRING_SOON') return 'warning';
+  if (status === 'UNKNOWN') return 'default';
   return 'error';
 };
 
 export const statusLabel = (status: ValidityStatus) => {
   if (status === 'VALID') return 'Platné';
   if (status === 'EXPIRING_SOON') return 'Vyprší čoskoro';
+  if (status === 'UNKNOWN') return 'Nezadané';
   return 'Expirované';
 };
 
