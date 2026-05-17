@@ -91,6 +91,8 @@ export default function HealthPassportPage() {
   const dogDiet = dietEntries.filter((v) => v.dogId === selectedDogId);
   const dogExpenses = expenses.filter((v) => v.dogId === selectedDogId);
 
+  const latestDietId = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0]?.id;
+
   // ── Status semaphores ──────────────────────────────────────────────────────
   const vaccinationStatus = dogVaccinations.length
     ? statusByDate(
@@ -604,7 +606,7 @@ export default function HealthPassportPage() {
       <AddRecord
         open={wizardOpen}
         dogId={selectedDogId}
-        currentDietEntryId={dogDiet[0]?.id}
+        currentDietEntryId={latestDietId}
         onClose={() => setWizardOpen(false)}
         onSave={dispatchBundle}
       />

@@ -39,26 +39,32 @@ export default function QuickVisitButton({
   onCreate,
   onUndo,
 }: QuickVisitButtonProps) {
-  const [lastClinic, setLastClinic] = useLocalStorage<string>('granule-check-last-clinic', '');
+  const [lastClinicByDog, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
+    'granule-check-last-clinic-by-dog',
+    {}
+  );
   const [lastCreated, setLastCreated] = useState<LastCreatedRef | null>(null);
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptClinic, setPromptClinic] = useState('');
 
+  const lastClinic = dogId ? (lastClinicByDog[dogId] ?? '') : '';
+
   const buildAndSave = (clinic: string) => {
     if (!dogId || !clinic.trim()) return;
+    const trimmed = clinic.trim();
     const visit: VetVisitRecord = {
       id: uid(),
       dogId,
       date: today(),
-      clinicName: clinic.trim(),
+      clinicName: trimmed,
       reason: QUICK_VISIT_REASON,
       diagnosis: QUICK_VISIT_DIAGNOSIS,
       medicationIds: [],
     };
     onCreate(visit);
     setLastCreated({ id: visit.id, clinic: visit.clinicName });
-    if (clinic.trim() !== lastClinic) {
-      setLastClinic(clinic.trim());
+    if (trimmed !== lastClinic) {
+      setLastClinicByDog((prev) => ({ ...prev, [dogId]: trimmed }));
     }
   };
 
