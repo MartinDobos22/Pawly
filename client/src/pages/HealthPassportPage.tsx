@@ -97,20 +97,20 @@ export default function HealthPassportPage() {
         [...dogVaccinations].sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0].validUntil,
         30
       )
-    : 'EXPIRED';
+    : 'UNKNOWN';
   const dewormingStatus = dogDewormings.length
     ? statusByDate(
         [...dogDewormings].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0]
           .nextDueDate,
         7
       )
-    : 'EXPIRED';
+    : 'UNKNOWN';
   const ectoStatus = dogEctos.length
     ? statusByDate(
         [...dogEctos].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0].nextDueDate,
         7
       )
-    : 'EXPIRED';
+    : 'UNKNOWN';
 
   const currentDiet = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
 

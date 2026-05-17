@@ -7,6 +7,7 @@ import {
   CheckCircle as CheckIcon,
   Warning as WarningIcon,
   Cancel as ExpiredIcon,
+  HelpOutline as UnknownIcon,
 } from '@mui/icons-material';
 import type { ValidityStatus, DietEntry } from '../../types/dogHealth';
 import { statusColor, statusLabel } from './utils.ts';
@@ -21,7 +22,13 @@ interface StatusItemProps {
 function StatusItem({ icon, title, status, detail }: StatusItemProps) {
   const color = statusColor(status);
   const StatusIcon =
-    status === 'VALID' ? CheckIcon : status === 'EXPIRING_SOON' ? WarningIcon : ExpiredIcon;
+    status === 'VALID'
+      ? CheckIcon
+      : status === 'EXPIRING_SOON'
+        ? WarningIcon
+        : status === 'UNKNOWN'
+          ? UnknownIcon
+          : ExpiredIcon;
 
   return (
     <Stack direction="row" alignItems="center" gap={1.25} sx={{ minWidth: 0, flex: 1 }}>

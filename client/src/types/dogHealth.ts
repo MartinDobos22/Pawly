@@ -1,6 +1,6 @@
 export type DogSex = 'MALE' | 'FEMALE' | 'UNKNOWN';
 export type VaccineType = 'RABIES' | 'COMBINED' | 'OTHER';
-export type ValidityStatus = 'VALID' | 'EXPIRING_SOON' | 'EXPIRED';
+export type ValidityStatus = 'VALID' | 'EXPIRING_SOON' | 'EXPIRED' | 'UNKNOWN';
 export type EctoForm = 'TABLET' | 'SPOT_ON' | 'COLLAR';
 export type ExpenseCategory = 'VET_VISIT' | 'MEDICATION' | 'FOOD' | 'OTHER';
 export type TimelineType =
