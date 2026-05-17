@@ -40,6 +40,7 @@ import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.ts
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
+import QuickVisitButton from '../components/healthPassport/QuickVisitButton';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
@@ -215,6 +216,15 @@ export default function HealthPassportPage() {
       setDietEntries,
       setExpenses,
     ]
+  );
+
+  const handleQuickVisitCreate = useCallback(
+    (visit: VetVisitRecord) => setVisits((p) => [...p, visit]),
+    [setVisits]
+  );
+  const handleQuickVisitUndo = useCallback(
+    (id: string) => setVisits((p) => p.filter((v) => v.id !== id)),
+    [setVisits]
   );
 
   // ── Timeline open detail ────────────────────────────────────────────────────
@@ -539,6 +549,12 @@ export default function HealthPassportPage() {
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => setWizardOpen(true)}>
               Pridať záznam
             </Button>
+            <QuickVisitButton
+              dogId={selectedDogId}
+              disabled={!selectedDogId}
+              onCreate={handleQuickVisitCreate}
+              onUndo={handleQuickVisitUndo}
+            />
             <Button variant="outlined" startIcon={<CardIcon />} href="/karta-pre-veterinara">
               Karta
             </Button>
