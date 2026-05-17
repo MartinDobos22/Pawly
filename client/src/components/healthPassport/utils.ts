@@ -1,5 +1,49 @@
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus, VaccinationRecord } from '../../types/dogHealth';
 import { KNOWN_DEWORMING_KEYWORDS, KNOWN_ECTOPARASITE_KEYWORDS } from './constants.ts';
+
+const MIN_NAME_OVERLAP = 4;
+const DUPLICATE_WINDOW_DAYS = 30;
+
+function normalizeName(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function namesMatch(a: string, b: string): boolean {
+  const na = normalizeName(a);
+  const nb = normalizeName(b);
+  if (!na || !nb) return false;
+  if (na.length < MIN_NAME_OVERLAP || nb.length < MIN_NAME_OVERLAP) return false;
+  return na.includes(nb) || nb.includes(na);
+}
+
+function diseaseMatches(disease: string | undefined, existing: VaccinationRecord): boolean {
+  if (!disease) return false;
+  const d = disease.toLowerCase();
+  if (existing.type === 'RABIES' && /(rabies|besnot)/i.test(d)) return true;
+  if (existing.type === 'COMBINED' && /(combined|kombin|dhppi|parvo|distemper)/i.test(d)) return true;
+  return false;
+}
+
+export function isDuplicateVaccination(params: {
+  productName: string;
+  sourceDisease?: string;
+  date: string;
+  existing: VaccinationRecord[];
+  dogId: string;
+}): boolean {
+  const { productName, sourceDisease, date, existing, dogId } = params;
+  const target = new Date(date).getTime();
+  if (Number.isNaN(target)) return false;
+
+  return existing.some((rec) => {
+    if (rec.dogId !== dogId) return false;
+    const recTime = new Date(rec.dateApplied).getTime();
+    if (Number.isNaN(recTime)) return false;
+    const diffDays = Math.abs(recTime - target) / (1000 * 60 * 60 * 24);
+    if (diffDays > DUPLICATE_WINDOW_DAYS) return false;
+    return namesMatch(productName, rec.name) || diseaseMatches(sourceDisease, rec);
+  });
+}
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 

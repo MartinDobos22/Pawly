@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import analyzeRouter from './routes/analyze';
 import episodesRouter from './routes/episodes';
 import extractTextRouter from './routes/extractText';
@@ -40,11 +41,34 @@ app.use((req, res, next) => {
   next();
 });
 
+// Rate limiting
+const rateLimitedError = (message: string) => ({
+  error: { message, code: 'RATE_LIMITED' },
+});
+
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: rateLimitedError('Príliš veľa požiadaviek, skús neskôr.'),
+});
+
+const aiHeavyLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: rateLimitedError('Príliš veľa AI požiadaviek, skús o chvíľu.'),
+});
+
+app.use('/api/', globalLimiter);
+
 // Routes
-app.use('/api/analyze', analyzeRouter);
+app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
-app.use('/api/extract-text', extractTextRouter);
-app.use('/api/interpret-passport', interpretPassportRouter);
+app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);
+app.use('/api/interpret-passport', aiHeavyLimiter, interpretPassportRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

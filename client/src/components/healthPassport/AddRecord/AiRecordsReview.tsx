@@ -60,10 +60,13 @@ export default function AiRecordsReview({ records, onChange }: AiRecordsReviewPr
       {records.map((record) => (
         <Card key={record.id}>
           <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-            <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }}>
-              <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1 }} noWrap>
+            <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }} flexWrap="wrap">
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1, minWidth: 0 }} noWrap>
                 {record.sourceDisease || record.productName || 'Záznam'}
               </Typography>
+              {record.isDuplicate && (
+                <Chip size="small" label="Už existuje" color="warning" variant="filled" />
+              )}
               <Chip
                 size="small"
                 label={`Istota: ${CONFIDENCE_LABEL[record.sourceConfidence]}`}
