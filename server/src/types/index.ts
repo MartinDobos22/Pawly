@@ -116,6 +116,6 @@ export interface FileExtractionResult {
 }
 
 export interface ApiError {
-  error: string;
-  status: number;
+  error: { message: string; code?: string };
+  status?: number;
 }

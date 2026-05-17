@@ -72,7 +72,7 @@ export interface PersonalizedNote {
 
 export interface FileExtractionResult {
   extractedText: string;
-  source: "google-vision+openai" | "google-vision" | "openai" | "pdf-parser";
+  source: 'google-vision+openai' | 'google-vision' | 'openai' | 'pdf-parser';
   examAnalysis?: {
     examAlias: string;
     examType: string;
@@ -126,6 +126,6 @@ export interface SavedAnalysis {
 }
 
 export interface ApiError {
-  error: string;
-  status: number;
+  error: { message: string; code?: string };
+  status?: number;
 }

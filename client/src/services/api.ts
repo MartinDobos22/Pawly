@@ -56,8 +56,14 @@ export async function analyzeComposition(
 
   if (!res.ok) {
     logger.error('Textová analýza zlyhala', { status: res.status });
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? `Chyba servera (${res.status})`);
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === 'string'
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    throw new Error(message);
   }
 
   const responsePayload = (await res.json()) as AnalysisResult;
@@ -94,8 +100,14 @@ export async function analyzeAttachment(
 
   if (!res.ok) {
     logger.error('Súborová analýza zlyhala', { status: res.status });
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? `Chyba servera (${res.status})`);
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === 'string'
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    throw new Error(message);
   }
 
   const responsePayload = (await res.json()) as FileExtractionResult;
