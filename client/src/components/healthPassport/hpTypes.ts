@@ -12,6 +12,7 @@ export interface AiDetectedDraftRecord {
   validUntil: string;
   batchNumber: string;
   intervalDays: number;
+  isDuplicate?: boolean;
 }
 
 export type WizardAdditionalRecordType = '' | 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION';

@@ -58,7 +58,7 @@ export default function AiImportProvider({
     analyze,
     buildBundle,
     reset,
-  } = useAiImportInternal();
+  } = useAiImportInternal(dogId);
 
   const submit = () => {
     if (!state.visitDraft.clinicName.trim()) return;

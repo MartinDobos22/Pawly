@@ -27,7 +27,25 @@ import {
   Pets as PetsIcon,
 } from '@mui/icons-material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
+import type {
+  PetProfile,
+  AnimalType,
+  AnimalSize,
+  AnimalLifeStage,
+  ActivityLevel,
+  SavedAnalysis,
+} from '../types';
+import type {
+  DewormingRecord,
+  DietEntry,
+  EctoparasiteRecord,
+  ExpenseRecord,
+  MedicationDoseLog,
+  MedicationRecord,
+  VaccinationRecord,
+  VetVisitRecord,
+} from '../types/dogHealth';
+import type { HealthEpisodeRecord } from '../types/healthEpisode';
 
 const ALLERGY_SUGGESTIONS = ['Kura/kuriatko', 'Hovädzie', 'Jahňacie', 'Ryby', 'Vajcia', 'Pšenica', 'Kukurica', 'Sója'];
 const INTOLERANCE_SUGGESTIONS = ['Lepok', 'Laktóza', 'Kukurica', 'Sója', 'Obilniny'];
@@ -60,6 +78,83 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 export default function PetProfilePage() {
   const [profiles, setProfiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const [vaccinations, setVaccinations] = useLocalStorage<VaccinationRecord[]>(
+    'dog-health-vaccinations',
+    [],
+  );
+  const [dewormings, setDewormings] = useLocalStorage<DewormingRecord[]>(
+    'dog-health-dewormings',
+    [],
+  );
+  const [ectos, setEctos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);
+  const [visits, setVisits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
+  const [medications, setMedications] = useLocalStorage<MedicationRecord[]>(
+    'dog-health-medications',
+    [],
+  );
+  const [doseLogs, setDoseLogs] = useLocalStorage<MedicationDoseLog[]>(
+    'dog-health-med-dose-logs',
+    [],
+  );
+  const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
+  const [expenses, setExpenses] = useLocalStorage<ExpenseRecord[]>('dog-health-expenses', []);
+  const [episodes, setEpisodes] = useLocalStorage<HealthEpisodeRecord[]>('dog-health-episodes', []);
+  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>(
+    'granule-check-history',
+    [],
+  );
+  const [, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
+    'granule-check-last-clinic-by-dog',
+    {},
+  );
+
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    name: string;
+    counts: Array<{ label: string; count: number }>;
+    total: number;
+  } | null>(null);
+
+  const requestDelete = (profile: PetProfile) => {
+    const id = profile.id;
+    const counts = [
+      { label: 'Očkovania', count: vaccinations.filter((x) => x.dogId === id).length },
+      { label: 'Odčervenia', count: dewormings.filter((x) => x.dogId === id).length },
+      { label: 'Ektoparazity', count: ectos.filter((x) => x.dogId === id).length },
+      { label: 'Návštevy', count: visits.filter((x) => x.dogId === id).length },
+      { label: 'Lieky', count: medications.filter((x) => x.dogId === id).length },
+      { label: 'Dávky liekov', count: doseLogs.filter((x) => x.dogId === id).length },
+      { label: 'Diéta', count: dietEntries.filter((x) => x.dogId === id).length },
+      { label: 'Výdavky', count: expenses.filter((x) => x.dogId === id).length },
+      { label: 'Epizódy', count: episodes.filter((x) => x.dogId === id).length },
+      { label: 'Analýzy krmiva', count: savedAnalyses.filter((x) => x.petProfileId === id).length },
+    ].filter((c) => c.count > 0);
+    const total = counts.reduce((acc, c) => acc + c.count, 0);
+    setPendingDelete({ id, name: profile.name, counts, total });
+  };
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    const id = pendingDelete.id;
+    setProfiles((prev) => prev.filter((p) => p.id !== id));
+    setVaccinations((prev) => prev.filter((x) => x.dogId !== id));
+    setDewormings((prev) => prev.filter((x) => x.dogId !== id));
+    setEctos((prev) => prev.filter((x) => x.dogId !== id));
+    setVisits((prev) => prev.filter((x) => x.dogId !== id));
+    setMedications((prev) => prev.filter((x) => x.dogId !== id));
+    setDoseLogs((prev) => prev.filter((x) => x.dogId !== id));
+    setDietEntries((prev) => prev.filter((x) => x.dogId !== id));
+    setExpenses((prev) => prev.filter((x) => x.dogId !== id));
+    setEpisodes((prev) => prev.filter((x) => x.dogId !== id));
+    setSavedAnalyses((prev) => prev.filter((x) => x.petProfileId !== id));
+    setLastClinicByDog((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    setPendingDelete(null);
+  };
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<PetProfile, 'id'>>(EMPTY_PROFILE);
@@ -138,7 +233,7 @@ export default function PetProfilePage() {
                 </Stack>
               </Box>
               <IconButton onClick={() => openEdit(profile)}><EditIcon /></IconButton>
-              <IconButton color="error" onClick={() => setProfiles((prev) => prev.filter((p) => p.id !== profile.id))}><DeleteIcon /></IconButton>
+              <IconButton color="error" onClick={() => requestDelete(profile)}><DeleteIcon /></IconButton>
             </CardContent>
           </Card>
         ))}
@@ -247,6 +342,43 @@ export default function PetProfilePage() {
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Zrušiť</Button>
           <Button variant="contained" onClick={handleSave} disabled={!form.name.trim()}>{editingId ? 'Uložiť' : 'Pridať'}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Vymazať profil?</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1.5}>
+            <Typography variant="body2">
+              Vymazať profil <strong>{pendingDelete?.name}</strong>?
+            </Typography>
+            {pendingDelete && pendingDelete.total > 0 && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Týmto sa zmaže aj <strong>{pendingDelete.total}</strong>{' '}
+                  {pendingDelete.total === 1 ? 'súvisiaci záznam' : 'súvisiacich záznamov'}:
+                </Typography>
+                <Stack component="ul" sx={{ pl: 2, m: 0 }} spacing={0.25}>
+                  {pendingDelete.counts.map((c) => (
+                    <li key={c.label}>
+                      <Typography variant="body2" color="text.secondary">
+                        {c.label}: {c.count}
+                      </Typography>
+                    </li>
+                  ))}
+                </Stack>
+              </>
+            )}
+            <Typography variant="caption" color="error">
+              Túto akciu nie je možné vrátiť.
+            </Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPendingDelete(null)}>Zrušiť</Button>
+          <Button color="error" variant="contained" onClick={confirmDelete}>
+            Vymazať
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

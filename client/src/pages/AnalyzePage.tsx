@@ -31,7 +31,20 @@ import {
   MAX_FILE_SIZE_BYTES,
   SUPPORTED_FILE_TYPES,
 } from '../components/healthPassport/constants';
-import type { SavedAnalysis, PetProfile } from '../types';
+import { today, uid } from '../components/healthPassport/utils';
+import type { AnalysisResult, SavedAnalysis, PetProfile } from '../types';
+import type { DietEntry } from '../types/dogHealth';
+
+function deriveSuitability(result: AnalysisResult): NonNullable<DietEntry['suitabilityStatus']> {
+  const critical =
+    (result.allergenWarnings ?? []).some((w) => w.severity === 'critical') ||
+    (result.healthWarnings ?? []).some((w) => w.severity === 'critical');
+  if (critical) return 'UNSUITABLE';
+  const anyWarning =
+    (result.allergenWarnings ?? []).length > 0 || (result.healthWarnings ?? []).length > 0;
+  if (anyWarning) return 'RISKY';
+  return 'SUITABLE';
+}
 
 const readFileAsBase64 = (file: File) =>
   new Promise<{ base64: string }>((resolve, reject) => {
@@ -63,8 +76,10 @@ export default function AnalyzePage() {
   } = useAnalyze();
   const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
   const [, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>('granule-check-history', []);
+  const [, setDietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
   const [selectedProfileId, setSelectedProfileId] = useState<string>('');
   const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('Hodnotenie bolo uložené');
   const [scanInfo, setScanInfo] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -129,6 +144,26 @@ export default function AnalyzePage() {
       petProfileName: selectedProfile?.name,
     };
     setSavedAnalyses((prev) => [entry, ...prev]);
+
+    if (selectedProfile) {
+      const suitability = deriveSuitability(displayResult);
+      const dietEntry: DietEntry = {
+        id: uid(),
+        dogId: selectedProfile.id,
+        foodName: sourceLabel || 'Krmivo z analýzy',
+        startedAt: today(),
+        reactionNotes: displayResult.summary,
+        suitabilityStatus: suitability,
+        suitabilityReasons:
+          suitability === 'SUITABLE'
+            ? ['Bez zistených alergénov a zdravotných rizík']
+            : (displayResult.recommendation?.notRecommendedFor ?? []),
+      };
+      setDietEntries((prev) => [dietEntry, ...prev]);
+      setSnackMessage(`Hodnotenie uložené a pridané do Zdravotného pasu pre ${selectedProfile.name}`);
+    } else {
+      setSnackMessage('Hodnotenie uložené');
+    }
     setSnackOpen(true);
   };
 
@@ -290,7 +325,7 @@ export default function AnalyzePage() {
         open={snackOpen}
         autoHideDuration={3000}
         onClose={() => setSnackOpen(false)}
-        message="Hodnotenie bolo uložené"
+        message={snackMessage}
       />
     </Box>
   );

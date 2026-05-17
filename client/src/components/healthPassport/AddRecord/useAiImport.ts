@@ -1,10 +1,19 @@
 import { useCallback, useReducer } from 'react';
 
+import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
+import type { VaccinationRecord } from '../../../types/dogHealth';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { AiDetectedDraftRecord } from '../hpTypes';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
-import { inferAiTargetType, normalizeDateInput, plusDays, today, uid } from '../utils';
+import {
+  inferAiTargetType,
+  isDuplicateVaccination,
+  normalizeDateInput,
+  plusDays,
+  today,
+  uid,
+} from '../utils';
 
 import type {
   AiAttachmentEntry,
@@ -125,8 +134,12 @@ interface BuildContext {
   examType?: string;
 }
 
-export function useAiImport() {
+export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
+  const [existingVaccinations] = useLocalStorage<VaccinationRecord[]>(
+    'dog-health-vaccinations',
+    [],
+  );
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
@@ -253,19 +266,31 @@ export function useAiImport() {
       const { vaccinations } = await interpretPassportText(combined);
 
       const drafts: AiDetectedDraftRecord[] = (vaccinations ?? []).map((item, index) => {
-        const targetType = inferAiTargetType(item.disease, item.vaccineName);
+        const inferredType = inferAiTargetType(item.disease, item.vaccineName);
         const date = normalizeDateInput(item.dateAdministered);
-        const fallback = targetType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
+        const fallback = inferredType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
+        const productName = item.vaccineName || item.disease || 'Neznámy záznam';
+        const isDuplicate =
+          inferredType === 'VACCINATION' &&
+          dogId !== '' &&
+          isDuplicateVaccination({
+            productName,
+            sourceDisease: item.disease,
+            date,
+            existing: existingVaccinations,
+            dogId,
+          });
         return {
           id: `${Date.now()}-${index}`,
           sourceConfidence: item.confidence,
           sourceDisease: item.disease,
-          targetType,
-          productName: item.vaccineName || item.disease || 'Neznámy záznam',
+          targetType: isDuplicate ? 'SKIP' : inferredType,
+          productName,
           date,
           validUntil: normalizeDateInput(item.validUntil ?? fallback),
           batchNumber: item.batchNumber ?? '',
-          intervalDays: targetType === 'ECTOPARASITE' ? 30 : 90,
+          intervalDays: inferredType === 'ECTOPARASITE' ? 30 : 90,
+          isDuplicate,
         };
       });
 
@@ -276,7 +301,7 @@ export function useAiImport() {
       const message = err instanceof Error ? err.message : 'Analýza pasu zlyhala.';
       dispatch({ type: 'SET_ANALYZE_ERROR', message });
     }
-  }, [state.attachments]);
+  }, [state.attachments, dogId, existingVaccinations]);
 
   const buildBundle = useCallback(
     (ctx: BuildContext): VisitBundle => {
