@@ -30,9 +30,15 @@ function validatePetProfile(profile: unknown): PetProfile | undefined {
     activityLevel: ['low', 'moderate', 'high', 'working'].includes(p.activityLevel as string)
       ? (p.activityLevel as PetProfile['activityLevel'])
       : undefined,
-    allergies: Array.isArray(p.allergies) ? p.allergies.filter((a): a is string => typeof a === 'string') : [],
-    intolerances: Array.isArray(p.intolerances) ? p.intolerances.filter((i): i is string => typeof i === 'string') : [],
-    healthConditions: Array.isArray(p.healthConditions) ? p.healthConditions.filter((h): h is string => typeof h === 'string') : [],
+    allergies: Array.isArray(p.allergies)
+      ? p.allergies.filter((a): a is string => typeof a === 'string')
+      : [],
+    intolerances: Array.isArray(p.intolerances)
+      ? p.intolerances.filter((i): i is string => typeof i === 'string')
+      : [],
+    healthConditions: Array.isArray(p.healthConditions)
+      ? p.healthConditions.filter((h): h is string => typeof h === 'string')
+      : [],
     notes: typeof p.notes === 'string' ? p.notes : undefined,
   };
 }
@@ -53,11 +59,12 @@ router.post(
       if (sourceType === 'file') {
         if (!attachment || typeof attachment !== 'object') {
           logger.warn('Chýba príloha pri file analýze');
-          res.status(400).json({ error: 'Chýba príloha na analýzu.', status: 400 });
+          res.status(400).json({ error: { message: 'Chýba príloha na analýzu.' }, status: 400 });
           return;
         }
 
-        const validatedExamAlias = typeof examAlias === 'string' && isExamAlias(examAlias) ? examAlias : undefined;
+        const validatedExamAlias =
+          typeof examAlias === 'string' && isExamAlias(examAlias) ? examAlias : undefined;
         logger.info('Backend prijal file analýzu', {
           fileName: attachment.fileName,
           mimeType: attachment.mimeType,
@@ -82,7 +89,9 @@ router.post(
       if (!normalizedComposition) {
         logger.warn('Prázdny text na analýzu');
         res.status(400).json({
-          error: 'Nepodarilo sa získať text na analýzu. Skontrolujte vstupný text alebo súbor.',
+          error: {
+            message: 'Nepodarilo sa získať text na analýzu. Skontrolujte vstupný text alebo súbor.',
+          },
           status: 400,
         });
         return;
