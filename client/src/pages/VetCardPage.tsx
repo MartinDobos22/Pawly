@@ -1,23 +1,20 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { Print as PrintIcon } from '@mui/icons-material';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { PetProfile } from '../types';
-import AiFormattedText from '../components/AiFormattedText';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
 import ExportSectionsToolbar, {
   DEFAULT_EXPORT_SECTIONS,
   type ExportSectionsState,
 } from '../components/vetCard/ExportSectionsToolbar';
+import VetCardHeader from '../components/vetCard/VetCardHeader';
+import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
+import HealthProfileCard from '../components/vetCard/HealthProfileCard';
+import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
+import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
+import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
+import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
 import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 import type {
   DewormingRecord,
@@ -969,73 +966,64 @@ export default function VetCardPage() {
     );
   }
 
-  const age = dog.dateOfBirth
-    ? Math.floor(
-        (Date.now() - new Date(dog.dateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
-      )
-    : dog.ageYears;
+  const rabiesStatus = vetStatusFor(data.rabies?.validUntil);
+  const combinedStatus = vetStatusFor(data.combined?.validUntil);
+  const dewormingStatus = vetStatusFor(data.lastDeworming?.nextDueDate, 7);
+  const ectoStatus = vetStatusFor(data.lastEcto?.nextDueDate, 7);
 
-  const besnota = statusBadge(data.rabies?.validUntil);
-  const kombinov = statusBadge(data.combined?.validUntil);
-  const dew = statusBadge(data.lastDeworming?.nextDueDate, 7);
-  const ecto = statusBadge(data.lastEcto?.nextDueDate, 7);
-
-  // rgba-based — work in both light and dark mode
-  const sxBadge = (cls: string) => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '4px',
-    px: 1.25,
-    py: 0.5,
-    borderRadius: '999px',
-    fontSize: '12px',
-    fontWeight: 600,
-    ...(cls === 'badge-valid'
-      ? { bgcolor: 'rgba(34,197,94,0.12)', color: 'success.main' }
-      : cls === 'badge-warning'
-        ? { bgcolor: 'rgba(245,158,11,0.14)', color: 'warning.main' }
-        : cls === 'badge-expired'
-          ? { bgcolor: 'rgba(220,38,38,0.12)', color: 'error.main' }
-          : cls === 'badge-unknown'
-            ? { bgcolor: 'action.hover', color: 'text.secondary' }
-            : { bgcolor: 'rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.9)' }),
-  });
+  const preventiveItems: PreventiveItem[] = [];
+  if (data.rabies)
+    preventiveItems.push({
+      name: 'Besnota (Rabies)',
+      dateGiven: data.rabies.dateApplied,
+      validUntil: data.rabies.validUntil,
+      batch: data.rabies.batchNumber,
+      status: rabiesStatus.status,
+      statusLabel: rabiesStatus.detail,
+    });
+  if (data.combined)
+    preventiveItems.push({
+      name: 'Kombinovaná vakcína',
+      dateGiven: data.combined.dateApplied,
+      validUntil: data.combined.validUntil,
+      batch: data.combined.batchNumber,
+      status: combinedStatus.status,
+      statusLabel: combinedStatus.detail,
+    });
+  if (data.lastDeworming)
+    preventiveItems.push({
+      name: `Odčervenie: ${data.lastDeworming.productName}`,
+      dateGiven: data.lastDeworming.dateGiven,
+      validUntil: data.lastDeworming.nextDueDate,
+      status: dewormingStatus.status,
+      statusLabel: dewormingStatus.detail,
+    });
+  if (data.lastEcto)
+    preventiveItems.push({
+      name: `Antiparazitikum: ${data.lastEcto.productName}`,
+      dateGiven: data.lastEcto.dateGiven,
+      validUntil: data.lastEcto.nextDueDate,
+      status: ectoStatus.status,
+      statusLabel: ectoStatus.detail,
+    });
 
   return (
-    <Box>
-      {/* ── ACTION BAR ── */}
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', md: 'center' }}
-        gap={2}
-        sx={{ mb: 2.5 }}
-      >
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Karta pre veterinára
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Klinický prehľad pre veterinárnu prax
-          </Typography>
-        </Box>
-        <Stack direction="row" gap={1.5} alignItems="center">
-          {dogProfiles.length > 1 && (
-            <FormControl size="small" sx={{ minWidth: 180 }}>
-              <InputLabel>Pes</InputLabel>
-              <Select
-                value={selectedDogId}
-                label="Pes"
-                onChange={(e) => setSelectedDogId(e.target.value)}
-              >
-                {dogProfiles.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    {p.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
+    <Stack spacing={1.5}>
+      <VetCardHeader
+        dog={dog}
+        dogProfiles={dogProfiles}
+        selectedDogId={selectedDogId}
+        onSelectDog={setSelectedDogId}
+      />
+
+      <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', md: 'center' }}
+          gap={1.5}
+        >
+          <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
           <Button
             variant="contained"
             onClick={handlePrint}
@@ -1045,669 +1033,41 @@ export default function VetCardPage() {
             Export PDF
           </Button>
         </Stack>
-      </Stack>
+      </Card>
 
-      <Box sx={{ mb: 2.5 }}>
-        <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
-      </Box>
-
-      {/* ── HERO HEADER ── */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #14532d 0%, #1a4731 60%, #0f3422 100%)',
-          borderRadius: 4,
-          p: { xs: 3, md: 4 },
-          mb: 2,
-          color: 'white',
-          display: 'flex',
-          gap: 3,
-          alignItems: 'flex-start',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <Box
-          sx={{
-            width: 72,
-            height: 72,
-            borderRadius: '50%',
-            bgcolor: 'rgba(255,255,255,0.1)',
-            border: '2px solid rgba(255,255,255,0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 32,
-            flexShrink: 0,
-          }}
-        >
-          🐾
-        </Box>
-
-        <Box sx={{ flex: 1 }}>
-          <Typography
-            sx={{ fontSize: { xs: 28, md: 36 }, fontWeight: 700, lineHeight: 1, mb: 0.5 }}
-          >
-            {dog.name}
-          </Typography>
-          <Typography sx={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', mb: 2 }}>
-            {[
-              dog.breed,
-              age != null && `${age} r.`,
-              dog.weightKg && `${dog.weightKg} kg`,
-              dog.microchipNumber && `Čip: ${dog.microchipNumber}`,
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </Typography>
-          <Stack direction="row" flexWrap="wrap" gap={1}>
-            {dog.allergies.length > 0 && (
-              <Box
-                sx={{
-                  ...sxBadge('badge-neutral'),
-                  bgcolor: 'rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.85)',
-                }}
-              >
-                ⚠ {dog.allergies.length} {dog.allergies.length === 1 ? 'alergia' : 'alergií'}
-              </Box>
-            )}
-            {(dog.chronicConditions?.length ?? dog.healthConditions.length) > 0 && (
-              <Box
-                sx={{
-                  ...sxBadge('badge-neutral'),
-                  bgcolor: 'rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.85)',
-                }}
-              >
-                🩺 {dog.chronicConditions?.length ?? dog.healthConditions.length} chronických
-                diagnóz
-              </Box>
-            )}
-            {data.activeMeds.length > 0 && (
-              <Box
-                sx={{
-                  ...sxBadge('badge-neutral'),
-                  bgcolor: 'rgba(255,255,255,0.12)',
-                  color: 'rgba(255,255,255,0.85)',
-                }}
-              >
-                💊 {data.activeMeds.length} aktívnych liekov
-              </Box>
-            )}
-          </Stack>
-        </Box>
-      </Box>
-
-      {/* ── PREVENTÍVNA STAROSTLIVOSŤ QUICK STATUS ── */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
           gap: 1.5,
-          mb: 2,
         }}
       >
-        {[
-          { label: 'Besnota', s: besnota, date: data.rabies?.validUntil },
-          { label: 'Kombinovaná', s: kombinov, date: data.combined?.validUntil },
-          { label: 'Odčervenie', s: dew, date: data.lastDeworming?.nextDueDate },
-          { label: 'Antiparazitikum', s: ecto, date: data.lastEcto?.nextDueDate },
-        ].map(({ label, s }) => (
-          <Box
-            key={label}
-            sx={{
-              bgcolor: 'background.paper',
-              borderRadius: 3,
-              p: 2,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 0.75,
-              }}
-            >
-              {label}
-            </Typography>
-            <Box sx={{ ...sxBadge(s.cls), fontSize: 11 }}>{s.label}</Box>
-          </Box>
-        ))}
-      </Box>
-
-      {/* ── ZDRAVOTNÝ PROFIL ── */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          p: 3,
-          mb: 2,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Stack direction="row" gap={1.5} alignItems="center" sx={{ mb: 2.5 }}>
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 2,
-              bgcolor: 'rgba(37,99,235,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 16,
-            }}
-          >
-            🪪
-          </Box>
-          <Typography
-            sx={{
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '0.07em',
-              textTransform: 'uppercase',
-              color: 'text.secondary',
-            }}
-          >
-            Zdravotný profil
-          </Typography>
+        <Stack spacing={1.5}>
+          <VetCardStatusOverview
+            rabies={rabiesStatus}
+            combined={combinedStatus}
+            deworming={dewormingStatus}
+            ecto={ectoStatus}
+          />
+          <PreventiveCareCard items={preventiveItems} />
+          <RecentVisitsCard visits={data.significantVisits} />
+          <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
+            <ClinicalHistory timeline={data.timeline} />
+          </Card>
         </Stack>
-
-        {dog.chronicConditions?.length || dog.healthConditions.length ? (
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 0.75,
-              }}
-            >
-              Chronické diagnózy
-            </Typography>
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions).map((t) => (
-                <Box
-                  key={t}
-                  sx={{
-                    px: 1.25,
-                    py: 0.5,
-                    borderRadius: '999px',
-                    bgcolor: 'rgba(37,99,235,0.1)',
-                    color: 'primary.main',
-                    fontSize: 12,
-                    fontWeight: 500,
-                  }}
-                >
-                  {t}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        ) : null}
-
-        {dog.allergies.length ? (
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 0.75,
-              }}
-            >
-              ⚠️ Alergie
-            </Typography>
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {dog.allergies.map((a) => (
-                <Box
-                  key={a}
-                  sx={{
-                    px: 1.25,
-                    py: 0.5,
-                    borderRadius: '999px',
-                    bgcolor: 'rgba(220,38,38,0.1)',
-                    color: 'error.main',
-                    fontSize: 12,
-                    fontWeight: 500,
-                  }}
-                >
-                  {a}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        ) : null}
-
-        {dog.intolerances.length ? (
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 0.75,
-              }}
-            >
-              Intolerancie
-            </Typography>
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {dog.intolerances.map((a) => (
-                <Box
-                  key={a}
-                  sx={{
-                    px: 1.25,
-                    py: 0.5,
-                    borderRadius: '999px',
-                    bgcolor: 'rgba(245,158,11,0.12)',
-                    color: 'warning.main',
-                    fontSize: 12,
-                    fontWeight: 500,
-                  }}
-                >
-                  {a}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        ) : null}
-
-        {dog.notes && (
-          <Box>
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                mb: 0.5,
-              }}
-            >
-              Poznámky
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {dog.notes}
-            </Typography>
-          </Box>
-        )}
-
-        {!dog.chronicConditions?.length &&
-          !dog.healthConditions.length &&
-          !dog.allergies.length &&
-          !dog.notes && (
-            <Typography variant="body2" color="text.secondary">
-              Žiadne špeciálne zdravotné záznamy.
-            </Typography>
-          )}
-      </Box>
-
-      {/* ── AKTÍVNE LIEKY ── */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          p: 3,
-          mb: 2,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Stack direction="row" gap={1.5} alignItems="center" sx={{ mb: 2.5 }}>
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 2,
-              bgcolor: 'rgba(34,197,94,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 16,
-            }}
-          >
-            💊
-          </Box>
-          <Typography
-            sx={{
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '0.07em',
-              textTransform: 'uppercase',
-              color: 'text.secondary',
-            }}
-          >
-            Aktívne lieky a doplnky
-          </Typography>
+        <Stack spacing={1.5}>
+          <HealthProfileCard dog={dog} />
+          <ActiveMedicationsCard medications={data.activeMeds} />
         </Stack>
-        {data.activeMeds.length ? (
-          data.activeMeds.map((m, i) => (
-            <Box
-              key={m.id}
-              sx={{
-                display: 'flex',
-                gap: 1.5,
-                alignItems: 'flex-start',
-                py: 1.25,
-                borderBottom: i < data.activeMeds.length - 1 ? '1px solid' : 'none',
-                borderColor: 'divider',
-              }}
-            >
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  bgcolor: 'success.main',
-                  mt: '6px',
-                  flexShrink: 0,
-                }}
-              />
-              <Box>
-                <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{m.name}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {m.dose} · {m.frequency}
-                  {m.reason ? ` · ${m.reason}` : ''}
-                </Typography>
-              </Box>
-            </Box>
-          ))
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            Bez aktívnych liekov
-          </Typography>
-        )}
       </Box>
 
-      {/* ── PREVENTÍVA ── */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          p: 3,
-          mb: 2,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{ textAlign: 'center', display: 'block', py: 2 }}
       >
-        <Stack direction="row" gap={1.5} alignItems="center" sx={{ mb: 2.5 }}>
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 2,
-              bgcolor: 'rgba(34,197,94,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 16,
-            }}
-          >
-            💉
-          </Box>
-          <Typography
-            sx={{
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '0.07em',
-              textTransform: 'uppercase',
-              color: 'text.secondary',
-            }}
-          >
-            Preventívna starostlivosť
-          </Typography>
-        </Stack>
-        {[
-          data.rabies && {
-            name: 'Besnota (Rabies)',
-            date: data.rabies.dateApplied,
-            valid: data.rabies.validUntil,
-            batch: data.rabies.batchNumber,
-            s: besnota,
-          },
-          data.combined && {
-            name: 'Kombinovaná vakcína',
-            date: data.combined.dateApplied,
-            valid: data.combined.validUntil,
-            batch: data.combined.batchNumber,
-            s: kombinov,
-          },
-          data.lastDeworming && {
-            name: `Odčervenie: ${data.lastDeworming.productName}`,
-            date: data.lastDeworming.dateGiven,
-            valid: data.lastDeworming.nextDueDate,
-            batch: undefined,
-            s: dew,
-          },
-          data.lastEcto && {
-            name: `Antiparazitikum: ${data.lastEcto.productName}`,
-            date: data.lastEcto.dateGiven,
-            valid: data.lastEcto.nextDueDate,
-            batch: undefined,
-            s: ecto,
-          },
-        ]
-          .filter(Boolean)
-          .map(
-            (item, i, arr) =>
-              item && (
-                <Box
-                  key={item.name}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    py: 1.5,
-                    borderBottom: i < arr.length - 1 ? '1px solid' : 'none',
-                    borderColor: 'divider',
-                  }}
-                >
-                  <Box>
-                    <Typography sx={{ fontWeight: 600, fontSize: 14 }}>{item.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Podané {formatDateShort(item.date)}
-                      {item.batch ? ` · šarža ${item.batch}` : ''}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ ...sxBadge(item.s.cls) }}>{item.s.label}</Box>
-                </Box>
-              )
-          )}
-        {!data.rabies && !data.combined && !data.lastDeworming && !data.lastEcto && (
-          <Typography variant="body2" color="text.secondary">
-            Žiadne záznamy o očkovaniach
-          </Typography>
-        )}
-      </Box>
-
-      {/* ── KLINICKÉ ZÁZNAMY ── */}
-      {data.significantVisits.length > 0 && (
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            borderRadius: 3,
-            p: 3,
-            mb: 2,
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Stack direction="row" gap={1.5} alignItems="center" sx={{ mb: 2.5 }}>
-            <Box
-              sx={{
-                width: 34,
-                height: 34,
-                borderRadius: 2,
-                bgcolor: 'rgba(37,99,235,0.12)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 16,
-              }}
-            >
-              🏥
-            </Box>
-            <Typography
-              sx={{
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-              }}
-            >
-              Posledné klinické záznamy
-            </Typography>
-          </Stack>
-          <Stack gap={1.5}>
-            {data.significantVisits.map((v) => (
-              <Box
-                key={v.id}
-                sx={{
-                  bgcolor: 'action.hover',
-                  borderRadius: 2.5,
-                  p: 2.5,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mb: 1.5 }}>
-                  <Box
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: '999px',
-                      bgcolor: 'rgba(34,197,94,0.14)',
-                      color: 'success.main',
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {formatDate(v.date)}
-                  </Box>
-                  <Box
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: '999px',
-                      bgcolor: 'action.selected',
-                      color: 'text.primary',
-                      fontSize: 12,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {v.clinicName}
-                  </Box>
-                  {v.aiExamType && (
-                    <Box
-                      sx={{
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: '999px',
-                        bgcolor: 'rgba(37,99,235,0.1)',
-                        color: 'primary.main',
-                        fontSize: 12,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {v.aiExamType}
-                    </Box>
-                  )}
-                </Stack>
-                <Typography sx={{ fontWeight: 600, fontSize: 13, mb: 1.5, color: 'text.primary' }}>
-                  {v.reason}
-                </Typography>
-                {v.diagnosis && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography
-                      sx={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        letterSpacing: '0.07em',
-                        textTransform: 'uppercase',
-                        color: 'text.secondary',
-                        mb: 0.75,
-                      }}
-                    >
-                      Diagnóza
-                    </Typography>
-                    <AiFormattedText text={v.diagnosis} />
-                  </Box>
-                )}
-                {v.findings && (
-                  <Box sx={{ mb: 1.5 }}>
-                    <Typography
-                      sx={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        letterSpacing: '0.07em',
-                        textTransform: 'uppercase',
-                        color: 'text.secondary',
-                        mb: 0.75,
-                      }}
-                    >
-                      Nález
-                    </Typography>
-                    <AiFormattedText text={v.findings} />
-                  </Box>
-                )}
-                {v.recommendations && (
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        letterSpacing: '0.07em',
-                        textTransform: 'uppercase',
-                        color: 'text.secondary',
-                        mb: 0.75,
-                      }}
-                    >
-                      Odporúčania
-                    </Typography>
-                    <AiFormattedText text={v.recommendations} />
-                  </Box>
-                )}
-              </Box>
-            ))}
-          </Stack>
-        </Box>
-      )}
-
-      {/* ── KLINICKÁ HISTÓRIA ── */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          p: 3,
-          mb: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <ClinicalHistory timeline={data.timeline} />
-      </Box>
-
-      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
         GranuleCheck · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
       </Typography>
-    </Box>
+    </Stack>
   );
 }
