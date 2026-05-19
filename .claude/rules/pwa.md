@@ -6,9 +6,10 @@ Idete live → PWA chyby sú user-visible. Tieto pravidlá sú **tvrdé**.
 
 ### Cache versioning
 
-- Pri **akejkoľvek zmene** statických aktív (manifest, ikony, obsah cachovaných súborov) **MUSÍŠ** zvýšiť `CACHE_NAME` verziu (napr. `granule-check-v3` → `granule-check-v4`).
+- Premenná v `sw.js` sa volá `CACHE_VERSION` (aktuálne `animalPassport-v3`). Z nej sa odvodia `STATIC_CACHE` a `DYNAMIC_CACHE`.
+- Pri **akejkoľvek zmene** statických aktív (manifest, ikony, obsah cachovaných súborov, app shell) **MUSÍŠ** zvýšiť verziu (napr. `animalPassport-v3` → `animalPassport-v4`).
 - Bez bumpu používatelia uvidia starý JS/CSS aj po deploy → biele obrazovky, broken funkcie.
-- V `activate` evente vyčisti staré cache (`caches.keys()` → delete kde nie je current).
+- V `activate` evente sa staré cache mažú (`caches.keys()` → delete všetko okrem aktuálneho `STATIC_CACHE` a `DYNAMIC_CACHE`).
 
 ### Stratégia
 

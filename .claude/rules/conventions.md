@@ -30,6 +30,34 @@ Klient **musí** kontrolovať `response.ok` a parsovať `{ error: { message } }`
 - **Token/cost guard:** pre dlhé inputy zváž truncation alebo odmietnutie request-u nad N znakov.
 - **Output parsing:** AI odpovede VŽDY validuj. Ak čakáš JSON, použi `response_format: { type: "json_object" }` a obal `JSON.parse` v try/catch — vráť 502 ak parse zlyhá.
 - **Žiadne PII** (mená, adresy) sa neposielajú do AI bez explicitného súhlasu používateľa.
+- **Rate limit:** všetky AI/OCR endpointy MUSIA byť za `aiHeavyLimiter` v `server/src/index.ts`. Ak pridávaš AI endpoint pod existujúci router (napr. `/api/episodes/similar-summary` pod `episodesRouter`), zváž split routra alebo per-route limiter — celý `episodesRouter` momentálne pod AI limiterom nie je.
+
+## OCR pipeline (`extractTextFromAttachment` v `aiService.ts`)
+
+OCR má fallback ladder, v tomto poradí:
+
+1. **Google Vision API** — primárny, najlepšia kvalita pre tlačený text na fotkách.
+2. **OpenAI vision** — fallback ak Vision zlyhá alebo nie je nakonfigurované.
+3. **pdf-parse** — pre PDF prílohy bez OCR.
+4. **`none`** — všetko zlyhalo; klient dostane prázdny `extractedText` so `source: 'none'`.
+
+Klient (`client/src/services/api.ts`) prijíma `source` v response — používa ho na UX (napr. „text získaný cez OpenAI vision, kvalita môže byť nižšia").
+
+## Sanitizácia OCR textu pred AI promptom
+
+OCR text z užívateľského PDF/foto môže obsahovať **prompt injection** (napr. "Ignore previous instructions and …"). Pred vložením do AI promptu **MUSÍ** prejsť cez `server/src/utils/sanitizeOcrText.ts` → `wrapOcrForPrompt`. Funkcia obalí text do jasných delimiterov, trimne nadmernú dĺžku a odstráni control characters.
+
+Žiadny nový kód nesmie vkladať raw OCR string do `messages` poľa pre OpenAI bez prechodu cez `wrapOcrForPrompt`.
+
+## Exam alias / typ vyšetrenia
+
+Server udržuje mapu veterinárnych skratiek a typov vyšetrenia v `server/src/services/`:
+
+- `examAlias.ts` — kanonický zoznam skratiek (napr. USG, RTG, EKG, PPT, …) a mapa `EXAM_ALIAS_TO_TYPE`. Pri pridávaní novej skratky uprav túto mapu **a** type guard `isExamAlias`.
+- `examAliasPrompts.ts` — prompt template per typ vyšetrenia.
+- `examType.ts` — heuristická detekcia typu z OCR textu, keď klient `examAlias` neposlal.
+
+Frontend posiela voliteľný `examAlias` do `POST /api/analyze` (file mode). Backend ho validuje cez `isExamAlias` — neznáme hodnoty **ignoruj** (nehadž 400, použijú sa heuristiky).
 
 ## Logging
 
