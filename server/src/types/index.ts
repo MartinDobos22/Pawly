@@ -111,6 +111,18 @@ export interface FileExtractionResult {
       confidence: 'high' | 'medium' | 'low';
       notes?: string;
     }>;
+    petIdentifiers?: {
+      name?: string;
+      breed?: string;
+      dateOfBirth?: string;
+      sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
+      microchipNumber?: string;
+      passportNumber?: string;
+    };
+    healthFlags?: {
+      allergies: string[];
+      chronicConditions: string[];
+    };
   };
   feedAnalysis?: AnalysisResult;
 }

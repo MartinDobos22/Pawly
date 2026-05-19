@@ -19,12 +19,14 @@ import { VISIT_CATEGORY_OPTIONS } from '../constants';
 import { useAiImportContext } from './AiImport';
 import AttachmentUpload from './AttachmentUpload';
 import AiRecordsReview from './AiRecordsReview';
+import AiProfileMergeReview from './AiProfileMergeReview';
 
 const STEP_LABELS = ['Nahrať strany', 'Skontrolovať záznamy', 'Potvrdiť a uložiť'];
 
 export default function AiImportBody() {
   const {
     state,
+    dogId,
     maxAttachments,
     addAttachments,
     removeAttachment,
@@ -33,6 +35,7 @@ export default function AiImportBody() {
     setSubcategory,
     updateAiRecord,
     setVisitDraftField,
+    clearProfilePatch,
   } = useAiImportContext();
 
   const subOptions =
@@ -59,8 +62,8 @@ export default function AiImportBody() {
         <Card sx={{ p: 2 }}>
           <Stack spacing={1.5}>
             <Typography variant="body2" color="text.secondary">
-              Nahraj viacero strán zdravotného pasu (alebo iný dokument). AI z nich extrahuje
-              všetky očkovania naraz a v ďalšom kroku ti dá unified zoznam na schválenie.
+              Nahraj viacero strán zdravotného pasu (alebo iný dokument). AI z nich extrahuje všetky
+              očkovania naraz a v ďalšom kroku ti dá unified zoznam na schválenie.
             </Typography>
 
             <Box
@@ -138,9 +141,19 @@ export default function AiImportBody() {
       )}
 
       {state.step === 1 && (
-        <Card sx={{ p: 2 }}>
-          <AiRecordsReview records={state.aiDetectedRecords} onChange={updateAiRecord} />
-        </Card>
+        <>
+          {state.detectedProfilePatch && dogId !== '' && (
+            <AiProfileMergeReview
+              dogId={dogId}
+              patch={state.detectedProfilePatch}
+              onDone={() => clearProfilePatch()}
+              onSkip={() => clearProfilePatch()}
+            />
+          )}
+          <Card sx={{ p: 2 }}>
+            <AiRecordsReview records={state.aiDetectedRecords} onChange={updateAiRecord} />
+          </Card>
+        </>
       )}
 
       {state.step === 2 && (

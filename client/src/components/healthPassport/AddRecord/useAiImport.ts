@@ -4,6 +4,7 @@ import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
 import type { VaccinationRecord } from '../../../types/dogHealth';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
+import type { PetProfilePatch } from '../../../utils/petProfileMerge';
 import type { AiDetectedDraftRecord } from '../hpTypes';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
 import {
@@ -45,6 +46,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   useVisitDetailsFromManual: false,
   visitDraft: INITIAL_VISIT_DRAFT,
   feedback: null,
+  detectedProfilePatch: null,
 };
 
 type AiAction =
@@ -62,6 +64,7 @@ type AiAction =
   | { type: 'UPDATE_AI_RECORD'; id: string; patch: Partial<AiDetectedDraftRecord> }
   | { type: 'SET_VISIT_DRAFT_FIELD'; field: keyof AiVisitDraftValues; value: string }
   | { type: 'SET_FEEDBACK'; message: string | null }
+  | { type: 'SET_PROFILE_PATCH'; patch: PetProfilePatch | null }
   | { type: 'RESET' };
 
 function reducer(state: AiFormState, action: AiAction): AiFormState {
@@ -97,13 +100,15 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
       return {
         ...state,
         aiDetectedRecords: state.aiDetectedRecords.map((r) =>
-          r.id === action.id ? { ...r, ...action.patch } : r,
+          r.id === action.id ? { ...r, ...action.patch } : r
         ),
       };
     case 'SET_VISIT_DRAFT_FIELD':
       return { ...state, visitDraft: { ...state.visitDraft, [action.field]: action.value } };
     case 'SET_FEEDBACK':
       return { ...state, feedback: action.message };
+    case 'SET_PROFILE_PATCH':
+      return { ...state, detectedProfilePatch: action.patch };
     case 'RESET':
       return { ...INITIAL_AI_STATE, visitDraft: { ...INITIAL_VISIT_DRAFT, date: today() } };
     default: {
@@ -138,99 +143,96 @@ export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
   const [existingVaccinations] = useLocalStorage<VaccinationRecord[]>(
     'dog-health-vaccinations',
-    [],
+    []
   );
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
-  const addAttachmentFiles = useCallback(
-    async (files: File[], currentCount: number) => {
-      if (files.length === 0) return;
+  const addAttachmentFiles = useCallback(async (files: File[], currentCount: number) => {
+    if (files.length === 0) return;
 
-      if (currentCount >= MAX_ATTACHMENTS) {
-        dispatch({
-          type: 'SET_ATTACHMENT_ERROR',
-          message: `Maximálne ${MAX_ATTACHMENTS} strán pasu.`,
+    if (currentCount >= MAX_ATTACHMENTS) {
+      dispatch({
+        type: 'SET_ATTACHMENT_ERROR',
+        message: `Maximálne ${MAX_ATTACHMENTS} strán pasu.`,
+      });
+      return;
+    }
+
+    const available = MAX_ATTACHMENTS - currentCount;
+    const toProcess = files.slice(0, available);
+    const accepted: AiAttachmentEntry[] = [];
+    let lastError = '';
+
+    for (const file of toProcess) {
+      if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
+        lastError = `Nepodporovaný typ súboru: ${file.name}`;
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        lastError = `Súbor je príliš veľký (max 5 MB): ${file.name}`;
+        continue;
+      }
+      try {
+        const { previewUrl, base64 } = await readFileAsBase64(file);
+        accepted.push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          file,
+          previewUrl,
+          pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
         });
-        return;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
       }
+    }
 
-      const available = MAX_ATTACHMENTS - currentCount;
-      const toProcess = files.slice(0, available);
-      const accepted: AiAttachmentEntry[] = [];
-      let lastError = '';
-
-      for (const file of toProcess) {
-        if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-          lastError = `Nepodporovaný typ súboru: ${file.name}`;
-          continue;
-        }
-        if (file.size > MAX_FILE_SIZE_BYTES) {
-          lastError = `Súbor je príliš veľký (max 5 MB): ${file.name}`;
-          continue;
-        }
-        try {
-          const { previewUrl, base64 } = await readFileAsBase64(file);
-          accepted.push({
-            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-            file,
-            previewUrl,
-            pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
-          });
-        } catch (err) {
-          lastError = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
-        }
-      }
-
-      if (accepted.length > 0) {
-        dispatch({ type: 'ADD_ATTACHMENTS', entries: accepted });
-      }
-      if (lastError) {
-        dispatch({ type: 'SET_ATTACHMENT_ERROR', message: lastError });
-      }
-      if (files.length > available) {
-        dispatch({
-          type: 'SET_ATTACHMENT_ERROR',
-          message: `Maximum ${MAX_ATTACHMENTS} strán pasu — nadbytočné súbory boli ignorované.`,
-        });
-      }
-    },
-    [],
-  );
+    if (accepted.length > 0) {
+      dispatch({ type: 'ADD_ATTACHMENTS', entries: accepted });
+    }
+    if (lastError) {
+      dispatch({ type: 'SET_ATTACHMENT_ERROR', message: lastError });
+    }
+    if (files.length > available) {
+      dispatch({
+        type: 'SET_ATTACHMENT_ERROR',
+        message: `Maximum ${MAX_ATTACHMENTS} strán pasu — nadbytočné súbory boli ignorované.`,
+      });
+    }
+  }, []);
 
   const addAttachments = useCallback(
     (files: File[]) => addAttachmentFiles(files, state.attachments.length),
-    [addAttachmentFiles, state.attachments.length],
+    [addAttachmentFiles, state.attachments.length]
   );
 
   const removeAttachment = useCallback(
     (id: string) => dispatch({ type: 'REMOVE_ATTACHMENT', id }),
-    [],
+    []
   );
 
   const clearAttachments = useCallback(() => dispatch({ type: 'CLEAR_ATTACHMENTS' }), []);
 
   const setAttachmentLabel = useCallback(
     (label: string) => dispatch({ type: 'SET_ATTACHMENT_LABEL', label }),
-    [],
+    []
   );
   const setMainCategory = useCallback(
     (value: string) => dispatch({ type: 'SET_MAIN_CATEGORY', value }),
-    [],
+    []
   );
   const setSubcategory = useCallback(
     (value: string) => dispatch({ type: 'SET_SUBCATEGORY', value }),
-    [],
+    []
   );
   const updateAiRecord = useCallback(
     (id: string, patch: Partial<AiDetectedDraftRecord>) =>
       dispatch({ type: 'UPDATE_AI_RECORD', id, patch }),
-    [],
+    []
   );
   const setVisitDraftField = useCallback(
     (field: keyof AiVisitDraftValues, value: string) =>
       dispatch({ type: 'SET_VISIT_DRAFT_FIELD', field, value }),
-    [],
+    []
   );
 
   const analyze = useCallback(async () => {
@@ -259,11 +261,35 @@ export function useAiImport(dogId: string) {
 
       dispatch({
         type: 'SET_ANALYZE_PROGRESS',
-        progress: { done: state.attachments.length, total: state.attachments.length, stage: 'interpret' },
+        progress: {
+          done: state.attachments.length,
+          total: state.attachments.length,
+          stage: 'interpret',
+        },
       });
 
       const combined = texts.join('\n\n---\n\n');
-      const { vaccinations } = await interpretPassportText(combined);
+      const interpretation = await interpretPassportText(combined);
+      const { vaccinations, petIdentifiers, healthFlags } = interpretation;
+
+      const patch: PetProfilePatch | null =
+        (petIdentifiers &&
+          (petIdentifiers.name ||
+            petIdentifiers.breed ||
+            petIdentifiers.dateOfBirth ||
+            petIdentifiers.sex ||
+            petIdentifiers.microchipNumber ||
+            petIdentifiers.passportNumber)) ||
+        (healthFlags &&
+          ((healthFlags.allergies?.length ?? 0) > 0 ||
+            (healthFlags.chronicConditions?.length ?? 0) > 0))
+          ? {
+              identifiers: petIdentifiers,
+              allergies: healthFlags?.allergies ?? [],
+              chronicConditions: healthFlags?.chronicConditions ?? [],
+            }
+          : null;
+      dispatch({ type: 'SET_PROFILE_PATCH', patch });
 
       const drafts: AiDetectedDraftRecord[] = (vaccinations ?? []).map((item, index) => {
         const inferredType = inferAiTargetType(item.disease, item.vaccineName);
@@ -353,10 +379,15 @@ export function useAiImport(dogId: string) {
       state.selectedMainCategory,
       state.selectedSubcategory,
       state.visitDraft,
-    ],
+    ]
   );
 
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
+
+  const clearProfilePatch = useCallback(
+    () => dispatch({ type: 'SET_PROFILE_PATCH', patch: null }),
+    []
+  );
 
   return {
     state,
@@ -372,6 +403,7 @@ export function useAiImport(dogId: string) {
     setVisitDraftField,
     analyze,
     buildBundle,
+    clearProfilePatch,
     reset,
   };
 }

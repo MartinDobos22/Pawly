@@ -11,6 +11,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  format-check:
+    name: Prettier format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Prettier
+        run: npm install --no-save --no-package-lock prettier@^3
+      - name: Check formatting
+        run: npx prettier --check "client/src/**/*.{ts,tsx,css,html}" "server/src/**/*.ts" "*.{json,md}" ".github/**/*.yml"
+
   client:
     name: Client (type-check + build + test)
     runs-on: ubuntu-latest
@@ -33,11 +46,22 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+        env:
+          # In CI we build without a backend URL — Vite proxy is dev-only.
+          VITE_API_URL: ''
       - name: Bundle size summary
         run: |
           echo "## Client bundle" >> $GITHUB_STEP_SUMMARY
           du -sh dist 2>/dev/null | awk '{print "- Total: "$1}' >> $GITHUB_STEP_SUMMARY || true
           find dist -name '*.js' -size +500k -printf '- ⚠️ %p (%s bytes)\n' >> $GITHUB_STEP_SUMMARY || true
+      - name: PWA sanity (CACHE_VERSION bump check)
+        run: |
+          version=$(grep -E "const CACHE_VERSION" public/sw.js | head -1 || true)
+          echo "## PWA" >> $GITHUB_STEP_SUMMARY
+          echo "- $version" >> $GITHUB_STEP_SUMMARY
+          if ! grep -qE "CACHE_VERSION\s*=\s*['\"]animalPassport-v[0-9]+['\"]" public/sw.js; then
+            echo "::warning file=client/public/sw.js::CACHE_VERSION nesedí so vzorom 'animalPassport-vN'"
+          fi
 
   server:
     name: Server (type-check + build + test)

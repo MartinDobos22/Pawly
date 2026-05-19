@@ -131,4 +131,5 @@ export interface AiFormState {
   useVisitDetailsFromManual: boolean;
   visitDraft: AiVisitDraftValues;
   feedback: string | null;
+  detectedProfilePatch: import('../../../utils/petProfileMerge').PetProfilePatch | null;
 }
