@@ -278,6 +278,18 @@ interface HealthPassportInterpretation {
     confidence: 'high' | 'medium' | 'low';
     notes?: string;
   }>;
+  petIdentifiers?: {
+    name?: string;
+    breed?: string;
+    dateOfBirth?: string;
+    sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
+    microchipNumber?: string;
+    passportNumber?: string;
+  };
+  healthFlags?: {
+    allergies: string[];
+    chronicConditions: string[];
+  };
 }
 
 const FEED_RELATED_KEYWORDS = [
@@ -499,8 +511,27 @@ Vráť iba JSON v tvare:
       "confidence": "high|medium|low",
       "notes": "doplňujúca poznámka"
     }
-  ]
+  ],
+  "petIdentifiers": {
+    "name": "meno zvieraťa",
+    "breed": "plemeno",
+    "dateOfBirth": "YYYY-MM-DD",
+    "sex": "MALE|FEMALE|UNKNOWN",
+    "microchipNumber": "len číslice/písmená mikročipu",
+    "passportNumber": "číslo pasu"
+  },
+  "healthFlags": {
+    "allergies": ["alergén 1", "alergén 2"],
+    "chronicConditions": ["chronický stav 1"]
+  }
 }
+
+PRAVIDLÁ PRE IDENTIFIKÁTORY A ZDRAVOTNÉ PRÍZNAKY:
+- Extrahuj LEN ak je údaj v dokumente EXPLICITNE uvedený. Nedomýšľaj.
+- Ak chýba pole identifikátora, použi prázdny string "".
+- Pre "sex" akceptuj len MALE/FEMALE/UNKNOWN; iné hodnoty vráť ako "".
+- Pre allergies/chronicConditions extrahuj len keď je v dokumente sekcia "alergie", "intolerancie", "chronické ochorenia" a podobne. Ak nič, vráť prázdne pole [].
+- Pre dateOfBirth striktne YYYY-MM-DD; ak je dátum nejasný, vráť "".
 Ak údaj v texte chýba, použi prázdny string alebo pole.`,
         },
         {
@@ -545,11 +576,69 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
           };
         })
         .filter((item): item is NonNullable<typeof item> => Boolean(item)),
+      petIdentifiers: parsePetIdentifiers(parsed.petIdentifiers),
+      healthFlags: parseHealthFlags(parsed.healthFlags),
     };
   } catch (error) {
     console.error('[AI Service] Health passport interpretation failed:', error);
     return null;
   }
+}
+
+function nonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function parsePetIdentifiers(
+  value: unknown
+): HealthPassportInterpretation['petIdentifiers'] | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const v = value as Record<string, unknown>;
+  const sexRaw = typeof v.sex === 'string' ? v.sex.toUpperCase() : '';
+  const sex: 'MALE' | 'FEMALE' | 'UNKNOWN' | undefined =
+    sexRaw === 'MALE' || sexRaw === 'FEMALE' || sexRaw === 'UNKNOWN' ? sexRaw : undefined;
+
+  const dob = typeof v.dateOfBirth === 'string' ? v.dateOfBirth.trim() : '';
+  const dateOfBirth = /^\d{4}-\d{2}-\d{2}$/.test(dob) ? dob : undefined;
+
+  const result = {
+    name: nonEmptyString(v.name),
+    breed: nonEmptyString(v.breed),
+    dateOfBirth,
+    sex,
+    microchipNumber: nonEmptyString(v.microchipNumber),
+    passportNumber: nonEmptyString(v.passportNumber),
+  };
+
+  const hasAny = Object.values(result).some((entry) => entry !== undefined);
+  return hasAny ? result : undefined;
+}
+
+function parseStringArrayDedup(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of value) {
+    if (typeof item !== 'string') continue;
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+function parseHealthFlags(value: unknown): HealthPassportInterpretation['healthFlags'] | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const v = value as Record<string, unknown>;
+  const allergies = parseStringArrayDedup(v.allergies);
+  const chronicConditions = parseStringArrayDedup(v.chronicConditions);
+  if (allergies.length === 0 && chronicConditions.length === 0) return undefined;
+  return { allergies, chronicConditions };
 }
 
 export async function extractRawTextFromAttachment(

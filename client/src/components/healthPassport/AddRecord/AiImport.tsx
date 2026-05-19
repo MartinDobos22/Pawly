@@ -7,6 +7,7 @@ import { useAiImport as useAiImportInternal } from './useAiImport';
 
 interface AiImportContextValue {
   state: AiFormState;
+  dogId: string;
   maxAttachments: number;
   setStep: (step: AiStep) => void;
   addAttachments: (files: File[]) => Promise<void>;
@@ -18,6 +19,7 @@ interface AiImportContextValue {
   updateAiRecord: (id: string, patch: Partial<AiDetectedDraftRecord>) => void;
   setVisitDraftField: (field: keyof AiVisitDraftValues, value: string) => void;
   analyze: () => Promise<void>;
+  clearProfilePatch: () => void;
   submit: () => void;
   cancel: () => void;
 }
@@ -57,6 +59,7 @@ export default function AiImportProvider({
     setVisitDraftField,
     analyze,
     buildBundle,
+    clearProfilePatch,
     reset,
   } = useAiImportInternal(dogId);
 
@@ -69,6 +72,7 @@ export default function AiImportProvider({
 
   const value: AiImportContextValue = {
     state,
+    dogId,
     maxAttachments,
     setStep,
     addAttachments,
@@ -80,6 +84,7 @@ export default function AiImportProvider({
     updateAiRecord,
     setVisitDraftField,
     analyze,
+    clearProfilePatch,
     submit,
     cancel: onCancel,
   };

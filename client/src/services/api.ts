@@ -156,6 +156,20 @@ export async function extractTextFromImage(attachment: {
   return payload;
 }
 
+export interface PassportPetIdentifiers {
+  name?: string;
+  breed?: string;
+  dateOfBirth?: string;
+  sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  microchipNumber?: string;
+  passportNumber?: string;
+}
+
+export interface PassportHealthFlags {
+  allergies: string[];
+  chronicConditions: string[];
+}
+
 export interface PassportInterpretation {
   summary?: string;
   aiUnderstanding?: string;
@@ -170,6 +184,8 @@ export interface PassportInterpretation {
     confidence: 'high' | 'medium' | 'low';
     notes?: string;
   }>;
+  petIdentifiers?: PassportPetIdentifiers;
+  healthFlags?: PassportHealthFlags;
 }
 
 export async function interpretPassportText(text: string): Promise<PassportInterpretation> {
