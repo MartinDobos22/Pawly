@@ -99,6 +99,20 @@ export default function HealthPassportPage() {
 
   const currentDiet = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
 
+  // ── Latest records per domain (for metric cards) ───────────────────────────
+  const latestVaccination = useMemo(
+    () => [...dogVaccinations].sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0],
+    [dogVaccinations]
+  );
+  const latestDeworming = useMemo(
+    () => [...dogDewormings].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    [dogDewormings]
+  );
+  const latestEcto = useMemo(
+    () => [...dogEctos].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    [dogEctos]
+  );
+
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
     const t: TimelineEvent[] = [];
@@ -534,6 +548,48 @@ export default function HealthPassportPage() {
         dewormingStatus={dewormingStatus}
         ectoStatus={ectoStatus}
         currentDiet={currentDiet}
+        vaccinationNextDate={latestVaccination?.validUntil}
+        vaccinationLastDate={latestVaccination?.dateApplied}
+        dewormingNextDate={latestDeworming?.nextDueDate}
+        dewormingLastDate={latestDeworming?.dateGiven}
+        dewormingIntervalDays={
+          latestDeworming
+            ? (latestDeworming.intervalDays ??
+              computeIntervalDaysFromDates(latestDeworming.dateGiven, latestDeworming.nextDueDate, 90))
+            : undefined
+        }
+        dewormingPreparation={latestDeworming?.productName}
+        ectoNextDate={latestEcto?.nextDueDate}
+        ectoLastDate={latestEcto?.dateGiven}
+        ectoIntervalDays={
+          latestEcto
+            ? (latestEcto.intervalDays ??
+              computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
+            : undefined
+        }
+        ectoPreparation={latestEcto?.productName}
+        onAddVaccination={() => setWizardOpen(true)}
+        onAddDeworming={() => setWizardOpen(true)}
+        onAddEcto={() => setWizardOpen(true)}
+        onAddDiet={() => setWizardOpen(true)}
+        onOpenVaccination={
+          latestVaccination
+            ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+            : undefined
+        }
+        onOpenDeworming={
+          latestDeworming
+            ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+            : undefined
+        }
+        onOpenEcto={
+          latestEcto
+            ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
+            : undefined
+        }
+        onOpenDiet={
+          currentDiet ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' }) : undefined
+        }
       />
 
       {/* ── Dashboard: timeline (left) + tasks/expenses stack (right) ─────── */}
