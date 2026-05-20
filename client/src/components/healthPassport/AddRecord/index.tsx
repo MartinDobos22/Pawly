@@ -121,7 +121,9 @@ export default function AddRecord({
             Pridať záznam
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manuálne vyplň formulár alebo nahraj dokument na AI extrakciu.
+            {mode === 'MANUAL'
+              ? 'Vyplň formulár návštevy alebo záznamu manuálne.'
+              : 'AI extrahuje vakcinácie a záznamy z nahraných dokumentov.'}
           </Typography>
         </Box>
         <IconButton onClick={handleClose} size="small" aria-label="Zavrieť">

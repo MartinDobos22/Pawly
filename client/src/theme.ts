@@ -140,6 +140,17 @@ const commonOptions: ThemeOptions = {
         },
       },
     },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          letterSpacing: 0,
+          fontSize: '0.75rem',
+          fontWeight: 400,
+          marginTop: 4,
+        },
+      },
+    },
     MuiCard: {
       defaultProps: {
         variant: 'outlined',

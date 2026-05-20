@@ -182,7 +182,16 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
                         <Typography variant="body2">
                           <strong>{label}:</strong> {incomingLabel}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            textTransform: 'none',
+                            letterSpacing: 0,
+                            fontSize: '0.75rem',
+                            fontWeight: 400,
+                          }}
+                        >
                           aktuálne: {existingLabel}
                           {!entry.isEmptyExisting && ' (zachované, ak nezatrhneš)'}
                         </Typography>

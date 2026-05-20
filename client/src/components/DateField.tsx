@@ -46,7 +46,11 @@ export default function DateField({
       value={toDate(value)}
       onChange={(d) => onChange(toIso(d))}
       format="d. M. yyyy"
+      formatDensity="dense"
       slotProps={{
+        field: {
+          format: 'd. M. yyyy',
+        },
         textField: {
           size,
           required,

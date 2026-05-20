@@ -34,7 +34,7 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
             value={values.clinicName}
             onChange={(e) => onChange('clinicName', e.target.value)}
             error={Boolean(errors['basics.clinicName'])}
-            helperText={errors['basics.clinicName'] || 'Povinné'}
+            helperText={errors['basics.clinicName']}
             fullWidth
             required
           />
