@@ -7,9 +7,9 @@ import {
   DialogTitle,
   IconButton,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
+  alpha,
+  useTheme,
 } from '@mui/material';
 import { AutoAwesome as AiIcon, Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 
@@ -32,25 +32,64 @@ interface AddRecordProps {
 }
 
 function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => void }) {
+  const theme = useTheme();
+  const tabs: { value: Mode; label: string; icon: typeof EditIcon }[] = [
+    { value: 'MANUAL', label: 'Manuálne', icon: EditIcon },
+    { value: 'AI', label: 'Z dokumentu (AI)', icon: AiIcon },
+  ];
+
   return (
-    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-      <ToggleButtonGroup
-        value={mode}
-        exclusive
-        color="primary"
-        size="small"
-        onChange={(_, next: Mode | null) => {
-          if (next) onChange(next);
+    <Box sx={{ mb: 2.5, display: 'flex', justifyContent: 'center' }}>
+      <Box
+        role="tablist"
+        sx={{
+          display: 'inline-flex',
+          p: 0.5,
+          gap: 0.5,
+          borderRadius: 999,
+          bgcolor: alpha(theme.palette.text.primary, 0.04),
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <ToggleButton value="MANUAL">
-          <EditIcon sx={{ fontSize: 16, mr: 0.75 }} />
-          Manuálne
-        </ToggleButton>
-        <ToggleButton value="AI">
-          <AiIcon sx={{ fontSize: 16, mr: 0.75 }} />Z dokumentu
-        </ToggleButton>
-      </ToggleButtonGroup>
+        {tabs.map(({ value, label, icon: Icon }) => {
+          const active = mode === value;
+          return (
+            <Box
+              key={value}
+              role="tab"
+              aria-selected={active}
+              component="button"
+              type="button"
+              onClick={() => onChange(value)}
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 2,
+                py: 0.75,
+                borderRadius: 999,
+                border: 'none',
+                cursor: 'pointer',
+                font: 'inherit',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: active ? 'primary.contrastText' : 'text.secondary',
+                bgcolor: active ? 'primary.main' : 'transparent',
+                boxShadow: active ? '0 2px 6px rgba(15,76,92,0.18)' : 'none',
+                transition: 'background-color 150ms ease, color 150ms ease',
+                '&:hover': active ? {} : { color: 'text.primary' },
+                '&:focus-visible': {
+                  outline: `2px solid ${theme.palette.primary.main}`,
+                  outlineOffset: 2,
+                },
+              }}
+            >
+              <Icon sx={{ fontSize: 16 }} />
+              {label}
+            </Box>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
