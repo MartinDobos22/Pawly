@@ -83,13 +83,17 @@ export default function HealthMetricCard({
   }
 
   const isEmpty = status === 'UNKNOWN';
-  const headlineColor = isEmpty
-    ? 'text.secondary'
-    : meta.tone === 'error'
-      ? 'error.main'
-      : 'text.primary';
+  const isOverdue = status === 'EXPIRED';
+  const headlineColor = isEmpty ? 'text.secondary' : isOverdue ? 'error.main' : 'text.primary';
 
-  const headline = isEmpty ? 'Ešte nezadané' : rel ? rel.text : detail || meta.label;
+  const overdueDays = isOverdue && rel ? Math.abs(rel.diffDays) : 0;
+  const headline = isEmpty
+    ? 'Ešte nezadané'
+    : isOverdue
+      ? `Po termíne ${overdueDays} ${overdueDays === 1 ? 'deň' : overdueDays >= 2 && overdueDays <= 4 ? 'dni' : 'dní'}`
+      : rel
+        ? rel.text
+        : detail || meta.label;
 
   return (
     <Card
@@ -137,21 +141,33 @@ export default function HealthMetricCard({
         </Stack>
 
         <Box sx={{ minHeight: 56 }}>
-          <Typography
-            variant="h3"
-            sx={{ fontSize: '1.4rem', fontWeight: 700, color: headlineColor, lineHeight: 1.2 }}
-          >
-            {headline}
-          </Typography>
-          {!isEmpty && (lastDate || detail) && (
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
-              {lastDate ? `Posledné ${formatDateShort(lastDate)}` : detail}
-              {lastDate && detail ? ` · ${detail}` : ''}
+          <Stack direction="row" alignItems="center" gap={1}>
+            {isOverdue && <ErrorIcon sx={{ fontSize: 20, color: 'error.main', flexShrink: 0 }} />}
+            <Typography
+              variant="h3"
+              sx={{ fontSize: '1.4rem', fontWeight: 700, color: headlineColor, lineHeight: 1.2 }}
+            >
+              {headline}
             </Typography>
+          </Stack>
+          {isEmpty ? (
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', mt: 0.5, fontStyle: 'italic', opacity: 0.85 }}
+            >
+              Pridaj prvý záznam a uvidíš pripomienky
+            </Typography>
+          ) : (
+            (lastDate || detail) && (
+              <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
+                {lastDate ? `Posledné ${formatDateShort(lastDate)}` : detail}
+                {lastDate && detail ? ` · ${detail}` : ''}
+              </Typography>
+            )
           )}
         </Box>
 
-        {progress !== null && !isEmpty && (
+        {progress !== null && !isEmpty && !isOverdue && (
           <Box>
             <LinearProgress
               variant="determinate"

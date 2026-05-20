@@ -312,15 +312,15 @@ export const darkTheme = createTheme({
     },
     divider: darkSurface.divider,
     error: {
-      main: '#E58A6F',
-      light: '#F0AC97',
-      dark: '#B45A3F',
+      main: '#F0997E',
+      light: '#F5BAA5',
+      dark: '#C8694E',
       contrastText: '#1E0A04',
     },
     success: {
-      main: '#7AC6A2',
-      light: '#A4DABF',
-      dark: '#3F8A66',
+      main: '#8BD3AF',
+      light: '#B0E0C8',
+      dark: '#4F9B76',
       contrastText: '#0C2418',
     },
     warning: {
