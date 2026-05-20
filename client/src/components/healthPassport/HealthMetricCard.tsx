@@ -95,6 +95,75 @@ export default function HealthMetricCard({
         ? rel.text
         : detail || meta.label;
 
+  if (isEmpty) {
+    return (
+      <Card
+        onClick={onPrimaryAction || onOpen}
+        sx={{
+          position: 'relative',
+          p: 1.75,
+          cursor: onPrimaryAction || onOpen ? 'pointer' : 'default',
+          borderStyle: 'dashed',
+          borderColor: theme.palette.divider,
+          bgcolor: 'transparent',
+          transition: 'border-color 120ms ease, background-color 120ms ease',
+          '&:hover':
+            onPrimaryAction || onOpen
+              ? {
+                  borderColor: alpha(theme.palette.primary.main, 0.5),
+                  bgcolor: alpha(theme.palette.primary.main, 0.04),
+                }
+              : undefined,
+        }}
+      >
+        <Stack direction="row" gap={1.25} alignItems="center">
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: 2,
+              bgcolor: alpha(theme.palette.text.secondary, 0.08),
+              color: 'text.secondary',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              '& svg': { fontSize: 20 },
+            }}
+          >
+            {icon}
+          </Box>
+          <Stack sx={{ minWidth: 0, flex: 1 }} spacing={0.25}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+              {label}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', fontStyle: 'italic', opacity: 0.85 }}
+              noWrap
+            >
+              Ešte nezadané
+            </Typography>
+          </Stack>
+          {(onPrimaryAction || onOpen) && (
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<PlusIcon sx={{ fontSize: 16 }} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                (onPrimaryAction ?? onOpen)?.();
+              }}
+              sx={{ minHeight: 32, py: 0.5, px: 1.25, fontSize: '0.78rem', flexShrink: 0 }}
+            >
+              {primaryActionLabel ?? 'Pridať'}
+            </Button>
+          )}
+        </Stack>
+      </Card>
+    );
+  }
+
   return (
     <Card
       onClick={onOpen}
@@ -102,7 +171,7 @@ export default function HealthMetricCard({
         position: 'relative',
         p: 2,
         cursor: onOpen ? 'pointer' : 'default',
-        borderColor: isEmpty ? theme.palette.divider : alpha(toneColor, 0.35),
+        borderColor: alpha(toneColor, 0.35),
         bgcolor: surface,
         transition: 'transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease',
         '&:hover': onOpen
@@ -150,24 +219,15 @@ export default function HealthMetricCard({
               {headline}
             </Typography>
           </Stack>
-          {isEmpty ? (
-            <Typography
-              variant="body2"
-              sx={{ color: 'text.secondary', mt: 0.5, fontStyle: 'italic', opacity: 0.85 }}
-            >
-              Pridaj prvý záznam a uvidíš pripomienky
+          {(lastDate || detail) && (
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
+              {lastDate ? `Posledné ${formatDateShort(lastDate)}` : detail}
+              {lastDate && detail ? ` · ${detail}` : ''}
             </Typography>
-          ) : (
-            (lastDate || detail) && (
-              <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
-                {lastDate ? `Posledné ${formatDateShort(lastDate)}` : detail}
-                {lastDate && detail ? ` · ${detail}` : ''}
-              </Typography>
-            )
           )}
         </Box>
 
-        {progress !== null && !isEmpty && !isOverdue && (
+        {progress !== null && !isOverdue && (
           <Box>
             <LinearProgress
               variant="determinate"
@@ -197,16 +257,16 @@ export default function HealthMetricCard({
                 sx={{
                   px: 1,
                   minHeight: 28,
-                  color: meta.tone === 'neutral' ? 'primary.main' : toneColor,
+                  color: toneColor,
                   fontWeight: 600,
                 }}
               >
-                {primaryActionLabel ?? (isEmpty ? 'Pridať' : 'Naplánovať')}
+                {primaryActionLabel ?? 'Naplánovať'}
               </Button>
             ) : (
               <Box />
             )}
-            {onOpen && !isEmpty && <ChevronIcon sx={{ color: 'text.disabled', fontSize: 18 }} />}
+            {onOpen && <ChevronIcon sx={{ color: 'text.disabled', fontSize: 18 }} />}
           </Stack>
         )}
       </Stack>
