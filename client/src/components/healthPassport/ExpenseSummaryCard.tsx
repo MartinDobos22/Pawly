@@ -1,109 +1,248 @@
-import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material';
-import { ReceiptLong as ReceiptIcon } from '@mui/icons-material';
+import { useMemo } from 'react';
+import { Box, Card, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
+import {
+  ReceiptLong as ReceiptIcon,
+  ArrowUpward as UpIcon,
+  ArrowDownward as DownIcon,
+  RemoveCircleOutline as FlatIcon,
+} from '@mui/icons-material';
 import type { ExpenseRecord } from '../../types/dogHealth';
 import { today } from './utils.ts';
+import { formatDateShort } from '../../utils/relativeDate';
+import ExpenseDonut from './ExpenseDonut';
 
 interface ExpenseSummaryCardProps {
   expenses: ExpenseRecord[];
 }
 
-type CategoryColor = 'primary' | 'info' | 'success' | 'warning';
+type CategoryKey = 'VET_VISIT' | 'MEDICATION' | 'FOOD' | 'OTHER';
 
-const CATEGORY_META: Record<string, { label: string; color: CategoryColor }> = {
-  VET_VISIT: { label: 'Veterinár', color: 'primary' },
-  MEDICATION: { label: 'Lieky', color: 'info' },
-  FOOD: { label: 'Krmivo', color: 'success' },
-  OTHER: { label: 'Ostatné', color: 'warning' },
+const CATEGORY_LABELS: Record<CategoryKey, string> = {
+  VET_VISIT: 'Veterinár',
+  MEDICATION: 'Lieky',
+  FOOD: 'Krmivo',
+  OTHER: 'Ostatné',
+};
+
+const monthKey = (iso: string) => iso.slice(0, 7);
+const prevMonthKey = (iso: string) => {
+  const d = new Date(`${iso}-01`);
+  d.setMonth(d.getMonth() - 1);
+  return d.toISOString().slice(0, 7);
 };
 
 export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps) {
+  const theme = useTheme();
   const todayStr = today();
 
-  const monthly = expenses
-    .filter((e) => e.date.slice(0, 7) === todayStr.slice(0, 7))
-    .reduce((acc, x) => acc + x.amount, 0);
+  const thisMonthKey = monthKey(todayStr);
+  const lastMonthKey = prevMonthKey(thisMonthKey);
 
-  const yearly = expenses
-    .filter((e) => e.date.slice(0, 4) === todayStr.slice(0, 4))
-    .reduce((acc, x) => acc + x.amount, 0);
+  const thisMonthTotal = useMemo(
+    () =>
+      expenses
+        .filter((e) => monthKey(e.date) === thisMonthKey)
+        .reduce((acc, x) => acc + x.amount, 0),
+    [expenses, thisMonthKey]
+  );
 
-  const categorySums = Object.entries(CATEGORY_META).map(([category, meta]) => ({
-    ...meta,
-    category,
-    amount: expenses.filter((e) => e.category === category).reduce((acc, x) => acc + x.amount, 0),
-  }));
+  const lastMonthTotal = useMemo(
+    () =>
+      expenses
+        .filter((e) => monthKey(e.date) === lastMonthKey)
+        .reduce((acc, x) => acc + x.amount, 0),
+    [expenses, lastMonthKey]
+  );
 
-  const maxAmount = Math.max(...categorySums.map((c) => c.amount), 1);
+  const trend = useMemo(() => {
+    if (lastMonthTotal === 0 && thisMonthTotal === 0) return null;
+    if (lastMonthTotal === 0) return { pct: null, dir: 'up' as const };
+    const diff = thisMonthTotal - lastMonthTotal;
+    const pct = (diff / lastMonthTotal) * 100;
+    if (Math.abs(pct) < 1) return { pct, dir: 'flat' as const };
+    return { pct, dir: (pct > 0 ? 'up' : 'down') as 'up' | 'down' };
+  }, [thisMonthTotal, lastMonthTotal]);
+
+  const palette: Record<CategoryKey, string> = {
+    VET_VISIT: theme.palette.primary.main,
+    MEDICATION: theme.palette.info.main,
+    FOOD: theme.palette.success.main,
+    OTHER: theme.palette.warning.main,
+  };
+
+  const slices = useMemo(() => {
+    const map: Record<CategoryKey, number> = {
+      VET_VISIT: 0,
+      MEDICATION: 0,
+      FOOD: 0,
+      OTHER: 0,
+    };
+    for (const e of expenses) {
+      const k = (CATEGORY_LABELS[e.category as CategoryKey] ? e.category : 'OTHER') as CategoryKey;
+      map[k] += e.amount;
+    }
+    return (Object.keys(map) as CategoryKey[]).map((key) => ({
+      key,
+      label: CATEGORY_LABELS[key],
+      value: map[key],
+      color: palette[key],
+    }));
+  }, [expenses, palette]);
+
+  const totalAll = useMemo(() => expenses.reduce((acc, e) => acc + e.amount, 0), [expenses]);
+
+  const recentTop = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+    const cutoffIso = cutoff.toISOString().slice(0, 10);
+    return [...expenses]
+      .filter((e) => e.date >= cutoffIso)
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 3);
+  }, [expenses]);
+
+  const trendChip = trend && (
+    <Chip
+      size="small"
+      icon={
+        trend.dir === 'up' ? (
+          <UpIcon sx={{ fontSize: 14 }} />
+        ) : trend.dir === 'down' ? (
+          <DownIcon sx={{ fontSize: 14 }} />
+        ) : (
+          <FlatIcon sx={{ fontSize: 14 }} />
+        )
+      }
+      label={
+        trend.pct === null
+          ? 'nový'
+          : `${trend.pct > 0 ? '+' : ''}${trend.pct.toFixed(0)}% vs min. mesiac`
+      }
+      sx={{
+        height: 22,
+        fontSize: '0.7rem',
+        fontWeight: 600,
+        bgcolor: alpha(
+          trend.dir === 'up'
+            ? theme.palette.warning.main
+            : trend.dir === 'down'
+              ? theme.palette.success.main
+              : theme.palette.text.secondary,
+          0.14
+        ),
+        color:
+          trend.dir === 'up'
+            ? theme.palette.warning.dark
+            : trend.dir === 'down'
+              ? theme.palette.success.dark
+              : 'text.secondary',
+        '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
+      }}
+    />
+  );
 
   return (
-    <Card sx={{ p: 1.5, height: '100%' }}>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
+    <Card sx={{ p: 2 }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <ReceiptIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
           Výdavky
         </Typography>
       </Stack>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 1,
-          mb: 1.5,
-        }}
-      >
-        {[
-          { label: 'Tento mesiac', value: monthly },
-          { label: 'Tento rok', value: yearly },
-        ].map(({ label, value }) => (
-          <Box
-            key={label}
-            sx={{
-              p: 1.5,
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Typography
-              variant="overline"
-              sx={{ color: 'text.secondary', display: 'block', lineHeight: 1.2 }}
-            >
-              {label}
-            </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', lineHeight: 1.4 }}>
-              {value.toFixed(0)}
-              <Typography
-                component="span"
-                sx={{ fontWeight: 400, fontSize: '0.8rem', color: 'text.secondary', ml: 0.5 }}
-              >
-                €
-              </Typography>
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5} alignItems="center">
+        <ExpenseDonut data={slices} total={totalAll} size={140} />
 
-      <Stack spacing={1.25}>
-        {categorySums.map(({ label, color, amount }) => (
-          <Box key={label}>
-            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                {label}
-              </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                {amount.toFixed(0)} €
-              </Typography>
-            </Stack>
-            <LinearProgress
-              variant="determinate"
-              value={(amount / maxAmount) * 100}
-              color={color}
-              sx={{ height: 4, borderRadius: 1 }}
-            />
-          </Box>
-        ))}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Tento mesiac
+          </Typography>
+          <Stack direction="row" alignItems="baseline" gap={1} sx={{ mt: 0.25 }}>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, lineHeight: 1 }}>
+              {thisMonthTotal.toFixed(0)}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              €
+            </Typography>
+          </Stack>
+          {trendChip && <Box sx={{ mt: 1 }}>{trendChip}</Box>}
+
+          <Stack spacing={0.5} sx={{ mt: 1.5 }}>
+            {slices
+              .filter((s) => s.value > 0)
+              .map((s) => (
+                <Stack key={s.key} direction="row" alignItems="center" gap={1}>
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      bgcolor: s.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                      textTransform: 'none',
+                      letterSpacing: 0,
+                      flex: 1,
+                    }}
+                    noWrap
+                  >
+                    {s.label}
+                  </Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                    {s.value.toFixed(0)} €
+                  </Typography>
+                </Stack>
+              ))}
+          </Stack>
+        </Box>
       </Stack>
+
+      {recentTop.length > 0 && (
+        <Box sx={{ mt: 2, pt: 1.5, borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', display: 'block', mb: 0.75 }}
+          >
+            Najväčšie výdavky (90 dní)
+          </Typography>
+          <Stack spacing={0.5}>
+            {recentTop.map((e) => (
+              <Stack key={e.id} direction="row" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor:
+                      palette[
+                        (CATEGORY_LABELS[e.category as CategoryKey]
+                          ? e.category
+                          : 'OTHER') as CategoryKey
+                      ],
+                  }}
+                />
+                <Typography variant="body2" sx={{ flex: 1, fontWeight: 500 }} noWrap>
+                  {e.note || CATEGORY_LABELS[(e.category as CategoryKey) ?? 'OTHER']}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
+                  {formatDateShort(e.date)}
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700, ml: 1 }}>
+                  {e.amount.toFixed(0)} €
+                </Typography>
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
+      )}
     </Card>
   );
 }
