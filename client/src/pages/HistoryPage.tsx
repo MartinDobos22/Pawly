@@ -14,16 +14,22 @@ import {
   Delete as DeleteIcon,
   HistoryToggleOff as EmptyIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
+import EmptyState from '../components/EmptyState';
 import type { SavedAnalysis } from '../types';
 
 export default function HistoryPage() {
-  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>('granule-check-history', []);
+  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>(
+    'granule-check-history',
+    []
+  );
   const [expanded, setExpanded] = useState<string | false>(false);
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleDelete = (id: string) => {
     setSavedAnalyses((prev) => prev.filter((a) => a.id !== id));
@@ -47,14 +53,13 @@ export default function HistoryPage() {
 
   if (savedAnalyses.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 8 }}>
-        <EmptyIcon sx={{ fontSize: 80, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-          Žiadna história
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule a uložte výsledok.
-        </Typography>
+      <Box sx={{ pt: 4 }}>
+        <EmptyState
+          icon={<EmptyIcon />}
+          title="Žiadna história"
+          description="Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem."
+          primaryAction={{ label: 'Spustiť analýzu', onClick: () => navigate('/') }}
+        />
       </Box>
     );
   }
@@ -131,7 +136,11 @@ export default function HistoryPage() {
             </Box>
           </AccordionSummary>
           <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 0 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: 'italic', whiteSpace: 'pre-wrap' }}
+            >
               {item.composition}
             </Typography>
             <ScoreCard score={item.result.score} summary={item.result.summary} />

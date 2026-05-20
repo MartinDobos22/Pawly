@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Alert,
   Box,
   Button,
   Card,
@@ -20,6 +19,7 @@ import {
   EventBusy as EventBusyIcon,
   Pets as PetsIcon,
 } from '@mui/icons-material';
+import EmptyState from '../components/EmptyState';
 import EpisodeFiltersBar from '../components/episodes/EpisodeFiltersBar';
 import EpisodeListItem from '../components/episodes/EpisodeListItem';
 import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
@@ -190,30 +190,30 @@ export default function EpisodeDiaryPage() {
       />
 
       {dogEpisodes.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <EventBusyIcon sx={{ fontSize: 80, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            Zatiaľ žiadne epizódy
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte
-            overené riešenie.
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setEditing(undefined);
-              setFormOpen(true);
+        <Box sx={{ pt: 2 }}>
+          <EmptyState
+            icon={<EventBusyIcon />}
+            title="Zatiaľ žiadne epizódy"
+            description="Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte overené riešenie."
+            primaryAction={{
+              label: 'Pridať prvú epizódu',
+              icon: <AddIcon />,
+              onClick: () => {
+                setEditing(undefined);
+                setFormOpen(true);
+              },
             }}
-          >
-            Pridať prvú epizódu
-          </Button>
+          />
         </Box>
       ) : filtered.length === 0 ? (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Žiadne epizódy nezodpovedajú aktuálnym filtrom.
-        </Alert>
+        <Box sx={{ pt: 2 }}>
+          <EmptyState
+            icon={<EventBusyIcon />}
+            title="Žiadne epizódy v aktuálnom filtri"
+            description="Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
+            variant="inline"
+          />
+        </Box>
       ) : (
         <Box>
           {filtered.map((episode) => (
