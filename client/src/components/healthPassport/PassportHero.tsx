@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
 import type { ValidityStatus, VetVisitRecord } from '../../types/dogHealth';
-import HealthScoreRing from './HealthScoreRing';
+import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
 import QuickVisitButton from './QuickVisitButton';
 
 interface Props {
@@ -85,6 +85,20 @@ const statusToScore = (s: ValidityStatus): number | null => {
   return null;
 };
 
+const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
+  if (s === 'VALID') return 'good';
+  if (s === 'EXPIRING_SOON') return 'soon';
+  if (s === 'EXPIRED') return 'bad';
+  return 'unknown';
+};
+
+const statusDetail = (s: ValidityStatus): string => {
+  if (s === 'VALID') return 'platné';
+  if (s === 'EXPIRING_SOON') return 'končí čoskoro';
+  if (s === 'EXPIRED') return 'po termíne';
+  return 'nezadané';
+};
+
 export default function PassportHero({
   dog,
   dogProfiles,
@@ -111,6 +125,25 @@ export default function PassportHero({
     if (!values.length) return null;
     return values.reduce((a, b) => a + b, 0) / values.length;
   }, [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus]);
+
+  const scoreBreakdown: ScoreBreakdownItem[] = [
+    {
+      label: 'Očkovanie',
+      status: statusToBreakdown(vaccinationStatus),
+      detail: statusDetail(vaccinationStatus),
+    },
+    {
+      label: 'Odčervenie',
+      status: statusToBreakdown(dewormingStatus),
+      detail: statusDetail(dewormingStatus),
+    },
+    {
+      label: 'Kliešte / blchy',
+      status: statusToBreakdown(ectoStatus),
+      detail: statusDetail(ectoStatus),
+    },
+    { label: 'Diéta', status: statusToBreakdown(dietStatus), detail: statusDetail(dietStatus) },
+  ];
 
   const ageLabel = computeAgeLabel(dog);
   const sex = sexLabel(dog.sex);
@@ -146,24 +179,27 @@ export default function PassportHero({
           pointerEvents: 'none',
         }}
       />
-      <Box sx={{ position: 'relative', p: { xs: 2.5, md: 3.5 } }}>
+      <Box sx={{ position: 'relative', p: { xs: 2, md: 2.5 } }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={{ xs: 2.5, md: 3 }}
+          gap={{ xs: 2, md: 2.5 }}
         >
           <Avatar
             src={dog.photoUrl || undefined}
             alt={dog.name}
             sx={{
-              width: { xs: 84, md: 112 },
-              height: { xs: 84, md: 112 },
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
+              width: { xs: 72, md: 96 },
+              height: { xs: 72, md: 96 },
+              bgcolor: alpha(
+                theme.palette.primary.main,
+                theme.palette.mode === 'light' ? 0.16 : 0.25
+              ),
+              color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
               fontWeight: 700,
-              fontSize: { xs: '1.6rem', md: '2.2rem' },
-              border: `4px solid ${theme.palette.background.paper}`,
-              boxShadow: '0 4px 12px rgba(15,76,92,0.18)',
+              fontSize: { xs: '1.5rem', md: '1.9rem' },
+              border: `3px solid ${theme.palette.background.paper}`,
+              boxShadow: '0 2px 8px rgba(15,76,92,0.10)',
             }}
           >
             {initials(dog.name) || <PetsIcon />}
@@ -260,7 +296,7 @@ export default function PassportHero({
               pl: { md: 2 },
             }}
           >
-            <HealthScoreRing score={score} size={120} />
+            <HealthScoreRing score={score} size={96} breakdown={scoreBreakdown} />
           </Box>
         </Stack>
       </Box>

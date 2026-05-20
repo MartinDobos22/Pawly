@@ -1,9 +1,16 @@
-import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
+
+export interface ScoreBreakdownItem {
+  label: string;
+  status: 'good' | 'soon' | 'bad' | 'unknown';
+  detail?: string;
+}
 
 interface Props {
   score: number | null;
   size?: number;
   label?: string;
+  breakdown?: ScoreBreakdownItem[];
 }
 
 const labelForScore = (score: number) => {
@@ -13,9 +20,21 @@ const labelForScore = (score: number) => {
   return 'Vyžaduje pozornosť';
 };
 
-export default function HealthScoreRing({ score, size = 120, label = 'Celkový stav' }: Props) {
+const statusDot: Record<ScoreBreakdownItem['status'], string> = {
+  good: '#2F7D5B',
+  soon: '#B8860B',
+  bad: '#B4452C',
+  unknown: '#9AA0A2',
+};
+
+export default function HealthScoreRing({
+  score,
+  size = 96,
+  label = 'Celkový stav',
+  breakdown,
+}: Props) {
   const theme = useTheme();
-  const stroke = Math.max(6, Math.round(size * 0.07));
+  const stroke = Math.max(6, Math.round(size * 0.08));
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
 
@@ -36,74 +55,123 @@ export default function HealthScoreRing({ score, size = 120, label = 'Celkový s
   const center = size / 2;
   const dash = (value / 100) * circumference;
 
-  return (
-    <Stack alignItems="center" spacing={1}>
-      <Box sx={{ position: 'relative', width: size, height: size }}>
-        <svg
-          width={size}
-          height={size}
-          role="img"
-          aria-label={`Health skóre ${hasScore ? Math.round(value) : 'neznáme'}`}
-        >
+  const ring = (
+    <Box sx={{ position: 'relative', width: size, height: size }}>
+      <svg
+        width={size}
+        height={size}
+        role="img"
+        aria-label={`Health skóre ${hasScore ? Math.round(value) : 'neznáme'}`}
+      >
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="none"
+          stroke={trackColor}
+          strokeWidth={stroke}
+        />
+        {hasScore && (
           <circle
             cx={center}
             cy={center}
             r={radius}
             fill="none"
-            stroke={trackColor}
+            stroke={color}
             strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${circumference - dash}`}
+            transform={`rotate(-90 ${center} ${center})`}
+            style={{ transition: 'stroke-dasharray 400ms ease' }}
           />
-          {hasScore && (
-            <circle
-              cx={center}
-              cy={center}
-              r={radius}
-              fill="none"
-              stroke={color}
-              strokeWidth={stroke}
-              strokeLinecap="round"
-              strokeDasharray={`${dash} ${circumference - dash}`}
-              transform={`rotate(-90 ${center} ${center})`}
-              style={{ transition: 'stroke-dasharray 400ms ease' }}
-            />
-          )}
-        </svg>
-        <Box
+        )}
+      </svg>
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
           sx={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0,
+            fontSize: size * 0.33,
+            fontWeight: 700,
+            lineHeight: 1,
+            color: hasScore ? 'text.primary' : 'text.secondary',
+            letterSpacing: '-0.02em',
           }}
         >
-          <Typography
-            sx={{
-              fontSize: size * 0.27,
-              fontWeight: 700,
-              lineHeight: 1,
-              color: hasScore ? 'text.primary' : 'text.secondary',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {hasScore ? Math.round(value) : '—'}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ color: 'text.secondary', fontSize: size * 0.075, mt: 0.5 }}
-          >
-            zo 100
-          </Typography>
-        </Box>
+          {hasScore ? Math.round(value) : '—'}
+        </Typography>
       </Box>
-      <Stack alignItems="center" spacing={0.25}>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+    </Box>
+  );
+
+  const tooltipContent =
+    breakdown && breakdown.length > 0 ? (
+      <Stack spacing={0.5} sx={{ py: 0.5 }}>
+        <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.85, fontSize: '0.7rem' }}>
+          Skóre vychádza z:
+        </Typography>
+        {breakdown.map((b) => (
+          <Stack key={b.label} direction="row" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: statusDot[b.status],
+                flexShrink: 0,
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'inherit',
+                textTransform: 'none',
+                letterSpacing: 0,
+                fontSize: '0.75rem',
+              }}
+            >
+              {b.label}
+              {b.detail ? ` — ${b.detail}` : ''}
+            </Typography>
+          </Stack>
+        ))}
+      </Stack>
+    ) : null;
+
+  return (
+    <Stack alignItems="center" spacing={0.75}>
+      {tooltipContent ? (
+        <Tooltip title={tooltipContent} placement="left" arrow>
+          {ring}
+        </Tooltip>
+      ) : (
+        ring
+      )}
+      <Stack alignItems="center" spacing={0}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            textTransform: 'none',
+            letterSpacing: 0,
+            fontSize: '0.78rem',
+            lineHeight: 1.25,
+          }}
+        >
           {label}
         </Typography>
         {hasScore && (
-          <Typography variant="body2" sx={{ fontWeight: 600, color }}>
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 600, color, fontSize: '0.85rem', lineHeight: 1.3 }}
+          >
             {labelForScore(value)}
           </Typography>
         )}
