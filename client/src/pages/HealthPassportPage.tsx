@@ -27,6 +27,7 @@ import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard'
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
+import WeightTrendCard from '../components/healthPassport/WeightTrendCard';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
 
@@ -555,7 +556,11 @@ export default function HealthPassportPage() {
         dewormingIntervalDays={
           latestDeworming
             ? (latestDeworming.intervalDays ??
-              computeIntervalDaysFromDates(latestDeworming.dateGiven, latestDeworming.nextDueDate, 90))
+              computeIntervalDaysFromDates(
+                latestDeworming.dateGiven,
+                latestDeworming.nextDueDate,
+                90
+              ))
             : undefined
         }
         dewormingPreparation={latestDeworming?.productName}
@@ -618,6 +623,7 @@ export default function HealthPassportPage() {
               setDoseLogs((p) => p.map((x) => (x.id === logId ? { ...x, taken: !x.taken } : x)))
             }
           />
+          <WeightTrendCard dogId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
           <ExpenseSummaryCard expenses={dogExpenses} />
         </Stack>
       </Box>
