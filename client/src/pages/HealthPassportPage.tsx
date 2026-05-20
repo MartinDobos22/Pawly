@@ -1,23 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
-import {
-  HealthAndSafety as HealthIcon,
-  Add as AddIcon,
-  Description as CardIcon,
-} from '@mui/icons-material';
+import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Pets as PetsIcon } from '@mui/icons-material';
 
-import type { PetProfile } from '../types';
 import type {
   DewormingRecord,
   DietEntry,
@@ -32,15 +16,16 @@ import type {
 } from '../types/dogHealth';
 
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useActivePet } from '../hooks/useActivePet';
 import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
+import PassportHero from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
-import QuickVisitButton from '../components/healthPassport/QuickVisitButton';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
@@ -54,10 +39,8 @@ import {
 import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 
 export default function HealthPassportPage() {
-  // ── Dog selection ──────────────────────────────────────────────────────────
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
-  const [selectedDogId, setSelectedDogId] = useState(dogProfiles[0]?.id ?? '');
+  // ── Dog selection (shared via useActivePet) ────────────────────────────────
+  const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
 
   // ── Health records ────────────────────────────────────────────────────────
   const [vaccinations, setVaccinations] = useLocalStorage<VaccinationRecord[]>(
@@ -480,9 +463,43 @@ export default function HealthPassportPage() {
   // ── Early return if no dogs ─────────────────────────────────────────────────
   if (!dogProfiles.length) {
     return (
-      <Alert severity="info" sx={{ borderRadius: 3 }}>
-        Najprv si vytvorte profil psa v sekcii <strong>Profily</strong>.
-      </Alert>
+      <Card
+        sx={{
+          p: 4,
+          textAlign: 'center',
+          borderStyle: 'dashed',
+          maxWidth: 520,
+          mx: 'auto',
+          mt: 4,
+        }}
+      >
+        <Stack spacing={2} alignItems="center">
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <PetsIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="h3" sx={{ fontSize: '1.25rem' }}>
+            Vitajte v zdravotnom pase
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
+            Najprv si vytvorte profil psa v sekcii <strong>Profily</strong>. Potom tu uvidíte
+            timeline, najbližšie úlohy a celkový zdravotný stav.
+          </Typography>
+          <Button variant="contained" href="/profily" size="large">
+            Vytvoriť profil
+          </Button>
+        </Stack>
+      </Card>
     );
   }
 
@@ -490,79 +507,26 @@ export default function HealthPassportPage() {
   const selectedVisit = selectedVisitId
     ? (dogVisits.find((v) => v.id === selectedVisitId) ?? null)
     : null;
+  const dietStatus: 'VALID' | 'UNKNOWN' = currentDiet ? 'VALID' : 'UNKNOWN';
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
-      {/* ── Page header — flat outlined ───────────────────────────────────── */}
-      <Card sx={{ mb: 1.5, p: { xs: 1.5, md: 2 } }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          justifyContent="space-between"
-          gap={2}
-        >
-          <Stack direction="row" alignItems="center" gap={1.5}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 1,
-                bgcolor: 'action.hover',
-                color: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <HealthIcon sx={{ fontSize: 22 }} />
-            </Box>
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                Zdravotný pas
-              </Typography>
-              {selectedDog && (
-                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.25 }}>
-                  {selectedDog.name}
-                  {selectedDog.breed ? ` · ${selectedDog.breed}` : ''}
-                  {selectedDog.weightKg ? ` · ${selectedDog.weightKg} kg` : ''}
-                </Typography>
-              )}
-            </Box>
-          </Stack>
-
-          <Stack direction="row" flexWrap="wrap" gap={1}>
-            {dogProfiles.length > 1 && (
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <InputLabel>Pes</InputLabel>
-                <Select
-                  value={selectedDogId}
-                  label="Pes"
-                  onChange={(e) => setSelectedDogId(e.target.value)}
-                >
-                  {dogProfiles.map((p) => (
-                    <MenuItem key={p.id} value={p.id}>
-                      {p.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setWizardOpen(true)}>
-              Pridať záznam
-            </Button>
-            <QuickVisitButton
-              dogId={selectedDogId}
-              disabled={!selectedDogId}
-              onCreate={handleQuickVisitCreate}
-              onUndo={handleQuickVisitUndo}
-            />
-            <Button variant="outlined" startIcon={<CardIcon />} href="/karta-pre-veterinara">
-              Karta
-            </Button>
-          </Stack>
-        </Stack>
-      </Card>
+      {selectedDog && (
+        <PassportHero
+          dog={selectedDog}
+          dogProfiles={dogProfiles}
+          selectedDogId={selectedDogId}
+          onSelectDog={setSelectedDogId}
+          vaccinationStatus={vaccinationStatus}
+          dewormingStatus={dewormingStatus}
+          ectoStatus={ectoStatus}
+          dietStatus={dietStatus}
+          onAddRecord={() => setWizardOpen(true)}
+          onQuickVisitCreate={handleQuickVisitCreate}
+          onQuickVisitUndo={handleQuickVisitUndo}
+        />
+      )}
 
       {/* ── Status overview ────────────────────────────────────────────────── */}
       <HealthStatusOverview
