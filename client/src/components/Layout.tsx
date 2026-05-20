@@ -150,15 +150,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             GranuleCheck
           </Typography>
         </Stack>
-        <Box
-          sx={{
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 3,
-            bgcolor: 'background.paper',
-          }}
-        >
-          <PetSwitcher />
-        </Box>
+        <PetSwitcher />
       </Box>
 
       <Box sx={{ px: 1.25, pt: 1, flex: 1, overflowY: 'auto' }}>

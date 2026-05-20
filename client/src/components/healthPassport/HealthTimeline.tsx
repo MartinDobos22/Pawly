@@ -7,7 +7,6 @@ import {
   InputAdornment,
   Stack,
   TextField,
-  Tooltip,
   Typography,
   alpha,
   useTheme,
@@ -161,30 +160,36 @@ export default function HealthTimeline({
               minWidth: { sm: 280 },
             }}
           />
-          <Tooltip title="Exportovať do PDF">
-            <IconButton
-              onClick={onExportPdf}
-              aria-label="Exportovať timeline do PDF"
-              sx={{
-                border: `1px solid ${theme.palette.divider}`,
-                bgcolor: 'background.paper',
-              }}
-            >
-              <PdfIcon sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Tooltip>
+          <Button
+            variant="outlined"
+            startIcon={<PdfIcon sx={{ fontSize: 18 }} />}
+            onClick={onExportPdf}
+            aria-label="Exportovať timeline do PDF"
+            sx={{ flexShrink: 0 }}
+          >
+            Export PDF
+          </Button>
         </Stack>
       </Stack>
 
       <Stack
         direction="row"
-        flexWrap="wrap"
         alignItems="center"
         gap={0.75}
         sx={{
           mb: 2.5,
           pb: 1.5,
           borderBottom: `1px solid ${theme.palette.divider}`,
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+          scrollSnapType: 'x proximity',
+          maskImage:
+            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+          '&::-webkit-scrollbar': { height: 0 },
+          scrollbarWidth: 'none',
+          '& > *': { scrollSnapAlign: 'start', flexShrink: 0 },
         }}
       >
         <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
