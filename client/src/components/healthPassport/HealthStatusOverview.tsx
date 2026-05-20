@@ -68,6 +68,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           sm: 'repeat(2, 1fr)',
           lg: 'repeat(4, 1fr)',
         },
+        alignItems: 'start',
         gap: 1.5,
         mb: 2.5,
       }}

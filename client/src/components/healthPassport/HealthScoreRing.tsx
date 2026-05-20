@@ -159,17 +159,23 @@ export default function HealthScoreRing({
         ring
       )}
       {breakdown && breakdown.length > 0 && (
-        <Stack direction="row" gap={0.5} sx={{ mt: 0.25 }}>
+        <Stack direction="row" gap={0.75} sx={{ mt: 0.5 }}>
           {breakdown.map((b, idx) => (
             <Tooltip key={idx} title={`${b.label}${b.detail ? ` — ${b.detail}` : ''}`}>
               <Box
                 sx={{
-                  width: 8,
-                  height: 8,
+                  width: 10,
+                  height: 10,
                   borderRadius: '50%',
                   bgcolor: statusDot[b.status],
-                  opacity: b.status === 'unknown' ? 0.4 : 1,
+                  opacity: b.status === 'unknown' ? 0.45 : 1,
+                  boxShadow:
+                    theme.palette.mode === 'dark' && b.status !== 'unknown'
+                      ? `0 0 6px ${statusDot[b.status]}77`
+                      : undefined,
                   cursor: 'default',
+                  border:
+                    b.status === 'unknown' ? `1px dashed ${theme.palette.divider}` : undefined,
                 }}
               />
             </Tooltip>
