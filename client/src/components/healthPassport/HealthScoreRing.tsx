@@ -34,7 +34,7 @@ export default function HealthScoreRing({
   breakdown,
 }: Props) {
   const theme = useTheme();
-  const stroke = Math.max(6, Math.round(size * 0.08));
+  const stroke = Math.max(8, Math.round(size * 0.1));
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
 
@@ -50,7 +50,10 @@ export default function HealthScoreRing({
         : theme.palette.error.main;
 
   const trackColor =
-    theme.palette.mode === 'light' ? 'rgba(15,76,92,0.08)' : 'rgba(255,255,255,0.08)';
+    theme.palette.mode === 'light' ? 'rgba(15,76,92,0.10)' : 'rgba(255,255,255,0.10)';
+
+  const glowFilter =
+    theme.palette.mode === 'dark' && hasScore ? `drop-shadow(0 0 6px ${color}55)` : undefined;
 
   const center = size / 2;
   const dash = (value / 100) * circumference;
@@ -62,6 +65,7 @@ export default function HealthScoreRing({
         height={size}
         role="img"
         aria-label={`Health skóre ${hasScore ? Math.round(value) : 'neznáme'}`}
+        style={{ filter: glowFilter }}
       >
         <circle
           cx={center}
@@ -153,6 +157,24 @@ export default function HealthScoreRing({
         </Tooltip>
       ) : (
         ring
+      )}
+      {breakdown && breakdown.length > 0 && (
+        <Stack direction="row" gap={0.5} sx={{ mt: 0.25 }}>
+          {breakdown.map((b, idx) => (
+            <Tooltip key={idx} title={`${b.label}${b.detail ? ` — ${b.detail}` : ''}`}>
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: statusDot[b.status],
+                  opacity: b.status === 'unknown' ? 0.4 : 1,
+                  cursor: 'default',
+                }}
+              />
+            </Tooltip>
+          ))}
+        </Stack>
       )}
       <Stack alignItems="center" spacing={0}>
         <Typography

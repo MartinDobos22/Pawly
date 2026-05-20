@@ -107,6 +107,11 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
     transition: 'background-color 120ms ease',
   });
 
+  const isDark = theme.palette.mode === 'dark';
+  const activeAlpha = isDark ? 0.18 : 0.08;
+  const activeHoverAlpha = isDark ? 0.24 : 0.12;
+  const activeTextColor = isDark ? 'primary.light' : 'text.primary';
+
   const navItemSx = (active: boolean) =>
     ({
       position: 'relative',
@@ -115,15 +120,15 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       py: 0.9,
       pl: 2.5,
       pr: 1.5,
-      color: active ? 'text.primary' : 'text.secondary',
+      color: active ? activeTextColor : 'text.secondary',
       '& .MuiListItemIcon-root': {
         minWidth: 36,
-        color: active ? 'primary.main' : 'text.secondary',
+        color: active ? (isDark ? 'primary.light' : 'primary.main') : 'text.secondary',
       },
       '&::before': accentBar(active),
       '&.Mui-selected': {
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-        '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.12) },
+        backgroundColor: alpha(theme.palette.primary.main, activeAlpha),
+        '&:hover': { backgroundColor: alpha(theme.palette.primary.main, activeHoverAlpha) },
       },
       '&:hover': { backgroundColor: 'action.hover' },
     }) as const;
@@ -131,22 +136,32 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ px: 2, pt: 2.5, pb: 1.25 }}>
-        <Stack direction="row" alignItems="center" gap={1} sx={{ pl: 0.5, pb: 1.5 }}>
+        <Stack direction="row" alignItems="center" gap={1.25} sx={{ pl: 0.5, pb: 1.5 }}>
           <Box
             sx={{
-              width: 28,
-              height: 28,
+              width: 30,
+              height: 30,
               borderRadius: 1.5,
               bgcolor: 'primary.main',
               color: 'primary.contrastText',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              boxShadow: isDark
+                ? `0 0 12px ${alpha(theme.palette.primary.main, 0.35)}`
+                : '0 2px 6px rgba(15,76,92,0.18)',
             }}
           >
             <PetsIcon sx={{ fontSize: 18 }} />
           </Box>
-          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+          <Typography
+            sx={{
+              fontWeight: 800,
+              fontSize: '1rem',
+              letterSpacing: '-0.015em',
+              color: isDark ? 'primary.light' : 'text.primary',
+            }}
+          >
             GranuleCheck
           </Typography>
         </Stack>

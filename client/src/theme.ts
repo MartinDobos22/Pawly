@@ -290,9 +290,9 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#5BA9BC',
-      light: '#8AC6D4',
-      dark: '#327A8B',
+      main: '#6FBED1',
+      light: '#9AD2DF',
+      dark: '#3F8FA1',
       contrastText: '#06212A',
     },
     secondary: {
