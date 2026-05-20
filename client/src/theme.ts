@@ -117,6 +117,16 @@ const commonOptions: ThemeOptions = {
         },
       },
     },
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          '&:focus-visible': {
+            outline: '2px solid currentColor',
+            outlineOffset: 2,
+          },
+        },
+      },
+    },
     MuiCard: {
       defaultProps: {
         variant: 'outlined',

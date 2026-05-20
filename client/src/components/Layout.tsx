@@ -230,6 +230,28 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         },
       }}
     >
+      <Box
+        component="a"
+        href="#main-content"
+        sx={{
+          position: 'absolute',
+          left: 8,
+          top: -40,
+          zIndex: theme.zIndex.modal,
+          px: 2,
+          py: 1,
+          borderRadius: 2,
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          textDecoration: 'none',
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          transition: 'top 120ms ease',
+          '&:focus': { top: 8 },
+        }}
+      >
+        Preskočiť na obsah
+      </Box>
       {isDesktop && (
         <Drawer
           variant="permanent"
@@ -307,6 +329,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
 
         <Box
           component="main"
+          id="main-content"
           sx={{
             flex: 1,
             p: { xs: 2, md: 3 },
