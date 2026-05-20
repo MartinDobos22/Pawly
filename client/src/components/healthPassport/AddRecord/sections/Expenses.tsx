@@ -3,6 +3,7 @@ import { ReceiptLong as ReceiptIcon } from '@mui/icons-material';
 
 import type { ErrorMap, ExpensesValues } from '../formTypes';
 import SectionCard from './SectionCard';
+import DateField from '../../../DateField';
 
 interface ExpensesProps {
   values: ExpensesValues;
@@ -22,13 +23,10 @@ export default function Expenses({ values, errors, expanded, onExpand, onChange 
       onExpandChange={onExpand}
     >
       <Stack spacing={1.5}>
-        <TextField
-          size="small"
-          type="date"
+        <DateField
           label="Dátum ďalšej kontroly"
-          InputLabelProps={{ shrink: true }}
           value={values.nextCheckDate}
-          onChange={(e) => onChange('nextCheckDate', e.target.value)}
+          onChange={(v) => onChange('nextCheckDate', v)}
           sx={{ width: { xs: '100%', sm: 240 } }}
         />
         <Box

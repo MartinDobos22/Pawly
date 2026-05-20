@@ -2,6 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mu
 
 import type { EctoparasiteRecord } from '../../../../../types/dogHealth';
 import type { EctoFieldsValues } from '../../formTypes';
+import DateField from '../../../../DateField';
 
 interface EctoFieldsProps {
   values: EctoFieldsValues;
@@ -36,13 +37,10 @@ export default function EctoFields({ values, errorProduct, onChange }: EctoField
         </FormControl>
       </Stack>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-        <TextField
-          size="small"
-          type="date"
+        <DateField
           label="Ďalší termín"
-          InputLabelProps={{ shrink: true }}
           value={values.validUntil}
-          onChange={(e) => onChange('validUntil', e.target.value)}
+          onChange={(v) => onChange('validUntil', v)}
           fullWidth
         />
         <TextField

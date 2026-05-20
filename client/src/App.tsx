@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { sk } from 'date-fns/locale';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import Layout from './components/Layout';
@@ -20,9 +23,10 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Layout darkMode={darkMode} onToggleTheme={() => setDarkMode((prev) => !prev)}>
-          <Routes>
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={sk}>
+        <BrowserRouter>
+          <Layout darkMode={darkMode} onToggleTheme={() => setDarkMode((prev) => !prev)}>
+            <Routes>
             <Route path="/" element={<AnalyzePage />} />
             <Route path="/profily" element={<PetProfilePage />} />
             <Route path="/historia" element={<HistoryPage />} />
@@ -33,9 +37,10 @@ export default function App() {
             <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
             <Route path="/dennik" element={<EpisodeDiaryPage />} />
             <Route path="/o-aplikacii" element={<AboutPage />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }

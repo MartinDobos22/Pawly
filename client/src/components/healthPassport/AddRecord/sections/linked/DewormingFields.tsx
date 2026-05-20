@@ -1,6 +1,7 @@
 import { Stack, TextField } from '@mui/material';
 
 import type { DewormingFieldsValues } from '../../formTypes';
+import DateField from '../../../../DateField';
 
 interface DewormingFieldsProps {
   values: DewormingFieldsValues;
@@ -24,13 +25,10 @@ export default function DewormingFields({ values, errorProduct, onChange }: Dewo
         fullWidth
       />
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-        <TextField
-          size="small"
-          type="date"
+        <DateField
           label="Ďalší termín"
-          InputLabelProps={{ shrink: true }}
           value={values.validUntil}
-          onChange={(e) => onChange('validUntil', e.target.value)}
+          onChange={(v) => onChange('validUntil', v)}
           fullWidth
         />
         <TextField

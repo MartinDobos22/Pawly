@@ -4,6 +4,7 @@ import { InfoOutlined as InfoIcon } from '@mui/icons-material';
 import { VISIT_CATEGORY_OPTIONS } from '../../constants';
 import type { ErrorMap, VisitBasicsValues } from '../formTypes';
 import SectionCard from './SectionCard';
+import DateField from '../../../DateField';
 
 interface VisitBasicsProps {
   values: VisitBasicsValues;
@@ -19,13 +20,10 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
     <SectionCard title="Základné info" icon={<InfoIcon />}>
       <Stack spacing={1.5}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-          <TextField
-            size="small"
-            type="date"
+          <DateField
             label="Dátum"
-            InputLabelProps={{ shrink: true }}
             value={values.date}
-            onChange={(e) => onChange('date', e.target.value)}
+            onChange={(v) => onChange('date', v)}
             error={Boolean(errors['basics.date'])}
             helperText={errors['basics.date']}
             sx={{ width: { xs: '100%', sm: 200 } }}

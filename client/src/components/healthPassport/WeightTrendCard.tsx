@@ -26,6 +26,7 @@ import {
 import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from 'recharts';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { formatDateShort } from '../../utils/relativeDate';
+import DateField from '../DateField';
 
 export interface WeightLog {
   id: string;
@@ -234,14 +235,7 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 0.5 }}>
-            <TextField
-              label="Dátum"
-              type="date"
-              value={draftDate}
-              onChange={(e) => setDraftDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-            />
+            <DateField label="Dátum" value={draftDate} onChange={setDraftDate} fullWidth />
             <TextField
               label="Hmotnosť (kg)"
               type="number"

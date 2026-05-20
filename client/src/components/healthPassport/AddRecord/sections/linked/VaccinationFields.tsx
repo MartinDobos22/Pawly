@@ -2,6 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mu
 
 import type { VaccinationRecord } from '../../../../../types/dogHealth';
 import type { VaccinationFieldsValues } from '../../formTypes';
+import DateField from '../../../../DateField';
 
 interface VaccinationFieldsProps {
   values: VaccinationFieldsValues;
@@ -39,13 +40,10 @@ export default function VaccinationFields({ values, errorName, onChange }: Vacci
         </FormControl>
       </Stack>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-        <TextField
-          size="small"
-          type="date"
+        <DateField
           label="Platnosť do"
-          InputLabelProps={{ shrink: true }}
           value={values.validUntil}
-          onChange={(e) => onChange('validUntil', e.target.value)}
+          onChange={(v) => onChange('validUntil', v)}
           fullWidth
         />
         <TextField
