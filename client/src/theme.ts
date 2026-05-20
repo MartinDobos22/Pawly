@@ -77,10 +77,23 @@ const commonOptions: ThemeOptions = {
           body: {
             width: '100%',
             margin: 0,
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
             WebkitPrintColorAdjust: 'exact',
             printColorAdjust: 'exact',
           },
           '#root': { width: '100%' },
+          '.MuiCard-root, .MuiPaper-root': {
+            boxShadow: 'none !important',
+            border: '1px solid #DDDDDD !important',
+            backgroundColor: '#FFFFFF !important',
+          },
+          '.MuiButton-root, .MuiIconButton-root': {
+            display: 'none !important',
+          },
+          'a[href^="#"]': {
+            display: 'none !important',
+          },
         },
       },
     },
