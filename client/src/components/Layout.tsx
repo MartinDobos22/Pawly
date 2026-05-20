@@ -5,7 +5,6 @@ import {
   Box,
   BottomNavigation,
   BottomNavigationAction,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -32,18 +31,42 @@ import {
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
 } from '@mui/icons-material';
+import PetSwitcher from './PetSwitcher';
 
-const DRAWER_WIDTH = 264;
+const DRAWER_WIDTH = 272;
 
-const NAV_ITEMS = [
-  { label: 'Analýza', icon: <ScienceIcon />, path: '/' },
-  { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
-  { label: 'História', icon: <HistoryIcon />, path: '/historia' },
-  { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
-  { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
-  { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
-  { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
+type NavItem = { label: string; icon: ReactNode; path: string };
+type NavSection = { id: string; label: string; items: NavItem[] };
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    id: 'main',
+    label: 'Hlavné',
+    items: [
+      { label: 'Analýza', icon: <ScienceIcon />, path: '/' },
+      { label: 'História', icon: <HistoryIcon />, path: '/historia' },
+    ],
+  },
+  {
+    id: 'health',
+    label: 'Zdravie',
+    items: [
+      { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
+      { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
+      { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
+    ],
+  },
+  {
+    id: 'settings',
+    label: 'Nastavenia',
+    items: [
+      { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
+      { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
+    ],
+  },
 ];
+
+const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
 
 interface LayoutProps {
   children: ReactNode;
@@ -63,88 +86,135 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const navigate = useNavigate();
   const location = useLocation();
 
-  const currentNavIndex = NAV_ITEMS.findIndex((item) => isItemActive(item.path, location.pathname));
+  const currentMobileIndex = FLAT_NAV.findIndex((item) =>
+    isItemActive(item.path, location.pathname)
+  );
 
   const handleNav = (path: string) => {
     navigate(path);
     setMobileDrawerOpen(false);
   };
 
-  const navItemSx = {
-    borderRadius: 999,
-    mb: 0.25,
-    py: 0.75,
-    pl: 2,
-    pr: 1.5,
-    '& .MuiListItemIcon-root': { minWidth: 40, color: 'text.secondary' },
-    '&.Mui-selected': {
-      backgroundColor: alpha(theme.palette.primary.main, 0.12),
-      '& .MuiListItemIcon-root': { color: 'primary.main' },
-      '& .MuiListItemText-primary': { color: 'primary.main', fontWeight: 600 },
-      '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.18) },
-    },
-    '&:hover': { backgroundColor: 'action.hover' },
-  } as const;
+  const accentBar = (active: boolean) => ({
+    content: '""',
+    position: 'absolute' as const,
+    left: 6,
+    top: 8,
+    bottom: 8,
+    width: 3,
+    borderRadius: 2,
+    bgcolor: active ? 'primary.main' : 'transparent',
+    transition: 'background-color 120ms ease',
+  });
+
+  const navItemSx = (active: boolean) =>
+    ({
+      position: 'relative',
+      borderRadius: 2,
+      mb: 0.25,
+      py: 0.9,
+      pl: 2.5,
+      pr: 1.5,
+      color: active ? 'text.primary' : 'text.secondary',
+      '& .MuiListItemIcon-root': {
+        minWidth: 36,
+        color: active ? 'primary.main' : 'text.secondary',
+      },
+      '&::before': accentBar(active),
+      '&.Mui-selected': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.12) },
+      },
+      '&:hover': { backgroundColor: 'action.hover' },
+    }) as const;
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ px: 2.5, pt: 2.5, pb: 1.5 }}>
-        <Stack direction="row" alignItems="center" gap={1.25}>
+      <Box sx={{ px: 2, pt: 2.5, pb: 1.25 }}>
+        <Stack direction="row" alignItems="center" gap={1} sx={{ pl: 0.5, pb: 1.5 }}>
           <Box
             sx={{
-              width: 36,
-              height: 36,
+              width: 28,
+              height: 28,
               borderRadius: 1.5,
-              bgcolor: alpha(theme.palette.primary.main, 0.12),
-              color: 'primary.main',
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <PetsIcon sx={{ fontSize: 22 }} />
+            <PetsIcon sx={{ fontSize: 18 }} />
           </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.1 }}>
-              GranuleCheck
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Animal Passport
-            </Typography>
-          </Box>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.01em' }}>
+            GranuleCheck
+          </Typography>
         </Stack>
+        <Box
+          sx={{
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <PetSwitcher />
+        </Box>
       </Box>
 
-      <List sx={{ px: 1.5, pt: 0.5, flex: 1 }} disablePadding>
-        {NAV_ITEMS.map((item) => {
-          const active = isItemActive(item.path, location.pathname);
-          return (
-            <ListItemButton
-              key={item.path}
-              selected={active}
-              onClick={() => handleNav(item.path)}
-              sx={navItemSx}
+      <Box sx={{ px: 1.25, pt: 1, flex: 1, overflowY: 'auto' }}>
+        {NAV_SECTIONS.map((section) => (
+          <Box key={section.id} sx={{ mb: 1.5 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                display: 'block',
+                px: 2,
+                pb: 0.5,
+                color: 'text.secondary',
+                fontSize: '0.68rem',
+              }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: active ? 600 : 500 }}
-              />
-            </ListItemButton>
-          );
-        })}
-      </List>
+              {section.label}
+            </Typography>
+            <List disablePadding>
+              {section.items.map((item) => {
+                const active = isItemActive(item.path, location.pathname);
+                return (
+                  <ListItemButton
+                    key={item.path}
+                    selected={active}
+                    onClick={() => handleNav(item.path)}
+                    sx={navItemSx(active)}
+                  >
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontSize: '0.9rem',
+                        fontWeight: active ? 600 : 500,
+                      }}
+                    />
+                  </ListItemButton>
+                );
+              })}
+            </List>
+          </Box>
+        ))}
+      </Box>
 
-      <Divider sx={{ mx: 2 }} />
-      <List sx={{ px: 1.5, py: 1 }} disablePadding>
-        <ListItemButton onClick={onToggleTheme} sx={navItemSx}>
+      <Box sx={{ px: 1.25, pb: 1.5, pt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
+        <ListItemButton
+          onClick={onToggleTheme}
+          sx={navItemSx(false)}
+          aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+        >
           <ListItemIcon>{darkMode ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
           <ListItemText
             primary={darkMode ? 'Svetlý režim' : 'Tmavý režim'}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
           />
         </ListItemButton>
-      </List>
+      </Box>
     </Box>
   );
 
@@ -153,13 +223,13 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       sx={{
         display: 'flex',
         minHeight: '100vh',
+        bgcolor: 'background.default',
         '@media print': {
           display: 'block',
           minHeight: 'auto',
         },
       }}
     >
-      {/* Desktop permanent drawer */}
       {isDesktop && (
         <Drawer
           variant="permanent"
@@ -174,6 +244,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               width: DRAWER_WIDTH,
               boxSizing: 'border-box',
               borderRight: `1px solid ${theme.palette.divider}`,
+              bgcolor: 'background.default',
               displayPrint: 'none',
             },
           }}
@@ -182,7 +253,6 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         </Drawer>
       )}
 
-      {/* Mobile temporary drawer */}
       {!isDesktop && (
         <Drawer
           variant="temporary"
@@ -193,6 +263,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             '& .MuiDrawer-paper': {
               width: DRAWER_WIDTH,
               boxSizing: 'border-box',
+              bgcolor: 'background.default',
             },
           }}
         >
@@ -200,31 +271,34 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         </Drawer>
       )}
 
-      {/* Main content area */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {!isDesktop && (
           <AppBar
             position="sticky"
             elevation={0}
             sx={{
-              backgroundColor: theme.palette.background.paper,
-              color: theme.palette.text.primary,
+              backgroundColor: 'background.paper',
+              color: 'text.primary',
               borderBottom: `1px solid ${theme.palette.divider}`,
               display: { print: 'none' },
             }}
           >
-            <Toolbar>
-              <IconButton edge="start" onClick={() => setMobileDrawerOpen(true)} sx={{ mr: 1 }}>
+            <Toolbar sx={{ gap: 1 }}>
+              <IconButton
+                edge="start"
+                onClick={() => setMobileDrawerOpen(true)}
+                aria-label="Otvoriť menu"
+              >
                 <MenuIcon />
               </IconButton>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PetsIcon color="primary" sx={{ fontSize: 24 }} />
-                <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
-                  GranuleCheck
-                </Typography>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <PetSwitcher variant="compact" />
               </Box>
-              <Box sx={{ flex: 1 }} />
-              <IconButton onClick={onToggleTheme} color="inherit">
+              <IconButton
+                onClick={onToggleTheme}
+                color="inherit"
+                aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+              >
                 {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
             </Toolbar>
@@ -248,7 +322,6 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           {children}
         </Box>
 
-        {/* Mobile bottom navigation */}
         {!isDesktop && (
           <Paper
             elevation={8}
@@ -263,16 +336,16 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             }}
           >
             <BottomNavigation
-              value={currentNavIndex >= 0 ? currentNavIndex : 0}
-              onChange={(_e, newValue: number) => handleNav(NAV_ITEMS[newValue].path)}
+              value={currentMobileIndex >= 0 ? currentMobileIndex : 0}
+              onChange={(_e, newValue: number) => handleNav(FLAT_NAV[newValue].path)}
               sx={{
-                backgroundColor: theme.palette.background.paper,
+                backgroundColor: 'background.paper',
                 '& .Mui-selected': {
                   color: `${theme.palette.primary.main} !important`,
                 },
               }}
             >
-              {NAV_ITEMS.map((item) => (
+              {FLAT_NAV.map((item) => (
                 <BottomNavigationAction key={item.path} label={item.label} icon={item.icon} />
               ))}
             </BottomNavigation>
