@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Chip,
   CircularProgress,
   Snackbar,
   Stack,
@@ -17,7 +16,6 @@ import {
   Science as ScienceIcon,
   Save as SaveIcon,
   PhotoCamera as PhotoCameraIcon,
-  HelpOutline as QAIcon,
   History as HistoryIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +24,7 @@ import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
+import FoodSafetyCheck from '../components/analyze/FoodSafetyCheck';
 import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
@@ -291,44 +290,7 @@ export default function AnalyzePage() {
           )}
         </Card>
 
-        <Card
-          sx={{
-            p: { xs: 2, md: 2.5 },
-            borderStyle: 'dashed',
-            bgcolor: alpha(
-              theme.palette.primary.main,
-              theme.palette.mode === 'light' ? 0.03 : 0.06
-            ),
-          }}
-        >
-          <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
-            <QAIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Môže pes jesť…?
-            </Typography>
-          </Stack>
-          <Stack alignItems="center" spacing={1.5} sx={{ py: 3, textAlign: 'center' }}>
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                color: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <QAIcon sx={{ fontSize: 28 }} />
-            </Box>
-            <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 280 }}>
-              Rýchla otázka o jednej potravine alebo ingrediencii. AI odpovie či je bezpečná pre
-              psa.
-            </Typography>
-            <Chip label="Pripravujeme" size="small" variant="outlined" />
-          </Stack>
-        </Card>
+        <FoodSafetyCheck />
       </Box>
 
       {error && (

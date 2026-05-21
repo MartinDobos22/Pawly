@@ -141,3 +141,15 @@ export interface ApiError {
   error: { message: string; code?: string };
   status?: number;
 }
+
+export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
+
+export interface FoodSafetyResult {
+  query: string;
+  verdict: FoodSafetyVerdict;
+  shortAnswer: string;
+  explanation: string;
+  alternatives?: string[];
+  warnings?: string[];
+  source: 'openai' | 'mock';
+}

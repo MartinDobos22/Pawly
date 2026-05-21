@@ -1,4 +1,10 @@
-import { AnalysisRequest, AnalysisResult, FileExtractionResult, PetProfile } from '../types';
+import {
+  AnalysisRequest,
+  AnalysisResult,
+  FileExtractionResult,
+  FoodSafetyResult,
+  PetProfile,
+} from '../types';
 import { logger } from '../utils/logger';
 import type {
   EpisodeCategory,
@@ -265,4 +271,34 @@ export async function fetchSimilarEpisodeSummary(
   }
 
   return (await res.json()) as SimilarEpisodeSummary;
+}
+
+export async function askFoodSafety(
+  query: string,
+  petProfile?: PetProfile,
+): Promise<FoodSafetyResult> {
+  const payload = {
+    query,
+    petProfile: sanitizePetProfileForAnalyze(petProfile),
+  };
+
+  const res = await fetch(`${BASE_URL}/api/food-safety`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string; code?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === "string"
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    logger.error("food-safety zlyhalo", { status: res.status });
+    throw new Error(message);
+  }
+
+  return (await res.json()) as FoodSafetyResult;
 }

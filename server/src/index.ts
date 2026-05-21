@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import analyzeRouter from './routes/analyze';
 import episodesRouter from './routes/episodes';
 import extractTextRouter from './routes/extractText';
+import foodSafetyRouter from './routes/foodSafety';
 import interpretPassportRouter from './routes/interpretPassport';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './utils/logger';
@@ -68,6 +69,7 @@ app.use('/api/', globalLimiter);
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);
+app.use('/api/food-safety', aiHeavyLimiter, foodSafetyRouter);
 app.use('/api/interpret-passport', aiHeavyLimiter, interpretPassportRouter);
 
 // Health check
