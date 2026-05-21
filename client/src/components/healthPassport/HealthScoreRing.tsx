@@ -2,6 +2,7 @@ import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 
 export interface ScoreBreakdownItem {
   label: string;
+  shortLabel?: string;
   status: 'good' | 'soon' | 'bad' | 'unknown';
   detail?: string;
 }
@@ -159,25 +160,43 @@ export default function HealthScoreRing({
         ring
       )}
       {breakdown && breakdown.length > 0 && (
-        <Stack direction="row" gap={0.75} sx={{ mt: 0.5 }}>
+        <Stack
+          direction="row"
+          gap={1.25}
+          sx={{ mt: 0.75, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 220 }}
+        >
           {breakdown.map((b, idx) => (
             <Tooltip key={idx} title={`${b.label}${b.detail ? ` — ${b.detail}` : ''}`}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  bgcolor: statusDot[b.status],
-                  opacity: b.status === 'unknown' ? 0.45 : 1,
-                  boxShadow:
-                    theme.palette.mode === 'dark' && b.status !== 'unknown'
-                      ? `0 0 6px ${statusDot[b.status]}77`
-                      : undefined,
-                  cursor: 'default',
-                  border:
-                    b.status === 'unknown' ? `1px dashed ${theme.palette.divider}` : undefined,
-                }}
-              />
+              <Stack direction="row" alignItems="center" gap={0.5} sx={{ cursor: 'default' }}>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: statusDot[b.status],
+                    opacity: b.status === 'unknown' ? 0.45 : 1,
+                    boxShadow:
+                      theme.palette.mode === 'dark' && b.status !== 'unknown'
+                        ? `0 0 5px ${statusDot[b.status]}77`
+                        : undefined,
+                    border:
+                      b.status === 'unknown' ? `1px dashed ${theme.palette.divider}` : undefined,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography
+                  sx={{
+                    fontSize: '0.68rem',
+                    fontWeight: 600,
+                    color: 'text.secondary',
+                    textTransform: 'none',
+                    letterSpacing: 0,
+                    lineHeight: 1,
+                  }}
+                >
+                  {b.shortLabel ?? b.label}
+                </Typography>
+              </Stack>
             </Tooltip>
           ))}
         </Stack>

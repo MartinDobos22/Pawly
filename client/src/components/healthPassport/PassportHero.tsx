@@ -129,20 +129,28 @@ export default function PassportHero({
   const scoreBreakdown: ScoreBreakdownItem[] = [
     {
       label: 'Očkovanie',
+      shortLabel: 'Očk.',
       status: statusToBreakdown(vaccinationStatus),
       detail: statusDetail(vaccinationStatus),
     },
     {
       label: 'Odčervenie',
+      shortLabel: 'Odč.',
       status: statusToBreakdown(dewormingStatus),
       detail: statusDetail(dewormingStatus),
     },
     {
       label: 'Kliešte / blchy',
+      shortLabel: 'Kliešte',
       status: statusToBreakdown(ectoStatus),
       detail: statusDetail(ectoStatus),
     },
-    { label: 'Diéta', status: statusToBreakdown(dietStatus), detail: statusDetail(dietStatus) },
+    {
+      label: 'Diéta',
+      shortLabel: 'Diéta',
+      status: statusToBreakdown(dietStatus),
+      detail: statusDetail(dietStatus),
+    },
   ];
 
   const ageLabel = computeAgeLabel(dog);
