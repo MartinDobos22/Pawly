@@ -8,9 +8,9 @@ import ExportSectionsToolbar, {
   DEFAULT_EXPORT_SECTIONS,
   type ExportSectionsState,
 } from '../components/vetCard/ExportSectionsToolbar';
-import VetCardHeader from '../components/vetCard/VetCardHeader';
+import DocumentIdentityBlock from '../components/vetCard/DocumentIdentityBlock';
+import HealthProfileChips from '../components/vetCard/HealthProfileChips';
 import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
-import HealthProfileCard from '../components/vetCard/HealthProfileCard';
 import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
@@ -1009,31 +1009,52 @@ export default function VetCardPage() {
 
   return (
     <Stack spacing={1.5}>
-      <VetCardHeader
-        dog={dog}
-        dogProfiles={dogProfiles}
-        selectedDogId={selectedDogId}
-        onSelectDog={setSelectedDogId}
-      />
-
-      <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={1.5}
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        alignItems={{ xs: 'stretch', md: 'flex-start' }}
+        gap={1.5}
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <DocumentIdentityBlock
+            dog={dog}
+            dogProfiles={dogProfiles}
+            selectedDogId={selectedDogId}
+            onSelectDog={setSelectedDogId}
+          />
+        </Box>
+        <Card
+          variant="outlined"
+          sx={{
+            p: 1.5,
+            minWidth: { md: 260 },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            alignSelf: { md: 'stretch' },
+          }}
         >
-          <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', fontSize: '0.7rem', letterSpacing: '0.08em' }}
+          >
+            Export
+          </Typography>
           <Button
             variant="contained"
             onClick={handlePrint}
             startIcon={<PrintIcon />}
             disabled={!Object.values(exportSections).some(Boolean)}
+            fullWidth
           >
             Export PDF
           </Button>
-        </Stack>
-      </Card>
+          <Box sx={{ pt: 0.5 }}>
+            <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
+          </Box>
+        </Card>
+      </Stack>
+
+      <HealthProfileChips dog={dog} />
 
       <Box
         sx={{
@@ -1056,7 +1077,6 @@ export default function VetCardPage() {
           </Card>
         </Stack>
         <Stack spacing={1.5}>
-          <HealthProfileCard dog={dog} />
           <ActiveMedicationsCard medications={data.activeMeds} />
         </Stack>
       </Box>
