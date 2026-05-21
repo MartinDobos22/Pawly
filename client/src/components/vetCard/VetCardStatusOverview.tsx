@@ -1,12 +1,13 @@
-import { Card, Divider, Stack } from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import {
   Coronavirus as RabiesIcon,
   Vaccines as VaccinesIcon,
   Biotech as DewormIcon,
   PestControl as EctoIcon,
+  ShieldOutlined as ShieldIcon,
 } from '@mui/icons-material';
 import type { ValidityStatus } from '../../types/dogHealth';
-import StatusItem from '../healthPassport/StatusItem';
+import VetCardStatusCell from './VetCardStatusCell';
 
 interface Props {
   rabies: { status: ValidityStatus; detail?: string };
@@ -17,40 +18,49 @@ interface Props {
 
 export default function VetCardStatusOverview({ rabies, combined, deworming, ecto }: Props) {
   return (
-    <Card variant="outlined" sx={{ p: 1.5 }}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        divider={
-          <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
-        }
-        spacing={{ xs: 1.5, md: 2 }}
-        alignItems="stretch"
+    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+        <ShieldIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          Aktuálny preventívny stav
+        </Typography>
+      </Stack>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(4, 1fr)',
+          },
+          gap: 1,
+        }}
       >
-        <StatusItem
+        <VetCardStatusCell
           icon={<RabiesIcon />}
-          title="Besnota"
+          label="Besnota"
           status={rabies.status}
           detail={rabies.detail}
         />
-        <StatusItem
+        <VetCardStatusCell
           icon={<VaccinesIcon />}
-          title="Kombinovaná"
+          label="Kombinovaná"
           status={combined.status}
           detail={combined.detail}
         />
-        <StatusItem
+        <VetCardStatusCell
           icon={<DewormIcon />}
-          title="Odčervenie"
+          label="Odčervenie"
           status={deworming.status}
           detail={deworming.detail}
         />
-        <StatusItem
+        <VetCardStatusCell
           icon={<EctoIcon />}
-          title="Antiparazitikum"
+          label="Antiparazitikum"
           status={ecto.status}
           detail={ecto.detail}
         />
-      </Stack>
+      </Box>
     </Card>
   );
 }
