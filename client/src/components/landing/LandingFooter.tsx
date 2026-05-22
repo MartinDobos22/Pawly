@@ -35,7 +35,7 @@ export default function LandingFooter() {
             >
               <PetsIcon sx={{ fontSize: 18 }} />
             </Box>
-            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>GranuleCheck</Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>Pawport</Typography>
             <Typography variant="caption" sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}>
               · {new Date().getFullYear()}
             </Typography>

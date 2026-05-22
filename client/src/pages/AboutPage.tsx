@@ -14,7 +14,7 @@ export default function AboutPage() {
         O aplikácii
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        GranuleCheck vám pomáha vybrať tie najlepšie granule pre vášho psíka
+        Pawport vám pomáha vybrať tie najlepšie granule pre vášho psíka
       </Typography>
 
       <Card sx={{ mb: 3 }}>
@@ -22,11 +22,11 @@ export default function AboutPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
             <PetsIcon color="primary" sx={{ fontSize: 32 }} />
             <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              GranuleCheck
+              Pawport
             </Typography>
           </Box>
           <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-            GranuleCheck je inteligentný nástroj na analýzu zloženia psích granúl. Stačí skopírovať zloženie z obalu
+            Pawport je inteligentný nástroj na analýzu zloženia psích granúl. Stačí skopírovať zloženie z obalu
             krmiva a aplikácia vyhodnotí kvalitu ingrediencií, identifikuje výhody a nevýhody, a poradí, pre aké
             psy je krmivo vhodné.
           </Typography>

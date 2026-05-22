@@ -912,7 +912,7 @@ export default function VetCardPage() {
   }
 
   <footer class="doc-foot">
-    GranuleCheck · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
+    Pawport · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
   </footer>
 
 </div>
@@ -1055,7 +1055,7 @@ export default function VetCardPage() {
           color="text.secondary"
           sx={{ textAlign: 'center', display: 'block', py: 2 }}
         >
-          GranuleCheck · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
+          Pawport · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
         </Typography>
       </Stack>
     </Box>

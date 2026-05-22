@@ -162,7 +162,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               color: isDark ? 'primary.light' : 'text.primary',
             }}
           >
-            GranuleCheck
+            Pawport
           </Typography>
         </Stack>
         <PetSwitcher />

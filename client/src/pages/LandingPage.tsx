@@ -64,7 +64,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
               <PetsIcon sx={{ fontSize: 20 }} />
             </Box>
             <Typography sx={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.015em' }}>
-              GranuleCheck
+              Pawport
             </Typography>
           </Stack>
           <IconButton
