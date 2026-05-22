@@ -12,6 +12,7 @@ interface Props {
   size?: number;
   label?: string;
   breakdown?: ScoreBreakdownItem[];
+  incomplete?: boolean;
 }
 
 const labelForScore = (score: number) => {
@@ -33,6 +34,7 @@ export default function HealthScoreRing({
   size = 96,
   label = 'Celkový stav',
   breakdown,
+  incomplete = false,
 }: Props) {
   const theme = useTheme();
   const stroke = Math.max(8, Math.round(size * 0.1));
@@ -220,6 +222,21 @@ export default function HealthScoreRing({
             sx={{ fontWeight: 600, color, fontSize: '0.85rem', lineHeight: 1.3 }}
           >
             {labelForScore(value)}
+          </Typography>
+        )}
+        {incomplete && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.disabled',
+              textTransform: 'none',
+              letterSpacing: 0,
+              fontSize: '0.68rem',
+              fontStyle: 'italic',
+              mt: 0.25,
+            }}
+          >
+            neúplné dáta
           </Typography>
         )}
       </Stack>

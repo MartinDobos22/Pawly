@@ -78,11 +78,11 @@ const sexLabel = (sex?: PetProfile['sex']) => {
   return null;
 };
 
-const statusToScore = (s: ValidityStatus): number | null => {
+const statusToScore = (s: ValidityStatus): number => {
   if (s === 'VALID') return 100;
   if (s === 'EXPIRING_SOON') return 60;
   if (s === 'EXPIRED') return 10;
-  return null;
+  return 40;
 };
 
 const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
@@ -115,16 +115,17 @@ export default function PassportHero({
   const theme = useTheme();
   const navigate = useNavigate();
 
+  const statuses = [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus];
+  const unknownCount = statuses.filter((s) => s === 'UNKNOWN').length;
+  const allUnknown = unknownCount === statuses.length;
+
   const score = useMemo(() => {
-    const values = [
-      statusToScore(vaccinationStatus),
-      statusToScore(dewormingStatus),
-      statusToScore(ectoStatus),
-      statusToScore(dietStatus),
-    ].filter((v): v is number => v !== null);
-    if (!values.length) return null;
+    if (allUnknown) return null;
+    const values = statuses.map(statusToScore);
     return values.reduce((a, b) => a + b, 0) / values.length;
-  }, [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus]);
+  }, [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus, allUnknown]);
+
+  const incomplete = unknownCount > 0 && !allUnknown;
 
   const scoreBreakdown: ScoreBreakdownItem[] = [
     {
@@ -304,7 +305,12 @@ export default function PassportHero({
               pl: { md: 2 },
             }}
           >
-            <HealthScoreRing score={score} size={96} breakdown={scoreBreakdown} />
+            <HealthScoreRing
+              score={score}
+              size={96}
+              breakdown={scoreBreakdown}
+              incomplete={incomplete}
+            />
           </Box>
         </Stack>
       </Box>
