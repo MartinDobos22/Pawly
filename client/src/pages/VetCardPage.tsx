@@ -1036,18 +1036,16 @@ export default function VetCardPage() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
+            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
             gap: 1.5,
+            alignItems: 'start',
           }}
         >
-          <Stack spacing={1.5}>
-            <PreventiveCareCard items={preventiveItems} />
-            <RecentVisitsCard visits={data.significantVisits} />
-          </Stack>
-          <Stack spacing={1.5}>
-            <ActiveMedicationsCard medications={data.activeMeds} />
-          </Stack>
+          <PreventiveCareCard items={preventiveItems} />
+          <ActiveMedicationsCard medications={data.activeMeds} />
         </Box>
+
+        <RecentVisitsCard visits={data.significantVisits} />
 
         <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
           <ClinicalHistory timeline={data.timeline} />
