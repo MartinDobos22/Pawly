@@ -7,6 +7,7 @@ import { sk } from 'date-fns/locale';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import Layout from './components/Layout';
+import LandingPage from './pages/LandingPage';
 import AnalyzePage from './pages/AnalyzePage';
 import PetProfilePage from './pages/PetProfilePage';
 import HistoryPage from './pages/HistoryPage';
@@ -19,26 +20,38 @@ export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
 
   const theme = useMemo(() => (darkMode ? darkTheme : lightTheme), [darkMode]);
+  const onToggleTheme = () => setDarkMode((prev) => !prev);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={sk}>
         <BrowserRouter>
-          <Layout darkMode={darkMode} onToggleTheme={() => setDarkMode((prev) => !prev)}>
-            <Routes>
-            <Route path="/" element={<AnalyzePage />} />
-            <Route path="/profily" element={<PetProfilePage />} />
-            <Route path="/historia" element={<HistoryPage />} />
-            <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
-            <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
-            <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
-            <Route path="/zdravotny-pas/novy-zaznam" element={<HealthPassportPage />} />
-            <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
-            <Route path="/dennik" element={<EpisodeDiaryPage />} />
-            <Route path="/o-aplikacii" element={<AboutPage />} />
-            </Routes>
-          </Layout>
+          <Routes>
+            <Route
+              path="/"
+              element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+            />
+            <Route
+              path="/*"
+              element={
+                <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+                  <Routes>
+                    <Route path="/analyza" element={<AnalyzePage />} />
+                    <Route path="/profily" element={<PetProfilePage />} />
+                    <Route path="/historia" element={<HistoryPage />} />
+                    <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
+                    <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
+                    <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
+                    <Route path="/zdravotny-pas/novy-zaznam" element={<HealthPassportPage />} />
+                    <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
+                    <Route path="/dennik" element={<EpisodeDiaryPage />} />
+                    <Route path="/o-aplikacii" element={<AboutPage />} />
+                  </Routes>
+                </Layout>
+              }
+            />
+          </Routes>
         </BrowserRouter>
       </LocalizationProvider>
     </ThemeProvider>

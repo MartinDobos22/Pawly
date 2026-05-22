@@ -43,7 +43,7 @@ const NAV_SECTIONS: NavSection[] = [
     id: 'main',
     label: 'Hlavné',
     items: [
-      { label: 'Analýza', icon: <ScienceIcon />, path: '/' },
+      { label: 'Analýza', icon: <ScienceIcon />, path: '/analyza' },
       { label: 'História', icon: <HistoryIcon />, path: '/historia' },
     ],
   },

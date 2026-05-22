@@ -58,7 +58,7 @@ export default function HistoryPage() {
           icon={<EmptyIcon />}
           title="Žiadna história"
           description="Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem."
-          primaryAction={{ label: 'Spustiť analýzu', onClick: () => navigate('/') }}
+          primaryAction={{ label: 'Spustiť analýzu', onClick: () => navigate('/analyza') }}
         />
       </Box>
     );
