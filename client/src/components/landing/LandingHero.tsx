@@ -48,6 +48,11 @@ export default function LandingHero() {
           width: { xs: 120, md: 200 },
           opacity: isDark ? 0.06 : 0.08,
           pointerEvents: 'none',
+          animation: 'pawport-float 7s ease-in-out infinite',
+          '@keyframes pawport-float': {
+            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+            '50%': { transform: 'translateY(-12px) rotate(-3deg)' },
+          },
         }}
       >
         <circle cx="50" cy="60" r="18" fill={theme.palette.primary.main} />
@@ -56,6 +61,32 @@ export default function LandingHero() {
         <circle cx="70" cy="100" r="14" fill={theme.palette.primary.main} />
         <ellipse cx="100" cy="140" rx="42" ry="32" fill={theme.palette.primary.main} />
         <circle cx="130" cy="100" r="14" fill={theme.palette.primary.main} />
+      </Box>
+
+      {/* second decorative paw bottom-left */}
+      <Box
+        component="svg"
+        viewBox="0 0 200 200"
+        sx={{
+          position: 'absolute',
+          bottom: { xs: -40, md: '8%' },
+          left: { xs: -50, md: '4%' },
+          width: { xs: 90, md: 140 },
+          opacity: isDark ? 0.05 : 0.06,
+          pointerEvents: 'none',
+          animation: 'pawport-float-alt 9s ease-in-out infinite',
+          '@keyframes pawport-float-alt': {
+            '0%, 100%': { transform: 'translateY(0) rotate(-12deg)' },
+            '50%': { transform: 'translateY(10px) rotate(-18deg)' },
+          },
+        }}
+      >
+        <circle cx="50" cy="60" r="18" fill={theme.palette.secondary.main} />
+        <circle cx="100" cy="40" r="22" fill={theme.palette.secondary.main} />
+        <circle cx="150" cy="60" r="18" fill={theme.palette.secondary.main} />
+        <circle cx="70" cy="100" r="14" fill={theme.palette.secondary.main} />
+        <ellipse cx="100" cy="140" rx="42" ry="32" fill={theme.palette.secondary.main} />
+        <circle cx="130" cy="100" r="14" fill={theme.palette.secondary.main} />
       </Box>
 
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2.5, md: 4 } }}>

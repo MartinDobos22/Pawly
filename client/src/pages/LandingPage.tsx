@@ -1,4 +1,13 @@
-import { AppBar, Box, Button, IconButton, Stack, Toolbar, Typography, useTheme } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -8,6 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
+import PetTypesStrip from '../components/landing/PetTypesStrip';
 import FeatureGrid from '../components/landing/FeatureGrid';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
@@ -28,7 +38,8 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         position="sticky"
         elevation={0}
         sx={{
-          bgcolor: theme.palette.mode === 'light' ? 'rgba(250,247,242,0.85)' : 'rgba(26,31,34,0.85)',
+          bgcolor:
+            theme.palette.mode === 'light' ? 'rgba(250,247,242,0.85)' : 'rgba(26,31,34,0.85)',
           backdropFilter: 'saturate(180%) blur(10px)',
           WebkitBackdropFilter: 'saturate(180%) blur(10px)',
           color: 'text.primary',
@@ -95,6 +106,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
 
       <LandingHero />
       <HowItWorks />
+      <PetTypesStrip />
       <FeatureGrid />
       <AppPreview />
       <FinalCta />

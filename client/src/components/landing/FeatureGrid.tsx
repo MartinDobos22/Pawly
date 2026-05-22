@@ -102,11 +102,15 @@ export default function FeatureGrid() {
                   p: { xs: 2.5, md: 3 },
                   borderRadius: 4,
                   border: `1px solid ${theme.palette.divider}`,
+                  borderLeft: `3px solid ${alpha(color, 0.5)}`,
                   bgcolor: 'background.paper',
-                  transition: 'transform 220ms ease, border-color 220ms ease',
+                  transition:
+                    'transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    borderColor: alpha(color, 0.4),
+                    transform: 'translateY(-6px)',
+                    borderColor: alpha(color, 0.5),
+                    borderLeftColor: color,
+                    boxShadow: `0 14px 30px ${alpha(color, 0.18)}`,
                   },
                 }}
               >
