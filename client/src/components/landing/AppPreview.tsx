@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Chip,
-  Stack,
-  Typography,
-  alpha,
-  useTheme,
-} from '@mui/material';
+import { Avatar, Box, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   Biotech as DewormIcon,
   CheckCircle as CheckIcon,
@@ -210,10 +202,7 @@ export default function AppPreview() {
     <Box
       sx={{
         position: 'relative',
-        py: { xs: 6, md: 10 },
-        bgcolor: 'background.paper',
-        borderTop: `1px solid ${theme.palette.divider}`,
-        borderBottom: `1px solid ${theme.palette.divider}`,
+        py: { xs: 8, md: 14 },
         overflow: 'hidden',
       }}
     >
@@ -233,25 +222,23 @@ export default function AppPreview() {
       />
 
       <Box sx={{ position: 'relative', maxWidth: 1200, mx: 'auto', px: { xs: 2.5, md: 4 } }}>
-        <Stack alignItems="center" spacing={1.5} sx={{ mb: { xs: 4, md: 6 }, textAlign: 'center' }}>
-          <Typography
-            variant="caption"
-            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.12em' }}
-          >
-            Náhľad aplikácie
-          </Typography>
+        <Stack alignItems="center" spacing={2} sx={{ mb: { xs: 6, md: 8 }, textAlign: 'center' }}>
           <Typography
             variant="h2"
             sx={{
-              fontSize: { xs: '1.75rem', md: '2.5rem' },
+              fontSize: { xs: '2rem', md: '3rem' },
               fontWeight: 700,
-              letterSpacing: '-0.02em',
-              maxWidth: 640,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.1,
+              maxWidth: 720,
             }}
           >
             Takto vyzerá tvoj digitálny pas
           </Typography>
-          <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 520 }}>
+          <Typography
+            variant="body1"
+            sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
+          >
             Funguje na počítači aj v mobile — všetky záznamy synchronizované, vždy s tebou.
           </Typography>
         </Stack>

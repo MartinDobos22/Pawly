@@ -1,4 +1,5 @@
 import {
+  alpha,
   AppBar,
   Box,
   Button,
@@ -33,17 +34,38 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          background: `
+            radial-gradient(900px circle at 85% 5%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.1 : 0.18)}, transparent 55%),
+            radial-gradient(700px circle at 8% 28%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.08 : 0.14)}, transparent 50%),
+            radial-gradient(800px circle at 95% 55%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.07 : 0.12)}, transparent 50%),
+            radial-gradient(600px circle at 5% 75%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.06 : 0.1)}, transparent 50%),
+            radial-gradient(700px circle at 80% 92%, ${alpha(theme.palette.primary.light, theme.palette.mode === 'light' ? 0.05 : 0.1)}, transparent 50%)
+          `,
+          pointerEvents: 'none',
+          zIndex: 0,
+        },
+        '& > *': { position: 'relative', zIndex: 1 },
+      }}
+    >
       <AppBar
         position="sticky"
         elevation={0}
         sx={{
-          bgcolor:
-            theme.palette.mode === 'light' ? 'rgba(250,247,242,0.85)' : 'rgba(26,31,34,0.85)',
-          backdropFilter: 'saturate(180%) blur(10px)',
-          WebkitBackdropFilter: 'saturate(180%) blur(10px)',
+          bgcolor: theme.palette.mode === 'light' ? 'rgba(250,247,242,0.7)' : 'rgba(26,31,34,0.7)',
+          backdropFilter: 'saturate(180%) blur(14px)',
+          WebkitBackdropFilter: 'saturate(180%) blur(14px)',
           color: 'text.primary',
-          borderBottom: `1px solid ${theme.palette.divider}`,
+          borderBottom: 'none',
         }}
       >
         <Toolbar

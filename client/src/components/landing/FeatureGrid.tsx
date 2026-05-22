@@ -56,25 +56,37 @@ export default function FeatureGrid() {
   const theme = useTheme();
 
   return (
-    <Box sx={{ py: { xs: 6, md: 10 } }}>
+    <Box sx={{ py: { xs: 8, md: 14 } }}>
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2.5, md: 4 } }}>
-        <Stack alignItems="center" spacing={1.5} sx={{ mb: { xs: 4, md: 6 }, textAlign: 'center' }}>
-          <Typography
-            variant="caption"
-            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.12em' }}
-          >
-            Funkcie
-          </Typography>
+        <Stack alignItems="center" spacing={2} sx={{ mb: { xs: 6, md: 8 }, textAlign: 'center' }}>
           <Typography
             variant="h2"
             sx={{
-              fontSize: { xs: '1.75rem', md: '2.5rem' },
+              fontSize: { xs: '2rem', md: '3rem' },
               fontWeight: 700,
-              letterSpacing: '-0.02em',
-              maxWidth: 720,
+              letterSpacing: '-0.025em',
+              lineHeight: 1.1,
+              maxWidth: 800,
             }}
           >
-            Všetko pre zdravie tvojho miláčika na jednom mieste
+            Všetko pre zdravie tvojho miláčika{' '}
+            <Box
+              component="span"
+              sx={{
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              na jednom mieste
+            </Box>
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
+          >
+            Šesť funkcií, ktoré spolu pokrývajú celý zdravotný život tvojho zvieratka.
           </Typography>
         </Stack>
 
@@ -103,7 +115,9 @@ export default function FeatureGrid() {
                   borderRadius: 4,
                   border: `1px solid ${theme.palette.divider}`,
                   borderLeft: `3px solid ${alpha(color, 0.5)}`,
-                  bgcolor: 'background.paper',
+                  bgcolor: alpha(theme.palette.background.paper, 0.6),
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
                   transition:
                     'transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease',
                   '&:hover': {

@@ -14,14 +14,6 @@ export default function LandingHero() {
   const navigate = useNavigate();
   const isDark = theme.palette.mode === 'dark';
 
-  const heroBg = isDark
-    ? `radial-gradient(circle at 80% 20%, ${alpha(theme.palette.primary.main, 0.25)} 0%, transparent 55%),
-       radial-gradient(circle at 10% 90%, ${alpha(theme.palette.secondary.main, 0.18)} 0%, transparent 50%),
-       ${theme.palette.background.default}`
-    : `radial-gradient(circle at 80% 20%, ${alpha(theme.palette.primary.main, 0.12)} 0%, transparent 55%),
-       radial-gradient(circle at 10% 90%, ${alpha(theme.palette.secondary.main, 0.1)} 0%, transparent 50%),
-       ${theme.palette.background.default}`;
-
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -32,9 +24,8 @@ export default function LandingHero() {
       sx={{
         position: 'relative',
         overflow: 'hidden',
-        background: heroBg,
-        pt: { xs: 6, md: 10 },
-        pb: { xs: 6, md: 12 },
+        pt: { xs: 8, md: 12 },
+        pb: { xs: 8, md: 14 },
       }}
     >
       {/* decorative paw SVG */}

@@ -9,7 +9,6 @@ export default function LandingFooter() {
       component="footer"
       sx={{
         py: 4,
-        bgcolor: 'background.paper',
         borderTop: `1px solid ${theme.palette.divider}`,
       }}
     >
@@ -36,18 +35,33 @@ export default function LandingFooter() {
               <PetsIcon sx={{ fontSize: 18 }} />
             </Box>
             <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>Pawport</Typography>
-            <Typography variant="caption" sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
+            >
               · {new Date().getFullYear()}
             </Typography>
           </Stack>
           <Stack direction="row" gap={3}>
-            <Link href="/o-aplikacii" underline="hover" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            <Link
+              href="/o-aplikacii"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
               O aplikácii
             </Link>
-            <Link href="/profily" underline="hover" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            <Link
+              href="/profily"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
               Profily
             </Link>
-            <Link href="/analyza" underline="hover" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            <Link
+              href="/analyza"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
               Spustiť
             </Link>
           </Stack>

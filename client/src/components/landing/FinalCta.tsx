@@ -11,7 +11,7 @@ export default function FinalCta() {
   const isDark = theme.palette.mode === 'dark';
 
   return (
-    <Box sx={{ py: { xs: 6, md: 10 } }}>
+    <Box sx={{ py: { xs: 8, md: 14 } }}>
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2.5, md: 4 } }}>
         <Box
           sx={{
