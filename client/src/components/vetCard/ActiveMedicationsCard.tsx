@@ -8,7 +8,7 @@ interface Props {
 
 export default function ActiveMedicationsCard({ medications }: Props) {
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 }, height: '100%' }}>
+    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <MedicationIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>

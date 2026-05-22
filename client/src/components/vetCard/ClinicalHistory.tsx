@@ -1,13 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Chip,
+  FormControl,
   IconButton,
   InputAdornment,
+  MenuItem,
+  Pagination,
+  Select,
   Stack,
   TextField,
   Typography,
-  alpha,
   useTheme,
 } from '@mui/material';
 import {
@@ -31,6 +34,8 @@ const FILTER_OPTIONS: Array<{ value: Filter; label: string }> = [
   { value: 'MEDICATION', label: 'Lieky' },
   { value: 'DIET', label: 'Diéta' },
 ];
+
+const PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
 
 const monthFormatter = new Intl.DateTimeFormat('sk-SK', { month: 'long', year: 'numeric' });
 const dayFormatter = new Intl.DateTimeFormat('sk-SK', {
@@ -65,6 +70,8 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
   const theme = useTheme();
   const [filter, setFilter] = useState<Filter>('ALL');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const clinical = useMemo(
     () =>
@@ -81,7 +88,25 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
     return byType.filter((x) => `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(q));
   }, [clinical, filter, search]);
 
-  const groups = useMemo(() => groupByMonth(visible), [visible]);
+  const totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
+
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, search, pageSize]);
+
+  const paged = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return visible.slice(start, start + pageSize);
+  }, [visible, page, pageSize]);
+
+  const groups = useMemo(() => groupByMonth(paged), [paged]);
+
+  const rangeStart = visible.length === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeEnd = Math.min(page * pageSize, visible.length);
 
   return (
     <Box>
@@ -175,121 +200,146 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
           </Typography>
         </Box>
       ) : (
-        <Box sx={{ position: 'relative', pl: { xs: 3, md: 3.5 } }}>
-          <Box
+        <>
+          <Stack spacing={2}>
+            {groups.map((group) => (
+              <Box key={group.key}>
+                <Typography
+                  variant="overline"
+                  sx={{
+                    display: 'block',
+                    color: 'text.secondary',
+                    fontSize: '0.7rem',
+                    mb: 1,
+                  }}
+                >
+                  {group.label}
+                </Typography>
+                <Stack spacing={1}>
+                  {group.items.map((event) => {
+                    const meta = TIMELINE_TYPE_META[event.type];
+                    return (
+                      <Box
+                        key={event.id}
+                        sx={{
+                          p: 1.25,
+                          borderRadius: 2,
+                          border: `1px solid ${theme.palette.divider}`,
+                          bgcolor: 'background.paper',
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" gap={1.25} flexWrap="wrap">
+                          <Chip
+                            icon={TIMELINE_ICON_MAP[event.type]}
+                            label={meta.label}
+                            size="small"
+                            color={meta.color}
+                            variant="outlined"
+                            sx={{ height: 22, fontSize: '0.7rem' }}
+                          />
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: 'text.secondary',
+                              textTransform: 'none',
+                              letterSpacing: 0,
+                              fontVariantNumeric: 'tabular-nums',
+                            }}
+                          >
+                            {(() => {
+                              const d = new Date(event.date);
+                              return Number.isNaN(d.getTime())
+                                ? event.date
+                                : dayFormatter.format(d);
+                            })()}
+                          </Typography>
+                        </Stack>
+                        <Typography variant="body2" sx={{ fontWeight: 600, mt: 0.5 }}>
+                          {event.title}
+                        </Typography>
+                        {event.subtitle && (
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              display: 'block',
+                              color: 'text.secondary',
+                              textTransform: 'none',
+                              letterSpacing: 0,
+                              fontSize: '0.78rem',
+                              mt: 0.25,
+                            }}
+                          >
+                            {event.subtitle}
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              </Box>
+            ))}
+          </Stack>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems="center"
+            justifyContent="space-between"
+            gap={1.5}
             sx={{
-              position: 'absolute',
-              left: { xs: 8, md: 10 },
-              top: 8,
-              bottom: 8,
-              width: 2,
-              bgcolor: alpha(theme.palette.primary.main, 0.18),
-              borderRadius: 1,
+              mt: 2,
+              pt: 1.5,
+              borderTop: `1px solid ${theme.palette.divider}`,
             }}
-          />
-          {groups.map((group) => (
-            <Box key={group.key} sx={{ mb: 2.5, '&:last-child': { mb: 0 } }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  display: 'block',
-                  mb: 1,
-                  ml: -1.5,
-                  pl: 1.5,
-                  color: 'text.secondary',
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  position: 'relative',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    left: -10,
-                    top: '50%',
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: 'background.paper',
-                    border: `2px solid ${theme.palette.primary.main}`,
-                    transform: 'translateY(-50%)',
-                  },
-                }}
-              >
-                {group.label}
-              </Typography>
-              <Stack spacing={1}>
-                {group.items.map((event) => {
-                  const meta = TIMELINE_TYPE_META[event.type];
-                  return (
-                    <Box
-                      key={event.id}
-                      sx={{
-                        position: 'relative',
-                        p: 1.25,
-                        borderRadius: 2,
-                        border: `1px solid ${theme.palette.divider}`,
-                        bgcolor: 'background.paper',
-                        '&::before': {
-                          content: '""',
-                          position: 'absolute',
-                          left: -18,
-                          top: 18,
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          bgcolor: theme.palette.primary.main,
-                          opacity: 0.7,
-                        },
-                      }}
-                    >
-                      <Stack direction="row" alignItems="center" gap={1.25} flexWrap="wrap">
-                        <Chip
-                          icon={TIMELINE_ICON_MAP[event.type]}
-                          label={meta.label}
-                          size="small"
-                          color={meta.color}
-                          variant="outlined"
-                          sx={{ height: 22, fontSize: '0.7rem' }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: 'text.secondary',
-                            textTransform: 'none',
-                            letterSpacing: 0,
-                            fontVariantNumeric: 'tabular-nums',
-                          }}
-                        >
-                          {(() => {
-                            const d = new Date(event.date);
-                            return Number.isNaN(d.getTime()) ? event.date : dayFormatter.format(d);
-                          })()}
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" sx={{ fontWeight: 600, mt: 0.5 }}>
-                        {event.title}
-                      </Typography>
-                      {event.subtitle && (
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: 'block',
-                            color: 'text.secondary',
-                            textTransform: 'none',
-                            letterSpacing: 0,
-                            fontSize: '0.78rem',
-                            mt: 0.25,
-                          }}
-                        >
-                          {event.subtitle}
-                        </Typography>
-                      )}
-                    </Box>
-                  );
-                })}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                textTransform: 'none',
+                letterSpacing: 0,
+                fontSize: '0.78rem',
+              }}
+            >
+              {rangeStart}–{rangeEnd} z {visible.length} záznamov
+            </Typography>
+            <Stack direction="row" alignItems="center" gap={1.5}>
+              <Stack direction="row" alignItems="center" gap={0.75}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    textTransform: 'none',
+                    letterSpacing: 0,
+                    fontSize: '0.78rem',
+                  }}
+                >
+                  Na stránku
+                </Typography>
+                <FormControl size="small">
+                  <Select
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value))}
+                    sx={{ '& .MuiSelect-select': { py: 0.5, fontSize: '0.85rem' } }}
+                  >
+                    {PAGE_SIZE_OPTIONS.map((opt) => (
+                      <MenuItem key={opt} value={opt}>
+                        {opt}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Stack>
-            </Box>
-          ))}
-        </Box>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(_, p) => setPage(p)}
+                size="small"
+                shape="rounded"
+                siblingCount={0}
+              />
+            </Stack>
+          </Stack>
+        </>
       )}
     </Box>
   );

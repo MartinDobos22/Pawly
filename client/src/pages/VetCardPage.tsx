@@ -1008,13 +1008,7 @@ export default function VetCardPage() {
     });
 
   return (
-    <Box
-      sx={{
-        maxWidth: 920,
-        mx: 'auto',
-        '@media print': { maxWidth: 'unset' },
-      }}
-    >
+    <Box>
       <VetCardActionBar
         exportSections={exportSections}
         onChangeSections={setExportSections}
@@ -1022,22 +1016,7 @@ export default function VetCardPage() {
         onPrintPreview={() => window.print()}
       />
 
-      <Stack
-        spacing={1.5}
-        sx={{
-          p: { md: 3 },
-          bgcolor: { md: 'background.paper' },
-          borderRadius: { md: 4 },
-          boxShadow: { md: '0 2px 16px rgba(15,76,92,0.08)' },
-          border: { md: (theme) => `1px solid ${theme.palette.divider}` },
-          '@media print': {
-            p: 0,
-            bgcolor: 'transparent',
-            boxShadow: 'none',
-            border: 'none',
-          },
-        }}
-      >
+      <Stack spacing={1.5}>
         <DocumentIdentityBlock
           dog={dog}
           dogProfiles={dogProfiles}
