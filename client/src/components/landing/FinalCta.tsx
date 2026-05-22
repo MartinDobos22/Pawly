@@ -27,7 +27,7 @@ export default function FinalCta() {
           <Box
             component="img"
             src={CTA_PHOTO}
-            alt="Veterinár kontroluje psa"
+            alt="Veterinárna kontrola domáceho zvieraťa"
             loading="lazy"
             sx={{
               position: 'absolute',
@@ -67,7 +67,7 @@ export default function FinalCta() {
                 color: 'inherit',
               }}
             >
-              Začni sa starať o zdravie tvojho psa už dnes
+              Začni sa starať o zdravie tvojho miláčika ešte dnes
             </Typography>
             <Typography
               variant="body1"

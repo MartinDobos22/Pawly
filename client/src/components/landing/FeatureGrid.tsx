@@ -23,7 +23,7 @@ const FEATURES: Array<{
   {
     icon: ScienceIcon,
     title: 'AI analýza krmiva',
-    text: 'Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre konkrétneho psa.',
+    text: 'Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera.',
     tone: 'info',
   },
   {
@@ -40,7 +40,7 @@ const FEATURES: Array<{
   },
   {
     icon: QAIcon,
-    title: 'Môže pes jesť…?',
+    title: 'Môže môj miláčik jesť…?',
     text: 'Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď.',
     tone: 'success',
   },
@@ -74,7 +74,7 @@ export default function FeatureGrid() {
               maxWidth: 720,
             }}
           >
-            Všetko pre zdravie psa na jednom mieste
+            Všetko pre zdravie tvojho miláčika na jednom mieste
           </Typography>
         </Stack>
 
@@ -92,8 +92,9 @@ export default function FeatureGrid() {
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
             const color =
-              theme.palette[feature.tone as 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error']
-                .main;
+              theme.palette[
+                feature.tone as 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error'
+              ].main;
             return (
               <Box
                 key={feature.title}

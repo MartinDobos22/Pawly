@@ -19,7 +19,7 @@ export default function LandingHero() {
        radial-gradient(circle at 10% 90%, ${alpha(theme.palette.secondary.main, 0.18)} 0%, transparent 50%),
        ${theme.palette.background.default}`
     : `radial-gradient(circle at 80% 20%, ${alpha(theme.palette.primary.main, 0.12)} 0%, transparent 55%),
-       radial-gradient(circle at 10% 90%, ${alpha(theme.palette.secondary.main, 0.10)} 0%, transparent 50%),
+       radial-gradient(circle at 10% 90%, ${alpha(theme.palette.secondary.main, 0.1)} 0%, transparent 50%),
        ${theme.palette.background.default}`;
 
   const scrollTo = (id: string) => {
@@ -71,7 +71,7 @@ export default function LandingHero() {
           <Stack spacing={3}>
             <Chip
               icon={<SparkleIcon sx={{ fontSize: 16 }} />}
-              label="Pre majiteľov, ktorí to s psím zdravím myslia vážne"
+              label="Pre psy, mačky a ďalšie domáce zvieratá"
               size="small"
               sx={{
                 alignSelf: 'flex-start',
@@ -91,7 +91,7 @@ export default function LandingHero() {
                 letterSpacing: '-0.025em',
               }}
             >
-              Zdravie tvojho psa,{' '}
+              Zdravie tvojho miláčika,{' '}
               <Box
                 component="span"
                 sx={{
@@ -112,8 +112,9 @@ export default function LandingHero() {
                 maxWidth: 540,
               }}
             >
-              Digitálny zdravotný pas, AI analýza krmiva a karta pre veterinára na jednom mieste.
-              Nikdy nezabudni na očkovanie, odčervenie ani kontrolu.
+              Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva a
+              karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani
+              kontrolu.
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
               <Button
@@ -145,7 +146,10 @@ export default function LandingHero() {
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'primary.main' }}>
                   100%
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
                   Zadarmo
                 </Typography>
               </Stack>
@@ -153,7 +157,10 @@ export default function LandingHero() {
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'primary.main' }}>
                   AI
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
                   Skenovanie pasu
                 </Typography>
               </Stack>
@@ -161,7 +168,10 @@ export default function LandingHero() {
                 <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'primary.main' }}>
                   PWA
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
                   Offline-ready
                 </Typography>
               </Stack>
