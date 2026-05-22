@@ -20,7 +20,9 @@ import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
 import PetTypesStrip from '../components/landing/PetTypesStrip';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
+import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
+import ActivityMarquee from '../components/landing/ActivityMarquee';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
@@ -131,8 +133,10 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
       <HowItWorks />
       <PetTypesStrip />
       <InteractiveAiDemo />
+      <StatsBand />
       <FeatureGrid />
       <AppPreview />
+      <ActivityMarquee />
       <FinalCta />
       <LandingFooter />
     </Box>
