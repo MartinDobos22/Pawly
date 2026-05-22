@@ -1,4 +1,14 @@
-import { Box, Button, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  Chip,
+  Stack,
+  Typography,
+  alpha,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import {
   ArrowForward as ArrowIcon,
   AutoAwesome as SparkleIcon,
@@ -13,6 +23,26 @@ export default function LandingHero() {
   const theme = useTheme();
   const navigate = useNavigate();
   const isDark = theme.palette.mode === 'dark';
+  const supportsHover = useMediaQuery('(hover: hover) and (pointer: fine)');
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    if (!supportsHover) return;
+    const onMove = (e: MouseEvent) => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        setMouse({ x: e.clientX - cx, y: e.clientY - cy });
+      });
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [supportsHover]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -39,7 +69,11 @@ export default function LandingHero() {
           width: { xs: 120, md: 200 },
           opacity: isDark ? 0.06 : 0.08,
           pointerEvents: 'none',
-          animation: 'pawport-float 7s ease-in-out infinite',
+          transform: supportsHover
+            ? `translate3d(${mouse.x / 28}px, ${mouse.y / 28}px, 0)`
+            : undefined,
+          transition: supportsHover ? 'transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1)' : undefined,
+          animation: supportsHover ? undefined : 'pawport-float 7s ease-in-out infinite',
           '@keyframes pawport-float': {
             '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
             '50%': { transform: 'translateY(-12px) rotate(-3deg)' },
@@ -65,7 +99,11 @@ export default function LandingHero() {
           width: { xs: 90, md: 140 },
           opacity: isDark ? 0.05 : 0.06,
           pointerEvents: 'none',
-          animation: 'pawport-float-alt 9s ease-in-out infinite',
+          transform: supportsHover
+            ? `translate3d(${-mouse.x / 22}px, ${-mouse.y / 22}px, 0) rotate(-12deg)`
+            : undefined,
+          transition: supportsHover ? 'transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1)' : undefined,
+          animation: supportsHover ? undefined : 'pawport-float-alt 9s ease-in-out infinite',
           '@keyframes pawport-float-alt': {
             '0%, 100%': { transform: 'translateY(0) rotate(-12deg)' },
             '50%': { transform: 'translateY(10px) rotate(-18deg)' },

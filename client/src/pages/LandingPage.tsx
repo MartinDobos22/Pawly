@@ -23,6 +23,7 @@ import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
 import ActivityMarquee from '../components/landing/ActivityMarquee';
+import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
@@ -130,14 +131,30 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
       </AppBar>
 
       <LandingHero />
-      <HowItWorks />
-      <PetTypesStrip />
-      <InteractiveAiDemo />
-      <StatsBand />
-      <FeatureGrid />
-      <AppPreview />
-      <ActivityMarquee />
-      <FinalCta />
+      <RevealOnScroll>
+        <HowItWorks />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <PetTypesStrip />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <InteractiveAiDemo />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <StatsBand />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <FeatureGrid />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <AppPreview />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <ActivityMarquee />
+      </RevealOnScroll>
+      <RevealOnScroll>
+        <FinalCta />
+      </RevealOnScroll>
       <LandingFooter />
     </Box>
   );
