@@ -1,21 +1,20 @@
 import { useMemo, useState } from 'react';
 import {
-  Alert,
   Box,
   Chip,
   IconButton,
   InputAdornment,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
+  alpha,
+  useTheme,
 } from '@mui/material';
-import { Clear as ClearIcon, Search as SearchIcon } from '@mui/icons-material';
+import {
+  Clear as ClearIcon,
+  Search as SearchIcon,
+  TimelineOutlined as TimelineIcon,
+} from '@mui/icons-material';
 
 import type { TimelineEvent } from '../../types/dogHealth';
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from '../healthPassport/constants';
@@ -33,10 +32,29 @@ const FILTER_OPTIONS: Array<{ value: Filter; label: string }> = [
   { value: 'DIET', label: 'Diéta' },
 ];
 
-const formatDateShort = (value: string): string => {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' });
+const monthFormatter = new Intl.DateTimeFormat('sk-SK', { month: 'long', year: 'numeric' });
+const dayFormatter = new Intl.DateTimeFormat('sk-SK', {
+  day: 'numeric',
+  month: 'long',
+  weekday: 'short',
+});
+
+const groupByMonth = (
+  events: TimelineEvent[]
+): { key: string; label: string; items: TimelineEvent[] }[] => {
+  const map = new Map<string, { label: string; items: TimelineEvent[] }>();
+  for (const ev of events) {
+    const d = new Date(ev.date);
+    if (Number.isNaN(d.getTime())) continue;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (!map.has(key)) {
+      map.set(key, { label: monthFormatter.format(d), items: [] });
+    }
+    map.get(key)!.items.push(ev);
+  }
+  return Array.from(map.entries())
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, val]) => ({ key, label: val.label, items: val.items }));
 };
 
 interface ClinicalHistoryProps {
@@ -44,6 +62,7 @@ interface ClinicalHistoryProps {
 }
 
 export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
+  const theme = useTheme();
   const [filter, setFilter] = useState<Filter>('ALL');
   const [search, setSearch] = useState('');
 
@@ -62,20 +81,25 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
     return byType.filter((x) => `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(q));
   }, [clinical, filter, search]);
 
+  const groups = useMemo(() => groupByMonth(visible), [visible]);
+
   return (
     <Box>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        justifyContent="space-between"
-        gap={1.5}
-        sx={{ mb: 2 }}
-      >
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+        <TimelineIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="h3" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
             Klinická história
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              textTransform: 'none',
+              letterSpacing: 0,
+              fontSize: '0.78rem',
+            }}
+          >
             Vakcíny, návštevy, lieky a preventívne ošetrenia v jednom prehľade.
           </Typography>
         </Box>
@@ -92,17 +116,32 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
             ),
             endAdornment: search ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => setSearch('')}>
+                <IconButton size="small" onClick={() => setSearch('')} aria-label="Vyčistiť">
                   <ClearIcon sx={{ fontSize: 16 }} />
                 </IconButton>
               </InputAdornment>
             ) : null,
           }}
-          sx={{ width: { xs: '100%', sm: 240 } }}
+          sx={{ width: { xs: 160, sm: 240 } }}
         />
       </Stack>
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 0.75,
+          mb: 2,
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+          maskImage:
+            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+          '&::-webkit-scrollbar': { height: 0 },
+          scrollbarWidth: 'none',
+          '& > *': { flexShrink: 0 },
+        }}
+      >
         {FILTER_OPTIONS.map((opt) => {
           const active = filter === opt.value;
           return (
@@ -120,64 +159,137 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
       </Box>
 
       {visible.length === 0 ? (
-        <Alert severity="info">
-          {clinical.length === 0
-            ? 'Zatiaľ žiadne klinické záznamy.'
-            : 'Pre zvolený filter sa nenašli žiadne záznamy.'}
-        </Alert>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 4,
+            color: 'text.secondary',
+            border: `1px dashed ${theme.palette.divider}`,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="body2">
+            {clinical.length === 0
+              ? 'Zatiaľ žiadne klinické záznamy.'
+              : 'Pre zvolený filter sa nenašli žiadne záznamy.'}
+          </Typography>
+        </Box>
       ) : (
-        <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow sx={{ bgcolor: 'action.hover' }}>
-                <TableCell sx={{ width: { xs: 110, md: 140 } }}>Dátum</TableCell>
-                <TableCell sx={{ width: { xs: 130, md: 160 } }}>Typ</TableCell>
-                <TableCell>Detail</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {visible.map((event) => {
-                const meta = TIMELINE_TYPE_META[event.type];
-                return (
-                  <TableRow key={event.id} hover sx={{ '&:last-child td': { border: 0 } }}>
-                    <TableCell
+        <Box sx={{ position: 'relative', pl: { xs: 3, md: 3.5 } }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: { xs: 8, md: 10 },
+              top: 8,
+              bottom: 8,
+              width: 2,
+              bgcolor: alpha(theme.palette.primary.main, 0.18),
+              borderRadius: 1,
+            }}
+          />
+          {groups.map((group) => (
+            <Box key={group.key} sx={{ mb: 2.5, '&:last-child': { mb: 0 } }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  display: 'block',
+                  mb: 1,
+                  ml: -1.5,
+                  pl: 1.5,
+                  color: 'text.secondary',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  position: 'relative',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    left: -10,
+                    top: '50%',
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: 'background.paper',
+                    border: `2px solid ${theme.palette.primary.main}`,
+                    transform: 'translateY(-50%)',
+                  },
+                }}
+              >
+                {group.label}
+              </Typography>
+              <Stack spacing={1}>
+                {group.items.map((event) => {
+                  const meta = TIMELINE_TYPE_META[event.type];
+                  return (
+                    <Box
+                      key={event.id}
                       sx={{
-                        color: 'text.secondary',
-                        whiteSpace: 'nowrap',
-                        fontVariantNumeric: 'tabular-nums',
+                        position: 'relative',
+                        p: 1.25,
+                        borderRadius: 2,
+                        border: `1px solid ${theme.palette.divider}`,
+                        bgcolor: 'background.paper',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          left: -18,
+                          top: 18,
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: theme.palette.primary.main,
+                          opacity: 0.7,
+                        },
                       }}
                     >
-                      {formatDateShort(event.date)}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        icon={TIMELINE_ICON_MAP[event.type]}
-                        label={meta.label}
-                        size="small"
-                        color={meta.color}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      <Stack direction="row" alignItems="center" gap={1.25} flexWrap="wrap">
+                        <Chip
+                          icon={TIMELINE_ICON_MAP[event.type]}
+                          label={meta.label}
+                          size="small"
+                          color={meta.color}
+                          variant="outlined"
+                          sx={{ height: 22, fontSize: '0.7rem' }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                            textTransform: 'none',
+                            letterSpacing: 0,
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                        >
+                          {(() => {
+                            const d = new Date(event.date);
+                            return Number.isNaN(d.getTime()) ? event.date : dayFormatter.format(d);
+                          })()}
+                        </Typography>
+                      </Stack>
+                      <Typography variant="body2" sx={{ fontWeight: 600, mt: 0.5 }}>
                         {event.title}
                       </Typography>
                       {event.subtitle && (
                         <Typography
                           variant="caption"
-                          color="text.secondary"
-                          sx={{ display: 'block' }}
+                          sx={{
+                            display: 'block',
+                            color: 'text.secondary',
+                            textTransform: 'none',
+                            letterSpacing: 0,
+                            fontSize: '0.78rem',
+                            mt: 0.25,
+                          }}
                         >
                           {event.subtitle}
                         </Typography>
                       )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            </Box>
+          ))}
+        </Box>
       )}
     </Box>
   );
