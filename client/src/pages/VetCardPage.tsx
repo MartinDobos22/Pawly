@@ -1,15 +1,15 @@
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
-import { Print as PrintIcon } from '@mui/icons-material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import type { PetProfile } from '../types';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
-import ExportSectionsToolbar, {
+import {
   DEFAULT_EXPORT_SECTIONS,
   type ExportSectionsState,
 } from '../components/vetCard/ExportSectionsToolbar';
 import DocumentIdentityBlock from '../components/vetCard/DocumentIdentityBlock';
 import HealthProfileChips from '../components/vetCard/HealthProfileChips';
+import VetCardActionBar from '../components/vetCard/VetCardActionBar';
 import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
 import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
@@ -1008,86 +1008,65 @@ export default function VetCardPage() {
     });
 
   return (
-    <Stack spacing={1.5}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        alignItems={{ xs: 'stretch', md: 'flex-start' }}
-        gap={1.5}
-      >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <DocumentIdentityBlock
-            dog={dog}
-            dogProfiles={dogProfiles}
-            selectedDogId={selectedDogId}
-            onSelectDog={setSelectedDogId}
-          />
-        </Box>
-        <Card
-          variant="outlined"
+    <Box
+      sx={{
+        maxWidth: 920,
+        mx: 'auto',
+        '@media print': { maxWidth: 'unset' },
+      }}
+    >
+      <VetCardActionBar
+        exportSections={exportSections}
+        onChangeSections={setExportSections}
+        onExportPdf={handlePrint}
+        onPrintPreview={() => window.print()}
+      />
+
+      <Stack spacing={1.5}>
+        <DocumentIdentityBlock
+          dog={dog}
+          dogProfiles={dogProfiles}
+          selectedDogId={selectedDogId}
+          onSelectDog={setSelectedDogId}
+        />
+
+        <HealthProfileChips dog={dog} />
+
+        <VetCardStatusOverview
+          rabies={rabiesStatus}
+          combined={combinedStatus}
+          deworming={dewormingStatus}
+          ecto={ectoStatus}
+        />
+
+        <Box
           sx={{
-            p: 1.5,
-            minWidth: { md: 260 },
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            alignSelf: { md: 'stretch' },
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
+            gap: 1.5,
           }}
         >
-          <Typography
-            variant="caption"
-            sx={{ color: 'text.secondary', fontSize: '0.7rem', letterSpacing: '0.08em' }}
-          >
-            Export
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handlePrint}
-            startIcon={<PrintIcon />}
-            disabled={!Object.values(exportSections).some(Boolean)}
-            fullWidth
-          >
-            Export PDF
-          </Button>
-          <Box sx={{ pt: 0.5 }}>
-            <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
-          </Box>
+          <Stack spacing={1.5}>
+            <PreventiveCareCard items={preventiveItems} />
+            <RecentVisitsCard visits={data.significantVisits} />
+          </Stack>
+          <Stack spacing={1.5}>
+            <ActiveMedicationsCard medications={data.activeMeds} />
+          </Stack>
+        </Box>
+
+        <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
+          <ClinicalHistory timeline={data.timeline} />
         </Card>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ textAlign: 'center', display: 'block', py: 2 }}
+        >
+          GranuleCheck · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
+        </Typography>
       </Stack>
-
-      <HealthProfileChips dog={dog} />
-
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
-          gap: 1.5,
-        }}
-      >
-        <Stack spacing={1.5}>
-          <VetCardStatusOverview
-            rabies={rabiesStatus}
-            combined={combinedStatus}
-            deworming={dewormingStatus}
-            ecto={ectoStatus}
-          />
-          <PreventiveCareCard items={preventiveItems} />
-          <RecentVisitsCard visits={data.significantVisits} />
-          <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-            <ClinicalHistory timeline={data.timeline} />
-          </Card>
-        </Stack>
-        <Stack spacing={1.5}>
-          <ActiveMedicationsCard medications={data.activeMeds} />
-        </Stack>
-      </Box>
-
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ textAlign: 'center', display: 'block', py: 2 }}
-      >
-        GranuleCheck · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
-      </Typography>
-    </Stack>
+    </Box>
   );
 }
