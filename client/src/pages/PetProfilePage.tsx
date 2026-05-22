@@ -204,12 +204,104 @@ export default function PetProfilePage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>Profil psa</Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>Rozšírený profil pre zdravie, vakcinácie a návštevy veterinára.</Typography>
+      <Box
+        sx={{
+          mb: 2.5,
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 4,
+          bgcolor: (theme) =>
+            theme.palette.mode === 'light'
+              ? 'rgba(15, 76, 92, 0.05)'
+              : 'rgba(111, 190, 209, 0.10)',
+          border: (theme) =>
+            `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
+          p: { xs: 2, md: 2.5 },
+        }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={2}
+        >
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
+              flexShrink: 0,
+            }}
+          >
+            <PetsIcon />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                fontWeight: 700,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Profily zvierat
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
+              Rozšírený profil pre zdravie, vakcinácie a návštevy veterinára. Pridaj informácie o
+              alergiách, chronických stavoch a aktivite.
+            </Typography>
+          </Box>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
+            Pridať psa
+          </Button>
+        </Stack>
+      </Box>
 
-      <Button variant="contained" startIcon={<AddIcon />} onClick={openNew} sx={{ mb: 3 }}>Pridať psa</Button>
-
-      {dogProfiles.length === 0 && <Typography color="text.secondary" sx={{ textAlign: 'center', py: 6 }}>Zatiaľ nemáte profil psa.</Typography>}
+      {dogProfiles.length === 0 && (
+        <Card
+          sx={{
+            p: 4,
+            textAlign: 'center',
+            borderStyle: 'dashed',
+            maxWidth: 520,
+            mx: 'auto',
+            mt: 4,
+          }}
+        >
+          <Stack spacing={2} alignItems="center">
+            <Box
+              sx={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <PetsIcon sx={{ fontSize: 32 }} />
+            </Box>
+            <Typography variant="h3" sx={{ fontSize: '1.15rem', fontWeight: 700 }}>
+              Zatiaľ žiadny profil
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
+              Vytvor prvý profil psa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte
+              pre veterinára.
+            </Typography>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
+              Vytvoriť profil
+            </Button>
+          </Stack>
+        </Card>
+      )}
 
       <Stack spacing={2}>
         {dogProfiles.map((profile) => (

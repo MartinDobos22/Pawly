@@ -118,30 +118,72 @@ export default function EpisodeDiaryPage() {
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        spacing={2}
-        sx={{ mb: 3 }}
+      <Box
+        sx={{
+          mb: 2.5,
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 4,
+          bgcolor: (theme) =>
+            theme.palette.mode === 'light'
+              ? 'rgba(15, 76, 92, 0.05)'
+              : 'rgba(111, 190, 209, 0.10)',
+          border: (theme) =>
+            `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
+          p: { xs: 2, md: 2.5 },
+        }}
       >
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flex: 1 }}>
-          <MenuBookIcon color="primary" />
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Denník epizód
-          </Typography>
-        </Stack>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setEditing(undefined);
-            setFormOpen(true);
-          }}
-          disabled={!selectedDogId}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={2}
         >
-          Nová epizóda
-        </Button>
-      </Stack>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
+              flexShrink: 0,
+            }}
+          >
+            <MenuBookIcon />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                fontWeight: 700,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Denník epizód
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
+              Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš
+              overené riešenie.
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setEditing(undefined);
+              setFormOpen(true);
+            }}
+            disabled={!selectedDogId}
+          >
+            Nová epizóda
+          </Button>
+        </Stack>
+      </Box>
 
       <Card sx={{ mb: 2 }}>
         <CardContent>
