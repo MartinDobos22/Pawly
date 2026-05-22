@@ -51,7 +51,7 @@ export default function AnalyzeHero() {
           <Typography
             variant="h1"
             sx={{
-              fontSize: { xs: '1.6rem', md: '1.85rem' },
+              fontSize: { xs: '1.5rem', md: '2rem' },
               fontWeight: 700,
               lineHeight: 1.15,
               letterSpacing: '-0.02em',

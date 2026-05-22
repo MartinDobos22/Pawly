@@ -218,7 +218,7 @@ export default function PassportHero({
               <Typography
                 variant="h1"
                 sx={{
-                  fontSize: { xs: '1.75rem', md: '2.25rem' },
+                  fontSize: { xs: '1.5rem', md: '2rem' },
                   fontWeight: 700,
                   lineHeight: 1.1,
                   letterSpacing: '-0.02em',
