@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
 import PetTypesStrip from '../components/landing/PetTypesStrip';
+import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import FeatureGrid from '../components/landing/FeatureGrid';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
@@ -129,6 +130,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
       <LandingHero />
       <HowItWorks />
       <PetTypesStrip />
+      <InteractiveAiDemo />
       <FeatureGrid />
       <AppPreview />
       <FinalCta />
