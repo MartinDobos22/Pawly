@@ -96,7 +96,7 @@ export default function RecentVisitsCard({ visits }: Props) {
         ))}
       </Stack>
 
-      {visits.length > PAGE_SIZE_OPTIONS[0] && (
+      {visits.length > 0 && (
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           alignItems="center"

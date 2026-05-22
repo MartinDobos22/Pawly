@@ -389,8 +389,7 @@ export default function VetCardPage() {
 
     const significantVisits = dogVisits
       .filter((x) => x.diagnosis || x.findings || x.recommendations || x.aiExtractedText)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 5);
+      .sort((a, b) => b.date.localeCompare(a.date));
 
     const timeline: TimelineEvent[] = [
       ...dogVaccines.map((x) => ({
