@@ -61,7 +61,7 @@ export default function VetCardActionBar({
     <Box
       sx={{
         position: 'sticky',
-        top: { xs: 56, md: 12 },
+        top: { xs: 72, md: 12 },
         zIndex: 10,
         mb: 1.5,
         display: 'flex',

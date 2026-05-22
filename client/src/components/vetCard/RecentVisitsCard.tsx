@@ -1,5 +1,5 @@
 import { Box, Card, Chip, Stack, Typography } from '@mui/material';
-import { LocalHospital as HospitalIcon } from '@mui/icons-material';
+import { LocalHospitalOutlined as HospitalIcon } from '@mui/icons-material';
 import type { VetVisitRecord } from '../../types/dogHealth';
 import AiFormattedText from '../AiFormattedText';
 
@@ -28,25 +28,10 @@ export default function RecentVisitsCard({ visits }: Props) {
   if (visits.length === 0) return null;
 
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-      <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 1,
-            bgcolor: 'action.hover',
-            color: 'primary.main',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            '& svg': { fontSize: 22 },
-          }}
-        >
-          <HospitalIcon />
-        </Box>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+        <HospitalIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Posledné klinické záznamy
         </Typography>
       </Stack>

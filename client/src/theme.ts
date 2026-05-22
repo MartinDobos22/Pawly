@@ -81,18 +81,24 @@ const commonOptions: ThemeOptions = {
             color: '#000000',
             WebkitPrintColorAdjust: 'exact',
             printColorAdjust: 'exact',
+            fontSize: '11pt',
           },
           '#root': { width: '100%' },
           '.MuiCard-root, .MuiPaper-root': {
             boxShadow: 'none !important',
             border: '1px solid #DDDDDD !important',
             backgroundColor: '#FFFFFF !important',
+            breakInside: 'avoid',
           },
           '.MuiButton-root, .MuiIconButton-root': {
             display: 'none !important',
           },
           'a[href^="#"]': {
             display: 'none !important',
+          },
+          '.MuiChip-root': {
+            border: '1px solid #CCCCCC !important',
+            backgroundColor: 'transparent !important',
           },
         },
       },

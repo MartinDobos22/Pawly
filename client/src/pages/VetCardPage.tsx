@@ -1022,7 +1022,22 @@ export default function VetCardPage() {
         onPrintPreview={() => window.print()}
       />
 
-      <Stack spacing={1.5}>
+      <Stack
+        spacing={1.5}
+        sx={{
+          p: { md: 3 },
+          bgcolor: { md: 'background.paper' },
+          borderRadius: { md: 4 },
+          boxShadow: { md: '0 2px 16px rgba(15,76,92,0.08)' },
+          border: { md: (theme) => `1px solid ${theme.palette.divider}` },
+          '@media print': {
+            p: 0,
+            bgcolor: 'transparent',
+            boxShadow: 'none',
+            border: 'none',
+          },
+        }}
+      >
         <DocumentIdentityBlock
           dog={dog}
           dogProfiles={dogProfiles}
