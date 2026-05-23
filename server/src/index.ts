@@ -8,6 +8,7 @@ import extractTextRouter from './routes/extractText';
 import foodSafetyRouter from './routes/foodSafety';
 import interpretPassportRouter from './routes/interpretPassport';
 import { errorHandler } from './middleware/errorHandler';
+import { firebaseAuth } from './middleware/firebaseAuth';
 import { logger } from './utils/logger';
 
 dotenv.config();
@@ -65,17 +66,20 @@ const aiHeavyLimiter = rateLimit({
 
 app.use('/api/', globalLimiter);
 
+// Health check (verejný — bez autentifikácie)
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token
+app.use('/api/', firebaseAuth);
+
 // Routes
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);
 app.use('/api/food-safety', aiHeavyLimiter, foodSafetyRouter);
 app.use('/api/interpret-passport', aiHeavyLimiter, interpretPassportRouter);
-
-// Health check
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // Global error handler
 app.use(errorHandler);

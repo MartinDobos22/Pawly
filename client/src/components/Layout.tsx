@@ -30,8 +30,10 @@ import {
   LightMode as LightModeIcon,
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
+import { useAuth } from '../hooks/useAuth';
 
 const DRAWER_WIDTH = 272;
 
@@ -85,6 +87,12 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
+  };
 
   const currentMobileIndex = FLAT_NAV.findIndex((item) =>
     isItemActive(item.path, location.pathname)
@@ -219,6 +227,17 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           <ListItemText
             primary={darkMode ? 'Svetlý režim' : 'Tmavý režim'}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
+          />
+        </ListItemButton>
+        <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label="Odhlásiť sa">
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary="Odhlásiť sa"
+            secondary={user?.email ?? undefined}
+            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
+            secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
           />
         </ListItemButton>
       </Box>

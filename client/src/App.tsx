@@ -6,8 +6,12 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { sk } from 'date-fns/locale';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import AnalyzePage from './pages/AnalyzePage';
 import PetProfilePage from './pages/PetProfilePage';
 import HistoryPage from './pages/HistoryPage';
@@ -26,16 +30,26 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={sk}>
-        <BrowserRouter>
-          <Routes>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
             <Route
               path="/"
               element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
             />
             <Route
+              path="/login"
+              element={<LoginPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+            />
+            <Route
+              path="/register"
+              element={<RegisterPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+            />
+            <Route
               path="/*"
               element={
-                <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+                <ProtectedRoute>
+                  <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
                   <Routes>
                     <Route path="/analyza" element={<AnalyzePage />} />
                     <Route path="/profily" element={<PetProfilePage />} />
@@ -48,11 +62,13 @@ export default function App() {
                     <Route path="/dennik" element={<EpisodeDiaryPage />} />
                     <Route path="/o-aplikacii" element={<AboutPage />} />
                   </Routes>
-                </Layout>
+                  </Layout>
+                </ProtectedRoute>
               }
             />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
   );

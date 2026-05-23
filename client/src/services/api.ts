@@ -6,6 +6,7 @@ import {
   PetProfile,
 } from '../types';
 import { logger } from '../utils/logger';
+import { getAuthHeader, handleUnauthorized } from './authToken';
 import type {
   EpisodeCategory,
   HealthEpisodeRecord,
@@ -56,11 +57,12 @@ export async function analyzeComposition(
 
   const res = await fetch(`${BASE_URL}/api/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Textová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -100,11 +102,12 @@ export async function analyzeAttachment(
 
   const res = await fetch(`${BASE_URL}/api/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Súborová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -141,11 +144,12 @@ export async function extractTextFromImage(attachment: {
 
   const res = await fetch(`${BASE_URL}/api/extract-text`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify({ attachment }),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('OCR extrakcia zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
@@ -199,11 +203,12 @@ export async function interpretPassportText(text: string): Promise<PassportInter
 
   const res = await fetch(`${BASE_URL}/api/interpret-passport`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify({ text }),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Interpretácia pasu zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
@@ -254,11 +259,12 @@ export async function fetchSimilarEpisodeSummary(
 
   const res = await fetch(`${BASE_URL}/api/episodes/similar-summary`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string } | string;
     } | null;
@@ -284,11 +290,12 @@ export async function askFoodSafety(
 
   const res = await fetch(`${BASE_URL}/api/food-safety`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string } | string;
     } | null;
