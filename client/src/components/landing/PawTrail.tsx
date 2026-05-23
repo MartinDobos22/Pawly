@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
+type Step = 'LF' | 'RH' | 'RF' | 'LH';
+const STEP_ORDER: Step[] = ['LF', 'RH', 'RF', 'LH'];
+
 interface Paw {
   topPct: number;
   leftPct: number;
@@ -8,25 +11,38 @@ interface Paw {
   mirror: boolean;
   scale: number;
   accent: boolean;
+  order: number; // sequence index for gait reveal
 }
 
-// Zig-zag walking trail: alternating left/right foot down the page.
-function generatePaws(count: number): Paw[] {
+// Build a quadruped walking trail: repeating LF → RH → RF → LH gait down the page.
+function generatePaws(strides: number): Paw[] {
   const paws: Paw[] = [];
-  for (let i = 0; i < count; i++) {
-    const t = i / (count - 1);
-    const topPct = 3 + t * 93;
-    // walking line drifts gently left-right across the page
-    const drift = Math.sin(t * Math.PI * 3) * 26; // -26..26 wave
-    const side = i % 2 === 0 ? -5 : 5; // left/right foot offset
-    const leftPct = 50 + drift + side;
-    paws.push({
-      topPct,
-      leftPct: Math.max(4, Math.min(92, leftPct)),
-      rotate: drift * 0.5 + (i % 2 === 0 ? -6 : 6),
-      mirror: i % 2 === 1,
-      scale: 0.85 + (i % 3) * 0.12,
-      accent: i % 4 === 0,
+  const totalSteps = strides * 4;
+  // horizontal center wanders very gently so the walk feels alive but stays a line
+  for (let s = 0; s < strides; s++) {
+    const strideT = strides > 1 ? s / (strides - 1) : 0;
+    const centerDrift = Math.sin(strideT * Math.PI * 1.5) * 10; // -10..10
+    STEP_ORDER.forEach((step, k) => {
+      const order = s * 4 + k;
+      const t = order / (totalSteps - 1);
+      // vertical position spread across the page
+      const topPct = 4 + t * 92;
+      const isLeft = step === 'LF' || step === 'LH';
+      const isFront = step === 'LF' || step === 'RF';
+      // left/right foot offset from the walking line
+      const sideOffset = isLeft ? -6 : 6;
+      // front feet land slightly narrower than hind
+      const widthFactor = isFront ? 0.85 : 1.05;
+      const leftPct = 50 + centerDrift + sideOffset * widthFactor;
+      paws.push({
+        topPct,
+        leftPct: Math.max(6, Math.min(90, leftPct)),
+        rotate: (isLeft ? -10 : 10) + centerDrift * 0.4,
+        mirror: !isLeft,
+        scale: (isFront ? 0.82 : 1) * (0.95 + (s % 2) * 0.08),
+        accent: s % 3 === 0 && isFront,
+        order,
+      });
     });
   }
   return paws;
@@ -48,14 +64,15 @@ export default function PawTrail() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
-  const pawCount = isMobile ? 12 : 20;
-  const pawsRef = useRef<Paw[]>(generatePaws(pawCount));
+  const strides = isMobile ? 4 : 6;
+  const pawCount = strides * 4;
+  const pawsRef = useRef<Paw[]>(generatePaws(strides));
   const [progress, setProgress] = useState(0);
   const rafRef = useRef(0);
 
   useEffect(() => {
-    pawsRef.current = generatePaws(pawCount);
-  }, [pawCount]);
+    pawsRef.current = generatePaws(strides);
+  }, [strides]);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -82,9 +99,8 @@ export default function PawTrail() {
 
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
-  const baseOpacity = isDark ? 0.1 : 0.08;
+  const baseOpacity = isDark ? 0.22 : 0.3;
 
-  // "walking head" position in page percentage (a bit ahead of scroll)
   const walkPct = progress * 100;
 
   return (
@@ -100,27 +116,28 @@ export default function PawTrail() {
       }}
     >
       {pawsRef.current.map((paw, i) => {
-        // Reveal: paw becomes visible once the walker has passed its position.
-        const pawProgressPos = (i / (pawCount - 1)) * 100;
+        const pawProgressPos = (paw.order / (pawCount - 1)) * 100;
         const dist = walkPct - pawProgressPos;
         let opacity: number;
+        let pop: number; // scale pop on step
         let settle: number;
         if (reducedMotion) {
           opacity = baseOpacity;
+          pop = 1;
           settle = 0;
-        } else if (dist < -4) {
-          // walker not here yet
+        } else if (dist < -2) {
           opacity = 0;
-          settle = 10;
-        } else if (dist < 6) {
-          // just stepped — fade in
-          const k = (dist + 4) / 10;
+          pop = 0.55;
+          settle = 8;
+        } else if (dist < 3) {
+          const k = (dist + 2) / 5;
           opacity = baseOpacity * k;
-          settle = 10 * (1 - k);
+          pop = 0.55 + 0.45 * k;
+          settle = 8 * (1 - k);
         } else {
-          // already walked — gently fade older prints
-          const fade = Math.max(0.35, 1 - (dist - 6) / 140);
+          const fade = Math.max(0.7, 1 - (dist - 3) / 200);
           opacity = baseOpacity * fade;
+          pop = 1;
           settle = 0;
         }
 
@@ -134,8 +151,9 @@ export default function PawTrail() {
               width: { xs: 26, md: 38 },
               height: { xs: 26, md: 38 },
               opacity,
-              transform: `translate(-50%, ${settle}px) rotate(${paw.rotate}deg) scaleX(${paw.mirror ? -1 : 1}) scale(${paw.scale})`,
-              transition: 'opacity 500ms ease, transform 500ms ease',
+              transform: `translate(-50%, ${settle}px) rotate(${paw.rotate}deg) scaleX(${paw.mirror ? -1 : 1}) scale(${paw.scale * pop})`,
+              transition:
+                'opacity 220ms ease-out, transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1)',
               willChange: 'opacity, transform',
             }}
           >
