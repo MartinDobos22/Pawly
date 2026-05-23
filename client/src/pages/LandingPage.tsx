@@ -16,6 +16,7 @@ import {
   ArrowForward as ArrowIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
 import PetTypesStrip from '../components/landing/PetTypesStrip';
@@ -59,9 +60,10 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           pointerEvents: 'none',
           zIndex: 0,
         },
-        '& > *': { position: 'relative', zIndex: 1 },
+        '& > *:not([data-paw-trail])': { position: 'relative', zIndex: 1 },
       }}
     >
+      <PawTrail />
       <AppBar
         position="sticky"
         elevation={0}
