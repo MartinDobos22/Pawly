@@ -144,7 +144,33 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ px: 2, pt: 2.5, pb: 1.25 }}>
-        <Stack direction="row" alignItems="center" gap={1.25} sx={{ pl: 0.5, pb: 1.5 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1.25}
+          role="button"
+          tabIndex={0}
+          aria-label="Domov — Pawport"
+          onClick={() => handleNav('/')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleNav('/');
+            }
+          }}
+          sx={{
+            pl: 0.5,
+            pb: 1.5,
+            cursor: 'pointer',
+            borderRadius: 2,
+            transition: 'opacity 120ms ease',
+            '&:hover': { opacity: 0.85 },
+            '&:focus-visible': {
+              outline: `2px solid ${theme.palette.primary.main}`,
+              outlineOffset: 2,
+            },
+          }}
+        >
           <Box
             sx={{
               width: 30,

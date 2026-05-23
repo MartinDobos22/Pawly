@@ -16,6 +16,7 @@ import {
   ArrowForward as ArrowIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
@@ -38,6 +39,7 @@ interface Props {
 export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   return (
     <Box
@@ -114,22 +116,27 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           >
             {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
-          <Button
-            variant="contained"
-            endIcon={<ArrowIcon />}
-            onClick={() => navigate('/analyza')}
-            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
-          >
-            Vstúpiť
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => navigate('/analyza')}
-            sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
-          >
-            Vstúpiť
-          </Button>
+          {!loading &&
+            (user ? (
+              <Button
+                variant="contained"
+                size="small"
+                endIcon={<ArrowIcon />}
+                onClick={() => navigate('/analyza')}
+                sx={{ minHeight: { sm: 40 } }}
+              >
+                Vstúpiť
+              </Button>
+            ) : (
+              <Stack direction="row" gap={1}>
+                <Button variant="text" size="small" onClick={() => navigate('/login')}>
+                  Prihlásiť sa
+                </Button>
+                <Button variant="contained" size="small" onClick={() => navigate('/register')}>
+                  Registrácia
+                </Button>
+              </Stack>
+            ))}
         </Toolbar>
       </AppBar>
 
