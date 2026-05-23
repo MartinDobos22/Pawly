@@ -3,16 +3,21 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 interface Print {
   id: number;
+  yDoc: number; // px od vrchu dokumentu
   xPct: number;
-  yPct: number;
   rotateDeg: number;
   mirror: boolean;
   scale: number;
   accent: boolean;
 }
 
-const STEP_MS = 420; // čas medzi krokmi
-const LIFE_MS = 5200; // ako dlho odtlačok žije (fade in → out)
+interface Walker {
+  y: number; // document px frontier
+  x: number; // percent
+  heading: number; // radians (smer chôdze)
+  phase: number; // gait phase
+}
+
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
 const PawShape = ({ color }: { color: string }) => (
@@ -32,116 +37,132 @@ export default function PawTrail() {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   const [prints, setPrints] = useState<Print[]>([]);
-  const walker = useRef({
-    x: rand(25, 75),
-    y: rand(20, 50),
-    heading: rand(0, Math.PI * 2),
-    phase: 0,
-  });
   const idRef = useRef(0);
-  const bornRef = useRef<Map<number, number>>(new Map());
+  const downRef = useRef<Walker | null>(null);
+  const upRef = useRef<Walker | null>(null);
+  const rafRef = useRef(0);
 
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
-  const baseOpacity = isDark ? 0.24 : 0.32;
+  const baseOpacity = isDark ? 0.22 : 0.3;
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion) {
+      // jednorazová riedka statická stopa
+      const vh = window.innerHeight;
+      const docH = document.documentElement.scrollHeight;
+      const out: Print[] = [];
+      let x = rand(30, 70);
+      for (let y = vh * 0.2; y < docH - vh * 0.1; y += vh * 0.18) {
+        x = Math.max(12, Math.min(88, x + rand(-8, 8)));
+        out.push({
+          id: idRef.current++,
+          yDoc: y,
+          xPct: x,
+          rotateDeg: rand(-20, 20),
+          mirror: Math.random() < 0.5,
+          scale: rand(0.85, 1.05),
+          accent: Math.random() < 0.22,
+        });
+      }
+      setPrints(out);
+      return;
+    }
 
-    const stepLenX = isMobile ? 6 : 4.5;
-    const stepLenY = isMobile ? 8 : 6.5;
+    const vh = window.innerHeight;
+    const stepGap = vh * 0.085;
+    const genMargin = vh * 0.35;
+    const pruneMargin = vh * 1.1;
     const lateral = 4.5;
 
-    const step = () => {
-      const w = walker.current;
+    const start = window.scrollY + vh * 0.4;
+    downRef.current = { y: start, x: rand(30, 70), heading: Math.PI / 2, phase: 0 };
+    upRef.current = { y: start, x: downRef.current.x, heading: -Math.PI / 2, phase: 0 };
 
-      // jemné náhodné natáčanie
-      w.heading += rand(-0.3, 0.3);
+    const advance = (w: Walker, dir: 1 | -1): Print => {
+      // jemné natáčanie + držanie v rozsahu
+      w.heading += rand(-0.28, 0.28);
+      if (w.x < 14) w.heading = dir * (Math.PI / 2) - 0.5 * dir;
+      if (w.x > 86) w.heading = dir * (Math.PI / 2) + 0.5 * dir;
+      // horizontálny posun podľa headingu, vertikálny pevne podľa smeru
+      w.x += Math.cos(w.heading) * (lateral * 1.4) * (Math.random() < 0.5 ? 1 : 0.6);
+      w.x = Math.max(10, Math.min(90, w.x));
+      w.y += dir * stepGap;
 
-      // ak sa blíži k okraju, natoč sa späť do stredu
-      const margin = 12;
-      if (w.x < margin || w.x > 100 - margin || w.y < margin || w.y > 100 - margin) {
-        const toCenter = Math.atan2(50 - w.y, 50 - w.x);
-        // plynulý blend k smeru do stredu
-        let diff = toCenter - w.heading;
-        while (diff > Math.PI) diff -= Math.PI * 2;
-        while (diff < -Math.PI) diff += Math.PI * 2;
-        w.heading += diff * 0.6;
-      }
-
-      // posun walkera
-      w.x += Math.cos(w.heading) * stepLenX;
-      w.y += Math.sin(w.heading) * stepLenY;
-      w.x = Math.max(5, Math.min(95, w.x));
-      w.y = Math.max(6, Math.min(94, w.y));
-
-      // ktorá noha (gait)
       const phase = w.phase % 4;
       w.phase += 1;
-      const isLeft = phase === 0 || phase === 3; // LF, LH
-      const isFront = phase === 0 || phase === 2; // LF, RF
+      const isLeft = phase === 0 || phase === 3;
+      const isFront = phase === 0 || phase === 2;
+      const sideOffset = (isLeft ? -1 : 1) * lateral * (isFront ? 0.9 : 1.1);
 
-      // bočný offset kolmo na smer chôdze
-      const perp = w.heading + Math.PI / 2;
-      const sign = isLeft ? -1 : 1;
-      const mag = lateral * (isFront ? 0.9 : 1.1);
-      const xPct = w.x + Math.cos(perp) * mag * sign;
-      const yPct = w.y + Math.sin(perp) * mag * sign;
-
-      const id = idRef.current++;
-      bornRef.current.set(id, performance.now());
-      const print: Print = {
-        id,
-        xPct: Math.max(3, Math.min(97, xPct)),
-        yPct: Math.max(4, Math.min(96, yPct)),
-        rotateDeg: (w.heading * 180) / Math.PI + 90 + (isLeft ? -8 : 8),
+      return {
+        id: idRef.current++,
+        yDoc: w.y,
+        xPct: Math.max(6, Math.min(92, w.x + sideOffset)),
+        rotateDeg: (dir === 1 ? 0 : 180) + (isLeft ? -10 : 10) + rand(-6, 6),
         mirror: !isLeft,
         scale: (isFront ? 0.82 : 1) * rand(0.92, 1.08),
         accent: Math.random() < 0.22,
       };
+    };
 
-      const now = performance.now();
-      setPrints((prev) => {
-        const alive = prev.filter((p) => {
-          const born = bornRef.current.get(p.id) ?? now;
-          if (now - born > LIFE_MS) {
-            bornRef.current.delete(p.id);
-            return false;
-          }
-          return true;
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const vTop = window.scrollY;
+        const vBottom = vTop + window.innerHeight;
+        const down = downRef.current!;
+        const up = upRef.current!;
+        const fresh: Print[] = [];
+
+        let guard = 0;
+        while (down.y < vBottom + genMargin && guard < 60) {
+          fresh.push(advance(down, 1));
+          guard++;
+        }
+        guard = 0;
+        while (up.y > vTop - genMargin && guard < 60) {
+          fresh.push(advance(up, -1));
+          guard++;
+        }
+
+        if (fresh.length === 0) return;
+
+        setPrints((prev) => {
+          const merged = [...prev, ...fresh];
+          // prune odtlačky ďaleko mimo viewport
+          return merged.filter(
+            (p) => p.yDoc > vTop - pruneMargin && p.yDoc < vBottom + pruneMargin
+          );
         });
-        return [...alive, print];
       });
     };
 
-    step();
-    const interval = setInterval(step, STEP_MS);
-    return () => clearInterval(interval);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, [reducedMotion, isMobile]);
-
-  if (reducedMotion) return null;
 
   return (
     <Box
       aria-hidden
       data-paw-trail
       sx={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
         zIndex: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
-        '@keyframes pawFade': {
-          '0%': { opacity: 0 },
-          '8%': { opacity: baseOpacity },
-          '65%': { opacity: baseOpacity },
-          '100%': { opacity: 0 },
-        },
-        '@keyframes pawPop': {
-          '0%': { transform: 'scale(0.5)' },
-          '12%': { transform: 'scale(1.06)' },
-          '20%': { transform: 'scale(1)' },
-          '100%': { transform: 'scale(1.04)' },
+        '@keyframes pawStamp': {
+          '0%': { opacity: 0, transform: 'scale(0.5)' },
+          '45%': { opacity: 1, transform: 'scale(1.05)' },
+          '70%': { transform: 'scale(1)' },
+          '100%': { opacity: 1, transform: 'scale(1)' },
         },
       }}
     >
@@ -150,13 +171,12 @@ export default function PawTrail() {
           key={p.id}
           sx={{
             position: 'absolute',
-            top: `${p.yPct}%`,
+            top: `${p.yDoc}px`,
             left: `${p.xPct}%`,
             width: { xs: 26, md: 38 },
             height: { xs: 26, md: 38 },
             transform: `translate(-50%, -50%) rotate(${p.rotateDeg}deg) scaleX(${p.mirror ? -1 : 1})`,
-            animation: `pawFade ${LIFE_MS}ms ease-in-out forwards`,
-            willChange: 'opacity',
+            opacity: baseOpacity,
           }}
         >
           <Box
@@ -164,8 +184,9 @@ export default function PawTrail() {
               width: '100%',
               height: '100%',
               transform: `scale(${p.scale})`,
-              animation: `pawPop ${LIFE_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
-              willChange: 'transform',
+              animation: reducedMotion
+                ? undefined
+                : 'pawStamp 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both',
             }}
           >
             <PawShape color={p.accent ? secondary : primary} />
