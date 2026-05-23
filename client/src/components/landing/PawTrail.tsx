@@ -117,29 +117,23 @@ export default function PawTrail() {
     >
       {pawsRef.current.map((paw, i) => {
         const pawProgressPos = (paw.order / (pawCount - 1)) * 100;
-        const dist = walkPct - pawProgressPos;
-        let opacity: number;
-        let pop: number; // scale pop on step
-        let settle: number;
+        // Proximity spotlight: paws near the current scroll position are visible and
+        // fade out the further they are — in BOTH directions. Scroll up or down and
+        // a moving cluster of footsteps follows you, appearing & fading dynamically.
+        const d = Math.abs(pawProgressPos - walkPct);
+        const band = 16; // fully visible within ±16% of scroll progress
+        const falloff = 24; // fade over the next 24%
+        let vis: number;
         if (reducedMotion) {
-          opacity = baseOpacity;
-          pop = 1;
-          settle = 0;
-        } else if (dist < -2) {
-          opacity = 0;
-          pop = 0.55;
-          settle = 8;
-        } else if (dist < 3) {
-          const k = (dist + 2) / 5;
-          opacity = baseOpacity * k;
-          pop = 0.55 + 0.45 * k;
-          settle = 8 * (1 - k);
+          vis = 1;
+        } else if (d <= band) {
+          vis = 1;
         } else {
-          const fade = Math.max(0.7, 1 - (dist - 3) / 200);
-          opacity = baseOpacity * fade;
-          pop = 1;
-          settle = 0;
+          vis = Math.max(0, 1 - (d - band) / falloff);
         }
+        const opacity = baseOpacity * vis;
+        const pop = 0.7 + 0.3 * vis;
+        const settle = (1 - vis) * 6;
 
         return (
           <Box
