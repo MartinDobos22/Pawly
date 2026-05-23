@@ -22,7 +22,8 @@ import PetTypesStrip from '../components/landing/PetTypesStrip';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
-import ActivityMarquee from '../components/landing/ActivityMarquee';
+import ComparisonSection from '../components/landing/ComparisonSection';
+import PetPhotoWall from '../components/landing/PetPhotoWall';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
@@ -147,10 +148,13 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         <FeatureGrid />
       </RevealOnScroll>
       <RevealOnScroll>
+        <ComparisonSection />
+      </RevealOnScroll>
+      <RevealOnScroll>
         <AppPreview />
       </RevealOnScroll>
       <RevealOnScroll>
-        <ActivityMarquee />
+        <PetPhotoWall />
       </RevealOnScroll>
       <RevealOnScroll>
         <FinalCta />
