@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import type { PetProfile } from '../types';
 import { useLocalStorage } from './useLocalStorage';
+import { usePetProfiles } from './usePetProfiles';
 
-const PROFILES_KEY = 'granule-check-pet-profiles';
 const ACTIVE_PET_KEY = 'granule-check-active-pet-id';
 
 export function useActivePet() {
-  const [profiles] = useLocalStorage<PetProfile[]>(PROFILES_KEY, []);
+  const { profiles } = usePetProfiles();
   const [activePetId, setActivePetId] = useLocalStorage<string>(ACTIVE_PET_KEY, '');
 
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);

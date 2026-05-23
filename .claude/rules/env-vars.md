@@ -12,6 +12,10 @@
 | `FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID (Service Account). |
 | `FIREBASE_CLIENT_EMAIL` | áno (auth) | — | Service Account client email. |
 | `FIREBASE_PRIVATE_KEY` | áno (auth) | — | Service Account privátny kľúč; novelines ako `\n` v úvodzovkách (`config/firebase.ts` ich nahradí). Z Firebase Console → Project Settings → Service Accounts → Generate new private key. |
+| `SUPABASE_URL` | áno (DB) | — | URL Supabase projektu. Z Supabase Dashboard → Project Settings → API. |
+| `SUPABASE_SERVICE_ROLE_KEY` | áno (DB) | — | **TAJOMSTVO** — service_role kľúč (obchádza RLS). Výhradne server-side, NIKDY do klienta. Z Supabase Dashboard → Project Settings → API. Číta `config/supabase.ts`. |
+
+> **Supabase premenné sú povinné pre DB.** `server/src/config/supabase.ts` fail-fastne ak `SUPABASE_URL` alebo `SUPABASE_SERVICE_ROLE_KEY` chýba. service_role kľúč obchádza RLS — autorizácia sa vynucuje v API vrstve (scope na `req.appUserId` cez `middleware/ensureUser.ts`).
 
 > **Auth premenné sú povinné.** `server/src/config/firebase.ts` fail-fastne pri prvom overení tokenu ak ktorákoľvek `FIREBASE_*` chýba. Všetky `/api/*` endpointy okrem `/api/health` overujú Firebase ID token cez `middleware/firebaseAuth.ts`.
 

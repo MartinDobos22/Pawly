@@ -27,15 +27,15 @@ import SimilarEpisodesDialog from '../components/episodes/SimilarEpisodesDialog'
 import { useHealthEpisodes } from '../hooks/useHealthEpisodes';
 import { useEpisodeStorageSize } from '../hooks/useEpisodeStorageSize';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { usePetProfiles } from '../hooks/usePetProfiles';
 import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters';
 import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
-import type { PetProfile } from '../types';
 import type { MedicationRecord, VetVisitRecord } from '../types/dogHealth';
 
 export default function EpisodeDiaryPage() {
   const navigate = useNavigate();
 
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const { profiles } = usePetProfiles();
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');

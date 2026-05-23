@@ -1,7 +1,7 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { PetProfile } from '../types';
+import { usePetProfiles } from '../hooks/usePetProfiles';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
 import {
   DEFAULT_EXPORT_SECTIONS,
@@ -344,7 +344,7 @@ function statusBadge(date: string | undefined, soonDays = 30): { cls: string; la
 }
 
 export default function VetCardPage() {
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const { profiles } = usePetProfiles();
   const [vaccinations] = useLocalStorage<VaccinationRecord[]>('dog-health-vaccinations', []);
   const [dewormings] = useLocalStorage<DewormingRecord[]>('dog-health-dewormings', []);
   const [ectos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);

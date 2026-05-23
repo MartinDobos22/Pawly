@@ -27,6 +27,7 @@ import {
   Pets as PetsIcon,
 } from '@mui/icons-material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { usePetProfiles } from '../hooks/usePetProfiles';
 import type {
   PetProfile,
   AnimalType,
@@ -77,7 +78,7 @@ const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 export default function PetProfilePage() {
-  const [profiles, setProfiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
   const [vaccinations, setVaccinations] = useLocalStorage<VaccinationRecord[]>(
     'dog-health-vaccinations',
     [],
@@ -133,10 +134,10 @@ export default function PetProfilePage() {
     setPendingDelete({ id, name: profile.name, counts, total });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!pendingDelete) return;
     const id = pendingDelete.id;
-    setProfiles((prev) => prev.filter((p) => p.id !== id));
+    await deleteProfile(id);
     setVaccinations((prev) => prev.filter((x) => x.dogId !== id));
     setDewormings((prev) => prev.filter((x) => x.dogId !== id));
     setEctos((prev) => prev.filter((x) => x.dogId !== id));
@@ -177,12 +178,12 @@ export default function PetProfilePage() {
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) return;
     if (editingId) {
-      setProfiles((prev) => prev.map((p) => (p.id === editingId ? { ...form, id: editingId } : p)));
+      await updateProfile(editingId, form);
     } else {
-      setProfiles((prev) => [...prev, { ...form, id: uid() }]);
+      await createProfile(form);
     }
     setDialogOpen(false);
   };

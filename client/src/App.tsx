@@ -7,6 +7,7 @@ import { sk } from 'date-fns/locale';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { AuthProvider } from './contexts/AuthContext';
+import { PetProfilesProvider } from './contexts/PetProfilesContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import LandingPage from './pages/LandingPage';
@@ -49,6 +50,7 @@ export default function App() {
               path="/*"
               element={
                 <ProtectedRoute>
+                  <PetProfilesProvider>
                   <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
                   <Routes>
                     <Route path="/analyza" element={<AnalyzePage />} />
@@ -63,6 +65,7 @@ export default function App() {
                     <Route path="/o-aplikacii" element={<AboutPage />} />
                   </Routes>
                   </Layout>
+                  </PetProfilesProvider>
                 </ProtectedRoute>
               }
             />

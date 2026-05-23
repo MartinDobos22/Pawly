@@ -7,8 +7,10 @@ import episodesRouter from './routes/episodes';
 import extractTextRouter from './routes/extractText';
 import foodSafetyRouter from './routes/foodSafety';
 import interpretPassportRouter from './routes/interpretPassport';
+import petsRouter from './routes/pets';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
+import { ensureUser } from './middleware/ensureUser';
 import { logger } from './utils/logger';
 
 dotenv.config();
@@ -75,6 +77,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/', firebaseAuth);
 
 // Routes
+app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);

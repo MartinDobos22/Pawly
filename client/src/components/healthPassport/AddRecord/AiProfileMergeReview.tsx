@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 
-import { useLocalStorage } from '../../../hooks/useLocalStorage';
+import { usePetProfiles } from '../../../hooks/usePetProfiles';
 import {
   IDENTIFIER_LABELS,
   type IdentifierKey,
@@ -19,7 +19,6 @@ import {
   type PetProfilePatch,
   mergePetProfile,
 } from '../../../utils/petProfileMerge';
-import type { PetProfile } from '../../../types';
 
 interface Props {
   dogId: string;
@@ -43,7 +42,7 @@ function describeValue(key: IdentifierKey, value: string | undefined): string {
 }
 
 export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: Props) {
-  const [profiles, setProfiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const { profiles, updateProfile } = usePetProfiles();
   const profile = useMemo(() => profiles.find((p) => p.id === dogId) ?? null, [profiles, dogId]);
 
   const identifierEntries = useMemo(() => {
@@ -130,14 +129,14 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
     allergyAccept.length > 0 ||
     chronicAccept.length > 0;
 
-  const handleApply = () => {
+  const handleApply = async () => {
     const acceptance: MergeAcceptance = {
       identifiers: identifierAccept,
       allergies: allergyAccept,
       chronicConditions: chronicAccept,
     };
     const { merged, changedFields } = mergePetProfile(profile, patch, acceptance);
-    setProfiles((prev) => prev.map((p) => (p.id === merged.id ? merged : p)));
+    await updateProfile(merged.id, merged);
     onDone(changedFields);
   };
 
