@@ -11,13 +11,6 @@ interface Print {
   accent: boolean;
 }
 
-interface Walker {
-  y: number; // document px frontier
-  x: number; // percent
-  heading: number; // radians (smer chôdze)
-  phase: number; // gait phase
-}
-
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
 const PawShape = ({ color }: { color: string }) => (
@@ -38,8 +31,10 @@ export default function PawTrail() {
 
   const [prints, setPrints] = useState<Print[]>([]);
   const idRef = useRef(0);
-  const downRef = useRef<Walker | null>(null);
-  const upRef = useRef<Walker | null>(null);
+  const lastYRef = useRef(0);
+  const accRef = useRef(0);
+  const xRef = useRef(50);
+  const phaseRef = useRef(0);
   const rafRef = useRef(0);
 
   const primary = theme.palette.primary.main;
@@ -48,7 +43,6 @@ export default function PawTrail() {
 
   useEffect(() => {
     if (reducedMotion) {
-      // jednorazová riedka statická stopa
       const vh = window.innerHeight;
       const docH = document.documentElement.scrollHeight;
       const out: Print[] = [];
@@ -70,67 +64,62 @@ export default function PawTrail() {
     }
 
     const vh = window.innerHeight;
-    const stepGap = vh * 0.085;
-    const genMargin = vh * 0.35;
-    const pruneMargin = vh * 1.1;
+    const stepGap = vh * 0.09; // vzdialenosť scrollu na jeden krok
     const lateral = 4.5;
+    const pruneMargin = vh * 0.6;
+    xRef.current = rand(35, 65);
+    lastYRef.current = window.scrollY;
 
-    const start = window.scrollY + vh * 0.4;
-    downRef.current = { y: start, x: rand(30, 70), heading: Math.PI / 2, phase: 0 };
-    upRef.current = { y: start, x: downRef.current.x, heading: -Math.PI / 2, phase: 0 };
+    const layPrint = (dir: 1 | -1) => {
+      // walker mierne meandruje horizontálne
+      xRef.current += rand(-7, 7);
+      xRef.current = Math.max(12, Math.min(88, xRef.current));
 
-    const advance = (w: Walker, dir: 1 | -1): Print => {
-      // jemné natáčanie + držanie v rozsahu
-      w.heading += rand(-0.28, 0.28);
-      if (w.x < 14) w.heading = dir * (Math.PI / 2) - 0.5 * dir;
-      if (w.x > 86) w.heading = dir * (Math.PI / 2) + 0.5 * dir;
-      // horizontálny posun podľa headingu, vertikálny pevne podľa smeru
-      w.x += Math.cos(w.heading) * (lateral * 1.4) * (Math.random() < 0.5 ? 1 : 0.6);
-      w.x = Math.max(10, Math.min(90, w.x));
-      w.y += dir * stepGap;
-
-      const phase = w.phase % 4;
-      w.phase += 1;
+      const phase = phaseRef.current % 4;
+      phaseRef.current += 1;
       const isLeft = phase === 0 || phase === 3;
       const isFront = phase === 0 || phase === 2;
       const sideOffset = (isLeft ? -1 : 1) * lateral * (isFront ? 0.9 : 1.1);
 
+      // odtlačok sa kladie na vedúcu hranu viewportu v smere scrollu
+      const vTop = window.scrollY;
+      const vBottom = vTop + window.innerHeight;
+      const edge = dir === 1 ? vBottom : vTop;
+      const yDoc = edge - dir * rand(vh * 0.05, vh * 0.25);
+
       return {
         id: idRef.current++,
-        yDoc: w.y,
-        xPct: Math.max(6, Math.min(92, w.x + sideOffset)),
+        yDoc,
+        xPct: Math.max(6, Math.min(92, xRef.current + sideOffset)),
         rotateDeg: (dir === 1 ? 0 : 180) + (isLeft ? -10 : 10) + rand(-6, 6),
         mirror: !isLeft,
         scale: (isFront ? 0.82 : 1) * rand(0.92, 1.08),
         accent: Math.random() < 0.22,
-      };
+      } as Print;
     };
 
     const onScroll = () => {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
-        const vTop = window.scrollY;
-        const vBottom = vTop + window.innerHeight;
-        const down = downRef.current!;
-        const up = upRef.current!;
+        const y = window.scrollY;
+        const delta = y - lastYRef.current;
+        lastYRef.current = y;
+        if (delta === 0) return;
+
+        accRef.current += delta;
+        const dir: 1 | -1 = delta > 0 ? 1 : -1;
         const fresh: Print[] = [];
-
         let guard = 0;
-        while (down.y < vBottom + genMargin && guard < 60) {
-          fresh.push(advance(down, 1));
-          guard++;
-        }
-        guard = 0;
-        while (up.y > vTop - genMargin && guard < 60) {
-          fresh.push(advance(up, -1));
+        while (Math.abs(accRef.current) >= stepGap && guard < 20) {
+          fresh.push(layPrint(dir));
+          accRef.current -= dir * stepGap;
           guard++;
         }
 
-        if (fresh.length === 0) return;
-
+        const vTop = y;
+        const vBottom = y + window.innerHeight;
         setPrints((prev) => {
-          const merged = [...prev, ...fresh];
-          // prune odtlačky ďaleko mimo viewport
+          const merged = fresh.length ? [...prev, ...fresh] : prev;
           return merged.filter(
             (p) => p.yDoc > vTop - pruneMargin && p.yDoc < vBottom + pruneMargin
           );
@@ -138,7 +127,6 @@ export default function PawTrail() {
       });
     };
 
-    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     return () => {
@@ -186,7 +174,7 @@ export default function PawTrail() {
               transform: `scale(${p.scale})`,
               animation: reducedMotion
                 ? undefined
-                : 'pawStamp 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both',
+                : 'pawStamp 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both',
             }}
           >
             <PawShape color={p.accent ? secondary : primary} />
