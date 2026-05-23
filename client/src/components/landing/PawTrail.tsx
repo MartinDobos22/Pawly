@@ -14,37 +14,64 @@ interface Paw {
   order: number; // sequence index for gait reveal
 }
 
-// Build a quadruped walking trail: repeating LF → RH → RF → LH gait down the page.
+const rand = (min: number, max: number) => min + Math.random() * (max - min);
+
+// Build a quadruped walking trail that randomly meanders across the whole screen.
+// Each stride the "walker" turns by a random heading, so the path wanders left/right
+// organically (different on every load) instead of a straight central line.
 function generatePaws(strides: number): Paw[] {
   const paws: Paw[] = [];
   const totalSteps = strides * 4;
-  // horizontal center wanders very gently so the walk feels alive but stays a line
+
+  // Random-walk centre across the page width + a heading that controls foot offset dir.
+  let center = rand(20, 80);
+  let heading = rand(-1, 1); // -1 = walking left, +1 = walking right
+  let topCursor = rand(2, 6);
+
   for (let s = 0; s < strides; s++) {
-    const strideT = strides > 1 ? s / (strides - 1) : 0;
-    const centerDrift = Math.sin(strideT * Math.PI * 1.5) * 10; // -10..10
+    // turn a bit each stride (random meander), keep inside margins
+    heading += rand(-0.6, 0.6);
+    heading = Math.max(-1.2, Math.min(1.2, heading));
+    center += heading * rand(6, 14);
+    if (center < 14) {
+      center = 14;
+      heading = Math.abs(heading);
+    }
+    if (center > 86) {
+      center = 86;
+      heading = -Math.abs(heading);
+    }
+
+    // perpendicular axis for left/right foot offset (so feet straddle the heading line)
+    const perpSign = heading >= 0 ? 1 : -1;
+
     STEP_ORDER.forEach((step, k) => {
       const order = s * 4 + k;
-      const t = order / (totalSteps - 1);
-      // vertical position spread across the page
-      const topPct = 4 + t * 92;
+      // advance vertical cursor per step (irregular spacing → organic)
+      topCursor += rand(1.4, 2.8);
+      const topPct = Math.min(97, topCursor);
       const isLeft = step === 'LF' || step === 'LH';
       const isFront = step === 'LF' || step === 'RF';
-      // left/right foot offset from the walking line
-      const sideOffset = isLeft ? -6 : 6;
-      // front feet land slightly narrower than hind
-      const widthFactor = isFront ? 0.85 : 1.05;
-      const leftPct = 50 + centerDrift + sideOffset * widthFactor;
+      const sideOffset = (isLeft ? -1 : 1) * perpSign * (isFront ? 5 : 6.5);
+      const leftPct = center + sideOffset + rand(-2, 2);
       paws.push({
         topPct,
-        leftPct: Math.max(6, Math.min(90, leftPct)),
-        rotate: (isLeft ? -10 : 10) + centerDrift * 0.4,
+        leftPct: Math.max(5, Math.min(92, leftPct)),
+        rotate: heading * 22 + (isLeft ? -8 : 8) + rand(-6, 6),
         mirror: !isLeft,
-        scale: (isFront ? 0.82 : 1) * (0.95 + (s % 2) * 0.08),
-        accent: s % 3 === 0 && isFront,
+        scale: (isFront ? 0.82 : 1) * rand(0.9, 1.1),
+        accent: Math.random() < 0.25 && isFront,
         order,
       });
     });
   }
+  // normalise topPct span so the trail still covers most of the page height
+  const maxTop = paws[paws.length - 1].topPct;
+  const scaleTop = maxTop > 0 ? 95 / maxTop : 1;
+  paws.forEach((p) => {
+    p.topPct = 3 + p.topPct * scaleTop * 0.95;
+  });
+  void totalSteps;
   return paws;
 }
 
