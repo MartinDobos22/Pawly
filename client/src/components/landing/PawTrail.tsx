@@ -64,7 +64,7 @@ export default function PawTrail() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
-  const strides = isMobile ? 4 : 6;
+  const strides = isMobile ? 7 : 11;
   const pawCount = strides * 4;
   const pawsRef = useRef<Paw[]>(generatePaws(strides));
   const [progress, setProgress] = useState(0);
