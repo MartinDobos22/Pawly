@@ -23,11 +23,25 @@ function requireServiceKey(): string {
   return value;
 }
 
+// supabase-js si k base URL sám pridáva /rest/v1/... — odstráň prípadný
+// koncový /rest/v1 a lomítka, aby URL fungovala aj keď ju niekto zadá s cestou.
+function normalizeSupabaseUrl(raw: string): string {
+  return raw
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/rest\/v1$/, '')
+    .replace(/\/+$/, '');
+}
+
 export function getSupabase(): SupabaseClient {
   if (!cachedClient) {
-    cachedClient = createClient(requireEnv('SUPABASE_URL'), requireServiceKey(), {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    cachedClient = createClient(
+      normalizeSupabaseUrl(requireEnv('SUPABASE_URL')),
+      requireServiceKey(),
+      {
+        auth: { persistSession: false, autoRefreshToken: false },
+      }
+    );
   }
   return cachedClient;
 }
