@@ -96,6 +96,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    // Vyčisti user-špecifické localStorage kľúče, nech neunikajú medzi účtami
+    // na zdieľanom prehliadači (dark-mode je neutrálna preferencia, tú nechávame).
+    ['granule-check-food-safety-recent', 'granule-check-active-pet-id', 'granule-check-last-clinic-by-dog'].forEach(
+      (key) => {
+        try {
+          window.localStorage.removeItem(key);
+        } catch {
+          /* ignore */
+        }
+      }
+    );
     await signOut(auth);
   }, []);
 
