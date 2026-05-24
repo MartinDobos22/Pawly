@@ -1,10 +1,11 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   createUserWithEmailAndPassword,
+  getRedirectResult,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   type User,
 } from 'firebase/auth';
@@ -56,6 +57,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Po návrate z Google redirectu zachyť prípadnú chybu (žiadna tichá biela obrazovka).
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          logger.info('loginWithGoogle (redirect): úspech', {
+            uid: result.user.uid,
+            email: result.user.email ?? undefined,
+          });
+        }
+      })
+      .catch((err) => {
+        const fe = err as { code?: string; message?: string };
+        logger.error('loginWithGoogle (redirect) zlyhal', {
+          code: fe.code,
+          message: fe.message,
+        });
+      });
+
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
       logger.info('Auth state zmena', {
         signedIn: Boolean(nextUser),
@@ -86,10 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    logger.info('loginWithGoogle: otváram Google popup');
+    logger.info('loginWithGoogle: presmerovanie na Google (redirect)');
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      logger.info('loginWithGoogle: úspech', { uid: result.user.uid, email: result.user.email });
+      await signInWithRedirect(auth, googleProvider);
+      // stránka sa presmeruje; výsledok spracuje getRedirectResult + onAuthStateChanged po návrate
     } catch (err) {
       throw mapFirebaseAuthError(err);
     }
@@ -98,15 +117,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     // Vyčisti user-špecifické localStorage kľúče, nech neunikajú medzi účtami
     // na zdieľanom prehliadači (dark-mode je neutrálna preferencia, tú nechávame).
-    ['granule-check-food-safety-recent', 'granule-check-active-pet-id', 'granule-check-last-clinic-by-dog'].forEach(
-      (key) => {
-        try {
-          window.localStorage.removeItem(key);
-        } catch {
-          /* ignore */
-        }
+    [
+      'granule-check-food-safety-recent',
+      'granule-check-active-pet-id',
+      'granule-check-last-clinic-by-dog',
+    ].forEach((key) => {
+      try {
+        window.localStorage.removeItem(key);
+      } catch {
+        /* ignore */
       }
-    );
+    });
     await signOut(auth);
   }, []);
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
+import { isInAppBrowser } from '../utils/isInAppBrowser';
 import AuthLayout from '../components/auth/AuthLayout';
 import GoogleIcon from '../components/auth/GoogleIcon';
 
@@ -102,6 +103,13 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
           </Button>
 
           <Divider sx={{ my: 0.5 }}>alebo</Divider>
+
+          {isInAppBrowser() && (
+            <Alert severity="info">
+              Registrácia cez Google nefunguje v prehliadači Messengera/Instagramu. Otvor stránku v
+              Chrome/Safari, alebo použi e-mail a heslo.
+            </Alert>
+          )}
 
           <Button
             variant="outlined"

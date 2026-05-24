@@ -4,6 +4,7 @@ import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from 
 import { useAuth } from '../hooks/useAuth';
 import AuthLayout from '../components/auth/AuthLayout';
 import GoogleIcon from '../components/auth/GoogleIcon';
+import { isInAppBrowser } from '../utils/isInAppBrowser';
 
 interface Props {
   darkMode: boolean;
@@ -112,6 +113,13 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
           </Button>
 
           <Divider sx={{ my: 0.5 }}>alebo</Divider>
+
+          {isInAppBrowser() && (
+            <Alert severity="info">
+              Prihlásenie cez Google nefunguje v prehliadači Messengera/Instagramu. Otvor stránku v
+              Chrome/Safari, alebo sa prihlás e-mailom a heslom.
+            </Alert>
+          )}
 
           <Button
             variant="outlined"
