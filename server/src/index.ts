@@ -19,8 +19,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
+// Za reverzným proxy (Render) — správne klientské IP pre rate-limiter.
+app.set('trust proxy', 1);
+
 // Middleware
-app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
+const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://127.0.0.1:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+app.use(cors({ origin: allowedOrigins }));
 // Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));

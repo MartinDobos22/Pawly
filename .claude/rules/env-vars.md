@@ -8,7 +8,7 @@
 | `OPENAI_API_KEY` | áno (na analýzu) | — | Kľúč pre OpenAI API |
 | `GOOGLE_VISION_API_KEY` | áno (na OCR) | — | Kľúč pre Google Vision API |
 | `NODE_ENV` | nie | `development` | `production` v deployi |
-| `CORS_ORIGIN` | odporúčané v prod | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated allowed originy. **POZOR:** `server/src/index.ts` má aktuálne hardcoded `['http://localhost:5173','http://127.0.0.1:5173']` — pri deploy treba premennú reálne čítať, inak CORS error. |
+| `CORS_ORIGIN` | odporúčané v prod | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated allowed originy. `server/src/index.ts` ich reálne číta (split podľa `,`); ak premenná chýba, fallbackne na localhost. V prod (Render) nastav na Netlify URL **bez** koncového `/`. |
 | `FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID (Service Account). |
 | `FIREBASE_CLIENT_EMAIL` | áno (auth) | — | Service Account client email. |
 | `FIREBASE_PRIVATE_KEY` | áno (auth) | — | Service Account privátny kľúč; novelines ako `\n` v úvodzovkách (`config/firebase.ts` ich nahradí). Z Firebase Console → Project Settings → Service Accounts → Generate new private key. |

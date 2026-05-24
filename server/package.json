@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "GranuleCheck API server – analýza zloženia psích granúl",
   "main": "src/index.ts",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
