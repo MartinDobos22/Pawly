@@ -91,7 +91,7 @@ export default function PawTrail() {
         id: idRef.current++,
         yDoc,
         xPct: Math.max(6, Math.min(92, xRef.current + sideOffset)),
-        rotateDeg: (dir === 1 ? 0 : 180) + (isLeft ? -10 : 10) + rand(-6, 6),
+        rotateDeg: (dir === 1 ? 180 : 0) + (isLeft ? -10 : 10) + rand(-6, 6),
         mirror: !isLeft,
         scale: (isFront ? 0.82 : 1) * rand(0.92, 1.08),
         accent: Math.random() < 0.22,
