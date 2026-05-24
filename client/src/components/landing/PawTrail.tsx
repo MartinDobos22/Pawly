@@ -47,7 +47,7 @@ export default function PawTrail() {
       const docH = document.documentElement.scrollHeight;
       const out: Print[] = [];
       let x = rand(30, 70);
-      for (let y = vh * 0.2; y < docH - vh * 0.1; y += vh * 0.18) {
+      for (let y = vh * 0.24; y < docH - vh * 0.14; y += vh * 0.28) {
         x = Math.max(12, Math.min(88, x + rand(-8, 8)));
         out.push({
           id: idRef.current++,
@@ -64,9 +64,9 @@ export default function PawTrail() {
     }
 
     const vh = window.innerHeight;
-    const stepGap = vh * 0.09; // vzdialenosť scrollu na jeden krok
+    const stepGap = vh * 0.14; // väčší rozostup, menej odtlačkov
     const lateral = 4.5;
-    const pruneMargin = vh * 0.6;
+    const pruneMargin = vh * 0.45;
     xRef.current = rand(35, 65);
     lastYRef.current = window.scrollY;
 
