@@ -1,7 +1,7 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useHealthData } from '../hooks/useHealthData';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
 import {
   DEFAULT_EXPORT_SECTIONS,
@@ -16,15 +16,7 @@ import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/P
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
 import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
-import type {
-  DewormingRecord,
-  DietEntry,
-  EctoparasiteRecord,
-  MedicationRecord,
-  TimelineEvent,
-  VaccinationRecord,
-  VetVisitRecord,
-} from '../types/dogHealth';
+import type { TimelineEvent } from '../types/dogHealth';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const formatDate = (value?: string) => {
@@ -345,12 +337,7 @@ function statusBadge(date: string | undefined, soonDays = 30): { cls: string; la
 
 export default function VetCardPage() {
   const { profiles } = usePetProfiles();
-  const [vaccinations] = useLocalStorage<VaccinationRecord[]>('dog-health-vaccinations', []);
-  const [dewormings] = useLocalStorage<DewormingRecord[]>('dog-health-dewormings', []);
-  const [ectos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);
-  const [visits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
-  const [medications] = useLocalStorage<MedicationRecord[]>('dog-health-medications', []);
-  const [dietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
+  const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);

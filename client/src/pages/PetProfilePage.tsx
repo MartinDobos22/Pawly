@@ -28,25 +28,14 @@ import {
 } from '@mui/icons-material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useHealthData } from '../hooks/useHealthData';
 import type {
   PetProfile,
   AnimalType,
   AnimalSize,
   AnimalLifeStage,
   ActivityLevel,
-  SavedAnalysis,
 } from '../types';
-import type {
-  DewormingRecord,
-  DietEntry,
-  EctoparasiteRecord,
-  ExpenseRecord,
-  MedicationDoseLog,
-  MedicationRecord,
-  VaccinationRecord,
-  VetVisitRecord,
-} from '../types/dogHealth';
-import type { HealthEpisodeRecord } from '../types/healthEpisode';
 
 const ALLERGY_SUGGESTIONS = ['Kura/kuriatko', 'Hovädzie', 'Jahňacie', 'Ryby', 'Vajcia', 'Pšenica', 'Kukurica', 'Sója'];
 const INTOLERANCE_SUGGESTIONS = ['Lepok', 'Laktóza', 'Kukurica', 'Sója', 'Obilniny'];
@@ -79,31 +68,18 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 export default function PetProfilePage() {
   const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
-  const [vaccinations, setVaccinations] = useLocalStorage<VaccinationRecord[]>(
-    'dog-health-vaccinations',
-    [],
-  );
-  const [dewormings, setDewormings] = useLocalStorage<DewormingRecord[]>(
-    'dog-health-dewormings',
-    [],
-  );
-  const [ectos, setEctos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);
-  const [visits, setVisits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
-  const [medications, setMedications] = useLocalStorage<MedicationRecord[]>(
-    'dog-health-medications',
-    [],
-  );
-  const [doseLogs, setDoseLogs] = useLocalStorage<MedicationDoseLog[]>(
-    'dog-health-med-dose-logs',
-    [],
-  );
-  const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
-  const [expenses, setExpenses] = useLocalStorage<ExpenseRecord[]>('dog-health-expenses', []);
-  const [episodes, setEpisodes] = useLocalStorage<HealthEpisodeRecord[]>('dog-health-episodes', []);
-  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>(
-    'granule-check-history',
-    [],
-  );
+  const {
+    vaccinations,
+    dewormings,
+    ectos,
+    visits,
+    medications,
+    doseLogs,
+    dietEntries,
+    expenses,
+    episodes,
+    savedAnalyses,
+  } = useHealthData();
   const [, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
     'granule-check-last-clinic-by-dog',
     {},
@@ -137,17 +113,9 @@ export default function PetProfilePage() {
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     const id = pendingDelete.id;
+    // DB má na pet_id ON DELETE CASCADE — zmazaním profilu sa odstránia aj
+    // všetky súvisiace zdravotné záznamy a analýzy na serveri.
     await deleteProfile(id);
-    setVaccinations((prev) => prev.filter((x) => x.dogId !== id));
-    setDewormings((prev) => prev.filter((x) => x.dogId !== id));
-    setEctos((prev) => prev.filter((x) => x.dogId !== id));
-    setVisits((prev) => prev.filter((x) => x.dogId !== id));
-    setMedications((prev) => prev.filter((x) => x.dogId !== id));
-    setDoseLogs((prev) => prev.filter((x) => x.dogId !== id));
-    setDietEntries((prev) => prev.filter((x) => x.dogId !== id));
-    setExpenses((prev) => prev.filter((x) => x.dogId !== id));
-    setEpisodes((prev) => prev.filter((x) => x.dogId !== id));
-    setSavedAnalyses((prev) => prev.filter((x) => x.petProfileId !== id));
     setLastClinicByDog((prev) => {
       const next = { ...prev };
       delete next[id];

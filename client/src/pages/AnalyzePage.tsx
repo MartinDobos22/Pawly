@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Theme } from '@mui/material/styles';
 import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useHealthData } from '../hooks/useHealthData';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
 import FoodSafetyCheck from '../components/analyze/FoodSafetyCheck';
 import ScoreCard from '../components/ScoreCard';
@@ -31,9 +31,9 @@ import RecommendationChip from '../components/RecommendationChip';
 import AllergenWarningBanner from '../components/AllergenWarningBanner';
 import PersonalizedVerdictCard from '../components/PersonalizedVerdictCard';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../components/healthPassport/constants';
-import { today, uid } from '../components/healthPassport/utils';
+import { today } from '../components/healthPassport/utils';
 import { formatDateShort } from '../utils/relativeDate';
-import type { AnalysisResult, SavedAnalysis } from '../types';
+import type { AnalysisResult } from '../types';
 import type { DietEntry } from '../types/dogHealth';
 
 function deriveSuitability(result: AnalysisResult): NonNullable<DietEntry['suitabilityStatus']> {
@@ -76,11 +76,7 @@ export default function AnalyzePage() {
   const { analyze, extractTextOnly, result, loadingText, extractingText, error, extractError } =
     useAnalyze();
   const { activePet } = useActivePet();
-  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>(
-    'granule-check-history',
-    []
-  );
-  const [, setDietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
+  const { savedAnalyses, addSavedAnalysis, addDietEntry } = useHealthData();
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState('Hodnotenie bolo uložené');
   const [scanInfo, setScanInfo] = useState<string | null>(null);
@@ -134,23 +130,20 @@ export default function AnalyzePage() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!displayResult) return;
-    const entry: SavedAnalysis = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    await addSavedAnalysis({
       date: new Date().toISOString(),
       composition: composition.trim() || sourceLabel,
       sourceLabel,
       result: displayResult,
       petProfileId: activePet?.id,
       petProfileName: activePet?.name,
-    };
-    setSavedAnalyses((prev) => [entry, ...prev]);
+    });
 
     if (activePet) {
       const suitability = deriveSuitability(displayResult);
-      const dietEntry: DietEntry = {
-        id: uid(),
+      await addDietEntry({
         dogId: activePet.id,
         foodName: sourceLabel || 'Krmivo z analýzy',
         startedAt: today(),
@@ -160,8 +153,7 @@ export default function AnalyzePage() {
           suitability === 'SUITABLE'
             ? ['Bez zistených alergénov a zdravotných rizík']
             : (displayResult.recommendation?.notRecommendedFor ?? []),
-      };
-      setDietEntries((prev) => [dietEntry, ...prev]);
+      });
       setSnackMessage(`Hodnotenie uložené a pridané do Zdravotného pasu pre ${activePet.name}`);
     } else {
       setSnackMessage('Hodnotenie uložené');

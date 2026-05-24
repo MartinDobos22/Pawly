@@ -26,11 +26,10 @@ import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
 import SimilarEpisodesDialog from '../components/episodes/SimilarEpisodesDialog';
 import { useHealthEpisodes } from '../hooks/useHealthEpisodes';
 import { useEpisodeStorageSize } from '../hooks/useEpisodeStorageSize';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useHealthData } from '../hooks/useHealthData';
 import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters';
 import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
-import type { MedicationRecord, VetVisitRecord } from '../types/dogHealth';
 
 export default function EpisodeDiaryPage() {
   const navigate = useNavigate();
@@ -39,8 +38,7 @@ export default function EpisodeDiaryPage() {
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
-  const [medications] = useLocalStorage<MedicationRecord[]>('dog-health-medications', []);
-  const [vetVisits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
+  const { medications, visits: vetVisits } = useHealthData();
 
   const { episodes, byDog, add, update, remove } = useHealthEpisodes();
   const dogEpisodes = byDog(selectedDogId);
@@ -83,14 +81,14 @@ export default function EpisodeDiaryPage() {
     );
   }
 
-  const handleSave = (
+  const handleSave = async (
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>,
     id?: string
   ) => {
     if (id) {
-      update(id, payload);
+      await update(id, payload);
     } else {
-      add(payload);
+      await add(payload);
     }
     setFormOpen(false);
     setEditing(undefined);

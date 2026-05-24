@@ -127,6 +127,16 @@ export interface FileExtractionResult {
   feedAnalysis?: AnalysisResult;
 }
 
+export interface SavedAnalysis {
+  id: string;
+  date: string;
+  composition: string;
+  sourceLabel?: string;
+  result: AnalysisResult;
+  petProfileId?: string;
+  petProfileName?: string;
+}
+
 export interface ApiError {
   error: { message: string; code?: string };
   status?: number;

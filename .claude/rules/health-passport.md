@@ -22,15 +22,19 @@ Aktuálne typy v repo:
 
 > **Pravidlo drift:** žiadny shared package zatiaľ nie je. Pri zmene tvaru epizódy / záznamu zdrav. pasu **uprav typy na oboch stranách**. Skontroluj aj endpoint payload v `client/src/services/api.ts` (`stripAttachments`, `SimilarSummaryRequest`).
 
-## Perzistencia (localStorage)
+## Perzistencia (Supabase)
 
-Všetko sa drží v `localStorage` cez `useLocalStorage<T>(key, default)`.
+Profily zvierat aj **všetky zdravotné záznamy** (vakcinácie, odčervenia, ektoparazity, návštevy, lieky, dose-logy, diéta, výdavky, epizódy) a história analýz sú v **Supabase** cez backend. Frontend ich číta/zapisuje cez kontexty:
 
-| Hook | Kľúč | Obsah |
+| Hook / kontext | Zdroj | Obsah |
 |---|---|---|
-| `useHealthEpisodes` | (interný) | `HealthEpisodeRecord[]` |
-| `useLocalStorage('granule-check-dark-mode')` | dark-mode flag | `boolean` |
-| Profily, história, záznamy pasu | (vid pages) | doménové polia |
+| `usePetProfiles` (`PetProfilesContext`) | `services/petsApi.ts` → `/api/pets` | `PetProfile[]` |
+| `useHealthData` (`HealthDataContext`) | `services/healthApi.ts` → `/api/health/*` | všetky zdravotné polia + `savedAnalyses` |
+| `useHealthEpisodes` | wrapper nad `useHealthData` | `HealthEpisodeRecord[]` (`add/update/remove` sú async) |
+
+Vytvorenie návštevy s naviazanými záznamami ide cez **`POST /api/health/visit-bundle`** (`addVisitBundle`) — server atomicky vytvorí visit + lieky + dose-logy + … a premapuje id.
+
+V `localStorage` ostávajú už len lokálne preferencie: `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, `dog-health-weight-logs` (zatiaľ), recent food-safety queries.
 
 ### Pravidlá pre localStorage
 

@@ -36,7 +36,7 @@ interface Props {
   ectoStatus: ValidityStatus;
   dietStatus: ValidityStatus;
   onAddRecord: () => void;
-  onQuickVisitCreate: (visit: VetVisitRecord) => void;
+  onQuickVisitCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onQuickVisitUndo: (id: string) => void;
 }
 

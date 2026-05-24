@@ -8,6 +8,7 @@ import extractTextRouter from './routes/extractText';
 import foodSafetyRouter from './routes/foodSafety';
 import interpretPassportRouter from './routes/interpretPassport';
 import petsRouter from './routes/pets';
+import healthRouter from './routes/health';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -78,6 +79,7 @@ app.use('/api/', firebaseAuth);
 
 // Routes
 app.use('/api/pets', ensureUser, petsRouter);
+app.use('/api/health', ensureUser, healthRouter);
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);

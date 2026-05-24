@@ -15,29 +15,25 @@ import {
   HistoryToggleOff as EmptyIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useHealthData } from '../hooks/useHealthData';
 import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
 import EmptyState from '../components/EmptyState';
-import type { SavedAnalysis } from '../types';
 
 export default function HistoryPage() {
-  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>(
-    'granule-check-history',
-    []
-  );
+  const { savedAnalyses, removeSavedAnalysis, clearSavedAnalyses } = useHealthData();
   const [expanded, setExpanded] = useState<string | false>(false);
   const theme = useTheme();
   const navigate = useNavigate();
 
   const handleDelete = (id: string) => {
-    setSavedAnalyses((prev) => prev.filter((a) => a.id !== id));
+    void removeSavedAnalysis(id);
     if (expanded === id) setExpanded(false);
   };
 
   const handleClearAll = () => {
-    setSavedAnalyses([]);
+    void clearSavedAnalyses();
     setExpanded(false);
   };
 

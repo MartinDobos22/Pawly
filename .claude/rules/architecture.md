@@ -83,7 +83,9 @@ Request → CORS → express.json (15mb) → request logger
 
 ## Perzistencia
 
-- **Klient `localStorage`** je jediná perzistencia (žiadna DB). Drží: profily zvierat, históriu analýz, zdravotné epizódy, záznamy zdravotného pasu, dark mode.
-- `useLocalStorage<T>(key, default)` je generický hook. Doménové hooky (`useHealthEpisodes`, `useEpisodeStorageSize`) ho používajú.
-- **Pozor na kvótu:** localStorage má typicky 5 MB limit. Base64 attachmenty (foto bločkov) rastú rýchlo. `useEpisodeStorageSize` poskytuje veľkosť — pri pridávaní novej UI uploadu zváž warning, downscale (`utils/imageDownscale.ts`) a stripovanie attachmentov pred odoslaním do AI (vid `stripAttachments` v `services/api.ts`).
-- Cieľový stav je relačná DB — pozri `docs/dog-health-modules-design.md`. Pri väčšej úprave dátového modelu konzultuj ten dokument.
+- **Supabase (Postgres)** je hlavná perzistencia pre používateľské dáta — cez **backend** (service_role, nikdy nie z klienta). Tabuľky: `users`, `pets`, a zdravotné záznamy (`vaccinations`, `dewormings`, `ectoparasites`, `vet_visits`, `medications`, `medication_dose_logs`, `diet_entries`, `expenses`, `health_episodes`, `saved_analyses`). Migrácie v `supabase/migrations/`.
+  - Frontend pristupuje cez kontexty/hooky: `usePetProfiles` (profily) a `useHealthData` (zdravotné záznamy + história analýz). Tieto volajú `services/petsApi.ts` a `services/healthApi.ts`. Žiadny health stav už nie je v localStorage.
+  - Bezpečnosť: každý dotaz je scopnutý na vlastníka (`user_id` / vlastníctvo petu cez `pet_id`); RLS je deny-by-default. `pet_id` má `ON DELETE CASCADE` — zmazaním zvieraťa sa zmažú jeho záznamy na serveri.
+- **`localStorage`** drží už len **lokálne preferencie/cache zariadenia** (nie medicínske dáta): `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, `dog-health-weight-logs` (zatiaľ — kandidát na migráciu), recent food-safety queries.
+- `useLocalStorage<T>(key, default)` ostáva generický hook pre tieto preferencie.
+- Cieľový dátový model: `docs/dog-health-modules-design.md`. Pri zmene tvaru záznamu uprav SQL migráciu, server mapper (`server/src/services/healthMappers.ts`) **aj** klientské typy.

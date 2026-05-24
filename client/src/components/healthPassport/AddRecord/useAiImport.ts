@@ -1,8 +1,7 @@
 import { useCallback, useReducer } from 'react';
 
-import { useLocalStorage } from '../../../hooks/useLocalStorage';
+import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
-import type { VaccinationRecord } from '../../../types/dogHealth';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
 import type { AiDetectedDraftRecord } from '../hpTypes';
@@ -141,10 +140,7 @@ interface BuildContext {
 
 export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
-  const [existingVaccinations] = useLocalStorage<VaccinationRecord[]>(
-    'dog-health-vaccinations',
-    []
-  );
+  const { vaccinations: existingVaccinations } = useHealthData();
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
