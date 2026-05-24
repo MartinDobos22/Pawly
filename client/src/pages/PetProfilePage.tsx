@@ -131,6 +131,7 @@ export default function PetProfilePage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<PetProfile, 'id'>>(EMPTY_PROFILE);
   const [dobError, setDobError] = useState('');
+  const [nameError, setNameError] = useState('');
   const [conditionDraft, setConditionDraft] = useState('');
   const [procedureDraft, setProcedureDraft] = useState('');
 
@@ -141,17 +142,25 @@ export default function PetProfilePage() {
     setForm({ ...EMPTY_PROFILE });
     setConditionDraft('');
     setProcedureDraft('');
+    setDobError('');
+    setNameError('');
     setDialogOpen(true);
   };
 
   const openEdit = (profile: PetProfile) => {
     setEditingId(profile.id);
     setForm({ ...EMPTY_PROFILE, ...profile, allergies: [...profile.allergies], intolerances: [...profile.intolerances], healthConditions: [...profile.healthConditions], chronicConditions: [...(profile.chronicConditions ?? [])], procedures: [...(profile.procedures ?? [])] });
+    setDobError('');
+    setNameError('');
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
-    if (!form.name.trim()) return;
+    if (!form.name.trim()) {
+      setNameError('Meno je povinné.');
+      return;
+    }
+    setNameError('');
     const hasFullDate = Boolean(form.dateOfBirth);
     const hasYear = typeof form.birthYear === 'number';
     if (!hasFullDate && !hasYear) {
@@ -315,7 +324,10 @@ export default function PetProfilePage() {
         <DialogTitle>{editingId ? 'Upraviť profil psa' : 'Nový profil psa'}</DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Stack spacing={2}>
-            <TextField label="Meno" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} fullWidth />
+            <TextField label="Meno *" value={form.name} onChange={(e) => {
+              setForm({ ...form, name: e.target.value });
+              if (e.target.value.trim()) setNameError('');
+            }} error={Boolean(nameError)} helperText={nameError || 'Povinné pole'} required fullWidth />
             <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
               <FormControl fullWidth>
                 <InputLabel>Druh</InputLabel>
@@ -339,10 +351,10 @@ export default function PetProfilePage() {
                 </Select>
               </FormControl>
               {(form.dateOfBirthPrecision ?? 'full') === 'full' ? (
-                <TextField label="Dátum narodenia" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined })} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} fullWidth />
+                <TextField label="Dátum narodenia *" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => { setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
               ) : (
                 <Stack direction="row" spacing={2}>
-                  <TextField label="Rok narodenia" type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined })} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} fullWidth />
+                  <TextField label="Rok narodenia *" type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => { setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
                   {(form.dateOfBirthPrecision ?? 'full') === 'year-month' && (
                     <TextField label="Mesiac" type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
                   )}
@@ -433,8 +445,8 @@ export default function PetProfilePage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Zrušiť</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim()}>{editingId ? 'Uložiť' : 'Pridať'}</Button>
+          <Button onClick={() => { setDialogOpen(false); setNameError(''); setDobError(''); }}>Zrušiť</Button>
+          <Button variant="contained" onClick={handleSave}>{editingId ? 'Uložiť' : 'Pridať'}</Button>
         </DialogActions>
       </Dialog>
 
