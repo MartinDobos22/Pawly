@@ -15,12 +15,14 @@ function requireEnv(name: string): string {
 
 function normalizePrivateKey(raw: string): string {
   let key = raw.trim();
+  // odstráň prípadnú koncovú čiarku (copy z JSON riadku: "...",)
+  if (key.endsWith(',')) key = key.slice(0, -1).trim();
   // Render/dashboardy nestripujú úvodzovky — odstráň obaľujúce " alebo '
   if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
     key = key.slice(1, -1);
   }
   // literálne \n (z JSON-u / single-line env) → reálne nové riadky
-  key = key.replace(/\\n/g, '\n');
+  key = key.replace(/\\n/g, '\n').trim();
   return key;
 }
 
