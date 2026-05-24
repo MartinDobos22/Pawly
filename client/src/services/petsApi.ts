@@ -1,10 +1,14 @@
 import type { PetProfile } from '../types';
 import { getAuthHeader, handleUnauthorized } from './authToken';
+import { logger } from '../utils/logger';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}/api/pets${path}`, {
+  const method = init?.method ?? 'GET';
+  const url = `${BASE_URL}/api/pets${path}`;
+  logger.info('API request', { method, url });
+  const res = await fetch(url, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -15,10 +19,20 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     await handleUnauthorized(res.status);
-    const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string; code?: string };
+    } | null;
+    logger.error('API request zlyhal', {
+      method,
+      url,
+      status: res.status,
+      code: body?.error?.code,
+      message: body?.error?.message,
+    });
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
   }
 
+  logger.info('API response OK', { method, url, status: res.status });
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }

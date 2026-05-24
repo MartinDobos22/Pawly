@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth, googleProvider } from '../config/firebase';
+import { logger } from '../utils/logger';
 
 interface AuthContextValue {
   user: User | null;
@@ -25,6 +26,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 
 function mapFirebaseAuthError(err: unknown): Error {
   if (err instanceof FirebaseError) {
+    logger.error('Firebase auth chyba', { code: err.code, message: err.message });
     switch (err.code) {
       case 'auth/invalid-email':
         return new Error('Neplatný formát e-mailu.');
@@ -55,6 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+      logger.info('Auth state zmena', {
+        signedIn: Boolean(nextUser),
+        uid: nextUser?.uid,
+        email: nextUser?.email ?? undefined,
+        provider: nextUser?.providerData?.[0]?.providerId,
+      });
       setUser(nextUser);
       setLoading(false);
     });
@@ -78,8 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
+    logger.info('loginWithGoogle: otváram Google popup');
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      logger.info('loginWithGoogle: úspech', { uid: result.user.uid, email: result.user.email });
     } catch (err) {
       throw mapFirebaseAuthError(err);
     }

@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { logger } from '../utils/logger';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -9,6 +10,15 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
+logger.info('Štart aplikácie — runtime konfigurácia', {
+  apiBaseUrl: import.meta.env.VITE_API_URL ?? '(prázdne → relatívne / Vite proxy)',
+  firebaseProjectId: firebaseConfig.projectId,
+  firebaseAuthDomain: firebaseConfig.authDomain,
+  hasFirebaseApiKey: Boolean(firebaseConfig.apiKey),
+  hasFirebaseAppId: Boolean(firebaseConfig.appId),
+  mode: import.meta.env.MODE,
+});
 
 const app = initializeApp(firebaseConfig);
 
