@@ -16,6 +16,9 @@ interface PetRow {
   animal_type: PetProfile['animalType'];
   breed: string | null;
   date_of_birth: string | null;
+  date_of_birth_precision: PetProfile['dateOfBirthPrecision'] | null;
+  birth_year: number | null;
+  birth_month: number | null;
   sex: PetProfile['sex'] | null;
   age_years: number | null;
   age_months: number | null;
@@ -41,6 +44,9 @@ function rowToProfile(row: PetRow): PetProfile {
     animalType: row.animal_type,
     breed: row.breed ?? undefined,
     dateOfBirth: row.date_of_birth ?? undefined,
+    dateOfBirthPrecision: row.date_of_birth_precision ?? undefined,
+    birthYear: row.birth_year ?? undefined,
+    birthMonth: row.birth_month ?? undefined,
     sex: row.sex ?? undefined,
     ageYears: row.age_years ?? undefined,
     ageMonths: row.age_months ?? undefined,
@@ -68,7 +74,14 @@ function profileToRow(payload: Partial<PetProfile>): Record<string, unknown> {
   set('name', payload.name);
   set('animal_type', payload.animalType);
   set('breed', payload.breed);
-  set('date_of_birth', payload.dateOfBirth);
+  const normalizedDob =
+    typeof payload.dateOfBirth === 'string' && payload.dateOfBirth.trim() === ''
+      ? null
+      : payload.dateOfBirth;
+  set('date_of_birth', normalizedDob);
+  set('date_of_birth_precision', payload.dateOfBirthPrecision);
+  set('birth_year', payload.birthYear);
+  set('birth_month', payload.birthMonth);
   set('sex', payload.sex);
   set('age_years', payload.ageYears);
   set('age_months', payload.ageMonths);
