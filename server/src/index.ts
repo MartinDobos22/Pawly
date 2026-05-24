@@ -23,12 +23,31 @@ const PORT = process.env.PORT ?? 3001;
 app.set('trust proxy', 1);
 
 // Middleware
-const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://127.0.0.1:5173')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-app.use(cors({ origin: allowedOrigins }));
-// Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
+
+const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+app.use(
+    cors({
+      origin: (origin, callback) => {
+        // povol aj requests bez Origin (curl, health checks)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+      },
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+);
+
+// explicitne obslúž preflight pre všetky route
+app.options('*', cors());// Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
 
