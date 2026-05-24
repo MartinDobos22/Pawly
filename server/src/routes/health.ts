@@ -10,6 +10,7 @@ import {
   medicationMapper,
   vaccinationMapper,
   vetVisitMapper,
+  weightLogMapper,
 } from '../services/healthMappers';
 import { removeMedicationCascade } from '../services/medicationsService';
 import { createVisitBundle } from '../services/visitBundleService';
@@ -79,6 +80,7 @@ registerCrud('dose-logs', makeCrud(doseLogMapper));
 registerCrud('diet-entries', makeCrud(dietEntryMapper));
 registerCrud('expenses', makeCrud(expenseMapper));
 registerCrud('episodes', makeCrud(episodeMapper));
+registerCrud('weight-logs', makeCrud(weightLogMapper));
 
 router.delete('/medications/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

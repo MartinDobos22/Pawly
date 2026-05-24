@@ -7,6 +7,7 @@ import type {
   MedicationRecord,
   VaccinationRecord,
   VetVisitRecord,
+  WeightLog,
 } from '../types/dogHealth';
 import type { HealthEpisodeRecord } from '../types/healthEpisode';
 import type { SavedAnalysis } from '../types';
@@ -59,6 +60,7 @@ export const doseLogsApi = crudApi<MedicationDoseLog>('dose-logs');
 export const dietEntriesApi = crudApi<DietEntry>('diet-entries');
 export const expensesApi = crudApi<ExpenseRecord>('expenses');
 export const episodesApi = crudApi<HealthEpisodeRecord>('episodes');
+export const weightLogsApi = crudApi<WeightLog>('weight-logs');
 
 export function createVisitBundle(bundle: VisitBundle): Promise<VisitBundle> {
   return request<VisitBundle>('/visit-bundle', { method: 'POST', body: JSON.stringify(bundle) });

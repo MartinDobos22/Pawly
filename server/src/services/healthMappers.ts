@@ -7,6 +7,7 @@ import type {
   MedicationRecord,
   VaccinationRecord,
   VetVisitRecord,
+  WeightLog,
 } from '../types/dogHealth';
 import type { HealthEpisodeRecord } from '../types/episode';
 
@@ -224,6 +225,21 @@ export const expenseMapper: EntityMapper<ExpenseRecord> = {
     relatedVetVisitId: str(r.related_vet_visit_id),
     relatedDietEntryId: str(r.related_diet_entry_id),
     note: str(r.note),
+  }),
+};
+
+export const weightLogMapper: EntityMapper<WeightLog> = {
+  table: 'weight_logs',
+  toRow: (d) =>
+    build([
+      ['date', d.date],
+      ['kg', d.kg],
+    ]),
+  toDto: (r) => ({
+    id: String(r.id),
+    dogId: String(r.pet_id),
+    date: str(r.date) ?? '',
+    kg: Number(r.kg ?? 0),
   }),
 };
 

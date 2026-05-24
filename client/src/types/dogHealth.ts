@@ -138,3 +138,10 @@ export interface TimelineEvent {
   subtitle?: string;
   date: string;
 }
+
+export interface WeightLog {
+  id: string;
+  dogId: string;
+  date: string;
+  kg: number;
+}

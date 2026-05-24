@@ -34,7 +34,7 @@ Profily zvierat aj **všetky zdravotné záznamy** (vakcinácie, odčervenia, ek
 
 Vytvorenie návštevy s naviazanými záznamami ide cez **`POST /api/health/visit-bundle`** (`addVisitBundle`) — server atomicky vytvorí visit + lieky + dose-logy + … a premapuje id.
 
-V `localStorage` ostávajú už len lokálne preferencie: `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, `dog-health-weight-logs` (zatiaľ), recent food-safety queries.
+V `localStorage` ostávajú už len lokálne preferencie: `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, recent food-safety queries.
 
 ### Pravidlá pre localStorage
 

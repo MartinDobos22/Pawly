@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type {
   DewormingRecord,
   DietEntry,
@@ -15,6 +8,7 @@ import type {
   MedicationRecord,
   VaccinationRecord,
   VetVisitRecord,
+  WeightLog,
 } from '../types/dogHealth';
 import type { HealthEpisodeRecord } from '../types/healthEpisode';
 import type { SavedAnalysis } from '../types';
@@ -31,6 +25,7 @@ import {
   savedAnalysesApi,
   vaccinationsApi,
   vetVisitsApi,
+  weightLogsApi,
   type CrudApi,
 } from '../services/healthApi';
 
@@ -84,6 +79,7 @@ export interface HealthDataContextValue {
   dietEntries: DietEntry[];
   expenses: ExpenseRecord[];
   episodes: HealthEpisodeRecord[];
+  weightLogs: WeightLog[];
   savedAnalyses: SavedAnalysis[];
 
   addVaccination: Collection<VaccinationRecord>['add'];
@@ -108,6 +104,7 @@ export interface HealthDataContextValue {
   addEpisode: Collection<HealthEpisodeRecord>['add'];
   updateEpisode: Collection<HealthEpisodeRecord>['update'];
   removeEpisode: Collection<HealthEpisodeRecord>['remove'];
+  addWeightLog: Collection<WeightLog>['add'];
 
   addMedication: Collection<MedicationRecord>['add'];
   updateMedication: Collection<MedicationRecord>['update'];
@@ -132,6 +129,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
   const dietEntries = useCollection<DietEntry>(dietEntriesApi);
   const expenses = useCollection<ExpenseRecord>(expensesApi);
   const episodes = useCollection<HealthEpisodeRecord>(episodesApi);
+  const weightLogs = useCollection<WeightLog>(weightLogsApi);
 
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +139,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const [v, d, e, vi, m, dl, di, ex, ep, sa] = await Promise.all([
+      const [v, d, e, vi, m, dl, di, ex, ep, wl, sa] = await Promise.all([
         vaccinationsApi.list(),
         dewormingsApi.list(),
         ectoparasitesApi.list(),
@@ -151,6 +149,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
         dietEntriesApi.list(),
         expensesApi.list(),
         episodesApi.list(),
+        weightLogsApi.list(),
         savedAnalysesApi.list(),
       ]);
       vaccinations.setItems(v);
@@ -162,6 +161,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       dietEntries.setItems(di);
       expenses.setItems(ex);
       episodes.setItems(ep);
+      weightLogs.setItems(wl);
       setSavedAnalyses(sa);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Načítanie zdravotných dát zlyhalo.');
@@ -189,7 +189,10 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       await medicationsApi.remove(id);
       medications.setItems((prev) => prev.filter((x) => x.id !== id));
       // server kaskádne zmazal dose-logy a odstránil id z návštev — premietni
-      const [freshDoseLogs, freshVisits] = await Promise.all([doseLogsApi.list(), vetVisitsApi.list()]);
+      const [freshDoseLogs, freshVisits] = await Promise.all([
+        doseLogsApi.list(),
+        vetVisitsApi.list(),
+      ]);
       doseLogs.setItems(freshDoseLogs);
       visits.setItems(freshVisits);
     },
@@ -241,6 +244,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       dietEntries: dietEntries.items,
       expenses: expenses.items,
       episodes: episodes.items,
+      weightLogs: weightLogs.items,
       savedAnalyses,
       addVaccination: vaccinations.add,
       updateVaccination: vaccinations.update,
@@ -263,6 +267,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       addEpisode: episodes.add,
       updateEpisode: episodes.update,
       removeEpisode: episodes.remove,
+      addWeightLog: weightLogs.add,
       addMedication: medications.add,
       updateMedication: medications.update,
       toggleDose,
@@ -285,6 +290,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       dietEntries,
       expenses,
       episodes,
+      weightLogs,
       savedAnalyses,
       toggleDose,
       removeMedication,

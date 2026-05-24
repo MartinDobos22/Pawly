@@ -83,9 +83,9 @@ Request → CORS → express.json (15mb) → request logger
 
 ## Perzistencia
 
-- **Supabase (Postgres)** je hlavná perzistencia pre používateľské dáta — cez **backend** (service_role, nikdy nie z klienta). Tabuľky: `users`, `pets`, a zdravotné záznamy (`vaccinations`, `dewormings`, `ectoparasites`, `vet_visits`, `medications`, `medication_dose_logs`, `diet_entries`, `expenses`, `health_episodes`, `saved_analyses`). Migrácie v `supabase/migrations/`.
+- **Supabase (Postgres)** je hlavná perzistencia pre používateľské dáta — cez **backend** (service_role, nikdy nie z klienta). Tabuľky: `users`, `pets`, a zdravotné záznamy (`vaccinations`, `dewormings`, `ectoparasites`, `vet_visits`, `medications`, `medication_dose_logs`, `diet_entries`, `expenses`, `health_episodes`, `weight_logs`, `saved_analyses`). Migrácie v `supabase/migrations/`.
   - Frontend pristupuje cez kontexty/hooky: `usePetProfiles` (profily) a `useHealthData` (zdravotné záznamy + história analýz). Tieto volajú `services/petsApi.ts` a `services/healthApi.ts`. Žiadny health stav už nie je v localStorage.
   - Bezpečnosť: každý dotaz je scopnutý na vlastníka (`user_id` / vlastníctvo petu cez `pet_id`); RLS je deny-by-default. `pet_id` má `ON DELETE CASCADE` — zmazaním zvieraťa sa zmažú jeho záznamy na serveri.
-- **`localStorage`** drží už len **lokálne preferencie/cache zariadenia** (nie medicínske dáta): `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, `dog-health-weight-logs` (zatiaľ — kandidát na migráciu), recent food-safety queries.
+- **`localStorage`** drží už len **lokálne preferencie/cache zariadenia** (nie medicínske dáta): `granule-check-dark-mode`, `granule-check-active-pet-id`, `granule-check-last-clinic-by-dog`, recent food-safety queries (`granule-check-food-safety-recent`).
 - `useLocalStorage<T>(key, default)` ostáva generický hook pre tieto preferencie.
 - Cieľový dátový model: `docs/dog-health-modules-design.md`. Pri zmene tvaru záznamu uprav SQL migráciu, server mapper (`server/src/services/healthMappers.ts`) **aj** klientské typy.

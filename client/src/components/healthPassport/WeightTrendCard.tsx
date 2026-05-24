@@ -24,29 +24,20 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from 'recharts';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useHealthData } from '../../hooks/useHealthData';
 import { formatDateShort } from '../../utils/relativeDate';
 import DateField from '../DateField';
-
-export interface WeightLog {
-  id: string;
-  dogId: string;
-  date: string;
-  kg: number;
-}
 
 interface Props {
   dogId: string;
   fallbackWeightKg?: number;
 }
 
-const STORAGE_KEY = 'dog-health-weight-logs';
-
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
   const theme = useTheme();
-  const [logs, setLogs] = useLocalStorage<WeightLog[]>(STORAGE_KEY, []);
+  const { weightLogs: logs, addWeightLog } = useHealthData();
   const [open, setOpen] = useState(false);
   const [draftKg, setDraftKg] = useState<string>(fallbackWeightKg ? String(fallbackWeightKg) : '');
   const [draftDate, setDraftDate] = useState<string>(todayIso());
@@ -76,16 +67,10 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
     return Math.ceil(Math.max(...series.map((s) => s.kg)) * 1.05);
   }, [series]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const kg = parseFloat(draftKg.replace(',', '.'));
     if (!Number.isFinite(kg) || kg <= 0) return;
-    const entry: WeightLog = {
-      id: `weight-${Date.now()}`,
-      dogId,
-      date: draftDate || todayIso(),
-      kg,
-    };
-    setLogs((prev) => [...prev, entry]);
+    await addWeightLog({ dogId, date: draftDate || todayIso(), kg });
     setOpen(false);
     setDraftKg('');
     setDraftDate(todayIso());
