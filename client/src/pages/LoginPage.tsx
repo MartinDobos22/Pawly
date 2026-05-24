@@ -26,6 +26,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const inAppBrowser = isInAppBrowser();
 
   const handleEmailLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -71,6 +72,18 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
     }
   };
 
+  const handleOpenInBrowser = () => {
+    const url = window.location.href;
+    const encodedUrl = encodeURIComponent(url);
+    // Android: pokus otvoriť stránku mimo in-app browsera.
+    if (/Android/i.test(navigator.userAgent)) {
+      window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodedUrl};end`;
+      return;
+    }
+    // iOS / ostatné: fallback - otvor novú kartu, ktorú vie systém ponúknuť v Safari.
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <AuthLayout
       title="Prihlásenie"
@@ -114,11 +127,16 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
 
           <Divider sx={{ my: 0.5 }}>alebo</Divider>
 
-          {isInAppBrowser() && (
-            <Alert severity="info">
-              Prihlásenie cez Google nefunguje v prehliadači Messengera/Instagramu. Otvor stránku v
-              Chrome/Safari, alebo sa prihlás e-mailom a heslom.
-            </Alert>
+          {inAppBrowser && (
+            <Stack gap={1}>
+              <Alert severity="warning">
+                Prihlásenie cez Google v Messengeri/Instagrame je blokované. Otvor túto stránku v
+                Chrome/Safari (⋯ → Open in browser), alebo sa prihlás e-mailom.
+              </Alert>
+              <Button variant="text" size="small" onClick={handleOpenInBrowser}>
+                Otvoriť v externom prehliadači
+              </Button>
+            </Stack>
           )}
 
           <Button
@@ -126,7 +144,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
             size="large"
             startIcon={<GoogleIcon />}
             onClick={handleGoogleLogin}
-            disabled={submitting}
+            disabled={submitting || inAppBrowser}
             fullWidth
           >
             Prihlásiť cez Google
