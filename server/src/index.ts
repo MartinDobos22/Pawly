@@ -9,6 +9,7 @@ import foodSafetyRouter from './routes/foodSafety';
 import interpretPassportRouter from './routes/interpretPassport';
 import petsRouter from './routes/pets';
 import healthRouter from './routes/health';
+import accountRouter from './routes/account';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -25,29 +26,29 @@ app.set('trust proxy', 1);
 // Middleware
 
 const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(
-    cors({
-      origin: (origin, callback) => {
-        // povol aj requests bez Origin (curl, health checks)
-        if (!origin) return callback(null, true);
+  cors({
+    origin: (origin, callback) => {
+      // povol aj requests bez Origin (curl, health checks)
+      if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
-          return callback(null, true);
-        }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
 
-        return callback(new Error(`CORS blocked for origin: ${origin}`));
-      },
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    })
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
 );
 
 // explicitne obslúž preflight pre všetky route
-app.options('*', cors());// Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
+app.options('*', cors()); // Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
 
@@ -106,6 +107,7 @@ app.use('/api/', firebaseAuth);
 // Routes
 app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/health', ensureUser, healthRouter);
+app.use('/api/account', ensureUser, accountRouter);
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);

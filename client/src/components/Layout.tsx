@@ -31,9 +31,11 @@ import {
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
   Logout as LogoutIcon,
+  DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
 import { useAuth } from '../hooks/useAuth';
+import { deleteAccount } from '../services/accountApi';
 
 const DRAWER_WIDTH = 272;
 
@@ -92,6 +94,20 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const handleLogout = async () => {
     await logout();
     navigate('/login', { replace: true });
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      'Naozaj zmazať účet? Vymažú sa všetky tvoje zvieratá a zdravotné záznamy. Túto akciu nie je možné vrátiť.'
+    );
+    if (!confirmed) return;
+    try {
+      await deleteAccount();
+      await logout();
+      navigate('/login', { replace: true });
+    } catch {
+      window.alert('Mazanie účtu zlyhalo. Skús to znova.');
+    }
   };
 
   const currentMobileIndex = FLAT_NAV.findIndex((item) =>
@@ -264,6 +280,23 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             secondary={user?.email ?? undefined}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
             secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
+          />
+        </ListItemButton>
+        <ListItemButton
+          onClick={handleDeleteAccount}
+          sx={{
+            ...navItemSx(false),
+            color: 'error.main',
+            '& .MuiListItemIcon-root': { color: 'error.main' },
+          }}
+          aria-label="Zmazať účet"
+        >
+          <ListItemIcon>
+            <DeleteForeverIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary="Zmazať účet"
+            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
           />
         </ListItemButton>
       </Box>
