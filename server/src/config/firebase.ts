@@ -13,6 +13,17 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function normalizePrivateKey(raw: string): string {
+  let key = raw.trim();
+  // Render/dashboardy nestripujú úvodzovky — odstráň obaľujúce " alebo '
+  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+    key = key.slice(1, -1);
+  }
+  // literálne \n (z JSON-u / single-line env) → reálne nové riadky
+  key = key.replace(/\\n/g, '\n');
+  return key;
+}
+
 function initApp(): App {
   const existing = getApps();
   if (existing.length > 0) return existing[0];
@@ -21,7 +32,7 @@ function initApp(): App {
     credential: cert({
       projectId: requireEnv('FIREBASE_PROJECT_ID'),
       clientEmail: requireEnv('FIREBASE_CLIENT_EMAIL'),
-      privateKey: requireEnv('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n'),
+      privateKey: normalizePrivateKey(requireEnv('FIREBASE_PRIVATE_KEY')),
     }),
   });
 }
