@@ -46,6 +46,11 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
   const handleGoogleLogin = async () => {
     setError(null);
     setInfo(null);
+    if (inAppBrowser) {
+      setInfo(
+        'Si v Messengeri/Instagrame. Ak Google prihlásenie neprejde, otvor stránku cez „Otvoriť v externom prehliadači“.'
+      );
+    }
     setSubmitting(true);
     try {
       await loginWithGoogle();
