@@ -39,6 +39,8 @@ export async function firebaseAuth(
     }
     logger.error('Overenie Firebase tokenu zlyhalo', {
       path: req.originalUrl,
+      reason: err instanceof Error ? err.message : String(err),
+      code: (err as { code?: string }).code,
     });
     next(new AuthError('Neplatný alebo expirovaný prihlasovací token.', 'INVALID_TOKEN'));
   }
