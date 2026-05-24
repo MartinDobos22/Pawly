@@ -46,6 +46,9 @@ const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   animalType: 'dog',
   breed: '',
   dateOfBirth: '',
+  dateOfBirthPrecision: 'full',
+  birthYear: undefined,
+  birthMonth: undefined,
   sex: 'UNKNOWN',
   ageYears: undefined,
   ageMonths: undefined,
@@ -127,6 +130,7 @@ export default function PetProfilePage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<PetProfile, 'id'>>(EMPTY_PROFILE);
+  const [dobError, setDobError] = useState('');
   const [conditionDraft, setConditionDraft] = useState('');
   const [procedureDraft, setProcedureDraft] = useState('');
 
@@ -148,6 +152,13 @@ export default function PetProfilePage() {
 
   const handleSave = async () => {
     if (!form.name.trim()) return;
+    const hasFullDate = Boolean(form.dateOfBirth);
+    const hasYear = typeof form.birthYear === 'number';
+    if (!hasFullDate && !hasYear) {
+      setDobError('Dátum narodenia je povinný aspoň ako rok.');
+      return;
+    }
+    setDobError('');
     if (editingId) {
       await updateProfile(editingId, form);
     } else {
@@ -315,7 +326,28 @@ export default function PetProfilePage() {
                 </Select>
               </FormControl>
               <TextField label="Plemeno" value={form.breed ?? ''} onChange={(e) => setForm({ ...form, breed: e.target.value })} fullWidth />
-              <TextField label="Dátum narodenia" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Presnosť dátumu narodenia</InputLabel>
+                <Select
+                  value={form.dateOfBirthPrecision ?? 'full'}
+                  label="Presnosť dátumu narodenia"
+                  onChange={(e) => setForm({ ...form, dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'] })}
+                >
+                  <MenuItem value="full">Presný dátum</MenuItem>
+                  <MenuItem value="year-month">Len rok a mesiac</MenuItem>
+                  <MenuItem value="year">Len rok</MenuItem>
+                </Select>
+              </FormControl>
+              {(form.dateOfBirthPrecision ?? 'full') === 'full' ? (
+                <TextField label="Dátum narodenia" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined })} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} fullWidth />
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <TextField label="Rok narodenia" type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined })} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} fullWidth />
+                  {(form.dateOfBirthPrecision ?? 'full') === 'year-month' && (
+                    <TextField label="Mesiac" type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
+                  )}
+                </Stack>
+              )}
               <FormControl fullWidth>
                 <InputLabel>Pohlavie</InputLabel>
                 <Select value={form.sex ?? 'UNKNOWN'} label="Pohlavie" onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}>

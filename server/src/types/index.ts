@@ -9,6 +9,9 @@ export interface PetProfile {
   animalType: AnimalType;
   breed?: string;
   dateOfBirth?: string;
+  dateOfBirthPrecision?: 'year' | 'year-month' | 'full';
+  birthYear?: number;
+  birthMonth?: number;
   sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
   ageYears?: number;
   ageMonths?: number;
