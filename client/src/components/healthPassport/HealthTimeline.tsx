@@ -113,14 +113,18 @@ export default function HealthTimeline({
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
-        justifyContent="space-between"
-        gap={1.5}
-        sx={{ mb: 2 }}
+      <Box
+        sx={{
+          mb: 2,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          columnGap: 2,
+          rowGap: 1.5,
+        }}
       >
-        <Box>
+        <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
           <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
             Timeline
           </Typography>
@@ -131,7 +135,7 @@ export default function HealthTimeline({
         <Stack
           direction="row"
           gap={1}
-          sx={{ width: { xs: '100%', sm: 'auto' }, alignItems: 'center' }}
+          sx={{ flex: '1 1 320px', minWidth: 0, alignItems: 'center', justifyContent: 'flex-end' }}
         >
           <TextField
             placeholder="Hľadať v zdravotnom zázname…"
@@ -155,10 +159,7 @@ export default function HealthTimeline({
                 </InputAdornment>
               ) : null,
             }}
-            sx={{
-              flex: { xs: 1, sm: 'unset' },
-              minWidth: { sm: 280 },
-            }}
+            sx={{ flex: 1, minWidth: 0 }}
           />
           <Button
             variant="outlined"
@@ -170,7 +171,7 @@ export default function HealthTimeline({
             Export PDF
           </Button>
         </Stack>
-      </Stack>
+      </Box>
 
       <Stack
         direction="row"
@@ -180,16 +181,8 @@ export default function HealthTimeline({
           mb: 2.5,
           pb: 1.5,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          overflowX: 'auto',
-          flexWrap: 'nowrap',
-          scrollSnapType: 'x proximity',
-          maskImage:
-            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
-          '&::-webkit-scrollbar': { height: 0 },
-          scrollbarWidth: 'none',
-          '& > *': { scrollSnapAlign: 'start', flexShrink: 0 },
+          flexWrap: 'wrap',
+          rowGap: 0.75,
         }}
       >
         <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
