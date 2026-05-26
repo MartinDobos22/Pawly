@@ -18,6 +18,7 @@ import AnalyzePage from './pages/AnalyzePage';
 import PetProfilePage from './pages/PetProfilePage';
 import HistoryPage from './pages/HistoryPage';
 import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
 import HealthPassportPage from './pages/HealthPassportPage';
 import VetCardPage from './pages/VetCardPage';
 import EpisodeDiaryPage from './pages/EpisodeDiaryPage';
@@ -65,6 +66,7 @@ export default function App() {
                     <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
                     <Route path="/dennik" element={<EpisodeDiaryPage />} />
                     <Route path="/o-aplikacii" element={<AboutPage />} />
+                    <Route path="/caste-otazky" element={<FaqPage />} />
                   </Routes>
                   </Layout>
                   </HealthDataProvider>

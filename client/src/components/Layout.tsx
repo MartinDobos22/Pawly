@@ -25,6 +25,7 @@ import {
   HealthAndSafety as HealthAndSafetyIcon,
   Description as DescriptionIcon,
   Info as InfoIcon,
+  HelpOutline as HelpOutlineIcon,
   Menu as MenuIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -65,6 +66,7 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'Nastavenia',
     items: [
       { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
+      { label: 'Časté otázky', icon: <HelpOutlineIcon />, path: '/caste-otazky' },
       { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
     ],
   },
