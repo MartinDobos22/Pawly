@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
-  const { register, loginWithGoogle } = useAuth();
+  const { user, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -20,6 +20,12 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const inAppBrowser = isInAppBrowser();
+
+  // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
+  useEffect(() => {
+    if (user) navigate('/analyza', { replace: true });
+  }, [user, navigate]);
 
   const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -104,7 +110,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
 
           <Divider sx={{ my: 0.5 }}>alebo</Divider>
 
-          {isInAppBrowser() && (
+          {inAppBrowser && (
             <Alert severity="info">
               Registrácia cez Google nefunguje v prehliadači Messengera/Instagramu. Otvor stránku v
               Chrome/Safari, alebo použi e-mail a heslo.
@@ -116,7 +122,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             size="large"
             startIcon={<GoogleIcon />}
             onClick={handleGoogleRegister}
-            disabled={submitting}
+            disabled={submitting || inAppBrowser}
             fullWidth
           >
             Pokračovať cez Google

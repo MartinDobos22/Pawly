@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
@@ -16,10 +16,15 @@ interface LocationState {
 }
 
 export default function LoginPage({ darkMode, onToggleTheme }: Props) {
-  const { login, loginWithGoogle, resetPassword } = useAuth();
+  const { user, login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as LocationState | null)?.from ?? '/analyza';
+
+  // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
+  useEffect(() => {
+    if (user) navigate(redirectTo, { replace: true });
+  }, [user, navigate, redirectTo]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

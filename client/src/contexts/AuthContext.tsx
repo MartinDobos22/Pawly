@@ -5,6 +5,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signInWithRedirect,
   signOut,
   type User,
@@ -105,12 +106,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    logger.info('loginWithGoogle: presmerovanie na Google (redirect)');
     try {
-      await signInWithRedirect(auth, googleProvider);
-      // stránka sa presmeruje; výsledok spracuje getRedirectResult + onAuthStateChanged po návrate
+      await signInWithPopup(auth, googleProvider);
     } catch (err) {
-      throw mapFirebaseAuthError(err);
+      const code = err instanceof FirebaseError ? err.code : '';
+      const userCancelled =
+        code === 'auth/popup-closed-by-user' ||
+        code === 'auth/cancelled-popup-request' ||
+        code === 'auth/user-cancelled';
+      if (userCancelled) {
+        throw mapFirebaseAuthError(err);
+      }
+      // Popup blokovaný/nepodporovaný (in-app prehliadač, COOP) → fallback na redirect.
+      logger.warn('loginWithGoogle: popup zlyhal, fallback na redirect', { code });
+      try {
+        await signInWithRedirect(auth, googleProvider);
+        // stránka sa presmeruje; výsledok spracuje getRedirectResult + onAuthStateChanged po návrate
+      } catch (redirectErr) {
+        throw mapFirebaseAuthError(redirectErr);
+      }
     }
   }, []);
 
