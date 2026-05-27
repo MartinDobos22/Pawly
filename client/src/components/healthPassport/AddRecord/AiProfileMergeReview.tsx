@@ -150,7 +150,7 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary">
-          AI extrahovala z pasu nové údaje o zvierati. Vyber, čo má pridať do profilu. Existujúce
+          AI z dokumentu navrhla nové údaje o zvierati. Vyber, čo má pridať do profilu. Existujúce
           neprázdne polia nikdy nepretkávame bez tvojho súhlasu.
         </Typography>
 

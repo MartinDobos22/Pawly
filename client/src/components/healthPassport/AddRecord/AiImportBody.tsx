@@ -62,8 +62,9 @@ export default function AiImportBody() {
         <Card sx={{ p: 2 }}>
           <Stack spacing={1.5}>
             <Typography variant="body2" color="text.secondary">
-              Nahraj viacero strán zdravotného pasu (alebo iný dokument). AI z nich extrahuje všetky
-              očkovania naraz a v ďalšom kroku ti dá unified zoznam na schválenie.
+              Nahraj jednu alebo viac strán dokumentu (zdravotný pas, laboratórny výsledok, správa
+              od veterinára…). AI z nich extrahuje záznamy naraz a v ďalšom kroku ti dá zoznam na
+              schválenie.
             </Typography>
 
             <Box
@@ -126,7 +127,7 @@ export default function AiImportBody() {
                 <Typography variant="body2" sx={{ mb: 0.5 }}>
                   {progress.stage === 'ocr'
                     ? `Spracovávam stranu ${Math.min(progress.done + 1, progress.total)} z ${progress.total}…`
-                    : 'Interpretujem záznamy…'}
+                    : 'Interpretujem záznamy… (môže to chvíľu trvať)'}
                 </Typography>
                 <LinearProgress
                   variant={progress.stage === 'interpret' ? 'indeterminate' : 'determinate'}
@@ -151,7 +152,11 @@ export default function AiImportBody() {
             />
           )}
           <Card sx={{ p: 2 }}>
-            <AiRecordsReview records={state.aiDetectedRecords} onChange={updateAiRecord} />
+            <AiRecordsReview
+              records={state.aiDetectedRecords}
+              onChange={updateAiRecord}
+              hasProfileData={state.detectedProfileAvailable}
+            />
           </Card>
         </>
       )}
@@ -174,11 +179,10 @@ export default function AiImportBody() {
               />
               <TextField
                 size="small"
-                label="Klinika / veterinár"
+                label="Klinika / veterinár (voliteľné)"
                 value={state.visitDraft.clinicName}
                 onChange={(e) => setVisitDraftField('clinicName', e.target.value)}
                 fullWidth
-                required
               />
             </Stack>
             <TextField

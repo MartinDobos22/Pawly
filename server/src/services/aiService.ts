@@ -1217,10 +1217,12 @@ async function callMockModel(
 
 // ── OpenAI integration ───────────────────────────────────────────────────────
 
+const OPENAI_TIMEOUT_MS = 45_000;
+
 function getOpenAIClient(): OpenAI | null {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || apiKey === 'your-key-here') return null;
-  return new OpenAI({ apiKey });
+  return new OpenAI({ apiKey, timeout: OPENAI_TIMEOUT_MS, maxRetries: 1 });
 }
 
 const VALID_CATEGORIES = new Set([

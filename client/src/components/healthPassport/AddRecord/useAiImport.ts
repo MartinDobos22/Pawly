@@ -46,6 +46,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   visitDraft: INITIAL_VISIT_DRAFT,
   feedback: null,
   detectedProfilePatch: null,
+  detectedProfileAvailable: false,
 };
 
 type AiAction =
@@ -53,6 +54,7 @@ type AiAction =
   | { type: 'ADD_ATTACHMENTS'; entries: AiAttachmentEntry[] }
   | { type: 'REMOVE_ATTACHMENT'; id: string }
   | { type: 'CLEAR_ATTACHMENTS' }
+  | { type: 'RESTART_UPLOAD' }
   | { type: 'SET_ATTACHMENT_ERROR'; message: string }
   | { type: 'SET_ATTACHMENT_LABEL'; label: string }
   | { type: 'SET_ANALYZE_PROGRESS'; progress: AnalyzeProgress | null }
@@ -81,6 +83,18 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
       };
     case 'CLEAR_ATTACHMENTS':
       return { ...state, attachments: [], attachmentError: '' };
+    case 'RESTART_UPLOAD':
+      return {
+        ...state,
+        step: 0,
+        attachments: [],
+        attachmentError: '',
+        analyzeError: '',
+        analyzeProgress: null,
+        aiDetectedRecords: [],
+        detectedProfilePatch: null,
+        detectedProfileAvailable: false,
+      };
     case 'SET_ATTACHMENT_ERROR':
       return { ...state, attachmentError: action.message };
     case 'SET_ATTACHMENT_LABEL':
@@ -107,7 +121,11 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
     case 'SET_FEEDBACK':
       return { ...state, feedback: action.message };
     case 'SET_PROFILE_PATCH':
-      return { ...state, detectedProfilePatch: action.patch };
+      return {
+        ...state,
+        detectedProfilePatch: action.patch,
+        detectedProfileAvailable: action.patch !== null || state.detectedProfileAvailable,
+      };
     case 'RESET':
       return { ...INITIAL_AI_STATE, visitDraft: { ...INITIAL_VISIT_DRAFT, date: today() } };
     default: {
@@ -150,7 +168,7 @@ export function useAiImport(dogId: string) {
     if (currentCount >= MAX_ATTACHMENTS) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximálne ${MAX_ATTACHMENTS} strán pasu.`,
+        message: `Maximálne ${MAX_ATTACHMENTS} strán dokumentu.`,
       });
       return;
     }
@@ -191,7 +209,7 @@ export function useAiImport(dogId: string) {
     if (files.length > available) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximum ${MAX_ATTACHMENTS} strán pasu — nadbytočné súbory boli ignorované.`,
+        message: `Maximum ${MAX_ATTACHMENTS} strán dokumentu — nadbytočné súbory boli ignorované.`,
       });
     }
   }, []);
@@ -207,6 +225,8 @@ export function useAiImport(dogId: string) {
   );
 
   const clearAttachments = useCallback(() => dispatch({ type: 'CLEAR_ATTACHMENTS' }), []);
+
+  const restartUpload = useCallback(() => dispatch({ type: 'RESTART_UPLOAD' }), []);
 
   const setAttachmentLabel = useCallback(
     (label: string) => dispatch({ type: 'SET_ATTACHMENT_LABEL', label }),
@@ -342,13 +362,13 @@ export function useAiImport(dogId: string) {
       const aiSummary = state.attachments.length
         ? `AI import zo ${state.attachments.length} ${
             state.attachments.length === 1 ? 'strany' : 'strán'
-          } zdravotného pasu`
+          } dokumentu`
         : '';
 
       const attachmentDrafts = state.attachments.map((entry, idx) => ({
         attachmentLabel:
           state.attachments.length > 1
-            ? `${state.attachmentLabel || 'Zdravotný pas'} — strana ${idx + 1}`
+            ? `${state.attachmentLabel || 'Dokument'} — strana ${idx + 1}`
             : state.attachmentLabel || entry.pending.fileName,
         attachmentUrl: '',
         attachmentPreviewUrl: entry.previewUrl,
@@ -392,6 +412,7 @@ export function useAiImport(dogId: string) {
     addAttachments,
     removeAttachment,
     clearAttachments,
+    restartUpload,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,

@@ -3,10 +3,11 @@ import { Alert, Box, Button, IconButton, Stack, TextField, Typography } from '@m
 import {
   AttachFile as AttachFileIcon,
   Close as CloseIcon,
+  PhotoLibrary as PhotoLibraryIcon,
   UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
+import { MAX_FILE_SIZE_BYTES } from '../constants';
 import type { AiAttachmentEntry } from './formTypes';
 
 interface AttachmentUploadProps {
@@ -34,10 +35,11 @@ export default function AttachmentUpload({
   onAddFiles,
   onRemove,
 }: AttachmentUploadProps) {
-  const inputId = useId();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const imageInputId = useId();
+  const fileInputId = useId();
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePick = () => inputRef.current?.click();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = '';
@@ -59,11 +61,20 @@ export default function AttachmentUpload({
       />
 
       <input
-        ref={inputRef}
-        id={inputId}
+        ref={imageInputRef}
+        id={imageInputId}
         type="file"
         multiple
-        accept={SUPPORTED_FILE_TYPES.join(',')}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleChange}
+      />
+      <input
+        ref={fileInputRef}
+        id={fileInputId}
+        type="file"
+        multiple
+        accept="application/pdf"
         style={{ display: 'none' }}
         onChange={handleChange}
       />
@@ -71,11 +82,19 @@ export default function AttachmentUpload({
       <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
         <Button
           variant="outlined"
-          startIcon={<UploadFileIcon />}
-          onClick={handlePick}
+          startIcon={<PhotoLibraryIcon />}
+          onClick={() => imageInputRef.current?.click()}
           disabled={limitReached}
         >
-          {attachments.length === 0 ? 'Vybrať strany pasu' : 'Pridať ďalšie strany'}
+          Fotka / galéria
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<UploadFileIcon />}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={limitReached}
+        >
+          PDF / súbor
         </Button>
         <Typography
           variant="caption"
