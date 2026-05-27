@@ -10,6 +10,8 @@ import interpretPassportRouter from './routes/interpretPassport';
 import petsRouter from './routes/pets';
 import healthRouter from './routes/health';
 import accountRouter from './routes/account';
+import notificationsRouter from './routes/notifications';
+import cronRouter from './routes/cron';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -101,6 +103,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Cron endpoint — autentifikuje sa shared secretom (x-cron-secret), nie Firebase tokenom.
+// Preto musí byť PRED firebaseAuth.
+app.use('/api/cron', cronRouter);
+
 // Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token
 app.use('/api/', firebaseAuth);
 
@@ -108,6 +114,7 @@ app.use('/api/', firebaseAuth);
 app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/health', ensureUser, healthRouter);
 app.use('/api/account', ensureUser, accountRouter);
+app.use('/api/notifications', ensureUser, notificationsRouter);
 app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
 app.use('/api/episodes', episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);

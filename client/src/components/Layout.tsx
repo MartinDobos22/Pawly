@@ -32,6 +32,7 @@ import {
   LightMode as LightModeIcon,
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
+  NotificationsActive as NotificationsActiveIcon,
   Logout as LogoutIcon,
   DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
@@ -67,6 +68,7 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'Nastavenia',
     items: [
       { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
+      { label: 'Notifikácie', icon: <NotificationsActiveIcon />, path: '/notifikacie' },
       { label: 'Časté otázky', icon: <HelpOutlineIcon />, path: '/caste-otazky' },
       { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
     ],
