@@ -4,7 +4,7 @@ import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
-import type { AiDetectedDraftRecord } from '../hpTypes';
+import type { AiDetectedDraftRecord, AiDetectedRecordType } from '../hpTypes';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
 import {
   inferAiTargetType,
@@ -47,6 +47,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   feedback: null,
   detectedProfilePatch: null,
   detectedProfileAvailable: false,
+  documentSummary: '',
 };
 
 type AiAction =
@@ -66,6 +67,7 @@ type AiAction =
   | { type: 'SET_VISIT_DRAFT_FIELD'; field: keyof AiVisitDraftValues; value: string }
   | { type: 'SET_FEEDBACK'; message: string | null }
   | { type: 'SET_PROFILE_PATCH'; patch: PetProfilePatch | null }
+  | { type: 'SET_DOCUMENT_SUMMARY'; summary: string }
   | { type: 'RESET' };
 
 function reducer(state: AiFormState, action: AiAction): AiFormState {
@@ -94,6 +96,7 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
         aiDetectedRecords: [],
         detectedProfilePatch: null,
         detectedProfileAvailable: false,
+        documentSummary: '',
       };
     case 'SET_ATTACHMENT_ERROR':
       return { ...state, attachmentError: action.message };
@@ -126,6 +129,8 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
         detectedProfilePatch: action.patch,
         detectedProfileAvailable: action.patch !== null || state.detectedProfileAvailable,
       };
+    case 'SET_DOCUMENT_SUMMARY':
+      return { ...state, documentSummary: action.summary };
     case 'RESET':
       return { ...INITIAL_AI_STATE, visitDraft: { ...INITIAL_VISIT_DRAFT, date: today() } };
     default: {
@@ -286,7 +291,9 @@ export function useAiImport(dogId: string) {
 
       const combined = texts.join('\n\n---\n\n');
       const interpretation = await interpretPassportText(combined);
-      const { vaccinations, petIdentifiers, healthFlags } = interpretation;
+      const { records, petIdentifiers, healthFlags, summary } = interpretation;
+
+      dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary: summary ?? '' });
 
       const patch: PetProfilePatch | null =
         (petIdentifiers &&
@@ -307,17 +314,29 @@ export function useAiImport(dogId: string) {
           : null;
       dispatch({ type: 'SET_PROFILE_PATCH', patch });
 
-      const drafts: AiDetectedDraftRecord[] = (vaccinations ?? []).map((item, index) => {
-        const inferredType = inferAiTargetType(item.disease, item.vaccineName);
-        const date = normalizeDateInput(item.dateAdministered);
-        const fallback = inferredType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
-        const productName = item.vaccineName || item.disease || 'Neznámy záznam';
+      const validTypes: AiDetectedRecordType[] = [
+        'VACCINATION',
+        'DEWORMING',
+        'ECTOPARASITE',
+        'MEDICATION',
+        'NOTE',
+      ];
+      const drafts: AiDetectedDraftRecord[] = (records ?? []).map((item, index) => {
+        const disease = item.disease ?? '';
+        const recordType: AiDetectedRecordType = validTypes.includes(
+          item.type as AiDetectedRecordType
+        )
+          ? item.type
+          : inferAiTargetType(disease, item.name);
+        const date = normalizeDateInput(item.date);
+        const fallback = recordType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
+        const productName = item.name || disease || 'Neznámy záznam';
         const isDuplicate =
-          inferredType === 'VACCINATION' &&
+          recordType === 'VACCINATION' &&
           dogId !== '' &&
           isDuplicateVaccination({
             productName,
-            sourceDisease: item.disease,
+            sourceDisease: disease,
             date,
             existing: existingVaccinations,
             dogId,
@@ -325,13 +344,13 @@ export function useAiImport(dogId: string) {
         return {
           id: `${Date.now()}-${index}`,
           sourceConfidence: item.confidence,
-          sourceDisease: item.disease,
-          targetType: isDuplicate ? 'SKIP' : inferredType,
+          sourceDisease: disease,
+          targetType: isDuplicate ? 'SKIP' : recordType,
           productName,
           date,
           validUntil: normalizeDateInput(item.validUntil ?? fallback),
           batchNumber: item.batchNumber ?? '',
-          intervalDays: inferredType === 'ECTOPARASITE' ? 30 : 90,
+          intervalDays: recordType === 'ECTOPARASITE' ? 30 : 90,
           isDuplicate,
         };
       });
@@ -359,11 +378,12 @@ export function useAiImport(dogId: string) {
           intervalDays: r.intervalDays || (r.targetType === 'ECTOPARASITE' ? 30 : 90),
         }));
 
-      const aiSummary = state.attachments.length
+      const importNote = state.attachments.length
         ? `AI import zo ${state.attachments.length} ${
             state.attachments.length === 1 ? 'strany' : 'strán'
           } dokumentu`
         : '';
+      const aiSummary = [state.documentSummary.trim(), importNote].filter(Boolean).join('\n\n');
 
       const attachmentDrafts = state.attachments.map((entry, idx) => ({
         attachmentLabel:
@@ -392,6 +412,7 @@ export function useAiImport(dogId: string) {
       state.aiDetectedRecords,
       state.attachments,
       state.attachmentLabel,
+      state.documentSummary,
       state.selectedMainCategory,
       state.selectedSubcategory,
       state.visitDraft,

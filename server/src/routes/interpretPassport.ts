@@ -43,7 +43,7 @@ router.post(
       }
 
       logger.info('Interpretácia pasu dokončená', {
-        vaccinationsCount: result.vaccinations?.length ?? 0,
+        recordsCount: result.records?.length ?? 0,
       });
 
       res.json(result);

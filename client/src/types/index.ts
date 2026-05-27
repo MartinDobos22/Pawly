@@ -91,14 +91,17 @@ export interface FileExtractionResult {
   healthPassportInterpretation?: {
     summary: string;
     aiUnderstanding: string;
-    vaccinations: Array<{
-      disease: string;
-      vaccineName: string;
-      dateAdministered: string;
+    records: Array<{
+      type: 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION' | 'NOTE';
+      name: string;
+      disease?: string;
+      date: string;
       validUntil?: string;
       batchNumber?: string;
-      veterinarian?: string;
+      dose?: string;
+      frequency?: string;
       manufacturer?: string;
+      veterinarian?: string;
       confidence: 'high' | 'medium' | 'low';
       notes?: string;
     }>;

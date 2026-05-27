@@ -180,20 +180,32 @@ export interface PassportHealthFlags {
   chronicConditions: string[];
 }
 
+export type PassportRecordType =
+  | 'VACCINATION'
+  | 'DEWORMING'
+  | 'ECTOPARASITE'
+  | 'MEDICATION'
+  | 'NOTE';
+
+export interface PassportRecord {
+  type: PassportRecordType;
+  name: string;
+  disease?: string;
+  date: string;
+  validUntil?: string;
+  batchNumber?: string;
+  dose?: string;
+  frequency?: string;
+  manufacturer?: string;
+  veterinarian?: string;
+  confidence: 'high' | 'medium' | 'low';
+  notes?: string;
+}
+
 export interface PassportInterpretation {
   summary?: string;
   aiUnderstanding?: string;
-  vaccinations: Array<{
-    disease: string;
-    vaccineName: string;
-    dateAdministered: string;
-    validUntil?: string;
-    batchNumber?: string;
-    veterinarian?: string;
-    manufacturer?: string;
-    confidence: 'high' | 'medium' | 'low';
-    notes?: string;
-  }>;
+  records: PassportRecord[];
   petIdentifiers?: PassportPetIdentifiers;
   healthFlags?: PassportHealthFlags;
 }
@@ -215,8 +227,8 @@ export async function interpretPassportText(text: string): Promise<PassportInter
   }
 
   const payload = (await res.json()) as PassportInterpretation;
-  logger.info('Interpretácia pasu prijatá', {
-    vaccinationsCount: payload.vaccinations?.length ?? 0,
+  logger.info('Interpretácia dokumentu prijatá', {
+    recordsCount: payload.records?.length ?? 0,
   });
   return payload;
 }
@@ -281,7 +293,7 @@ export async function fetchSimilarEpisodeSummary(
 
 export async function askFoodSafety(
   query: string,
-  petProfile?: PetProfile,
+  petProfile?: PetProfile
 ): Promise<FoodSafetyResult> {
   const payload = {
     query,
@@ -289,8 +301,8 @@ export async function askFoodSafety(
   };
 
   const res = await fetch(`${BASE_URL}/api/food-safety`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeader()) },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(payload),
   });
 
@@ -300,10 +312,10 @@ export async function askFoodSafety(
       error?: { message?: string; code?: string } | string;
     } | null;
     const message =
-      typeof body?.error === "string"
+      typeof body?.error === 'string'
         ? body.error
         : (body?.error?.message ?? `Chyba servera (${res.status})`);
-    logger.error("food-safety zlyhalo", { status: res.status });
+    logger.error('food-safety zlyhalo', { status: res.status });
     throw new Error(message);
   }
 

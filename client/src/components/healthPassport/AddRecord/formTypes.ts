@@ -133,4 +133,5 @@ export interface AiFormState {
   feedback: string | null;
   detectedProfilePatch: import('../../../utils/petProfileMerge').PetProfilePatch | null;
   detectedProfileAvailable: boolean;
+  documentSummary: string;
 }
