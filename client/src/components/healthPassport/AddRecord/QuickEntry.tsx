@@ -305,6 +305,7 @@ export function QuickEntryBody() {
         return (
           <DewormingFields
             values={deworming}
+            baseDate={date}
             onChange={setDeworming}
             errorProduct={showErrors && !primaryFieldFilled ? 'Zadaj názov prípravku' : undefined}
           />
@@ -313,6 +314,7 @@ export function QuickEntryBody() {
         return (
           <EctoFields
             values={ecto}
+            baseDate={date}
             onChange={setEcto}
             errorProduct={showErrors && !primaryFieldFilled ? 'Zadaj názov prípravku' : undefined}
           />

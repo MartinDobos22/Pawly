@@ -45,20 +45,20 @@ type NavSection = { id: string; label: string; items: NavItem[] };
 
 const NAV_SECTIONS: NavSection[] = [
   {
-    id: 'main',
+    id: 'health',
     label: 'Hlavné',
     items: [
-      { label: 'Analýza', icon: <ScienceIcon />, path: '/analyza' },
-      { label: 'História', icon: <HistoryIcon />, path: '/historia' },
+      { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
+      { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
+      { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
     ],
   },
   {
-    id: 'health',
-    label: 'Zdravie',
+    id: 'tools',
+    label: 'Ostatné',
     items: [
-      { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
-      { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
-      { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
+      { label: 'Analýza', icon: <ScienceIcon />, path: '/analyza' },
+      { label: 'História', icon: <HistoryIcon />, path: '/historia' },
     ],
   },
   {

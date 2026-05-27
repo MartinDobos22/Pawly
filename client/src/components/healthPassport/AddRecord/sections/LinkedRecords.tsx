@@ -31,6 +31,7 @@ import SectionCard from './SectionCard';
 interface LinkedRecordsProps {
   values: LinkedRecordsValues;
   errors: ErrorMap;
+  baseDate: string;
   expanded: boolean;
   onExpand: (next: boolean) => void;
   dispatch: Dispatch<ManualFormAction>;
@@ -73,6 +74,7 @@ function Row({ icon, label, hint, on, onToggle, children }: RowProps) {
 export default function LinkedRecords({
   values,
   errors,
+  baseDate,
   expanded,
   onExpand,
   dispatch,
@@ -135,6 +137,7 @@ export default function LinkedRecords({
           {values.deworming && (
             <DewormingFields
               values={values.deworming}
+              baseDate={baseDate}
               errorProduct={errors['linked.deworming.product']}
               onChange={setDewormingField}
             />
@@ -151,6 +154,7 @@ export default function LinkedRecords({
           {values.ecto && (
             <EctoFields
               values={values.ecto}
+              baseDate={baseDate}
               errorProduct={errors['linked.ecto.product']}
               onChange={setEctoField}
             />

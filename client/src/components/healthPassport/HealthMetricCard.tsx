@@ -121,7 +121,7 @@ export default function HealthMetricCard({
             sx={{
               width: 36,
               height: 36,
-              borderRadius: 2,
+              borderRadius: 1.5,
               bgcolor: alpha(theme.palette.text.secondary, 0.08),
               color: 'text.secondary',
               display: 'flex',
@@ -189,7 +189,7 @@ export default function HealthMetricCard({
               sx={{
                 width: 36,
                 height: 36,
-                borderRadius: 2,
+                borderRadius: 1.5,
                 bgcolor: alpha(toneColor, 0.16),
                 color: toneColor,
                 display: 'flex',

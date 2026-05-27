@@ -124,7 +124,7 @@ export default function FaqPage() {
                 key={item.q}
                 disableGutters
                 sx={{
-                  borderRadius: '12px !important',
+                  borderRadius: '8px !important',
                   border: (theme) => `1px solid ${theme.palette.divider}`,
                   boxShadow: 'none',
                   '&:before': { display: 'none' },

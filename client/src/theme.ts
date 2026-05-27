@@ -60,7 +60,7 @@ const commonOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
   components: {
     MuiCssBaseline: {
@@ -132,7 +132,7 @@ const commonOptions: ThemeOptions = {
     MuiIconButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
         },
       },
     },
@@ -163,7 +163,7 @@ const commonOptions: ThemeOptions = {
       },
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 12,
           boxShadow: 'none',
         },
       },
@@ -174,7 +174,7 @@ const commonOptions: ThemeOptions = {
       },
       styleOverrides: {
         rounded: {
-          borderRadius: 16,
+          borderRadius: 12,
         },
       },
     },
@@ -185,7 +185,7 @@ const commonOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 12,
+            borderRadius: 8,
           },
         },
       },
@@ -206,14 +206,14 @@ const commonOptions: ThemeOptions = {
     MuiAlert: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 20,
+          borderRadius: 16,
         },
       },
     },
@@ -231,7 +231,7 @@ const commonOptions: ThemeOptions = {
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          borderRadius: 8,
+          borderRadius: 6,
           fontSize: '0.75rem',
           paddingInline: 10,
           paddingBlock: 6,

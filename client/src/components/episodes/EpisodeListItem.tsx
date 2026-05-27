@@ -91,7 +91,7 @@ export default function EpisodeListItem({
       onChange={onToggle}
       sx={{
         mb: 1.5,
-        borderRadius: '12px !important',
+        borderRadius: '8px !important',
         '&:before': { display: 'none' },
         boxShadow: theme.shadows[1],
       }}

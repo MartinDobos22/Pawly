@@ -78,7 +78,7 @@ export default function HistoryPage() {
           onChange={(_e, isExpanded) => setExpanded(isExpanded ? item.id : false)}
           sx={{
             mb: 1.5,
-            borderRadius: '12px !important',
+            borderRadius: '8px !important',
             '&:before': { display: 'none' },
             boxShadow: theme.shadows[1],
           }}

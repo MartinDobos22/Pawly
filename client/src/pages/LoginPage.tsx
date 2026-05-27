@@ -19,7 +19,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
   const { user, login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = (location.state as LocationState | null)?.from ?? '/analyza';
+  const redirectTo = (location.state as LocationState | null)?.from ?? '/zdravotny-pas';
 
   // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
   useEffect(() => {

@@ -24,7 +24,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
 
   // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
   useEffect(() => {
-    if (user) navigate('/analyza', { replace: true });
+    if (user) navigate('/zdravotny-pas', { replace: true });
   }, [user, navigate]);
 
   const handleRegister = async (event: React.FormEvent) => {
@@ -43,7 +43,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     setSubmitting(true);
     try {
       await register(email, password);
-      navigate('/analyza', { replace: true });
+      navigate('/zdravotny-pas', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registrácia zlyhala.');
     } finally {
@@ -56,7 +56,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     setSubmitting(true);
     try {
       await loginWithGoogle();
-      navigate('/analyza', { replace: true });
+      navigate('/zdravotny-pas', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registrácia zlyhala.');
     } finally {
