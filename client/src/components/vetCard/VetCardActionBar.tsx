@@ -74,11 +74,14 @@ export default function VetCardActionBar({
         alignItems="center"
         gap={1}
         sx={{
+          maxWidth: '100%',
+          flexWrap: 'wrap',
+          justifyContent: 'flex-end',
           p: 0.5,
           pl: 1.5,
           bgcolor: 'background.paper',
           border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 999,
+          borderRadius: 4,
           boxShadow: '0 4px 14px rgba(15,76,92,0.10)',
         }}
       >

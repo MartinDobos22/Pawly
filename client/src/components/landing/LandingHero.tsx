@@ -64,6 +64,7 @@ export default function LandingHero() {
         viewBox="0 0 200 200"
         sx={{
           position: 'absolute',
+          display: { xs: 'none', md: 'block' },
           top: { xs: 20, md: 80 },
           right: { xs: -40, md: '8%' },
           width: { xs: 120, md: 200 },
@@ -94,6 +95,7 @@ export default function LandingHero() {
         viewBox="0 0 200 200"
         sx={{
           position: 'absolute',
+          display: { xs: 'none', md: 'block' },
           bottom: { xs: -40, md: '8%' },
           left: { xs: -50, md: '4%' },
           width: { xs: 90, md: 140 },

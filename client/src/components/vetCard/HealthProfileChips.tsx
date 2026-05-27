@@ -30,7 +30,7 @@ function Subsection({ label, icon, items, tone }: SubsectionProps) {
         : theme.palette.warning.main;
 
   return (
-    <Box sx={{ flex: 1, minWidth: 200 }}>
+    <Box sx={{ flex: 1, minWidth: { xs: 0, sm: 200 } }}>
       <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.75 }}>
         <Box
           sx={{
@@ -86,12 +86,18 @@ export default function HealthProfileChips({ dog }: Props) {
   if (!hasContent) {
     return (
       <Card variant="outlined" sx={{ p: 1.5 }}>
-        <Stack direction="row" alignItems="center" gap={1}>
-          <HealthIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Zdravotný profil
-          </Typography>
-          <Box sx={{ flex: 1 }} />
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={{ xs: 0.5, sm: 1 }}
+        >
+          <Stack direction="row" alignItems="center" gap={1}>
+            <HealthIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Zdravotný profil
+            </Typography>
+          </Stack>
+          <Box sx={{ flex: 1, display: { xs: 'none', sm: 'block' } }} />
           <Typography
             variant="body2"
             sx={{

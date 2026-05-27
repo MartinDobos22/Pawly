@@ -136,6 +136,9 @@ export default function PawTrail() {
     };
   }, [reducedMotion, isMobile]);
 
+  // Na mobile pôsobí stopa labiek cez text neporiadne — necháme ju len na väčších displejoch.
+  if (isMobile) return null;
+
   return (
     <Box
       aria-hidden

@@ -122,17 +122,27 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                 variant="contained"
                 size="small"
                 endIcon={<ArrowIcon />}
-                onClick={() => navigate('/analyza')}
-                sx={{ minHeight: { sm: 40 } }}
+                onClick={() => navigate('/zdravotny-pas')}
+                sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
               >
                 Vstúpiť
               </Button>
             ) : (
-              <Stack direction="row" gap={1}>
-                <Button variant="text" size="small" onClick={() => navigate('/login')}>
+              <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} sx={{ flexShrink: 0 }}>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={() => navigate('/login')}
+                  sx={{ whiteSpace: 'nowrap', flexShrink: 0, px: { xs: 1, sm: 1.5 } }}
+                >
                   Prihlásiť sa
                 </Button>
-                <Button variant="contained" size="small" onClick={() => navigate('/register')}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => navigate('/register')}
+                  sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                >
                   Registrácia
                 </Button>
               </Stack>

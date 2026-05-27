@@ -414,7 +414,7 @@ export function QuickEntryFooter() {
 
   return (
     <>
-      <Box sx={{ flex: 1, pl: 1 }}>
+      <Box sx={{ flex: 1, pl: 1, display: { xs: 'none', sm: 'block' } }}>
         <Typography
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}

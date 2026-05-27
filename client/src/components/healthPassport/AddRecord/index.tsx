@@ -52,13 +52,14 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
       <Box
         role="tablist"
         sx={{
-          display: 'inline-flex',
+          display: 'flex',
+          width: '100%',
+          maxWidth: 440,
           p: 0.5,
           gap: 0.5,
           borderRadius: 999,
           bgcolor: alpha(theme.palette.text.primary, 0.04),
           border: `1px solid ${theme.palette.divider}`,
-          flexWrap: 'wrap',
         }}
       >
         {tabs.map(({ value, label, icon: Icon }) => {
@@ -72,17 +73,22 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
               type="button"
               onClick={() => onChange(value)}
               sx={{
+                flex: '1 1 0',
+                minWidth: 0,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 0.75,
-                px: 2,
+                justifyContent: 'center',
+                textAlign: 'center',
+                gap: 0.5,
+                px: { xs: 0.75, sm: 2 },
                 py: 0.75,
                 borderRadius: 999,
                 border: 'none',
                 cursor: 'pointer',
                 font: 'inherit',
-                fontSize: '0.85rem',
+                fontSize: { xs: '0.72rem', sm: '0.85rem' },
                 fontWeight: 600,
+                lineHeight: 1.15,
                 color: active ? 'primary.contrastText' : 'text.secondary',
                 bgcolor: active ? 'primary.main' : 'transparent',
                 boxShadow: active ? '0 2px 6px rgba(15,76,92,0.18)' : 'none',
@@ -94,7 +100,7 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
                 },
               }}
             >
-              <Icon sx={{ fontSize: 16 }} />
+              <Icon sx={{ fontSize: 16, display: { xs: 'none', sm: 'block' }, flexShrink: 0 }} />
               {label}
             </Box>
           );

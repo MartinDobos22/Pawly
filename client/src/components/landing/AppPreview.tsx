@@ -252,7 +252,7 @@ export default function AppPreview() {
           }}
         >
           {/* Browser frame */}
-          <Box sx={{ position: 'relative' }}>
+          <Box sx={{ position: 'relative', display: { xs: 'none', md: 'block' } }}>
             <BrowserFrame url="pawport.app/karta-pre-veterinara">
               <DesktopPreview />
             </BrowserFrame>

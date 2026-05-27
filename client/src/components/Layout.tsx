@@ -27,6 +27,7 @@ import {
   Info as InfoIcon,
   HelpOutline as HelpOutlineIcon,
   Menu as MenuIcon,
+  MoreHoriz as MoreHorizIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Pets as PetsIcon,
@@ -73,6 +74,8 @@ const NAV_SECTIONS: NavSection[] = [
 ];
 
 const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
+// Mobilná bottom-nav: len primárne položky + „Viac" (ostatné cez drawer), aby sa ikony neorezávali.
+const MOBILE_NAV: NavItem[] = FLAT_NAV.slice(0, 4);
 
 interface LayoutProps {
   children: ReactNode;
@@ -112,7 +115,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
     }
   };
 
-  const currentMobileIndex = FLAT_NAV.findIndex((item) =>
+  const currentMobileIndex = MOBILE_NAV.findIndex((item) =>
     isItemActive(item.path, location.pathname)
   );
 
@@ -446,18 +449,27 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             }}
           >
             <BottomNavigation
-              value={currentMobileIndex >= 0 ? currentMobileIndex : 0}
-              onChange={(_e, newValue: number) => handleNav(FLAT_NAV[newValue].path)}
+              showLabels
+              value={currentMobileIndex >= 0 ? currentMobileIndex : false}
+              onChange={(_e, newValue: number) => {
+                if (newValue === MOBILE_NAV.length) {
+                  setMobileDrawerOpen(true);
+                } else {
+                  handleNav(MOBILE_NAV[newValue].path);
+                }
+              }}
               sx={{
                 backgroundColor: 'background.paper',
                 '& .Mui-selected': {
                   color: `${theme.palette.primary.main} !important`,
                 },
+                '& .MuiBottomNavigationAction-label': { fontSize: '0.68rem' },
               }}
             >
-              {FLAT_NAV.map((item) => (
+              {MOBILE_NAV.map((item) => (
                 <BottomNavigationAction key={item.path} label={item.label} icon={item.icon} />
               ))}
+              <BottomNavigationAction label="Viac" icon={<MoreHorizIcon />} />
             </BottomNavigation>
           </Paper>
         )}

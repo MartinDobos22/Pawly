@@ -8,7 +8,7 @@ export default function ManualEntryFooter() {
   const { submit, cancel } = useManualEntry();
   return (
     <>
-      <Box sx={{ flex: 1, pl: 1 }}>
+      <Box sx={{ flex: 1, pl: 1, display: { xs: 'none', sm: 'block' } }}>
         <Typography
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
