@@ -27,20 +27,20 @@ type ClinicalEventType = Exclude<TimelineEvent['type'], 'EXPENSE'>;
 type Filter = 'ALL' | ClinicalEventType;
 
 const FILTER_VALUES: Filter[] = [
-  'ALL', 'VET_VISIT', 'VACCINATION', 'DEWORMING', 'ECTOPARASITE', 'MEDICATION', 'DIET',
+  'ALL',
+  'VET_VISIT',
+  'VACCINATION',
+  'DEWORMING',
+  'ECTOPARASITE',
+  'MEDICATION',
+  'DIET',
 ];
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
 
-const monthFormatter = new Intl.DateTimeFormat('sk-SK', { month: 'long', year: 'numeric' });
-const dayFormatter = new Intl.DateTimeFormat('sk-SK', {
-  day: 'numeric',
-  month: 'long',
-  weekday: 'short',
-});
-
 const groupByMonth = (
-  events: TimelineEvent[]
+  events: TimelineEvent[],
+  fmtMonth: (d: Date) => string
 ): { key: string; label: string; items: TimelineEvent[] }[] => {
   const map = new Map<string, { label: string; items: TimelineEvent[] }>();
   for (const ev of events) {
@@ -48,7 +48,7 @@ const groupByMonth = (
     if (Number.isNaN(d.getTime())) continue;
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     if (!map.has(key)) {
-      map.set(key, { label: monthFormatter.format(d), items: [] });
+      map.set(key, { label: fmtMonth(d), items: [] });
     }
     map.get(key)!.items.push(ev);
   }
@@ -64,6 +64,16 @@ interface ClinicalHistoryProps {
 export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
   const theme = useTheme();
   const { t } = useTranslation('healthPassport');
+  const { t: tVc, i18n } = useTranslation('vetCard');
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
+  const monthFmt = useMemo(
+    () => new Intl.DateTimeFormat(lang, { month: 'long', year: 'numeric' }),
+    [lang]
+  );
+  const dayFmt = useMemo(
+    () => new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long', weekday: 'short' }),
+    [lang]
+  );
   const [filter, setFilter] = useState<Filter>('ALL');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -99,7 +109,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
     return visible.slice(start, start + pageSize);
   }, [visible, page, pageSize]);
 
-  const groups = useMemo(() => groupByMonth(paged), [paged]);
+  const groups = useMemo(() => groupByMonth(paged, (d) => monthFmt.format(d)), [paged, monthFmt]);
 
   const rangeStart = visible.length === 0 ? 0 : (page - 1) * pageSize + 1;
   const rangeEnd = Math.min(page * pageSize, visible.length);
@@ -110,7 +120,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
         <TimelineIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="h3" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
-            Klinická história
+            {tVc('clinicalHistory.title')}
           </Typography>
           <Typography
             variant="caption"
@@ -121,12 +131,12 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
               fontSize: '0.78rem',
             }}
           >
-            Vakcíny, návštevy, lieky a preventívne ošetrenia v jednom prehľade.
+            {tVc('clinicalHistory.subtitle')}
           </Typography>
         </Box>
         <TextField
           size="small"
-          placeholder="Hľadať…"
+          placeholder={tVc('clinicalHistory.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
@@ -137,7 +147,11 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
             ),
             endAdornment: search ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => setSearch('')} aria-label="Vyčistiť">
+                <IconButton
+                  size="small"
+                  onClick={() => setSearch('')}
+                  aria-label={tVc('clinicalHistory.clearAria')}
+                >
                   <ClearIcon sx={{ fontSize: 16 }} />
                 </IconButton>
               </InputAdornment>
@@ -191,8 +205,8 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
         >
           <Typography variant="body2">
             {clinical.length === 0
-              ? 'Zatiaľ žiadne klinické záznamy.'
-              : 'Pre zvolený filter sa nenašli žiadne záznamy.'}
+              ? tVc('clinicalHistory.noRecords')
+              : tVc('clinicalHistory.noRecordsFilter')}
           </Typography>
         </Box>
       ) : (
@@ -244,9 +258,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
                           >
                             {(() => {
                               const d = new Date(event.date);
-                              return Number.isNaN(d.getTime())
-                                ? event.date
-                                : dayFormatter.format(d);
+                              return Number.isNaN(d.getTime()) ? event.date : dayFmt.format(d);
                             })()}
                           </Typography>
                         </Stack>
@@ -296,7 +308,11 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
                 fontSize: '0.78rem',
               }}
             >
-              {rangeStart}–{rangeEnd} z {visible.length} záznamov
+              {tVc('clinicalHistory.rangeOf', {
+                start: rangeStart,
+                end: rangeEnd,
+                total: visible.length,
+              })}
             </Typography>
             <Stack direction="row" alignItems="center" gap={1.5}>
               <Stack direction="row" alignItems="center" gap={0.75}>
@@ -309,7 +325,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
                     fontSize: '0.78rem',
                   }}
                 >
-                  Na stránku
+                  {tVc('clinicalHistory.perPage')}
                 </Typography>
                 <FormControl size="small">
                   <Select

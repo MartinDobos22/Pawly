@@ -12,6 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { LocalHospitalOutlined as HospitalIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { VetVisitRecord } from '../../types/dogHealth';
 import AiFormattedText from '../AiFormattedText';
 
@@ -20,12 +21,6 @@ interface Props {
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
-
-function formatDate(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
-}
 
 function FieldBlock({ label, text }: { label: string; text: string }) {
   return (
@@ -40,6 +35,13 @@ function FieldBlock({ label, text }: { label: string; text: string }) {
 
 export default function RecentVisitsCard({ visits }: Props) {
   const theme = useTheme();
+  const { t, i18n } = useTranslation('vetCard');
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
+  const formatDate = (value: string): string => {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+  };
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -68,7 +70,7 @@ export default function RecentVisitsCard({ visits }: Props) {
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <HospitalIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Posledné klinické záznamy
+          {t('recentVisits.title')}
         </Typography>
       </Stack>
 
@@ -89,9 +91,11 @@ export default function RecentVisitsCard({ visits }: Props) {
               </Typography>
             )}
 
-            {v.diagnosis && <FieldBlock label="Diagnóza" text={v.diagnosis} />}
-            {v.findings && <FieldBlock label="Nález" text={v.findings} />}
-            {v.recommendations && <FieldBlock label="Odporúčania" text={v.recommendations} />}
+            {v.diagnosis && <FieldBlock label={t('recentVisits.diagnosis')} text={v.diagnosis} />}
+            {v.findings && <FieldBlock label={t('recentVisits.findings')} text={v.findings} />}
+            {v.recommendations && (
+              <FieldBlock label={t('recentVisits.recommendations')} text={v.recommendations} />
+            )}
           </Card>
         ))}
       </Stack>
@@ -117,7 +121,7 @@ export default function RecentVisitsCard({ visits }: Props) {
               fontSize: '0.78rem',
             }}
           >
-            {rangeStart}–{rangeEnd} z {visits.length} návštev
+            {t('recentVisits.rangeOf', { start: rangeStart, end: rangeEnd, total: visits.length })}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1.5}>
             <Stack direction="row" alignItems="center" gap={0.75}>
@@ -130,7 +134,7 @@ export default function RecentVisitsCard({ visits }: Props) {
                   fontSize: '0.78rem',
                 }}
               >
-                Na stránku
+                {t('recentVisits.perPage')}
               </Typography>
               <FormControl size="small">
                 <Select

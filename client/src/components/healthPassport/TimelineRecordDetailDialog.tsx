@@ -263,28 +263,28 @@ export default function TimelineRecordDetailDialog({
       return editing ? (
         <Stack spacing={1.5}>
           <TextField
-            label="Názov vakcíny"
+            label={t('detail.vaccineName')}
             value={vacDraft.name}
             onChange={(e) => setVacDraft((p) => ({ ...p, name: e.target.value }))}
             size="small"
           />
           <FormControl size="small" fullWidth>
-            <InputLabel>Typ vakcíny</InputLabel>
+            <InputLabel>{t('detail.vaccineType')}</InputLabel>
             <Select
-              label="Typ vakcíny"
+              label={t('detail.vaccineType')}
               value={vacDraft.type}
               onChange={(e) =>
                 setVacDraft((p) => ({ ...p, type: e.target.value as VaccinationRecord['type'] }))
               }
             >
-              <MenuItem value="RABIES">Besnota (Rabies)</MenuItem>
-              <MenuItem value="COMBINED">Kombinovaná</MenuItem>
-              <MenuItem value="OTHER">Iná</MenuItem>
+              <MenuItem value="RABIES">{t('detail.typeRabies')}</MenuItem>
+              <MenuItem value="COMBINED">{t('detail.typeCombined')}</MenuItem>
+              <MenuItem value="OTHER">{t('detail.typeOther')}</MenuItem>
             </Select>
           </FormControl>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Dátum podania"
+              label={t('detail.dateApplied')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={vacDraft.dateApplied}
@@ -292,7 +292,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Platnosť do"
+              label={t('detail.validUntil')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={vacDraft.validUntil}
@@ -301,7 +301,7 @@ export default function TimelineRecordDetailDialog({
             />
           </Box>
           <TextField
-            label="Šarža"
+            label={t('detail.batchNumber')}
             value={vacDraft.batchNumber}
             onChange={(e) => setVacDraft((p) => ({ ...p, batchNumber: e.target.value }))}
             size="small"
@@ -310,29 +310,31 @@ export default function TimelineRecordDetailDialog({
       ) : (
         <Stack spacing={1.5}>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-            <FieldRow label="Názov">
+            <FieldRow label={t('detail.name')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {vacDraft.name || '–'}
               </Typography>
             </FieldRow>
-            <FieldRow label="Typ">
+            <FieldRow label={t('detail.type')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {vacDraft.type}
+                {t(
+                  `detail.type${vacDraft.type.charAt(0) + vacDraft.type.slice(1).toLowerCase()}` as never
+                )}
               </Typography>
             </FieldRow>
-            <FieldRow label="Podaná">
+            <FieldRow label={t('detail.applied')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {vacDraft.dateApplied}
               </Typography>
             </FieldRow>
-            <FieldRow label="Platnosť do">
+            <FieldRow label={t('detail.validUntil')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {vacDraft.validUntil || '–'}
               </Typography>
             </FieldRow>
           </Box>
           {vacDraft.batchNumber && (
-            <FieldRow label="Šarža">
+            <FieldRow label={t('detail.batchNumber')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {vacDraft.batchNumber}
               </Typography>
@@ -346,14 +348,14 @@ export default function TimelineRecordDetailDialog({
       return editing ? (
         <Stack spacing={1.5}>
           <TextField
-            label="Produkt"
+            label={t('detail.product')}
             value={dewDraft.productName}
             onChange={(e) => setDewDraft((p) => ({ ...p, productName: e.target.value }))}
             size="small"
           />
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Dátum podania"
+              label={t('detail.dateApplied')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={dewDraft.dateGiven}
@@ -361,7 +363,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Ďalší termín"
+              label={t('detail.nextDue')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={dewDraft.nextDueDate}
@@ -372,17 +374,17 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-          <FieldRow label="Produkt">
+          <FieldRow label={t('detail.product')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {dewDraft.productName || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Dátum">
+          <FieldRow label={t('detail.date')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {dewDraft.dateGiven}
             </Typography>
           </FieldRow>
-          <FieldRow label="Ďalší termín">
+          <FieldRow label={t('detail.nextDue')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {dewDraft.nextDueDate || '–'}
             </Typography>
@@ -395,28 +397,28 @@ export default function TimelineRecordDetailDialog({
       return editing ? (
         <Stack spacing={1.5}>
           <TextField
-            label="Produkt"
+            label={t('detail.product')}
             value={ectoDraft.productName}
             onChange={(e) => setEctoDraft((p) => ({ ...p, productName: e.target.value }))}
             size="small"
           />
           <FormControl size="small" fullWidth>
-            <InputLabel>Forma</InputLabel>
+            <InputLabel>{t('detail.form')}</InputLabel>
             <Select
-              label="Forma"
+              label={t('detail.form')}
               value={ectoDraft.form}
               onChange={(e) =>
                 setEctoDraft((p) => ({ ...p, form: e.target.value as EctoparasiteRecord['form'] }))
               }
             >
-              <MenuItem value="TABLET">Tableta</MenuItem>
-              <MenuItem value="SPOT_ON">Spot-on</MenuItem>
-              <MenuItem value="COLLAR">Obojok</MenuItem>
+              <MenuItem value="TABLET">{t('detail.formTablet')}</MenuItem>
+              <MenuItem value="SPOT_ON">{t('detail.formSpotOn')}</MenuItem>
+              <MenuItem value="COLLAR">{t('detail.formCollar')}</MenuItem>
             </Select>
           </FormControl>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Dátum podania"
+              label={t('detail.dateApplied')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={ectoDraft.dateGiven}
@@ -424,7 +426,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Ďalší termín"
+              label={t('detail.nextDue')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={ectoDraft.nextDueDate}
@@ -435,22 +437,30 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-          <FieldRow label="Produkt">
+          <FieldRow label={t('detail.product')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {ectoDraft.productName || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Forma">
+          <FieldRow label={t('detail.form')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {ectoDraft.form}
+              {t(
+                `detail.form${
+                  ectoDraft.form.charAt(0) +
+                  ectoDraft.form
+                    .slice(1)
+                    .toLowerCase()
+                    .replace(/_([a-z])/g, (_, c: string) => c.toUpperCase())
+                }` as never
+              )}
             </Typography>
           </FieldRow>
-          <FieldRow label="Dátum">
+          <FieldRow label={t('detail.date')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {ectoDraft.dateGiven}
             </Typography>
           </FieldRow>
-          <FieldRow label="Ďalší termín">
+          <FieldRow label={t('detail.nextDue')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {ectoDraft.nextDueDate || '–'}
             </Typography>
@@ -464,31 +474,31 @@ export default function TimelineRecordDetailDialog({
         <Stack spacing={1.5}>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Názov lieku"
+              label={t('detail.drugName')}
               value={medDraft.name}
               onChange={(e) => setMedDraft((p) => ({ ...p, name: e.target.value }))}
               size="small"
             />
             <TextField
-              label="Dôvod"
+              label={t('detail.reason')}
               value={medDraft.reason}
               onChange={(e) => setMedDraft((p) => ({ ...p, reason: e.target.value }))}
               size="small"
             />
             <TextField
-              label="Dávkovanie"
+              label={t('detail.dose')}
               value={medDraft.dose}
               onChange={(e) => setMedDraft((p) => ({ ...p, dose: e.target.value }))}
               size="small"
             />
             <TextField
-              label="Frekvencia"
+              label={t('detail.frequency')}
               value={medDraft.frequency}
               onChange={(e) => setMedDraft((p) => ({ ...p, frequency: e.target.value }))}
               size="small"
             />
             <TextField
-              label="Začiatok"
+              label={t('detail.start')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={medDraft.startDate}
@@ -496,7 +506,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Koniec"
+              label={t('detail.end')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={medDraft.endDate}
@@ -507,32 +517,32 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-          <FieldRow label="Liek">
+          <FieldRow label={t('detail.drugName')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.name || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Dôvod">
+          <FieldRow label={t('detail.reason')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.reason || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Dávkovanie">
+          <FieldRow label={t('detail.dose')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.dose || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Frekvencia">
+          <FieldRow label={t('detail.frequency')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.frequency || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Začiatok">
+          <FieldRow label={t('detail.start')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.startDate}
             </Typography>
           </FieldRow>
-          <FieldRow label="Koniec">
+          <FieldRow label={t('detail.end')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {medDraft.endDate || '–'}
             </Typography>
@@ -545,14 +555,14 @@ export default function TimelineRecordDetailDialog({
       return editing ? (
         <Stack spacing={1.5}>
           <TextField
-            label="Krmivo"
+            label={t('detail.food')}
             value={dietDraft.foodName}
             onChange={(e) => setDietDraft((p) => ({ ...p, foodName: e.target.value }))}
             size="small"
           />
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Začiatok"
+              label={t('detail.start')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={dietDraft.startedAt}
@@ -560,7 +570,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Koniec"
+              label={t('detail.end')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={dietDraft.endedAt}
@@ -569,9 +579,9 @@ export default function TimelineRecordDetailDialog({
             />
           </Box>
           <FormControl size="small" fullWidth>
-            <InputLabel>Hodnotenie</InputLabel>
+            <InputLabel>{t('detail.rating')}</InputLabel>
             <Select
-              label="Hodnotenie"
+              label={t('detail.rating')}
               value={dietDraft.suitabilityStatus}
               onChange={(e) =>
                 setDietDraft((p) => ({
@@ -580,13 +590,13 @@ export default function TimelineRecordDetailDialog({
                 }))
               }
             >
-              <MenuItem value="SUITABLE">Vhodné</MenuItem>
-              <MenuItem value="RISKY">Rizikové</MenuItem>
-              <MenuItem value="UNSUITABLE">Nevhodné</MenuItem>
+              <MenuItem value="SUITABLE">{t('detail.suitableSuitable')}</MenuItem>
+              <MenuItem value="RISKY">{t('detail.suitableRisky')}</MenuItem>
+              <MenuItem value="UNSUITABLE">{t('detail.suitableUnsuitable')}</MenuItem>
             </Select>
           </FormControl>
           <TextField
-            label="Reakcia"
+            label={t('detail.reaction')}
             value={dietDraft.reactionNotes}
             onChange={(e) => setDietDraft((p) => ({ ...p, reactionNotes: e.target.value }))}
             size="small"
@@ -594,23 +604,25 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-          <FieldRow label="Krmivo">
+          <FieldRow label={t('detail.food')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {dietDraft.foodName || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label="Hodnotenie">
+          <FieldRow label={t('detail.rating')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {dietDraft.suitabilityStatus}
+              {t(
+                `detail.suitable${dietDraft.suitabilityStatus.charAt(0) + dietDraft.suitabilityStatus.slice(1).toLowerCase()}` as never
+              )}
             </Typography>
           </FieldRow>
-          <FieldRow label="Začiatok">
+          <FieldRow label={t('detail.start')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {dietDraft.startedAt}
             </Typography>
           </FieldRow>
           {dietDraft.endedAt && (
-            <FieldRow label="Koniec">
+            <FieldRow label={t('detail.end')}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {dietDraft.endedAt}
               </Typography>
@@ -618,7 +630,7 @@ export default function TimelineRecordDetailDialog({
           )}
           {dietDraft.reactionNotes && (
             <Box sx={{ gridColumn: '1 / -1' }}>
-              <FieldRow label="Reakcia">
+              <FieldRow label={t('detail.reaction')}>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {dietDraft.reactionNotes}
                 </Typography>
@@ -634,7 +646,7 @@ export default function TimelineRecordDetailDialog({
         <Stack spacing={1.5}>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
-              label="Dátum"
+              label={t('detail.date')}
               type="date"
               InputLabelProps={{ shrink: true }}
               value={expDraft.date}
@@ -642,7 +654,7 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
             <TextField
-              label="Suma (€)"
+              label={t('detail.expAmount')}
               type="number"
               value={expDraft.amount}
               onChange={(e) => setExpDraft((p) => ({ ...p, amount: e.target.value }))}
@@ -650,22 +662,22 @@ export default function TimelineRecordDetailDialog({
             />
           </Box>
           <FormControl size="small" fullWidth>
-            <InputLabel>Kategória</InputLabel>
+            <InputLabel>{t('detail.category')}</InputLabel>
             <Select
-              label="Kategória"
+              label={t('detail.category')}
               value={expDraft.category}
               onChange={(e) =>
                 setExpDraft((p) => ({ ...p, category: e.target.value as ExpenseCategory }))
               }
             >
-              <MenuItem value="VET_VISIT">Veterinár</MenuItem>
-              <MenuItem value="MEDICATION">Lieky</MenuItem>
-              <MenuItem value="FOOD">Krmivo</MenuItem>
-              <MenuItem value="OTHER">Ostatné</MenuItem>
+              <MenuItem value="VET_VISIT">{t('detail.expCategoryVetVisit')}</MenuItem>
+              <MenuItem value="MEDICATION">{t('detail.expCategoryMedication')}</MenuItem>
+              <MenuItem value="FOOD">{t('detail.expCategoryFood')}</MenuItem>
+              <MenuItem value="OTHER">{t('detail.expCategoryOther')}</MenuItem>
             </Select>
           </FormControl>
           <TextField
-            label="Poznámka"
+            label={t('detail.note')}
             value={expDraft.note}
             onChange={(e) => setExpDraft((p) => ({ ...p, note: e.target.value }))}
             size="small"
@@ -673,24 +685,32 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-          <FieldRow label="Dátum">
+          <FieldRow label={t('detail.date')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {expDraft.date}
             </Typography>
           </FieldRow>
-          <FieldRow label="Suma">
+          <FieldRow label={t('detail.amount')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {expDraft.amount} {expDraft.currency}
             </Typography>
           </FieldRow>
-          <FieldRow label="Kategória">
+          <FieldRow label={t('detail.category')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {expDraft.category}
+              {t(
+                `detail.expCategory${
+                  expDraft.category.charAt(0) +
+                  expDraft.category
+                    .slice(1)
+                    .toLowerCase()
+                    .replace(/_([a-z])/g, (_, c: string) => c.toUpperCase())
+                }` as never
+              )}
             </Typography>
           </FieldRow>
           {expDraft.note && (
             <Box sx={{ gridColumn: '1 / -1' }}>
-              <FieldRow label="Poznámka">
+              <FieldRow label={t('detail.note')}>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {expDraft.note}
                 </Typography>
@@ -766,10 +786,10 @@ export default function TimelineRecordDetailDialog({
           size="small"
           sx={{ borderRadius: 2, mr: 'auto' }}
         >
-          Zmazať
+          {t('detail.delete')}
         </Button>
         <Button onClick={onClose} size="small" sx={{ borderRadius: 2 }}>
-          Zavrieť
+          {t('detail.close')}
         </Button>
         {!editing ? (
           <Button
@@ -779,11 +799,11 @@ export default function TimelineRecordDetailDialog({
             onClick={() => setEditing(true)}
             sx={{ borderRadius: 2 }}
           >
-            Editovať
+            {t('detail.edit')}
           </Button>
         ) : (
           <Button variant="contained" size="small" onClick={handleSave} sx={{ borderRadius: 2 }}>
-            Uložiť zmeny
+            {t('detail.save')}
           </Button>
         )}
       </DialogActions>

@@ -5,6 +5,7 @@ import {
   ErrorOutline as ExpiredIcon,
   HelpOutline as UnknownIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { ReactElement } from 'react';
 import type { ValidityStatus } from '../../types/dogHealth';
 
@@ -17,17 +18,26 @@ interface Props {
 
 const STATUS_META: Record<
   ValidityStatus,
-  { toneKey: 'success' | 'warning' | 'error' | 'neutral'; Icon: typeof CheckIcon; label: string }
+  { toneKey: 'success' | 'warning' | 'error' | 'neutral'; Icon: typeof CheckIcon }
 > = {
-  VALID: { toneKey: 'success', Icon: CheckIcon, label: 'Platné' },
-  EXPIRING_SOON: { toneKey: 'warning', Icon: WarningIcon, label: 'Vyprší čoskoro' },
-  EXPIRED: { toneKey: 'error', Icon: ExpiredIcon, label: 'Po termíne' },
-  UNKNOWN: { toneKey: 'neutral', Icon: UnknownIcon, label: 'Nezadané' },
+  VALID: { toneKey: 'success', Icon: CheckIcon },
+  EXPIRING_SOON: { toneKey: 'warning', Icon: WarningIcon },
+  EXPIRED: { toneKey: 'error', Icon: ExpiredIcon },
+  UNKNOWN: { toneKey: 'neutral', Icon: UnknownIcon },
+};
+
+const STATUS_LABEL_KEY: Record<ValidityStatus, string> = {
+  VALID: 'statusOverview.statusValid',
+  EXPIRING_SOON: 'statusOverview.statusExpiringSoon',
+  EXPIRED: 'statusOverview.statusExpired',
+  UNKNOWN: 'statusOverview.statusUnknown',
 };
 
 export default function VetCardStatusCell({ icon, label, status, detail }: Props) {
   const theme = useTheme();
+  const { t } = useTranslation('vetCard');
   const meta = STATUS_META[status];
+  const statusLabel = t(STATUS_LABEL_KEY[status] as never);
 
   const toneColor =
     meta.toneKey === 'success'
@@ -80,10 +90,10 @@ export default function VetCardStatusCell({ icon, label, status, detail }: Props
               sx={{ fontWeight: 700, color: toneColor, fontSize: '0.82rem', lineHeight: 1.25 }}
               noWrap
             >
-              {meta.label}
+              {statusLabel}
             </Typography>
           </Stack>
-          {detail && detail !== meta.label && (
+          {detail && detail !== statusLabel && (
             <Typography
               variant="caption"
               sx={{

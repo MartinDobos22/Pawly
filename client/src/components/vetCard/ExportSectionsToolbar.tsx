@@ -1,5 +1,6 @@
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 export type ExportSectionId =
   | 'identity'
@@ -20,15 +21,6 @@ export const DEFAULT_EXPORT_SECTIONS: ExportSectionsState = {
   history: true,
 };
 
-const SECTION_LABELS: Record<ExportSectionId, string> = {
-  identity: 'Identita',
-  conditions: 'Diagnózy',
-  medications: 'Lieky',
-  prevention: 'Preventíva',
-  visits: 'Klinické záznamy',
-  history: 'História',
-};
-
 const ORDER: ExportSectionId[] = [
   'identity',
   'conditions',
@@ -44,6 +36,7 @@ interface ExportSectionsToolbarProps {
 }
 
 export default function ExportSectionsToolbar({ value, onChange }: ExportSectionsToolbarProps) {
+  const { t } = useTranslation('vetCard');
   const toggle = (id: ExportSectionId) => onChange({ ...value, [id]: !value[id] });
 
   return (
@@ -54,7 +47,7 @@ export default function ExportSectionsToolbar({ value, onChange }: ExportSection
       flexWrap="wrap"
     >
       <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5 }}>
-        Sekcie pre export:
+        {t('exportToolbar.label')}
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
         {ORDER.map((id) => {
@@ -62,7 +55,7 @@ export default function ExportSectionsToolbar({ value, onChange }: ExportSection
           return (
             <Chip
               key={id}
-              label={SECTION_LABELS[id]}
+              label={t(`actionBar.sections.${id}` as never)}
               icon={on ? <CheckIcon sx={{ fontSize: 14 }} /> : undefined}
               size="small"
               clickable

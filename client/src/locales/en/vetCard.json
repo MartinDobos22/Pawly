@@ -66,5 +66,53 @@
       "visits": "Clinical records",
       "history": "Clinical history"
     }
+  },
+  "vetStatus": {
+    "unknown": "Not set",
+    "expired": "Expired",
+    "willExpire": "Expires {{date}}",
+    "validUntil": "Valid until {{date}}"
+  },
+  "statusOverview": {
+    "preventiveStatus": "Current preventive status",
+    "rabies": "Rabies",
+    "combined": "Combined",
+    "deworming": "Deworming",
+    "antiparasitic": "Antiparasitic",
+    "statusValid": "Valid",
+    "statusExpiringSoon": "Expiring soon",
+    "statusExpired": "Overdue",
+    "statusUnknown": "Not set"
+  },
+  "preventiveCare": {
+    "title": "Preventive care",
+    "empty": "No vaccination records",
+    "applied": "Applied {{date}}",
+    "batch": "batch {{batch}}"
+  },
+  "recentVisits": {
+    "title": "Recent clinical records",
+    "diagnosis": "Diagnosis",
+    "findings": "Finding",
+    "recommendations": "Recommendations",
+    "rangeOf": "{{start}}–{{end}} of {{total}} visits",
+    "perPage": "Per page"
+  },
+  "activeMeds": {
+    "title": "Active medications & supplements",
+    "empty": "No active medications"
+  },
+  "clinicalHistory": {
+    "title": "Clinical history",
+    "subtitle": "Vaccines, visits, medications and preventive treatments in one overview.",
+    "searchPlaceholder": "Search…",
+    "clearAria": "Clear",
+    "noRecords": "No clinical records yet.",
+    "noRecordsFilter": "No records found for the selected filter.",
+    "rangeOf": "{{start}}–{{end}} of {{total}} records",
+    "perPage": "Per page"
+  },
+  "exportToolbar": {
+    "label": "Export sections:"
   }
 }

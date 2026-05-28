@@ -1,5 +1,6 @@
 import { Box, Card, Divider, Stack, Typography } from '@mui/material';
 import { MedicationOutlined as MedicationIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { MedicationRecord } from '../../types/dogHealth';
 
 interface Props {
@@ -7,18 +8,19 @@ interface Props {
 }
 
 export default function ActiveMedicationsCard({ medications }: Props) {
+  const { t } = useTranslation('vetCard');
   return (
     <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <MedicationIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Aktívne lieky a doplnky
+          {t('activeMeds.title')}
         </Typography>
       </Stack>
 
       {medications.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
-          Bez aktívnych liekov
+          {t('activeMeds.empty')}
         </Typography>
       ) : (
         <Stack divider={<Divider flexItem />} spacing={1.25}>

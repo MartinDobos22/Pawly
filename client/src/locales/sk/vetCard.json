@@ -66,5 +66,53 @@
       "visits": "Klinické záznamy",
       "history": "Klinická história"
     }
+  },
+  "vetStatus": {
+    "unknown": "Nezadané",
+    "expired": "Expirované",
+    "willExpire": "Vyprší {{date}}",
+    "validUntil": "Platné do {{date}}"
+  },
+  "statusOverview": {
+    "preventiveStatus": "Aktuálny preventívny stav",
+    "rabies": "Besnota",
+    "combined": "Kombinovaná",
+    "deworming": "Odčervenie",
+    "antiparasitic": "Antiparazitikum",
+    "statusValid": "Platné",
+    "statusExpiringSoon": "Vyprší čoskoro",
+    "statusExpired": "Po termíne",
+    "statusUnknown": "Nezadané"
+  },
+  "preventiveCare": {
+    "title": "Preventívna starostlivosť",
+    "empty": "Žiadne záznamy o očkovaniach",
+    "applied": "Podané {{date}}",
+    "batch": "šarža {{batch}}"
+  },
+  "recentVisits": {
+    "title": "Posledné klinické záznamy",
+    "diagnosis": "Diagnóza",
+    "findings": "Nález",
+    "recommendations": "Odporúčania",
+    "rangeOf": "{{start}}–{{end}} z {{total}} návštev",
+    "perPage": "Na stránku"
+  },
+  "activeMeds": {
+    "title": "Aktívne lieky a doplnky",
+    "empty": "Bez aktívnych liekov"
+  },
+  "clinicalHistory": {
+    "title": "Klinická história",
+    "subtitle": "Vakcíny, návštevy, lieky a preventívne ošetrenia v jednom prehľade.",
+    "searchPlaceholder": "Hľadať…",
+    "clearAria": "Vyčistiť",
+    "noRecords": "Zatiaľ žiadne klinické záznamy.",
+    "noRecordsFilter": "Pre zvolený filter sa nenašli žiadne záznamy.",
+    "rangeOf": "{{start}}–{{end}} z {{total}} záznamov",
+    "perPage": "Na stránku"
+  },
+  "exportToolbar": {
+    "label": "Sekcie pre export:"
   }
 }
