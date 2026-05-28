@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -36,6 +37,7 @@ interface Props {
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const { weightLogs: logs, addWeightLog } = useHealthData();
   const [open, setOpen] = useState(false);
@@ -89,7 +91,9 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
         )
       }
       label={
-        trend.dir === 'flat' ? 'stabilná' : `${trend.kg > 0 ? '+' : ''}${trend.kg.toFixed(1)} kg`
+        trend.dir === 'flat'
+          ? t('weightCard.stable')
+          : `${trend.kg > 0 ? '+' : ''}${trend.kg.toFixed(1)} kg`
       }
       sx={{
         height: 22,
@@ -120,12 +124,12 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <ScaleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
           <Typography variant="subtitle2" sx={{ fontWeight: 700, flex: 1 }}>
-            Hmotnosť
+            {t('weightCard.title')}
           </Typography>
           <IconButton
             size="small"
             onClick={() => setOpen(true)}
-            aria-label="Pridať váženie"
+            aria-label={t('weightCard.addLogAria')}
             sx={{
               border: `1px solid ${theme.palette.divider}`,
               borderRadius: 2,
@@ -152,10 +156,10 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
               <ScaleIcon />
             </Box>
             <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 240 }}>
-              Pridaj prvé váženie aby si videl trend hmotnosti v čase.
+              {t('weightCard.emptyDescription')}
             </Typography>
             <Button size="small" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
-              Pridať váženie
+              {t('weightCard.addLog')}
             </Button>
           </Stack>
         ) : (
@@ -170,8 +174,10 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
               {trendChip}
             </Stack>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Posledné {formatDateShort(last.date)}
-              {series.length > 1 ? ` · ${series.length} záznamov` : ''}
+              {t('weightCard.lastEntry', { date: formatDateShort(last.date) })}
+              {series.length > 1
+                ? ` · ${t('weightCard.seriesCount', { count: series.length })}`
+                : ''}
             </Typography>
 
             {series.length >= 2 && (
@@ -187,7 +193,10 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
                         border: `1px solid ${theme.palette.divider}`,
                         fontSize: 12,
                       }}
-                      formatter={(v) => [`${Number(v).toFixed(1)} kg`, 'Hmotnosť']}
+                      formatter={(v) => [
+                        `${Number(v).toFixed(1)} kg`,
+                        t('weightCard.tooltipLabel'),
+                      ]}
                       labelFormatter={(v) => formatDateShort(String(v))}
                     />
                     <Line
@@ -209,9 +218,9 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ pr: 6 }}>
-          Pridať váženie
+          {t('weightCard.dialogTitle')}
           <IconButton
-            aria-label="Zavrieť"
+            aria-label={t('weightCard.closeAria')}
             onClick={() => setOpen(false)}
             sx={{ position: 'absolute', right: 8, top: 8 }}
           >
@@ -220,9 +229,14 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 0.5 }}>
-            <DateField label="Dátum" value={draftDate} onChange={setDraftDate} fullWidth />
+            <DateField
+              label={t('weightCard.dateLabel')}
+              value={draftDate}
+              onChange={setDraftDate}
+              fullWidth
+            />
             <TextField
-              label="Hmotnosť (kg)"
+              label={t('weightCard.weightLabel')}
               type="number"
               value={draftKg}
               onChange={(e) => setDraftKg(e.target.value)}
@@ -233,9 +247,9 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setOpen(false)}>Zrušiť</Button>
+          <Button onClick={() => setOpen(false)}>{t('weightCard.cancel')}</Button>
           <Button variant="contained" onClick={handleSave} disabled={!draftKg.trim()}>
-            Uložiť
+            {t('weightCard.save')}
           </Button>
         </DialogActions>
       </Dialog>

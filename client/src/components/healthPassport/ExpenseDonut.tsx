@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function ExpenseDonut({ data, total, currency = '€', size = 160 }: Props) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const filtered = data.filter((s) => s.value > 0);
 
@@ -33,7 +35,7 @@ export default function ExpenseDonut({ data, total, currency = '€', size = 160
         }}
       >
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Žiadne dáta
+          {t('expenseCard.noData')}
         </Typography>
       </Box>
     );
@@ -71,7 +73,7 @@ export default function ExpenseDonut({ data, total, currency = '€', size = 160
           {total.toFixed(0)}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          {currency} celkom
+          {currency} {t('expenseCard.totalSuffix')}
         </Typography>
       </Stack>
     </Box>

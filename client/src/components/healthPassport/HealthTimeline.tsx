@@ -22,6 +22,8 @@ import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/dogHealth';
 import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
 
+const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');
+
 interface HealthTimelineProps {
   timeline: TimelineEvent[];
   onOpenDetail: (event: TimelineEvent) => void;
@@ -32,38 +34,13 @@ type SelectableType = TimelineEvent['type'];
 
 const dayKey = (iso: string) => iso.slice(0, 10);
 
-const formatDayHeader = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString('sk-SK', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-};
-
-const weekdayName = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('sk-SK', { weekday: 'long' });
-};
-
 const dayDiffFromToday = (iso: string) => {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return Number.NaN;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
-  return Math.round((date.getTime() - today.getTime()) / 86_400_000);
-};
-
-const dayMeta = (iso: string) => {
-  const diff = dayDiffFromToday(iso);
-  if (Number.isNaN(diff)) return null;
-  if (diff === 0) return { label: 'Dnes', tone: 'today' as const };
-  if (diff === -1) return { label: 'Včera', tone: 'recent' as const };
-  if (diff > 0 && diff < 14) return { label: `o ${diff} dní`, tone: 'future' as const };
-  return null;
+  return Math.round((date.getTime() - now.getTime()) / 86_400_000);
 };
 
 export default function HealthTimeline({
@@ -72,9 +49,33 @@ export default function HealthTimeline({
   onExportPdf,
 }: HealthTimelineProps) {
   const theme = useTheme();
-  const { t } = useTranslation('healthPassport');
+  const { t, i18n } = useTranslation('healthPassport');
   const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
+
+  const lang = localeTag(i18n.language);
+
+  const formatDayHeader = (iso: string) => {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return iso;
+    return date.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const weekdayName = (iso: string) => {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString(lang, { weekday: 'long' });
+  };
+
+  const dayMeta = (iso: string) => {
+    const diff = dayDiffFromToday(iso);
+    if (Number.isNaN(diff)) return null;
+    if (diff === 0) return { label: t('timeline.today'), tone: 'today' as const };
+    if (diff === -1) return { label: t('timeline.yesterday'), tone: 'recent' as const };
+    if (diff > 0 && diff < 14)
+      return { label: t('timeline.inDays', { count: diff }), tone: 'future' as const };
+    return null;
+  };
 
   const toggleType = (type: SelectableType | 'ALL') => {
     if (type === 'ALL') {

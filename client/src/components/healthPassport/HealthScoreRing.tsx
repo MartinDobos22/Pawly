@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 
 export interface ScoreBreakdownItem {
@@ -15,13 +16,6 @@ interface Props {
   incomplete?: boolean;
 }
 
-const labelForScore = (score: number) => {
-  if (score >= 85) return 'Výborný';
-  if (score >= 70) return 'Dobrý';
-  if (score >= 50) return 'Priemerný';
-  return 'Vyžaduje pozornosť';
-};
-
 const statusDot: Record<ScoreBreakdownItem['status'], string> = {
   good: '#2F7D5B',
   soon: '#B8860B',
@@ -32,14 +26,24 @@ const statusDot: Record<ScoreBreakdownItem['status'], string> = {
 export default function HealthScoreRing({
   score,
   size = 96,
-  label = 'Celkový stav',
+  label,
   breakdown,
   incomplete = false,
 }: Props) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const stroke = Math.max(8, Math.round(size * 0.1));
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
+
+  const resolvedLabel = label ?? t('score.overallStatus');
+
+  const labelForScore = (value: number) => {
+    if (value >= 85) return t('score.excellent');
+    if (value >= 70) return t('score.good');
+    if (value >= 50) return t('score.average');
+    return t('score.needsAttention');
+  };
 
   const hasScore = score !== null && !Number.isNaN(score);
   const value = hasScore ? Math.max(0, Math.min(100, score!)) : 0;
@@ -67,7 +71,7 @@ export default function HealthScoreRing({
         width={size}
         height={size}
         role="img"
-        aria-label={`Health skóre ${hasScore ? Math.round(value) : 'neznáme'}`}
+        aria-label={t('score.aria', { value: hasScore ? Math.round(value) : '—' })}
         style={{ filter: glowFilter }}
       >
         <circle
@@ -122,7 +126,7 @@ export default function HealthScoreRing({
     breakdown && breakdown.length > 0 ? (
       <Stack spacing={0.5} sx={{ py: 0.5 }}>
         <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.85, fontSize: '0.7rem' }}>
-          Skóre vychádza z:
+          {t('score.basedOn')}
         </Typography>
         {breakdown.map((b) => (
           <Stack key={b.label} direction="row" alignItems="center" gap={1}>
@@ -214,7 +218,7 @@ export default function HealthScoreRing({
             lineHeight: 1.25,
           }}
         >
-          {label}
+          {resolvedLabel}
         </Typography>
         {hasScore && (
           <Typography
@@ -236,7 +240,7 @@ export default function HealthScoreRing({
               mt: 0.25,
             }}
           >
-            neúplné dáta
+            {t('score.incompleteData')}
           </Typography>
         )}
       </Stack>

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Box,
@@ -48,36 +49,6 @@ const initials = (name: string) =>
     .map((p) => p[0]?.toUpperCase() ?? '')
     .join('');
 
-const computeAgeLabel = (dog: PetProfile): string | null => {
-  if (dog.dateOfBirth) {
-    const dob = new Date(dog.dateOfBirth);
-    if (!Number.isNaN(dob.getTime())) {
-      const now = new Date();
-      let years = now.getFullYear() - dob.getFullYear();
-      let months = now.getMonth() - dob.getMonth();
-      if (now.getDate() < dob.getDate()) months -= 1;
-      if (months < 0) {
-        years -= 1;
-        months += 12;
-      }
-      if (years <= 0 && months <= 0) return '< 1 mes.';
-      if (years <= 0) return `${months} mes.`;
-      if (months === 0) return `${years} r.`;
-      return `${years} r. ${months} mes.`;
-    }
-  }
-  if (typeof dog.ageYears === 'number' && dog.ageYears > 0) {
-    return `${dog.ageYears} r.`;
-  }
-  return null;
-};
-
-const sexLabel = (sex?: PetProfile['sex']) => {
-  if (sex === 'MALE') return 'Samec';
-  if (sex === 'FEMALE') return 'Samica';
-  return null;
-};
-
 const statusToScore = (s: ValidityStatus): number => {
   if (s === 'VALID') return 100;
   if (s === 'EXPIRING_SOON') return 60;
@@ -90,13 +61,6 @@ const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
   if (s === 'EXPIRING_SOON') return 'soon';
   if (s === 'EXPIRED') return 'bad';
   return 'unknown';
-};
-
-const statusDetail = (s: ValidityStatus): string => {
-  if (s === 'VALID') return 'platné';
-  if (s === 'EXPIRING_SOON') return 'končí čoskoro';
-  if (s === 'EXPIRED') return 'po termíne';
-  return 'nezadané';
 };
 
 export default function PassportHero({
@@ -112,8 +76,40 @@ export default function PassportHero({
   onQuickVisitCreate,
   onQuickVisitUndo,
 }: Props) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const computeAgeLabel = (p: PetProfile): string | null => {
+    if (p.dateOfBirth) {
+      const dob = new Date(p.dateOfBirth);
+      if (!Number.isNaN(dob.getTime())) {
+        const now = new Date();
+        let years = now.getFullYear() - dob.getFullYear();
+        let months = now.getMonth() - dob.getMonth();
+        if (now.getDate() < dob.getDate()) months -= 1;
+        if (months < 0) {
+          years -= 1;
+          months += 12;
+        }
+        if (years <= 0 && months <= 0) return t('hero.ageUnderMonth');
+        if (years <= 0) return t('hero.ageMonths', { count: months });
+        if (months === 0) return t('hero.ageYears', { count: years });
+        return t('hero.ageYearsMonths', { years, months });
+      }
+    }
+    if (typeof p.ageYears === 'number' && p.ageYears > 0) {
+      return t('hero.ageYears', { count: p.ageYears });
+    }
+    return null;
+  };
+
+  const statusDetail = (s: ValidityStatus): string => {
+    if (s === 'VALID') return t('hero.statusValid');
+    if (s === 'EXPIRING_SOON') return t('hero.statusExpiringSoon');
+    if (s === 'EXPIRED') return t('hero.statusExpired');
+    return t('hero.statusUnknown');
+  };
 
   const statuses = [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus];
   const unknownCount = statuses.filter((s) => s === 'UNKNOWN').length;
@@ -129,33 +125,34 @@ export default function PassportHero({
 
   const scoreBreakdown: ScoreBreakdownItem[] = [
     {
-      label: 'Očkovanie',
-      shortLabel: 'Očk.',
+      label: t('hero.vaccLabel'),
+      shortLabel: t('hero.vaccShort'),
       status: statusToBreakdown(vaccinationStatus),
       detail: statusDetail(vaccinationStatus),
     },
     {
-      label: 'Odčervenie',
-      shortLabel: 'Odč.',
+      label: t('hero.dewLabel'),
+      shortLabel: t('hero.dewShort'),
       status: statusToBreakdown(dewormingStatus),
       detail: statusDetail(dewormingStatus),
     },
     {
-      label: 'Kliešte / blchy',
-      shortLabel: 'Kliešte',
+      label: t('hero.ectoLabel'),
+      shortLabel: t('hero.ectoShort'),
       status: statusToBreakdown(ectoStatus),
       detail: statusDetail(ectoStatus),
     },
     {
-      label: 'Diéta',
-      shortLabel: 'Diéta',
+      label: t('hero.dietLabel'),
+      shortLabel: t('hero.dietShort'),
       status: statusToBreakdown(dietStatus),
       detail: statusDetail(dietStatus),
     },
   ];
 
   const ageLabel = computeAgeLabel(dog);
-  const sex = sexLabel(dog.sex);
+  const sex =
+    dog.sex === 'MALE' ? t('hero.sexMale') : dog.sex === 'FEMALE' ? t('hero.sexFemale') : null;
 
   const chips: { label: string; icon?: React.ReactElement }[] = [];
   if (dog.breed) chips.push({ label: dog.breed, icon: <PetsIcon sx={{ fontSize: 14 }} /> });
@@ -242,7 +239,7 @@ export default function PassportHero({
                   >
                     {dogProfiles.map((p) => (
                       <MenuItem key={p.id} value={p.id}>
-                        Prepnúť na {p.name}
+                        {t('hero.switchTo', { name: p.name })}
                       </MenuItem>
                     ))}
                   </Select>
@@ -279,7 +276,7 @@ export default function PassportHero({
                 size="large"
                 sx={{ boxShadow: '0 4px 14px rgba(15,76,92,0.25)' }}
               >
-                Pridať záznam
+                {t('hero.addRecord')}
               </Button>
               <QuickVisitButton
                 dogId={selectedDogId}
@@ -292,7 +289,7 @@ export default function PassportHero({
                 startIcon={<CardIcon />}
                 onClick={() => navigate('/karta-pre-veterinara')}
               >
-                Karta pre veterinára
+                {t('hero.vetCard')}
               </Button>
             </Stack>
           </Stack>

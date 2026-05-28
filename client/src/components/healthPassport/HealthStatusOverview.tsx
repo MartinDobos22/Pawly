@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 import {
   Vaccines as VaccinesIcon,
@@ -34,6 +35,7 @@ interface HealthStatusOverviewProps {
 }
 
 export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
+  const { t } = useTranslation('healthPassport');
   const {
     vaccinationStatus,
     dewormingStatus,
@@ -75,45 +77,49 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     >
       <HealthMetricCard
         icon={<VaccinesIcon />}
-        label="Očkovanie"
+        label={t('overview.vaccination')}
         status={vaccinationStatus}
         nextDate={vaccinationNextDate}
         lastDate={vaccinationLastDate}
-        primaryActionLabel={vaccinationStatus === 'UNKNOWN' ? 'Pridať' : 'Naplánovať'}
+        primaryActionLabel={
+          vaccinationStatus === 'UNKNOWN' ? t('overview.add') : t('overview.schedule')
+        }
         onPrimaryAction={onAddVaccination}
         onOpen={vaccinationStatus !== 'UNKNOWN' ? onOpenVaccination : undefined}
       />
       <HealthMetricCard
         icon={<DewormIcon />}
-        label="Odčervenie"
+        label={t('overview.deworming')}
         status={dewormingStatus}
         nextDate={dewormingNextDate}
         lastDate={dewormingLastDate}
         intervalDays={dewormingIntervalDays}
         detail={dewormingPreparation}
-        primaryActionLabel={dewormingStatus === 'UNKNOWN' ? 'Pridať' : 'Naplánovať'}
+        primaryActionLabel={
+          dewormingStatus === 'UNKNOWN' ? t('overview.add') : t('overview.schedule')
+        }
         onPrimaryAction={onAddDeworming}
         onOpen={dewormingStatus !== 'UNKNOWN' ? onOpenDeworming : undefined}
       />
       <HealthMetricCard
         icon={<EctoIcon />}
-        label="Kliešte / blchy"
+        label={t('overview.ecto')}
         status={ectoStatus}
         nextDate={ectoNextDate}
         lastDate={ectoLastDate}
         intervalDays={ectoIntervalDays}
         detail={ectoPreparation}
-        primaryActionLabel={ectoStatus === 'UNKNOWN' ? 'Pridať' : 'Obnoviť'}
+        primaryActionLabel={ectoStatus === 'UNKNOWN' ? t('overview.add') : t('overview.renew')}
         onPrimaryAction={onAddEcto}
         onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
       />
       <HealthMetricCard
         icon={<DietIcon />}
-        label="Aktuálna diéta"
+        label={t('overview.diet')}
         status={currentDiet ? 'VALID' : 'UNKNOWN'}
-        detail={currentDiet?.foodName ?? 'Nie je nastavená'}
+        detail={currentDiet?.foodName ?? t('overview.dietNotSet')}
         lastDate={currentDiet?.startedAt}
-        primaryActionLabel={currentDiet ? 'Upraviť' : 'Nastaviť'}
+        primaryActionLabel={currentDiet ? t('overview.edit') : t('overview.setup')}
         onPrimaryAction={onAddDiet}
         onOpen={currentDiet ? onOpenDiet : undefined}
       />
