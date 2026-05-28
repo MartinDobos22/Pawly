@@ -27,3 +27,15 @@ services:
       # Plná Netlify URL (bez koncového /), napr. https://animalpassport.netlify.app
       - key: CORS_ORIGIN
         sync: false
+      # Notifikácie (e-mail cez Resend). Bez RESEND_API_KEY beží sweep v dry-run režime.
+      - key: RESEND_API_KEY
+        sync: false
+      # Odosielateľ, napr. "Pawport <noreply@tvojadomena.sk>" (overená doména v Resend)
+      - key: NOTIFY_FROM_EMAIL
+        sync: false
+      # Tajný token pre POST /api/cron/notifications (hlavička x-cron-secret)
+      - key: CRON_SECRET
+        sync: false
+      # Plná URL appky (bez koncového /) pre odkazy v e-mailoch
+      - key: APP_URL
+        sync: false
