@@ -184,10 +184,7 @@ export async function computeUpcoming(appUserId: string): Promise<UpcomingItem[]
   const items: UpcomingItem[] = [];
   for (const source of SOURCES) {
     if (!isTypeEnabled(prefs, source)) continue;
-    const { data, error } = await supabase
-      .from(source.table)
-      .select('*')
-      .in('pet_id', petIds);
+    const { data, error } = await supabase.from(source.table).select('*').in('pet_id', petIds);
     if (error) throw error;
     for (const row of data as Row[]) {
       const dueDate = row[source.dateCol];
@@ -230,10 +227,18 @@ function matchedOffset(prefs: NotificationPreferences, d: number): number | null
   return null;
 }
 
+/** Slovenské skloňovanie podľa počtu (1 / 2-4 / 5+). */
+function plural(n: number, one: string, few: string, many: string): string {
+  const abs = Math.abs(n);
+  if (abs === 1) return one;
+  if (abs >= 2 && abs <= 4) return few;
+  return many;
+}
+
 function statusText(d: number): string {
-  if (d < 0) return `po termíne (${-d} ${-d === 1 ? 'deň' : 'dní'})`;
+  if (d < 0) return `po termíne o ${-d} ${plural(-d, 'deň', 'dni', 'dní')}`;
   if (d === 0) return 'dnes';
-  return `o ${d} ${d === 1 ? 'deň' : 'dní'}`;
+  return `o ${d} ${plural(d, 'deň', 'dni', 'dní')}`;
 }
 
 function buildEmailHtml(items: SweepCandidate[]): string {
@@ -258,11 +263,11 @@ function buildEmailHtml(items: SweepCandidate[]): string {
     : '';
 
   return `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;max-width:560px;margin:0 auto;">
-    <h2 style="color:#0f4c5c;">Pawport — blížiace sa termíny</h2>
-    <p>Tieto zdravotné termíny tvojich zvierat čoskoro vypršia alebo už sú po termíne:</p>
+    <h2 style="color:#0f4c5c;">Pripomienka z Pawportu</h2>
+    <p>Pár termínov tvojich zvierat sa blíži alebo už ušlo. Tu je rýchly prehľad:</p>
     <table style="border-collapse:collapse;width:100%;font-size:14px;">${rows}</table>
     ${cta}
-    <p style="color:#888;font-size:12px;margin-top:24px;">Notifikácie môžeš vypnúť v aplikácii v sekcii Notifikácie.</p>
+    <p style="color:#888;font-size:12px;margin-top:24px;">Tieto pripomienky môžeš kedykoľvek vypnúť v aplikácii (Nastavenia → Notifikácie).</p>
   </div>`;
 }
 
@@ -309,10 +314,7 @@ export async function runSweep(): Promise<SweepSummary> {
 
   const candidates: SweepCandidate[] = [];
   for (const source of SOURCES) {
-    const { data, error } = await supabase
-      .from(source.table)
-      .select('*')
-      .in('pet_id', allPetIds);
+    const { data, error } = await supabase.from(source.table).select('*').in('pet_id', allPetIds);
     if (error) throw error;
     for (const row of data as Row[]) {
       const info = petInfo.get(String(row.pet_id));
@@ -381,7 +383,7 @@ export async function runSweep(): Promise<SweepSummary> {
 
   for (const [, list] of byUser) {
     const email = list[0].email;
-    const subject = `Pawport: ${list.length} ${list.length === 1 ? 'termín' : 'termínov'} čoskoro`;
+    const subject = `Pawport: ${list.length} ${plural(list.length, 'termín', 'termíny', 'termínov')} čoskoro`;
     try {
       await sendEmail(email, subject, buildEmailHtml(list));
       usersNotified += 1;

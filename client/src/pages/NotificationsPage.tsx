@@ -33,10 +33,18 @@ function statusColor(status: string): 'error' | 'warning' | 'success' {
   return 'success';
 }
 
+/** 1 deň · 2-4 dni · 5+ dní */
+function dayWord(n: number): string {
+  const abs = Math.abs(n);
+  if (abs === 1) return 'deň';
+  if (abs >= 2 && abs <= 4) return 'dni';
+  return 'dní';
+}
+
 function dueText(days: number): string {
-  if (days < 0) return `po termíne (${-days} dní)`;
+  if (days < 0) return `po termíne o ${-days} ${dayWord(days)}`;
   if (days === 0) return 'dnes';
-  return `o ${days} dní`;
+  return `o ${days} ${dayWord(days)}`;
 }
 
 export default function NotificationsPage() {
@@ -76,8 +84,8 @@ export default function NotificationsPage() {
         </Typography>
       </Stack>
       <Typography variant="body2" color="text.secondary">
-        Upozorníme ťa na blížiace sa expirácie vakcín, odčervenia, ektoparazitík, kontroly u
-        veterinára a koniec liekov.
+        Upozorníme ťa, keď sa blíži termín očkovaní, odčervenia, antiparazitík, kontroly u
+        veterinára alebo koniec liečby liekom.
       </Typography>
 
       {(error || localError) && <Alert severity="warning">{localError ?? error}</Alert>}
@@ -114,7 +122,7 @@ export default function NotificationsPage() {
             {LEAD_DAY_OPTIONS.map((day) => (
               <Chip
                 key={day}
-                label={`${day} dní`}
+                label={`${day} ${dayWord(day)}`}
                 color={prefs.leadDays.includes(day) ? 'primary' : 'default'}
                 variant={prefs.leadDays.includes(day) ? 'filled' : 'outlined'}
                 onClick={() => toggleLeadDay(day)}
@@ -175,7 +183,11 @@ export default function NotificationsPage() {
                     {item.typeLabel} · {item.dueDate}
                   </Typography>
                 </Box>
-                <Chip size="small" color={statusColor(item.status)} label={dueText(item.daysUntil)} />
+                <Chip
+                  size="small"
+                  color={statusColor(item.status)}
+                  label={dueText(item.daysUntil)}
+                />
               </Stack>
             ))}
           </Stack>
