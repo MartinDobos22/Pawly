@@ -141,7 +141,7 @@ export default function PassportHero({
       detail: statusDetail(dewormingStatus),
     },
     {
-      label: 'Kliešte / blchy',
+      label: 'Kliešte a blchy',
       shortLabel: 'Kliešte',
       status: statusToBreakdown(ectoStatus),
       detail: statusDetail(ectoStatus),

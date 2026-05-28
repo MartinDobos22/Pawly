@@ -24,7 +24,7 @@ Pravidlá:
 - Žiadny markdown, žiadny text mimo JSON.
 - Nikdy nediagnostikuj. Vždy odporuč konzultáciu s veterinárom pri závažnejších stavoch.
 - Ak nie sú žiadne podobné epizódy, vráť prázdne similarEpisodeIds, summary "" a recommendation s odporúčaním navštíviť veterinára.
-- Všetky texty v slovenčine.
+- Všetky texty v slovenčine a v tykaní (oslovuj používateľa ako „ty"), prívetivo a stručne.
 
 Vráť VÝHRADNE validný JSON:
 {

@@ -18,7 +18,7 @@ const PAWPORT_POINTS = [
   'Vždy v mobile, nikdy sa nestratí',
   'Automatické pripomienky očkovania a odčervenia',
   'AI skenovanie pasu aj analýza krmiva',
-  'Prehľadná karta pre veterinára na 1 klik',
+  'Prehľadná karta pre veterinára jedným kliknutím',
   'Funguje offline a úplne zadarmo',
 ];
 

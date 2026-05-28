@@ -43,7 +43,7 @@ router.post('/similar-summary', async (req: Request, res: Response, next: NextFu
       });
       res.status(502).json({
         error: {
-          message: 'AI sumarizáciu sa nepodarilo dokončiť. Skúste neskôr.',
+          message: 'AI sumarizáciu sa nepodarilo dokončiť. Skús to znova neskôr.',
           code: 'AI_FAILED',
         },
       });

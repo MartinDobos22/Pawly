@@ -13,7 +13,7 @@ export default function ManualEntryFooter() {
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
         >
-          Tip: {modKey} + Enter pre uloženie
+          Skratka: {modKey} + Enter na uloženie
         </Typography>
       </Box>
       <Button onClick={cancel}>Zrušiť</Button>

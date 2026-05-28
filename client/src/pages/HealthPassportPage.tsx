@@ -376,7 +376,7 @@ export default function HealthPassportPage() {
         return `<tr><td>${escapeHtml(event.date)}</td><td>${escapeHtml(meta.label)}</td><td>${escapeHtml(event.title)}${event.subtitle ? `<br><small>${escapeHtml(event.subtitle)}</small>` : ''}</td></tr>`;
       })
       .join('');
-    const html = `<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>Timeline – ${escapeHtml(dog.name)}</title><style>body{font-family:system-ui,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f5f9;font-weight:700}small{color:#64748b}@media print{body{padding:0}}</style></head><body><h1>Zdravotná timeline – ${escapeHtml(dog.name)}</h1><table><thead><tr><th>Dátum</th><th>Typ</th><th>Detail</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>Časová os zdravia – ${escapeHtml(dog.name)}</title><style>body{font-family:system-ui,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f5f9;font-weight:700}small{color:#64748b}@media print{body{padding:0}}</style></head><body><h1>Časová os zdravia – ${escapeHtml(dog.name)}</h1><table><thead><tr><th>Dátum</th><th>Typ</th><th>Detail</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
     const iframe = document.createElement('iframe');
     iframe.style.cssText =
       'position:fixed;top:0;left:0;width:0;height:0;border:0;visibility:hidden;';

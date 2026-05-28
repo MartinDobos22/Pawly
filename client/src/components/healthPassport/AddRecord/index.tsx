@@ -43,7 +43,7 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
   const theme = useTheme();
   const tabs: { value: Mode; label: string; icon: ModeIcon }[] = [
     { value: 'QUICK', label: 'Rýchly', icon: BoltIcon },
-    { value: 'MANUAL', label: 'Manuálna návšteva', icon: EditIcon },
+    { value: 'MANUAL', label: 'Manuálny zápis', icon: EditIcon },
     { value: 'AI', label: 'Z dokumentu (AI)', icon: AiIcon },
   ];
 

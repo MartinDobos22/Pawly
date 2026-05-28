@@ -97,7 +97,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
       />
       <HealthMetricCard
         icon={<EctoIcon />}
-        label="Kliešte / blchy"
+        label="Kliešte a blchy"
         status={ectoStatus}
         nextDate={ectoNextDate}
         lastDate={ectoLastDate}

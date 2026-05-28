@@ -58,7 +58,7 @@ const DEFAULTS = {
 const KIND_META: Record<LinkedKind, { label: string; icon: typeof VaccinesIcon }> = {
   vaccination: { label: 'Očkovanie', icon: VaccinesIcon },
   deworming: { label: 'Odčervenie', icon: DewormIcon },
-  ecto: { label: 'Kliešte / blchy', icon: EctoIcon },
+  ecto: { label: 'Kliešte a blchy', icon: EctoIcon },
   medication: { label: 'Liek', icon: MedIcon },
   diet: { label: 'Diéta', icon: DietIcon },
 };
@@ -401,7 +401,7 @@ export function QuickEntryBody() {
         }}
       >
         Rýchly záznam sa uloží bez detailov o návšteve a kliniky. Pre kompletnú návštevu prepni na
-        „Manuálna návšteva".
+        „Manuálny zápis".
       </Typography>
     </Stack>
   );
@@ -419,7 +419,7 @@ export function QuickEntryFooter() {
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
         >
-          Tip: {modKey} + Enter pre uloženie
+          Skratka: {modKey} + Enter na uloženie
         </Typography>
       </Box>
       <Button onClick={cancel}>Zrušiť</Button>

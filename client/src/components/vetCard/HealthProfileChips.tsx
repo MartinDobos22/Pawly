@@ -107,7 +107,7 @@ export default function HealthProfileChips({ dog }: Props) {
               letterSpacing: 0,
             }}
           >
-            Žiadne špeciálne zdravotné záznamy
+            Bez zdravotných poznámok
           </Typography>
         </Stack>
       </Card>

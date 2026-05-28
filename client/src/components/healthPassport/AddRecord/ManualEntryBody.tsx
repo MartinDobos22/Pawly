@@ -24,7 +24,7 @@ export default function ManualEntryBody() {
     <Stack spacing={1.25}>
       {state.submitAttempted && errorCount > 0 && (
         <Alert severity="error">
-          Doplňte {errorCount} {errorCount === 1 ? 'povinné pole' : 'povinné polia'}.
+          Doplň {errorCount} {errorCount === 1 ? 'povinné pole' : 'povinné polia'}.
         </Alert>
       )}
 

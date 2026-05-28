@@ -110,7 +110,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
               color: empty ? 'text.secondary' : 'text.primary',
             }}
           >
-            {activePet?.name ?? 'Pridajte zviera'}
+            {activePet?.name ?? 'Pridaj zviera'}
           </Typography>
           {!isCompact && (
             <Typography

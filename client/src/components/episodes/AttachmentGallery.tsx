@@ -62,9 +62,7 @@ export default function AttachmentGallery({
               mimeType: file.type,
             });
           } else {
-            setError(
-              'Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skúste menšie rozlíšenie.'
-            );
+            setError('Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skús menšie rozlíšenie.');
           }
         }
       }

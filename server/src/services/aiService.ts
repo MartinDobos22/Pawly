@@ -94,7 +94,7 @@ Vráť VÝHRADNE validný JSON v tomto formáte (žiadny markdown, žiadny text 
 - Probiotiká, omega-3, glukozamín = pozitívne prídavky
 
 ## DÔLEŽITÉ:
-- Všetky texty MUSIA byť v slovenčine.
+- Všetky texty MUSIA byť v slovenčine a v tykaní (oslovuj používateľa ako „ty"), prívetivo a stručne.
 - Buď objektívny ale opatrný — ak si nie si istý bezpečnosťou, VŽDY varuj.
 - Ak nie je poskytnutý profil zvieraťa, allergenWarnings a healthWarnings budú prázdne polia a personalizedNote bude null.
 - Ak je poskytnutý profil, personalizedNote je POVINNÉ.`;
@@ -397,7 +397,7 @@ async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias)
     return [
       `Analyzovaný typ vyšetrenia: ${examAlias}.`,
       'OpenAI API kľúč nie je dostupný, preto nebolo možné spustiť detailnú AI interpretáciu dokumentu.',
-      'Skontrolujte prosím serverové nastavenia a skúste analýzu znova.',
+      'Skontroluj serverové nastavenia a skús analýzu znova.',
     ].join(' ');
   }
 
@@ -540,6 +540,9 @@ PRAVIDLÁ PRE ZÁZNAMY (records):
 - Klasifikuj každý záznam správnym "type": očkovanie → VACCINATION, odčervenie/antihelmintiká → DEWORMING, antiparazitiká/kliešte/blchy → ECTOPARASITE, predpísané/podané lieky → MEDICATION.
 - Diagnózy, nálezy, odporúčania a iný voľný text (vrátane zhrnutia laboratórnych výsledkov) daj ako jeden alebo viac záznamov typu NOTE (názov = krátky nadpis, "notes" = detail).
 - Extrahuj LEN to, čo je v dokumente reálne uvedené. Nedomýšľaj. Ak dokument neobsahuje žiadne záznamy, vráť "records": [].
+
+PRAVIDLÁ PRE TEXTY:
+- summary a aiUnderstanding vždy v slovenčine a v tykaní (oslovuj používateľa ako „ty"), prívetivo a stručne.
 
 PRAVIDLÁ PRE IDENTIFIKÁTORY A ZDRAVOTNÉ PRÍZNAKY:
 - Extrahuj LEN ak je údaj v dokumente EXPLICITNE uvedený. Nedomýšľaj.
@@ -735,7 +738,7 @@ export async function extractTextFromAttachment(
     const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
     if (!pdfText) {
       throw new Error(
-        'Z PDF sa nepodarilo získať text. Skúste kvalitnejší export alebo fotku dokumentu.'
+        'Z PDF sa nepodarilo získať text. Skús kvalitnejší export alebo fotku dokumentu.'
       );
     }
 
@@ -784,7 +787,7 @@ export async function extractTextFromAttachment(
     textFromVision.length >= textFromOpenAIImage.length ? textFromVision : textFromOpenAIImage;
 
   if (!bestText) {
-    throw new Error('Z obrázka sa nepodarilo prečítať text. Nahrajte ostrejšiu fotku.');
+    throw new Error('Z obrázka sa nepodarilo prečítať text. Nahraj ostrejšiu fotku.');
   }
 
   const normalizedText = await normalizeExtractedTextWithOpenAI(bestText);
@@ -1422,7 +1425,7 @@ export async function callAiModel(
       return await callOpenAI(composition, petProfile);
     } catch (retryErr) {
       console.error('[AI Service] Retry failed:', retryErr);
-      throw new Error('Nepodarilo sa analyzovať zloženie. Skúste to znova neskôr.');
+      throw new Error('Nepodarilo sa analyzovať zloženie. Skús to znova neskôr.');
     }
   }
 }

@@ -197,34 +197,34 @@ const isPositiveNumeric = (raw: string): boolean => {
 export function validateManualForm(state: ManualFormState): ErrorMap {
   const errors: ErrorMap = {};
   if (!state.basics.date.trim() || Number.isNaN(new Date(state.basics.date).getTime())) {
-    errors['basics.date'] = 'Zadajte platný dátum.';
+    errors['basics.date'] = 'Zadaj platný dátum.';
   }
   if (!state.basics.clinicName.trim()) {
-    errors['basics.clinicName'] = 'Zadajte meno kliniky alebo veterinára.';
+    errors['basics.clinicName'] = 'Zadaj meno kliniky alebo veterinára.';
   }
   if (state.linked.vaccination && !state.linked.vaccination.name.trim()) {
-    errors['linked.vaccination.name'] = 'Zadajte názov vakcíny.';
+    errors['linked.vaccination.name'] = 'Zadaj názov vakcíny.';
   }
   if (state.linked.deworming && !state.linked.deworming.product.trim()) {
-    errors['linked.deworming.product'] = 'Zadajte názov prípravku.';
+    errors['linked.deworming.product'] = 'Zadaj názov prípravku.';
   }
   if (state.linked.ecto && !state.linked.ecto.product.trim()) {
-    errors['linked.ecto.product'] = 'Zadajte názov prípravku.';
+    errors['linked.ecto.product'] = 'Zadaj názov prípravku.';
   }
   if (state.linked.medication && !state.linked.medication.name.trim()) {
-    errors['linked.medication.name'] = 'Zadajte názov lieku.';
+    errors['linked.medication.name'] = 'Zadaj názov lieku.';
   }
   if (state.linked.diet && !state.linked.diet.foodName.trim()) {
-    errors['linked.diet.foodName'] = 'Zadajte názov krmiva.';
+    errors['linked.diet.foodName'] = 'Zadaj názov krmiva.';
   }
   if (!isPositiveNumeric(state.expenses.totalExpense)) {
-    errors['expenses.totalExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.totalExpense'] = 'Zadaj nezáporné číslo.';
   }
   if (!isPositiveNumeric(state.expenses.extraMedicationExpense)) {
-    errors['expenses.extraMedicationExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.extraMedicationExpense'] = 'Zadaj nezáporné číslo.';
   }
   if (!isPositiveNumeric(state.expenses.extraFoodExpense)) {
-    errors['expenses.extraFoodExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.extraFoodExpense'] = 'Zadaj nezáporné číslo.';
   }
   return errors;
 }

@@ -29,17 +29,26 @@ import {
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
-import type {
-  PetProfile,
-  AnimalType,
-  AnimalSize,
-  AnimalLifeStage,
-  ActivityLevel,
-} from '../types';
+import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
 
-const ALLERGY_SUGGESTIONS = ['Kura/kuriatko', 'Hovädzie', 'Jahňacie', 'Ryby', 'Vajcia', 'Pšenica', 'Kukurica', 'Sója'];
+const ALLERGY_SUGGESTIONS = [
+  'Kura/kuriatko',
+  'Hovädzie',
+  'Jahňacie',
+  'Ryby',
+  'Vajcia',
+  'Pšenica',
+  'Kukurica',
+  'Sója',
+];
 const INTOLERANCE_SUGGESTIONS = ['Lepok', 'Laktóza', 'Kukurica', 'Sója', 'Obilniny'];
-const HEALTH_SUGGESTIONS = ['Diabetes', 'Problémy s obličkami', 'Obezita', 'Problémy s kĺbmi', 'Citlivé trávenie'];
+const HEALTH_SUGGESTIONS = [
+  'Diabetes',
+  'Problémy s obličkami',
+  'Obezita',
+  'Problémy s kĺbmi',
+  'Citlivé trávenie',
+];
 
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   name: '',
@@ -85,7 +94,7 @@ export default function PetProfilePage() {
   } = useHealthData();
   const [, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
     'granule-check-last-clinic-by-dog',
-    {},
+    {}
   );
 
   const [pendingDelete, setPendingDelete] = useState<{
@@ -149,7 +158,15 @@ export default function PetProfilePage() {
 
   const openEdit = (profile: PetProfile) => {
     setEditingId(profile.id);
-    setForm({ ...EMPTY_PROFILE, ...profile, allergies: [...profile.allergies], intolerances: [...profile.intolerances], healthConditions: [...profile.healthConditions], chronicConditions: [...(profile.chronicConditions ?? [])], procedures: [...(profile.procedures ?? [])] });
+    setForm({
+      ...EMPTY_PROFILE,
+      ...profile,
+      allergies: [...profile.allergies],
+      intolerances: [...profile.intolerances],
+      healthConditions: [...profile.healthConditions],
+      chronicConditions: [...(profile.chronicConditions ?? [])],
+      procedures: [...(profile.procedures ?? [])],
+    });
     setDobError('');
     setNameError('');
     setDialogOpen(true);
@@ -200,9 +217,7 @@ export default function PetProfilePage() {
           overflow: 'hidden',
           borderRadius: 4,
           bgcolor: (theme) =>
-            theme.palette.mode === 'light'
-              ? 'rgba(15, 76, 92, 0.05)'
-              : 'rgba(111, 190, 209, 0.10)',
+            theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
           border: (theme) =>
             `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
           p: { xs: 2, md: 2.5 },
@@ -282,8 +297,8 @@ export default function PetProfilePage() {
               Zatiaľ žiadny profil
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
-              Vytvor prvý profil psa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte
-              pre veterinára.
+              Vytvor prvý profil psa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte pre
+              veterinára.
             </Typography>
             <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
               Vytvoriť profil
@@ -297,24 +312,44 @@ export default function PetProfilePage() {
           <Card key={profile.id} sx={{ borderRadius: 3 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {profile.photoUrl ? (
-                <Box component="img" src={profile.photoUrl} alt={profile.name} sx={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+                <Box
+                  component="img"
+                  src={profile.photoUrl}
+                  alt={profile.name}
+                  sx={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }}
+                />
               ) : (
                 <PetsIcon color="primary" sx={{ fontSize: 42 }} />
               )}
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>{profile.name}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {profile.name}
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {[profile.breed, formatAge(profile), profile.weightKg ? `${profile.weightKg} kg` : undefined, profile.microchipNumber ? `Čip: ${profile.microchipNumber}` : undefined]
+                  {[
+                    profile.breed,
+                    formatAge(profile),
+                    profile.weightKg ? `${profile.weightKg} kg` : undefined,
+                    profile.microchipNumber ? `Čip: ${profile.microchipNumber}` : undefined,
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </Typography>
                 <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ mt: 1 }}>
-                  {profile.allergies.map((a) => <Chip key={a} label={a} size="small" color="error" variant="outlined" />)}
-                  {profile.healthConditions.map((h) => <Chip key={h} label={h} size="small" color="info" variant="outlined" />)}
+                  {profile.allergies.map((a) => (
+                    <Chip key={a} label={a} size="small" color="error" variant="outlined" />
+                  ))}
+                  {profile.healthConditions.map((h) => (
+                    <Chip key={h} label={h} size="small" color="info" variant="outlined" />
+                  ))}
                 </Stack>
               </Box>
-              <IconButton onClick={() => openEdit(profile)}><EditIcon /></IconButton>
-              <IconButton color="error" onClick={() => requestDelete(profile)}><DeleteIcon /></IconButton>
+              <IconButton onClick={() => openEdit(profile)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton color="error" onClick={() => requestDelete(profile)}>
+                <DeleteIcon />
+              </IconButton>
             </CardContent>
           </Card>
         ))}
@@ -324,26 +359,50 @@ export default function PetProfilePage() {
         <DialogTitle>{editingId ? 'Upraviť profil psa' : 'Nový profil psa'}</DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Stack spacing={2}>
-            <TextField label="Meno *" value={form.name} onChange={(e) => {
-              setForm({ ...form, name: e.target.value });
-              if (e.target.value.trim()) setNameError('');
-            }} error={Boolean(nameError)} helperText={nameError || 'Povinné pole'} required fullWidth />
-            <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+            <TextField
+              label="Meno *"
+              value={form.name}
+              onChange={(e) => {
+                setForm({ ...form, name: e.target.value });
+                if (e.target.value.trim()) setNameError('');
+              }}
+              error={Boolean(nameError)}
+              helperText={nameError || 'Povinné pole'}
+              required
+              fullWidth
+            />
+            <Box
+              sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}
+            >
               <FormControl fullWidth>
                 <InputLabel>Druh</InputLabel>
-                <Select value={form.animalType} label="Druh" onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}>
+                <Select
+                  value={form.animalType}
+                  label="Druh"
+                  onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}
+                >
                   <MenuItem value="dog">Pes</MenuItem>
                   <MenuItem value="cat">Mačka</MenuItem>
                   <MenuItem value="other">Iné</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label="Plemeno" value={form.breed ?? ''} onChange={(e) => setForm({ ...form, breed: e.target.value })} fullWidth />
+              <TextField
+                label="Plemeno"
+                value={form.breed ?? ''}
+                onChange={(e) => setForm({ ...form, breed: e.target.value })}
+                fullWidth
+              />
               <FormControl fullWidth>
-                <InputLabel>Presnosť dátumu narodenia</InputLabel>
+                <InputLabel>Ako presne poznáš dátum narodenia</InputLabel>
                 <Select
                   value={form.dateOfBirthPrecision ?? 'full'}
-                  label="Presnosť dátumu narodenia"
-                  onChange={(e) => setForm({ ...form, dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'] })}
+                  label="Ako presne poznáš dátum narodenia"
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'],
+                    })
+                  }
                 >
                   <MenuItem value="full">Presný dátum</MenuItem>
                   <MenuItem value="year-month">Len rok a mesiac</MenuItem>
@@ -351,33 +410,120 @@ export default function PetProfilePage() {
                 </Select>
               </FormControl>
               {(form.dateOfBirthPrecision ?? 'full') === 'full' ? (
-                <TextField label="Dátum narodenia *" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => { setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
+                <TextField
+                  label="Dátum narodenia *"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={form.dateOfBirth ?? ''}
+                  onChange={(e) => {
+                    setForm({
+                      ...form,
+                      dateOfBirth: e.target.value,
+                      birthYear: undefined,
+                      birthMonth: undefined,
+                    });
+                    if (e.target.value) setDobError('');
+                  }}
+                  error={Boolean(dobError)}
+                  helperText={dobError || 'Povinné pole'}
+                  required
+                  fullWidth
+                />
               ) : (
                 <Stack direction="row" spacing={2}>
-                  <TextField label="Rok narodenia *" type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => { setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
+                  <TextField
+                    label="Rok narodenia *"
+                    type="number"
+                    inputProps={{ min: 1900, max: 2100 }}
+                    value={form.birthYear ?? ''}
+                    onChange={(e) => {
+                      setForm({
+                        ...form,
+                        birthYear: e.target.value ? Number(e.target.value) : undefined,
+                        dateOfBirth: undefined,
+                      });
+                      if (e.target.value) setDobError('');
+                    }}
+                    error={Boolean(dobError)}
+                    helperText={dobError || 'Povinné pole'}
+                    required
+                    fullWidth
+                  />
                   {(form.dateOfBirthPrecision ?? 'full') === 'year-month' && (
-                    <TextField label="Mesiac" type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
+                    <TextField
+                      label="Mesiac"
+                      type="number"
+                      inputProps={{ min: 1, max: 12 }}
+                      value={form.birthMonth ?? ''}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          birthMonth: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                      }
+                      fullWidth
+                    />
                   )}
                 </Stack>
               )}
               <FormControl fullWidth>
                 <InputLabel>Pohlavie</InputLabel>
-                <Select value={form.sex ?? 'UNKNOWN'} label="Pohlavie" onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}>
+                <Select
+                  value={form.sex ?? 'UNKNOWN'}
+                  label="Pohlavie"
+                  onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}
+                >
                   <MenuItem value="MALE">Samec</MenuItem>
                   <MenuItem value="FEMALE">Samica</MenuItem>
                   <MenuItem value="UNKNOWN">Neznáme</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label="Váha (kg)" type="number" inputProps={{ min: 0, step: 0.1 }} value={form.weightKg ?? ''} onChange={(e) => setForm({ ...form, weightKg: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
-              <TextField label="Foto URL" value={form.photoUrl ?? ''} onChange={(e) => setForm({ ...form, photoUrl: e.target.value })} fullWidth />
-              <TextField label="Číslo čipu" value={form.microchipNumber ?? ''} onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })} fullWidth />
-              <TextField label="Číslo pasu" value={form.passportNumber ?? ''} onChange={(e) => setForm({ ...form, passportNumber: e.target.value })} fullWidth />
+              <TextField
+                label="Váha (kg)"
+                type="number"
+                inputProps={{ min: 0, step: 0.1 }}
+                value={form.weightKg ?? ''}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    weightKg: e.target.value ? Number(e.target.value) : undefined,
+                  })
+                }
+                fullWidth
+              />
+              <TextField
+                label="Foto URL"
+                value={form.photoUrl ?? ''}
+                onChange={(e) => setForm({ ...form, photoUrl: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Číslo čipu"
+                value={form.microchipNumber ?? ''}
+                onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="Číslo pasu"
+                value={form.passportNumber ?? ''}
+                onChange={(e) => setForm({ ...form, passportNumber: e.target.value })}
+                fullWidth
+              />
             </Box>
 
             {form.animalType === 'dog' && (
               <FormControl fullWidth>
                 <InputLabel>Veľkosť</InputLabel>
-                <Select value={form.size ?? ''} label="Veľkosť" onChange={(e) => setForm({ ...form, size: (e.target.value || undefined) as AnimalSize | undefined })}>
+                <Select
+                  value={form.size ?? ''}
+                  label="Veľkosť"
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      size: (e.target.value || undefined) as AnimalSize | undefined,
+                    })
+                  }
+                >
                   <MenuItem value="">–</MenuItem>
                   <MenuItem value="mini">Mini</MenuItem>
                   <MenuItem value="small">Malý</MenuItem>
@@ -390,7 +536,16 @@ export default function PetProfilePage() {
 
             <FormControl fullWidth>
               <InputLabel>Životné štádium</InputLabel>
-              <Select value={form.lifeStage ?? ''} label="Životné štádium" onChange={(e) => setForm({ ...form, lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined })}>
+              <Select
+                value={form.lifeStage ?? ''}
+                label="Životné štádium"
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined,
+                  })
+                }
+              >
                 <MenuItem value="">–</MenuItem>
                 <MenuItem value="puppy">Šteňa</MenuItem>
                 <MenuItem value="junior">Junior</MenuItem>
@@ -401,7 +556,16 @@ export default function PetProfilePage() {
 
             <FormControl fullWidth>
               <InputLabel>Úroveň aktivity</InputLabel>
-              <Select value={form.activityLevel ?? ''} label="Úroveň aktivity" onChange={(e) => setForm({ ...form, activityLevel: (e.target.value || undefined) as ActivityLevel | undefined })}>
+              <Select
+                value={form.activityLevel ?? ''}
+                label="Úroveň aktivity"
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    activityLevel: (e.target.value || undefined) as ActivityLevel | undefined,
+                  })
+                }
+              >
                 <MenuItem value="">–</MenuItem>
                 <MenuItem value="low">Nízka</MenuItem>
                 <MenuItem value="moderate">Stredná</MenuItem>
@@ -410,47 +574,154 @@ export default function PetProfilePage() {
               </Select>
             </FormControl>
 
-            <Autocomplete multiple freeSolo options={ALLERGY_SUGGESTIONS} value={form.allergies} onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })} renderInput={(params) => <TextField {...params} label="Alergie" />} />
-            <Autocomplete multiple freeSolo options={INTOLERANCE_SUGGESTIONS} value={form.intolerances} onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })} renderInput={(params) => <TextField {...params} label="Intolerancie" />} />
-            <Autocomplete multiple freeSolo options={HEALTH_SUGGESTIONS} value={form.healthConditions} onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })} renderInput={(params) => <TextField {...params} label="Zdravotné ťažkosti" />} />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={ALLERGY_SUGGESTIONS}
+              value={form.allergies}
+              onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })}
+              renderInput={(params) => <TextField {...params} label="Alergie" />}
+            />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={INTOLERANCE_SUGGESTIONS}
+              value={form.intolerances}
+              onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })}
+              renderInput={(params) => <TextField {...params} label="Intolerancie" />}
+            />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={HEALTH_SUGGESTIONS}
+              value={form.healthConditions}
+              onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })}
+              renderInput={(params) => <TextField {...params} label="Zdravotné ťažkosti" />}
+            />
 
             <Divider />
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Chronické diagnózy</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Chronické diagnózy
+            </Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label="Názov diagnózy" value={conditionDraft} onChange={(e) => setConditionDraft(e.target.value)} fullWidth />
-              <Button variant="outlined" onClick={() => {
-                if (!conditionDraft.trim()) return;
-                setForm({ ...form, chronicConditions: [...(form.chronicConditions ?? []), { id: uid(), title: conditionDraft.trim() }] });
-                setConditionDraft('');
-              }}>Pridať</Button>
+              <TextField
+                label="Názov diagnózy"
+                value={conditionDraft}
+                onChange={(e) => setConditionDraft(e.target.value)}
+                fullWidth
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  if (!conditionDraft.trim()) return;
+                  setForm({
+                    ...form,
+                    chronicConditions: [
+                      ...(form.chronicConditions ?? []),
+                      { id: uid(), title: conditionDraft.trim() },
+                    ],
+                  });
+                  setConditionDraft('');
+                }}
+              >
+                Pridať
+              </Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {(form.chronicConditions ?? []).map((c) => <Chip key={c.id} label={c.title} onDelete={() => setForm({ ...form, chronicConditions: (form.chronicConditions ?? []).filter((x) => x.id !== c.id) })} />)}
+              {(form.chronicConditions ?? []).map((c) => (
+                <Chip
+                  key={c.id}
+                  label={c.title}
+                  onDelete={() =>
+                    setForm({
+                      ...form,
+                      chronicConditions: (form.chronicConditions ?? []).filter(
+                        (x) => x.id !== c.id
+                      ),
+                    })
+                  }
+                />
+              ))}
             </Stack>
 
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Procedúry / operácie</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              Procedúry / operácie
+            </Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label="Názov + dátum (napr. kastrácia 2024-02-10)" value={procedureDraft} onChange={(e) => setProcedureDraft(e.target.value)} fullWidth />
-              <Button variant="outlined" onClick={() => {
-                if (!procedureDraft.trim()) return;
-                setForm({ ...form, procedures: [...(form.procedures ?? []), { id: uid(), title: procedureDraft.trim(), date: new Date().toISOString().slice(0, 10) }] });
-                setProcedureDraft('');
-              }}>Pridať</Button>
+              <TextField
+                label="Názov + dátum (napr. kastrácia 2024-02-10)"
+                value={procedureDraft}
+                onChange={(e) => setProcedureDraft(e.target.value)}
+                fullWidth
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  if (!procedureDraft.trim()) return;
+                  setForm({
+                    ...form,
+                    procedures: [
+                      ...(form.procedures ?? []),
+                      {
+                        id: uid(),
+                        title: procedureDraft.trim(),
+                        date: new Date().toISOString().slice(0, 10),
+                      },
+                    ],
+                  });
+                  setProcedureDraft('');
+                }}
+              >
+                Pridať
+              </Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {(form.procedures ?? []).map((p) => <Chip key={p.id} label={p.title} onDelete={() => setForm({ ...form, procedures: (form.procedures ?? []).filter((x) => x.id !== p.id) })} />)}
+              {(form.procedures ?? []).map((p) => (
+                <Chip
+                  key={p.id}
+                  label={p.title}
+                  onDelete={() =>
+                    setForm({
+                      ...form,
+                      procedures: (form.procedures ?? []).filter((x) => x.id !== p.id),
+                    })
+                  }
+                />
+              ))}
             </Stack>
 
-            <TextField label="Poznámky - na čo si dať pozor" multiline minRows={3} value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} fullWidth />
+            <TextField
+              label="Poznámky - na čo si dať pozor"
+              multiline
+              minRows={3}
+              value={form.notes ?? ''}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              fullWidth
+            />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setDialogOpen(false); setNameError(''); setDobError(''); }}>Zrušiť</Button>
-          <Button variant="contained" onClick={handleSave}>{editingId ? 'Uložiť' : 'Pridať'}</Button>
+          <Button
+            onClick={() => {
+              setDialogOpen(false);
+              setNameError('');
+              setDobError('');
+            }}
+          >
+            Zrušiť
+          </Button>
+          <Button variant="contained" onClick={handleSave}>
+            {editingId ? 'Uložiť' : 'Pridať'}
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={pendingDelete !== null}
+        onClose={() => setPendingDelete(null)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>Vymazať profil?</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5}>

@@ -54,7 +54,7 @@ export default function AiRecordsReview({
       <Typography variant="body2" color="text.secondary">
         {hasProfileData
           ? 'AI nenašla očkovania ani úkony, no navrhla údaje do profilu (vyššie). Môžeš pokračovať a uložiť dokument.'
-          : 'Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.'}
+          : 'Po analýze sa tu zobrazia rozpoznané záznamy. Zatiaľ sa nič nenašlo.'}
       </Typography>
     );
   }
