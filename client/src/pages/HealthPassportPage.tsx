@@ -36,7 +36,8 @@ import {
 } from '../components/healthPassport/utils';
 
 export default function HealthPassportPage() {
-  const { t } = useTranslation('healthPassport');
+  const { t, i18n } = useTranslation('healthPassport');
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
 
@@ -120,79 +121,85 @@ export default function HealthPassportPage() {
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
-    const t: TimelineEvent[] = [];
+    const items: TimelineEvent[] = [];
     dogVaccinations.forEach((v) =>
-      t.push({
+      items.push({
         id: `vac-${v.id}`,
         dogId: v.dogId,
         type: 'VACCINATION',
-        title: `Očkovanie: ${v.name}`,
-        subtitle: `Platnosť do ${v.validUntil}`,
+        title: t('timeline.titleVaccination', { name: v.name }),
+        subtitle: v.validUntil
+          ? t('timeline.subtitleValidUntil', { date: v.validUntil })
+          : undefined,
         date: v.dateApplied,
       })
     );
     dogDewormings.forEach((v) =>
-      t.push({
+      items.push({
         id: `dew-${v.id}`,
         dogId: v.dogId,
         type: 'DEWORMING',
-        title: `Odčervenie: ${v.productName}`,
-        subtitle: `Ďalší termín ${v.nextDueDate}`,
+        title: t('timeline.titleDeworming', { product: v.productName }),
+        subtitle: v.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
+          : undefined,
         date: v.dateGiven,
       })
     );
     dogEctos.forEach((v) =>
-      t.push({
+      items.push({
         id: `ect-${v.id}`,
         dogId: v.dogId,
         type: 'ECTOPARASITE',
-        title: `Antiparazitikum: ${v.productName}`,
-        subtitle: `Ďalší termín ${v.nextDueDate}`,
+        title: t('timeline.titleEcto', { product: v.productName }),
+        subtitle: v.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
+          : undefined,
         date: v.dateGiven,
       })
     );
     dogVisits.forEach((v) =>
-      t.push({
+      items.push({
         id: `visit-${v.id}`,
         dogId: v.dogId,
         type: 'VET_VISIT',
-        title: `Veterinár: ${v.clinicName}`,
+        title: t('timeline.titleVisit', { clinic: v.clinicName }),
         subtitle: v.reason,
         date: v.date,
       })
     );
     dogMeds.forEach((v) =>
-      t.push({
+      items.push({
         id: `med-${v.id}`,
         dogId: v.dogId,
         type: 'MEDICATION',
-        title: `Liek: ${v.name}`,
+        title: t('timeline.titleMedication', { name: v.name }),
         subtitle: `${v.dose}, ${v.frequency}`,
         date: v.startDate,
       })
     );
     dogDiet.forEach((v) =>
-      t.push({
+      items.push({
         id: `diet-${v.id}`,
         dogId: v.dogId,
         type: 'DIET',
-        title: `Diéta: ${v.foodName}`,
+        title: t('timeline.titleDiet', { food: v.foodName }),
         subtitle: v.suitabilityStatus,
         date: v.startedAt,
       })
     );
     dogExpenses.forEach((v) =>
-      t.push({
+      items.push({
         id: `exp-${v.id}`,
         dogId: v.dogId,
         type: 'EXPENSE',
-        title: `Výdavok ${v.amount.toFixed(2)} €`,
+        title: t('timeline.titleExpense', { amount: v.amount.toFixed(2) }),
         subtitle: v.category,
         date: v.date,
       })
     );
-    return t.sort((a, b) => b.date.localeCompare(a.date));
-  }, [dogVaccinations, dogDewormings, dogEctos, dogVisits, dogMeds, dogDiet, dogExpenses]);
+    return items.sort((a, b) => b.date.localeCompare(a.date));
+  }, [dogVaccinations, dogDewormings, dogEctos, dogVisits, dogMeds, dogDiet, dogExpenses, t]);
 
   // ── Wizard / dialog state ──────────────────────────────────────────────────
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -376,7 +383,7 @@ export default function HealthPassportPage() {
         return `<tr><td>${escapeHtml(event.date)}</td><td>${escapeHtml(t(`timeline.${event.type}` as never))}</td><td>${escapeHtml(event.title)}${event.subtitle ? `<br><small>${escapeHtml(event.subtitle)}</small>` : ''}</td></tr>`;
       })
       .join('');
-    const html = `<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>Timeline – ${escapeHtml(dog.name)}</title><style>body{font-family:system-ui,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f5f9;font-weight:700}small{color:#64748b}@media print{body{padding:0}}</style></head><body><h1>Zdravotná timeline – ${escapeHtml(dog.name)}</h1><table><thead><tr><th>Dátum</th><th>Typ</th><th>Detail</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html lang="${lang.split('-')[0]}"><head><meta charset="utf-8"><title>${escapeHtml(t('page.exportTitle', { name: dog.name }))}</title><style>body{font-family:system-ui,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f5f9;font-weight:700}small{color:#64748b}@media print{body{padding:0}}</style></head><body><h1>${escapeHtml(t('page.exportTitle', { name: dog.name }))}</h1><table><thead><tr><th>${escapeHtml(t('page.exportColDate'))}</th><th>${escapeHtml(t('page.exportColType'))}</th><th>${escapeHtml(t('page.exportColDetail'))}</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
     const iframe = document.createElement('iframe');
     iframe.style.cssText =
       'position:fixed;top:0;left:0;width:0;height:0;border:0;visibility:hidden;';
@@ -399,7 +406,7 @@ export default function HealthPassportPage() {
         }, 2000);
       }, 500);
     });
-  }, [timeline, dogProfiles, selectedDogId]);
+  }, [timeline, dogProfiles, selectedDogId, t, lang]);
 
   // ── Early return if no dogs ─────────────────────────────────────────────────
   if (!dogProfiles.length) {
@@ -430,14 +437,13 @@ export default function HealthPassportPage() {
             <PetsIcon sx={{ fontSize: 32 }} />
           </Box>
           <Typography variant="h3" sx={{ fontSize: '1.25rem' }}>
-            Vitajte v zdravotnom pase
+            {t('page.welcomeTitle')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
-            Najprv si vytvorte profil psa v sekcii <strong>Profily</strong>. Potom tu uvidíte
-            timeline, najbližšie úlohy a celkový zdravotný stav.
+            {t('page.welcomeDescription')}
           </Typography>
           <Button variant="contained" href="/profily" size="large">
-            Vytvoriť profil
+            {t('page.createProfile')}
           </Button>
         </Stack>
       </Card>

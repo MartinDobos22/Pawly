@@ -92,6 +92,106 @@
       }
     }
   },
+  "hero": {
+    "chip": "Pre psy, mačky a ďalšie domáce zvieratá",
+    "title1": "Zdravie tvojho miláčika,",
+    "title2": "vždy po ruke",
+    "description": "Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva a karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani kontrolu.",
+    "ctaStart": "Začať zadarmo",
+    "ctaHowItWorks": "Ako to funguje",
+    "statFree": "Zadarmo",
+    "statAiScan": "Skenovanie pasu",
+    "statOffline": "Offline-ready",
+    "dogPhotoAlt": "Zlatý retriever sa pozerá do kamery",
+    "floatingVaccination": "Očkovanie",
+    "floatingValidUntil": "Platné do 23. 6. 2026"
+  },
+  "howItWorks": {
+    "title": "3 kroky a máš zdravotný pas v mobile",
+    "subtitle": "Žiadne komplikované formuláre, žiadne mesačné poplatky. Začni za pár minút.",
+    "steps": [
+      { "title": "Vytvor profil zvieraťa", "text": "Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd." },
+      { "title": "Naskenuj zdravotný pas", "text": "AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF." },
+      { "title": "Karta pre veterinára", "text": "Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným." }
+    ]
+  },
+  "features": {
+    "title1": "Všetko pre zdravie tvojho miláčika",
+    "title2": "na jednom mieste",
+    "subtitle": "Šesť funkcií, ktoré spolu pokrývajú celý zdravotný život tvojho zvieratka.",
+    "items": [
+      { "title": "Zdravotný pas", "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline." },
+      { "title": "AI analýza krmiva", "text": "Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera." },
+      { "title": "Pripomienky", "text": "Karta vždy ukazuje čo treba: odčervenie po termíne, blížiace sa očkovanie, kontrola." },
+      { "title": "Karta pre veterinára", "text": "Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou." },
+      { "title": "Môže môj miláčik jesť…?", "text": "Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď." },
+      { "title": "Denník epizód", "text": "Zaznamenaj zdravotné epizódy a podľa minulosti vidíš čo zabralo a čo nie." }
+    ]
+  },
+  "comparison": {
+    "title": "Papierový pas verzus Pawport",
+    "subtitle": "Prečo prejsť z otrhaného papiera na digitálny zdravotný pas.",
+    "paperTitle": "Papierový pas",
+    "pawportTitle": "Pawport",
+    "recommended": "Odporúčané",
+    "paperPoints": [
+      "Ľahko sa stratí alebo zničí",
+      "Žiadne pripomienky termínov",
+      "Musíš ho stále nosiť so sebou",
+      "Nečitateľný rukopis veterinára",
+      "Žiadna analýza krmiva"
+    ],
+    "pawportPoints": [
+      "Vždy v mobile, nikdy sa nestratí",
+      "Automatické pripomienky očkovania a odčervenia",
+      "AI skenovanie pasu aj analýza krmiva",
+      "Prehľadná karta pre veterinára na 1 klik",
+      "Funguje offline a úplne zadarmo"
+    ]
+  },
+  "cta": {
+    "title": "Začni sa starať o zdravie tvojho miláčika ešte dnes",
+    "subtitle": "Žiadna registrácia, žiadne poplatky. Stačí pridať profil zvieraťa a môžeš naplno využívať digitálny zdravotný pas.",
+    "btnStart": "Vstúpiť do aplikácie",
+    "btnProfile": "Vytvoriť profil",
+    "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
+  },
+  "footer": {
+    "about": "O aplikácii",
+    "profiles": "Profily",
+    "start": "Spustiť"
+  },
+  "stats": {
+    "items": [
+      { "label": "záznamov v zdrav. pasoch" },
+      { "label": "aplikovaných vakcinácií" },
+      { "label": "druhov zvierat" },
+      { "label": "zadarmo, bez registrácie" }
+    ]
+  },
+  "demo": {
+    "badge": "Žiadna registrácia, vyskúšaj hneď",
+    "title": "Spýtaj sa AI, čo môže tvoj miláčik jesť",
+    "subtitle": "Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre psa, mačku alebo iné zvieratko bezpečná.",
+    "placeholder": "napr. čokoláda, mrkva, jablko, hrozno…",
+    "askBtn": "Spýtať sa",
+    "askingBtn": "Pýtam sa…",
+    "tryLabel": "Skús:",
+    "continueBtn": "Pokračovať so skutočnou AI v aplikácii"
+  },
+  "petTypes": {
+    "heading": "PAWPORT PRE VŠETKY DOMÁCE ZVIERATÁ",
+    "items": [
+      { "label": "Psy" },
+      { "label": "Mačky" },
+      { "label": "Králiky" },
+      { "label": "Hlodavce" },
+      { "label": "Vtáci" },
+      { "label": "Plazy" },
+      { "label": "Ryby" },
+      { "label": "Kone" }
+    ]
+  },
   "notifications": {
     "title": "Notifikácie",
     "description": "Upozorníme ťa, keď sa blíži termín očkovaní, odčervenia, antiparazitík, kontroly u veterinára alebo koniec liečby liekom.",

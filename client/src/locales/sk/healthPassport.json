@@ -428,7 +428,10 @@
     "recordEpisodes": "Epizódy",
     "recordAnalyses": "Analýzy krmiva",
     "saveCreate": "Pridať",
-    "saveUpdate": "Uložiť"
+    "saveUpdate": "Uložiť",
+    "allergySuggestions": ["Kura/kuriatko", "Hovädzie", "Jahňacie", "Ryby", "Vajcia", "Pšenica", "Kukurica", "Sója"],
+    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
+    "healthSuggestions": ["Diabetes", "Problémy s obličkami", "Obezita", "Problémy s kĺbmi", "Citlivé trávenie"]
   },
   "score": {
     "excellent": "Výborný",

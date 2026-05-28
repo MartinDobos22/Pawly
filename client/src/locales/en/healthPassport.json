@@ -424,7 +424,10 @@
     "recordEpisodes": "Episodes",
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
-    "saveUpdate": "Save"
+    "saveUpdate": "Save",
+    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
+    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
+    "healthSuggestions": ["Diabetes", "Kidney problems", "Obesity", "Joint problems", "Sensitive digestion"]
   },
   "score": {
     "excellent": "Excellent",

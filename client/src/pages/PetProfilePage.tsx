@@ -38,9 +38,6 @@ import type {
   ActivityLevel,
 } from '../types';
 
-const ALLERGY_SUGGESTIONS = ['Kura/kuriatko', 'Hovädzie', 'Jahňacie', 'Ryby', 'Vajcia', 'Pšenica', 'Kukurica', 'Sója'];
-const INTOLERANCE_SUGGESTIONS = ['Lepok', 'Laktóza', 'Kukurica', 'Sója', 'Obilniny'];
-const HEALTH_SUGGESTIONS = ['Diabetes', 'Problémy s obličkami', 'Obezita', 'Problémy s kĺbmi', 'Citlivé trávenie'];
 
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   name: '',
@@ -72,6 +69,9 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 export default function PetProfilePage() {
   const { t } = useTranslation('healthPassport');
+  const ALLERGY_SUGGESTIONS = t('profiles.allergySuggestions', { returnObjects: true }) as string[];
+  const INTOLERANCE_SUGGESTIONS = t('profiles.intoleranceSuggestions', { returnObjects: true }) as string[];
+  const HEALTH_SUGGESTIONS = t('profiles.healthSuggestions', { returnObjects: true }) as string[];
   const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
   const {
     vaccinations,

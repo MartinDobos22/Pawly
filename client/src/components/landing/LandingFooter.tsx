@@ -1,8 +1,10 @@
 import { Box, Link, Stack, Typography, useTheme } from '@mui/material';
 import { Pets as PetsIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 export default function LandingFooter() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
 
   return (
     <Box
@@ -48,21 +50,21 @@ export default function LandingFooter() {
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
             >
-              O aplikácii
+              {t('footer.about')}
             </Link>
             <Link
               href="/profily"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
             >
-              Profily
+              {t('footer.profiles')}
             </Link>
             <Link
               href="/analyza"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
             >
-              Spustiť
+              {t('footer.start')}
             </Link>
           </Stack>
         </Stack>

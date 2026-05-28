@@ -68,5 +68,6 @@
   "recentAnalyses": {
     "title": "Recent analyses",
     "noAnalyses": "Run your first analysis"
-  }
+  },
+  "defaultLabel": "Analysis"
 }

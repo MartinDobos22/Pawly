@@ -7,53 +7,22 @@ import {
   HelpOutline as QAIcon,
   MenuBook as DiaryIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
-const FEATURES: Array<{
-  icon: React.ElementType;
-  title: string;
-  text: string;
-  tone: 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error';
-}> = [
-  {
-    icon: ShieldIcon,
-    title: 'Zdravotný pas',
-    text: 'Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline.',
-    tone: 'primary',
-  },
-  {
-    icon: ScienceIcon,
-    title: 'AI analýza krmiva',
-    text: 'Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera.',
-    tone: 'info',
-  },
-  {
-    icon: NotificationIcon,
-    title: 'Pripomienky',
-    text: 'Karta vždy ukazuje čo treba: odčervenie po termíne, blížiace sa očkovanie, kontrola.',
-    tone: 'warning',
-  },
-  {
-    icon: VetCardIcon,
-    title: 'Karta pre veterinára',
-    text: 'Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou.',
-    tone: 'secondary',
-  },
-  {
-    icon: QAIcon,
-    title: 'Môže môj miláčik jesť…?',
-    text: 'Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď.',
-    tone: 'success',
-  },
-  {
-    icon: DiaryIcon,
-    title: 'Denník epizód',
-    text: 'Zaznamenaj zdravotné epizódy a podľa minulosti vidíš čo zabralo a čo nie.',
-    tone: 'error',
-  },
+type FeatureTone = 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error';
+const FEATURE_ICONS: Array<{ icon: React.ElementType; tone: FeatureTone }> = [
+  { icon: ShieldIcon, tone: 'primary' },
+  { icon: ScienceIcon, tone: 'info' },
+  { icon: NotificationIcon, tone: 'warning' },
+  { icon: VetCardIcon, tone: 'secondary' },
+  { icon: QAIcon, tone: 'success' },
+  { icon: DiaryIcon, tone: 'error' },
 ];
 
 export default function FeatureGrid() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
+  const featureItems = t('features.items', { returnObjects: true }) as Array<{ title: string; text: string }>;
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>
@@ -69,7 +38,7 @@ export default function FeatureGrid() {
               maxWidth: 800,
             }}
           >
-            Všetko pre zdravie tvojho miláčika{' '}
+            {t('features.title1')}{' '}
             <Box
               component="span"
               sx={{
@@ -79,14 +48,14 @@ export default function FeatureGrid() {
                 backgroundClip: 'text',
               }}
             >
-              na jednom mieste
+              {t('features.title2')}
             </Box>
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
           >
-            Šesť funkcií, ktoré spolu pokrývajú celý zdravotný život tvojho zvieratka.
+            {t('features.subtitle')}
           </Typography>
         </Stack>
 
@@ -101,15 +70,12 @@ export default function FeatureGrid() {
             gap: { xs: 2, md: 2.5 },
           }}
         >
-          {FEATURES.map((feature) => {
-            const Icon = feature.icon;
-            const color =
-              theme.palette[
-                feature.tone as 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error'
-              ].main;
+          {featureItems.map((feature, idx) => {
+            const { icon: Icon, tone } = FEATURE_ICONS[idx];
+            const color = theme.palette[tone].main;
             return (
               <Box
-                key={feature.title}
+                key={idx}
                 sx={{
                   p: { xs: 2.5, md: 3 },
                   borderRadius: 4,

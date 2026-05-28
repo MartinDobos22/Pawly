@@ -385,7 +385,7 @@ export default function AnalyzePage() {
                 </Box>
                 <Stack sx={{ flex: 1, minWidth: 0 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
-                    {entry.sourceLabel || 'Analýza'}
+                    {entry.sourceLabel || t('defaultLabel')}
                   </Typography>
                   <Typography
                     variant="caption"

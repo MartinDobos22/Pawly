@@ -68,5 +68,6 @@
   "recentAnalyses": {
     "title": "Posledné analýzy",
     "noAnalyses": "Vykonaj prvú analýzu"
-  }
+  },
+  "defaultLabel": "Analýza"
 }

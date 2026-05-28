@@ -92,6 +92,106 @@
       }
     }
   },
+  "hero": {
+    "chip": "For dogs, cats and other pets",
+    "title1": "Your pet's health,",
+    "title2": "always at hand",
+    "description": "A digital health passport for dogs, cats and other pets. AI food analysis and a vet card all in one place. Never miss a vaccination, deworming or check-up.",
+    "ctaStart": "Get started for free",
+    "ctaHowItWorks": "How it works",
+    "statFree": "Free",
+    "statAiScan": "Passport scan",
+    "statOffline": "Offline-ready",
+    "dogPhotoAlt": "Golden retriever looking at the camera",
+    "floatingVaccination": "Vaccination",
+    "floatingValidUntil": "Valid until 23 Jun 2026"
+  },
+  "howItWorks": {
+    "title": "3 steps and your health passport is on your phone",
+    "subtitle": "No complicated forms, no monthly fees. Get started in a few minutes.",
+    "steps": [
+      { "title": "Create a pet profile", "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds." },
+      { "title": "Scan the health passport", "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF." },
+      { "title": "Vet card", "text": "Before every vet visit, export a clear PDF card with everything that matters." }
+    ]
+  },
+  "features": {
+    "title1": "Everything for your pet's health",
+    "title2": "in one place",
+    "subtitle": "Six features that together cover the entire health life of your pet.",
+    "items": [
+      { "title": "Health passport", "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline." },
+      { "title": "AI food analysis", "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet." },
+      { "title": "Reminders", "text": "The card always shows what's needed: overdue deworming, upcoming vaccination, check-up." },
+      { "title": "Vet card", "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history." },
+      { "title": "Can my pet eat…?", "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer." },
+      { "title": "Health diary", "text": "Record health episodes and based on history see what worked and what didn't." }
+    ]
+  },
+  "comparison": {
+    "title": "Paper passport vs Pawport",
+    "subtitle": "Why switch from a worn paper passport to a digital health passport.",
+    "paperTitle": "Paper passport",
+    "pawportTitle": "Pawport",
+    "recommended": "Recommended",
+    "paperPoints": [
+      "Easily lost or damaged",
+      "No deadline reminders",
+      "You have to carry it everywhere",
+      "Unreadable vet handwriting",
+      "No food analysis"
+    ],
+    "pawportPoints": [
+      "Always on your phone, never lost",
+      "Automatic vaccination and deworming reminders",
+      "AI passport scanning and food analysis",
+      "Clear vet card with one click",
+      "Works offline and completely free"
+    ]
+  },
+  "cta": {
+    "title": "Start caring for your pet's health today",
+    "subtitle": "No registration, no fees. Just add a pet profile and you're ready to use the digital health passport.",
+    "btnStart": "Open app",
+    "btnProfile": "Create profile",
+    "vetPhotoAlt": "Veterinary check-up of a pet"
+  },
+  "footer": {
+    "about": "About",
+    "profiles": "Profiles",
+    "start": "Get started"
+  },
+  "stats": {
+    "items": [
+      { "label": "health passport records" },
+      { "label": "vaccinations recorded" },
+      { "label": "animal species" },
+      { "label": "free, no registration" }
+    ]
+  },
+  "demo": {
+    "badge": "No registration, try it now",
+    "title": "Ask AI what your pet can eat",
+    "subtitle": "Type a food or ingredient — instantly see if it's safe for your dog, cat or other pet.",
+    "placeholder": "e.g. chocolate, carrot, apple, grapes…",
+    "askBtn": "Ask",
+    "askingBtn": "Asking…",
+    "tryLabel": "Try:",
+    "continueBtn": "Continue with real AI in the app"
+  },
+  "petTypes": {
+    "heading": "PAWPORT FOR ALL PETS",
+    "items": [
+      { "label": "Dogs" },
+      { "label": "Cats" },
+      { "label": "Rabbits" },
+      { "label": "Rodents" },
+      { "label": "Birds" },
+      { "label": "Reptiles" },
+      { "label": "Fish" },
+      { "label": "Horses" }
+    ]
+  },
   "notifications": {
     "title": "Notifications",
     "description": "We'll remind you when vaccinations, deworming, antiparasitic treatments, vet check-ups, or medication end dates are approaching.",

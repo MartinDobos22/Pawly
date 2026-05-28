@@ -4,27 +4,14 @@ import {
   AutoAwesome as AiScanIcon,
   Description as VetCardIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
-const STEPS = [
-  {
-    icon: ProfileIcon,
-    title: 'Vytvor profil zvieraťa',
-    text: 'Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd.',
-  },
-  {
-    icon: AiScanIcon,
-    title: 'Naskenuj zdravotný pas',
-    text: 'AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF.',
-  },
-  {
-    icon: VetCardIcon,
-    title: 'Karta pre veterinára',
-    text: 'Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným.',
-  },
-];
+const STEP_ICONS = [ProfileIcon, AiScanIcon, VetCardIcon];
 
 export default function HowItWorks() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
+  const steps = t('howItWorks.steps', { returnObjects: true }) as Array<{ title: string; text: string }>;
 
   return (
     <Box id="how-it-works" sx={{ py: { xs: 8, md: 14 } }}>
@@ -40,13 +27,13 @@ export default function HowItWorks() {
               maxWidth: 720,
             }}
           >
-            3 kroky a máš zdravotný pas v mobile
+            {t('howItWorks.title')}
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
           >
-            Žiadne komplikované formuláre, žiadne mesačné poplatky. Začni za pár minút.
+            {t('howItWorks.subtitle')}
           </Typography>
         </Stack>
 
@@ -57,11 +44,11 @@ export default function HowItWorks() {
             gap: { xs: 2, md: 3 },
           }}
         >
-          {STEPS.map((step, idx) => {
-            const Icon = step.icon;
+          {steps.map((step, idx) => {
+            const Icon = STEP_ICONS[idx];
             return (
               <Box
-                key={step.title}
+                key={idx}
                 sx={{
                   position: 'relative',
                   p: { xs: 2.5, md: 3 },

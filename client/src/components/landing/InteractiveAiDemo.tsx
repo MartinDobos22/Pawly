@@ -19,6 +19,7 @@ import {
   WarningAmber as CautionIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type Verdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
 
@@ -122,18 +123,17 @@ const FALLBACK: MockResponse = {
   warnings: ['Pred podaním novej potraviny sa poraď s veterinárom'],
 };
 
-const VERDICT_META: Record<
-  Verdict,
-  { label: string; icon: typeof SafeIcon; toneKey: 'success' | 'warning' | 'error' }
-> = {
-  SAFE: { label: 'Bezpečné', icon: SafeIcon, toneKey: 'success' },
-  CAUTION: { label: 'Opatrne', icon: CautionIcon, toneKey: 'warning' },
-  UNSAFE: { label: 'Nedávaj', icon: UnsafeIcon, toneKey: 'error' },
+const VERDICT_ICONS: Record<Verdict, { icon: typeof SafeIcon; toneKey: 'success' | 'warning' | 'error' }> = {
+  SAFE: { icon: SafeIcon, toneKey: 'success' },
+  CAUTION: { icon: CautionIcon, toneKey: 'warning' },
+  UNSAFE: { icon: UnsafeIcon, toneKey: 'error' },
 };
 
 export default function InteractiveAiDemo() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation('landing');
+  const { t: tAnalyze } = useTranslation('analyze');
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ query: string; data: MockResponse } | null>(null);
@@ -161,7 +161,8 @@ export default function InteractiveAiDemo() {
   };
 
   const renderResult = (entry: { query: string; data: MockResponse }) => {
-    const meta = VERDICT_META[entry.data.verdict];
+    const meta = VERDICT_ICONS[entry.data.verdict];
+    const verdictLabel = tAnalyze(`foodSafety.verdicts.${entry.data.verdict}` as never);
     const Icon = meta.icon;
     const tone = theme.palette[meta.toneKey].main;
     return (
@@ -199,7 +200,7 @@ export default function InteractiveAiDemo() {
             <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
               <Chip
                 size="small"
-                label={meta.label}
+                label={verdictLabel}
                 sx={{
                   bgcolor: tone,
                   color: meta.toneKey === 'warning' ? theme.palette.warning.contrastText : '#fff',
@@ -298,7 +299,7 @@ export default function InteractiveAiDemo() {
               variant="caption"
               sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.12em' }}
             >
-              Žiadna registrácia, vyskúšaj hneď
+              {t('demo.badge')}
             </Typography>
           </Stack>
           <Typography
@@ -310,7 +311,7 @@ export default function InteractiveAiDemo() {
               lineHeight: 1.1,
             }}
           >
-            Spýtaj sa AI, čo môže tvoj miláčik jesť
+            {t('demo.title')}
           </Typography>
           <Typography
             variant="body1"
@@ -320,8 +321,7 @@ export default function InteractiveAiDemo() {
               fontSize: { xs: '1rem', md: '1.1rem' },
             }}
           >
-            Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre psa, mačku alebo iné
-            zvieratko bezpečná.
+            {t('demo.subtitle')}
           </Typography>
         </Stack>
 
@@ -340,7 +340,7 @@ export default function InteractiveAiDemo() {
             <TextField
               fullWidth
               size="medium"
-              placeholder="napr. čokoláda, mrkva, jablko, hrozno…"
+              placeholder={t('demo.placeholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -360,7 +360,7 @@ export default function InteractiveAiDemo() {
               sx={{ minWidth: 130, flexShrink: 0, fontSize: '1rem' }}
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
             >
-              {loading ? 'Pýtam sa…' : 'Spýtať sa'}
+              {loading ? t('demo.askingBtn') : t('demo.askBtn')}
             </Button>
           </Stack>
 
@@ -375,7 +375,7 @@ export default function InteractiveAiDemo() {
                 mr: 0.5,
               }}
             >
-              Skús:
+              {t('demo.tryLabel')}
             </Typography>
             {QUICK_FILLS.map((q) => (
               <Chip
@@ -400,7 +400,7 @@ export default function InteractiveAiDemo() {
             onClick={() => navigate('/analyza')}
             sx={{ color: 'primary.main' }}
           >
-            Pokračovať so skutočnou AI v aplikácii
+            {t('demo.continueBtn')}
           </Button>
         </Stack>
       </Box>

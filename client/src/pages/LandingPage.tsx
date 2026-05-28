@@ -16,6 +16,7 @@ import {
   ArrowForward as ArrowIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
@@ -40,6 +41,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { t } = useTranslation('common');
 
   return (
     <Box
@@ -112,7 +114,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           <IconButton
             onClick={onToggleTheme}
             color="inherit"
-            aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+            aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
           >
             {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>

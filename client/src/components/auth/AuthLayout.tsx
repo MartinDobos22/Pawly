@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { alpha, Box, Card, CardContent, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -23,6 +24,7 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation('common');
 
   return (
     <Box
@@ -48,7 +50,7 @@ export default function AuthLayout({
     >
       <IconButton
         onClick={onToggleTheme}
-        aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+        aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
         sx={{ position: 'absolute', top: theme.spacing(2), right: theme.spacing(2) }}
       >
         {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
