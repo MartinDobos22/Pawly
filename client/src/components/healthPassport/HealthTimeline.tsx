@@ -18,8 +18,9 @@ import {
   ChevronRight as ChevronIcon,
   TuneOutlined as TuneIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/dogHealth';
-import { TIMELINE_FILTER_OPTIONS, TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
+import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
 
 interface HealthTimelineProps {
   timeline: TimelineEvent[];
@@ -71,6 +72,7 @@ export default function HealthTimeline({
   onExportPdf,
 }: HealthTimelineProps) {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
   const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
 
@@ -129,7 +131,7 @@ export default function HealthTimeline({
             Timeline
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Chronologický prehľad zdravotnej histórie
+            {t('timeline.chronologicalOverview')}
           </Typography>
         </Box>
         <Stack
@@ -138,7 +140,7 @@ export default function HealthTimeline({
           sx={{ flex: '1 1 320px', minWidth: 0, alignItems: 'center', justifyContent: 'flex-end' }}
         >
           <TextField
-            placeholder="Hľadať v zdravotnom zázname…"
+            placeholder={t('timeline.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             InputProps={{
@@ -151,7 +153,7 @@ export default function HealthTimeline({
                 <InputAdornment position="end">
                   <IconButton
                     size="small"
-                    aria-label="Vyčistiť vyhľadávanie"
+                    aria-label={t('timeline.clearSearch')}
                     onClick={() => setSearch('')}
                   >
                     <ClearIcon sx={{ fontSize: 16 }} />
@@ -165,10 +167,10 @@ export default function HealthTimeline({
             variant="outlined"
             startIcon={<PdfIcon sx={{ fontSize: 18 }} />}
             onClick={onExportPdf}
-            aria-label="Exportovať timeline do PDF"
+            aria-label={t('timeline.exportPdfAriaLabel')}
             sx={{ flexShrink: 0 }}
           >
-            Export PDF
+            {t('timeline.exportPdf')}
           </Button>
         </Stack>
       </Box>
@@ -187,24 +189,24 @@ export default function HealthTimeline({
       >
         <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
         <Chip
-          label="Všetko"
+          label={t('filter.ALL')}
           size="small"
           clickable
           variant={isAllActive ? 'filled' : 'outlined'}
           color={isAllActive ? 'primary' : 'default'}
           onClick={() => toggleType('ALL')}
         />
-        {TIMELINE_FILTER_OPTIONS.filter((o) => o.value !== 'ALL').map((opt) => {
-          const isActive = selected.has(opt.value as SelectableType);
+        {TIMELINE_FILTER_VALUES.filter((v) => v !== 'ALL').map((v) => {
+          const isActive = selected.has(v as SelectableType);
           return (
             <Chip
-              key={opt.value}
-              label={opt.label}
+              key={v}
+              label={t(`filter.${v}`)}
               size="small"
               clickable
               variant={isActive ? 'filled' : 'outlined'}
               color={isActive ? 'primary' : 'default'}
-              onClick={() => toggleType(opt.value as SelectableType)}
+              onClick={() => toggleType(v as SelectableType)}
             />
           );
         })}
@@ -214,7 +216,7 @@ export default function HealthTimeline({
             onClick={clearFilters}
             sx={{ ml: 0.5, color: 'text.secondary', minHeight: 28 }}
           >
-            Vymazať filtre
+            {t('timeline.clearFilters')}
           </Button>
         )}
       </Stack>
@@ -229,7 +231,7 @@ export default function HealthTimeline({
             borderRadius: 3,
           }}
         >
-          <Typography variant="body2">Žiadne záznamy pre zvolený filter.</Typography>
+          <Typography variant="body2">{t('timeline.noRecords')}</Typography>
         </Box>
       ) : (
         <Box
@@ -295,7 +297,6 @@ export default function HealthTimeline({
 
                 <Stack spacing={1}>
                   {events.map((event) => {
-                    const typeMeta = TIMELINE_TYPE_META[event.type];
                     return (
                       <Box
                         key={event.id}
@@ -347,7 +348,7 @@ export default function HealthTimeline({
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.25 }}>
                             <Chip
-                              label={typeMeta.label}
+                              label={t(`timeline.${event.type}`)}
                               size="small"
                               variant="outlined"
                               sx={{

@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, CircularProgress, Typography, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface ScoreCardProps {
   score: number;
@@ -12,16 +13,17 @@ function getScoreColor(score: number): string {
   return '#1B5E20';
 }
 
-function getScoreLabel(score: number): string {
-  if (score <= 30) return 'Nevyhovujúce';
-  if (score <= 60) return 'Priemerné';
-  if (score <= 80) return 'Dobré';
-  return 'Výborné';
-}
-
 export default function ScoreCard({ score, summary }: ScoreCardProps) {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
   const color = getScoreColor(score);
+
+  const getScoreLabel = (s: number): string => {
+    if (s <= 30) return t('score.poor');
+    if (s <= 60) return t('score.average');
+    if (s <= 80) return t('score.good');
+    return t('score.excellent');
+  };
 
   return (
     <Card
@@ -76,7 +78,7 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
               {score}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-              z 100
+              {t('score.outOf')}
             </Typography>
           </Box>
         </Box>
@@ -86,7 +88,7 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
         </Typography>
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Celkové skóre kvality
+          {t('score.totalQuality')}
         </Typography>
 
         <Typography variant="body1" sx={{ mt: 2, maxWidth: 500, mx: 'auto', lineHeight: 1.7 }}>

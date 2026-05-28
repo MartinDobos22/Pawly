@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Karta pre veterinára",
+    "description": "Súhrn zdravotného stavu zvieraťa pre veterinára.",
+    "noPet": "Vyber zviera v ľavom menu.",
+    "exportPdf": "Exportovať PDF",
+    "print": "Vytlačiť"
+  },
+  "sections": {
+    "identity": "Identita",
+    "diagnoses": "Diagnózy",
+    "vaccinations": "Vakcinácie",
+    "medications": "Lieky",
+    "activeMedications": "Aktívne lieky",
+    "preventiveCare": "Preventívna starostlivosť",
+    "recentVisits": "Posledné návštevy",
+    "allergies": "Alergie",
+    "chronicConditions": "Chronické stavy",
+    "notes": "Poznámky"
+  },
+  "fields": {
+    "name": "Meno",
+    "species": "Druh",
+    "breed": "Plemeno",
+    "age": "Vek",
+    "weight": "Hmotnosť",
+    "sex": "Pohlavie",
+    "microchip": "Mikročip",
+    "passport": "Číslo pasu",
+    "owner": "Majiteľ"
+  },
+  "empty": {
+    "noData": "Žiadne dáta",
+    "noVaccinations": "Žiadne vakcinácie",
+    "noMedications": "Žiadne lieky",
+    "noVisits": "Žiadne návštevy"
+  }
+}

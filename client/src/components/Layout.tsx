@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   AppBar,
   Box,
@@ -37,6 +38,7 @@ import {
   DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
 import { deleteAccount } from '../services/accountApi';
 
@@ -44,40 +46,6 @@ const DRAWER_WIDTH = 272;
 
 type NavItem = { label: string; icon: ReactNode; path: string };
 type NavSection = { id: string; label: string; items: NavItem[] };
-
-const NAV_SECTIONS: NavSection[] = [
-  {
-    id: 'health',
-    label: 'Hlavné',
-    items: [
-      { label: 'Zdravotný pas', icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
-      { label: 'Karta veterinára', icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
-      { label: 'Denník', icon: <MenuBookIcon />, path: '/dennik' },
-    ],
-  },
-  {
-    id: 'tools',
-    label: 'Ostatné',
-    items: [
-      { label: 'Analýza', icon: <ScienceIcon />, path: '/analyza' },
-      { label: 'História', icon: <HistoryIcon />, path: '/historia' },
-    ],
-  },
-  {
-    id: 'settings',
-    label: 'Nastavenia',
-    items: [
-      { label: 'Profily', icon: <PetsIcon />, path: '/profily' },
-      { label: 'Notifikácie', icon: <NotificationsActiveIcon />, path: '/notifikacie' },
-      { label: 'Časté otázky', icon: <HelpOutlineIcon />, path: '/caste-otazky' },
-      { label: 'O aplikácii', icon: <InfoIcon />, path: '/o-aplikacii' },
-    ],
-  },
-];
-
-const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
-// Mobilná bottom-nav: len primárne položky + „Viac" (ostatné cez drawer), aby sa ikony neorezávali.
-const MOBILE_NAV: NavItem[] = FLAT_NAV.slice(0, 4);
 
 interface LayoutProps {
   children: ReactNode;
@@ -91,6 +59,7 @@ const isItemActive = (itemPath: string, currentPath: string) =>
     : currentPath === itemPath;
 
 export default function Layout({ children, darkMode, onToggleTheme }: LayoutProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -98,22 +67,53 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const location = useLocation();
   const { user, logout } = useAuth();
 
+  const NAV_SECTIONS: NavSection[] = [
+    {
+      id: 'health',
+      label: t('nav.sectionMain'),
+      items: [
+        { label: t('nav.healthPassport'), icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
+        { label: t('nav.vetCard'), icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
+        { label: t('nav.diary'), icon: <MenuBookIcon />, path: '/dennik' },
+      ],
+    },
+    {
+      id: 'tools',
+      label: t('nav.sectionOther'),
+      items: [
+        { label: t('nav.analyze'), icon: <ScienceIcon />, path: '/analyza' },
+        { label: t('nav.history'), icon: <HistoryIcon />, path: '/historia' },
+      ],
+    },
+    {
+      id: 'settings',
+      label: t('nav.sectionSettings'),
+      items: [
+        { label: t('nav.profiles'), icon: <PetsIcon />, path: '/profily' },
+        { label: t('nav.notifications'), icon: <NotificationsActiveIcon />, path: '/notifikacie' },
+        { label: t('nav.faq'), icon: <HelpOutlineIcon />, path: '/caste-otazky' },
+        { label: t('nav.about'), icon: <InfoIcon />, path: '/o-aplikacii' },
+      ],
+    },
+  ];
+
+  const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
+  const MOBILE_NAV: NavItem[] = FLAT_NAV.slice(0, 4);
+
   const handleLogout = async () => {
     await logout();
     navigate('/login', { replace: true });
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      'Naozaj zmazať účet? Vymažú sa všetky tvoje zvieratá a zdravotné záznamy. Túto akciu nie je možné vrátiť.'
-    );
+    const confirmed = window.confirm(t('auth.confirmDeleteMessage'));
     if (!confirmed) return;
     try {
       await deleteAccount();
       await logout();
       navigate('/login', { replace: true });
     } catch {
-      window.alert('Mazanie účtu zlyhalo. Skús to znova.');
+      window.alert(t('auth.deleteAccountFailed'));
     }
   };
 
@@ -173,7 +173,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           gap={1.25}
           role="button"
           tabIndex={0}
-          aria-label="Domov — Pawport"
+          aria-label={t('nav.home')}
           onClick={() => handleNav('/')}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -270,20 +270,21 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         <ListItemButton
           onClick={onToggleTheme}
           sx={navItemSx(false)}
-          aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+          aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
         >
           <ListItemIcon>{darkMode ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
           <ListItemText
-            primary={darkMode ? 'Svetlý režim' : 'Tmavý režim'}
+            primary={darkMode ? t('theme.light') : t('theme.dark')}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
           />
         </ListItemButton>
-        <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label="Odhlásiť sa">
+        <LanguageSwitcher sx={navItemSx(false)} />
+        <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label={t('auth.logout')}>
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>
           <ListItemText
-            primary="Odhlásiť sa"
+            primary={t('auth.logout')}
             secondary={user?.email ?? undefined}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
             secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
@@ -296,13 +297,13 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             color: 'error.main',
             '& .MuiListItemIcon-root': { color: 'error.main' },
           }}
-          aria-label="Zmazať účet"
+          aria-label={t('auth.deleteAccount')}
         >
           <ListItemIcon>
             <DeleteForeverIcon />
           </ListItemIcon>
           <ListItemText
-            primary="Zmazať účet"
+            primary={t('auth.deleteAccount')}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
           />
         </ListItemButton>
@@ -342,7 +343,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           '&:focus': { top: 8 },
         }}
       >
-        Preskočiť na obsah
+        {t('skipToContent')}
       </Box>
       {isDesktop && (
         <Drawer
@@ -401,7 +402,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               <IconButton
                 edge="start"
                 onClick={() => setMobileDrawerOpen(true)}
-                aria-label="Otvoriť menu"
+                aria-label={t('openMenu')}
               >
                 <MenuIcon />
               </IconButton>
@@ -411,7 +412,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               <IconButton
                 onClick={onToggleTheme}
                 color="inherit"
-                aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+                aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
               >
                 {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
@@ -471,7 +472,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               {MOBILE_NAV.map((item) => (
                 <BottomNavigationAction key={item.path} label={item.label} icon={item.icon} />
               ))}
-              <BottomNavigationAction label="Viac" icon={<MoreHorizIcon />} />
+              <BottomNavigationAction label={t('nav.more')} icon={<MoreHorizIcon />} />
             </BottomNavigation>
           </Paper>
         )}

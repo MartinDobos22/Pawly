@@ -1,0 +1,134 @@
+{
+  "about": {
+    "title": "About",
+    "subtitle": "A small helper for the big love you have for your pets.",
+    "appName": "Pawport",
+    "appTagline": "Everything about your pet's health in one place.",
+    "appDescription": "Pawport combines a digital health passport and intelligent food analysis for dogs, cats and other pets. It helps you keep track of vaccinations, medications and vet visits — and make food decisions with confidence. So you can focus on what matters most: your pet.",
+    "featuresTitle": "What Pawport can do",
+    "privacyTitle": "Your data is safe",
+    "privacyDescription": "Access is protected by sign-in and all your pet records are private — only you can see them.",
+    "madeWithLove": "Made with love for pets",
+    "features": {
+      "aiAnalysis": {
+        "title": "AI food analysis",
+        "description": "Type or photograph the ingredients and in seconds you'll know what your pet is getting."
+      },
+      "healthPassport": {
+        "title": "Digital health passport",
+        "description": "Vaccinations, deworming, medications and vet visits — all clearly in one place."
+      },
+      "diary": {
+        "title": "Health diary",
+        "description": "Record health incidents and track what works and what doesn't."
+      },
+      "vetCard": {
+        "title": "Vet card",
+        "description": "A neat summary you can show or print at the vet."
+      },
+      "profiles": {
+        "title": "Pet profiles",
+        "description": "Dogs, cats and other pets — each with their own profile and allergy list."
+      }
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Quick answers about how Pawport works and what happens to your data.",
+    "sections": {
+      "dataPrivacy": {
+        "title": "Data & privacy",
+        "items": [
+          {
+            "q": "Where is my data stored?",
+            "a": "Your pet profiles and health records are stored in a secure cloud database (Supabase) via our server. They are tied to your account — they are not stored only in the browser."
+          },
+          {
+            "q": "Who can see my records?",
+            "a": "Only you. Every request is bound to your signed-in account and the database is configured so that no one can access your data without your login."
+          },
+          {
+            "q": "Can I access my data from multiple devices?",
+            "a": "Yes. Since the data is in the cloud, after signing in you'll see it on your phone, tablet and computer — always up to date."
+          },
+          {
+            "q": "Is my data secure?",
+            "a": "Communication uses encrypted HTTPS, access is only possible after sign-in, and database secret keys are exclusively on the server, never in the browser."
+          }
+        ]
+      },
+      "photosAi": {
+        "title": "Photos & AI",
+        "items": [
+          {
+            "q": "Are scans and photos I upload for recognition stored?",
+            "a": "No. When you upload a photo of a passport or food packaging for AI recognition, it is only used to read the text — you get the result back, but the image itself is not stored on the server."
+          },
+          {
+            "q": "What about photos I attach directly to a record or episode?",
+            "a": "Those yes — attachments you deliberately add to a record are saved as part of it, so you can see them later."
+          },
+          {
+            "q": "How does AI analysis work?",
+            "a": "Text or photos are processed by AI services (OpenAI and Google Vision), which recognize the content and return the result. We only send what is needed for the evaluation."
+          },
+          {
+            "q": "Is the analysis result medical advice?",
+            "a": "No. Results are informational and serve as a guide. For health decisions, always consult a veterinarian."
+          }
+        ]
+      },
+      "account": {
+        "title": "Account & usage",
+        "items": [
+          { "q": "How do I sign in?", "a": "With email and password, or with a single click via your Google account." },
+          { "q": "I forgot my password, what now?", "a": "On the login page click \"Forgot password?\" and we'll send you an email to set a new one." },
+          { "q": "Can I have multiple pets?", "a": "Yes. Create a profile for each pet — dogs, cats and other animals, each with their own allergies and records." },
+          { "q": "What happens when I delete a pet?", "a": "Along with the profile, all related records are deleted too (vaccinations, medications, episodes, expenses…). This action cannot be undone." },
+          { "q": "How do I delete my account and all my data?", "a": "In the side menu click \"Delete account\". Your account and all saved data will be permanently removed. This action is irreversible." },
+          { "q": "Does it work on mobile?", "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app." },
+          { "q": "How much does it cost?", "a": "Pawport is currently free." }
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "We'll remind you when vaccinations, deworming, antiparasitic treatments, vet check-ups, or medication end dates are approaching.",
+    "emailSection": "Email",
+    "emailEnabled": "Send reminders by email",
+    "emailSentTo": "Reminders are sent to {{email}}",
+    "emailNoEmail": "Your account has no email — add one by signing in with email.",
+    "leadDaysTitle": "How many days in advance",
+    "leadDaysNote": "We'll also remind you on the due date and the day after.",
+    "leadDayChip_one": "{{count}} day",
+    "leadDayChip_other": "{{count}} days",
+    "typesTitle": "Record types",
+    "upcomingTitle": "Upcoming deadlines",
+    "loadError": "Failed to load settings.",
+    "minLeadDaysError": "Keep at least one reminder interval.",
+    "pushComing": "Push notifications to your phone are coming soon.",
+    "types": {
+      "notifyVaccinations": "Vaccinations",
+      "notifyDewormings": "Deworming",
+      "notifyEctoparasites": "Ectoparasites (ticks/fleas)",
+      "notifyVetChecks": "Vet check-ups",
+      "notifyMedications": "End of medications"
+    },
+    "status": {
+      "OVERDUE": "overdue",
+      "DUE_SOON": "soon",
+      "OK": "ok"
+    },
+    "dueText": {
+      "overdue_one": "overdue by {{count}} day",
+      "overdue_other": "overdue by {{count}} days",
+      "today": "today",
+      "upcoming_one": "in {{count}} day",
+      "upcoming_other": "in {{count}} days"
+    },
+    "noUpcoming": "No upcoming deadlines.",
+    "saveSuccess": "Settings saved",
+    "saveFailed": "Failed to save settings"
+  }
+}

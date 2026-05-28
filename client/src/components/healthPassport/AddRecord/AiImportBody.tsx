@@ -15,15 +15,16 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useTranslation } from 'react-i18next';
+
 import { VISIT_CATEGORY_OPTIONS } from '../constants';
 import { useAiImportContext } from './AiImport';
 import AttachmentUpload from './AttachmentUpload';
 import AiRecordsReview from './AiRecordsReview';
 import AiProfileMergeReview from './AiProfileMergeReview';
 
-const STEP_LABELS = ['Nahrať strany', 'Skontrolovať záznamy', 'Potvrdiť a uložiť'];
-
 export default function AiImportBody() {
+  const { t } = useTranslation('healthPassport');
   const {
     state,
     dogId,
@@ -39,7 +40,13 @@ export default function AiImportBody() {
   } = useAiImportContext();
 
   const subOptions =
-    VISIT_CATEGORY_OPTIONS.find((opt) => opt.main === state.selectedMainCategory)?.sub ?? [];
+    VISIT_CATEGORY_OPTIONS.find((opt) => opt.key === state.selectedMainCategory)?.sub ?? [];
+
+  const STEP_LABELS = [
+    t('addRecord.stepUpload'),
+    t('addRecord.stepReview'),
+    t('addRecord.stepConfirm'),
+  ];
 
   const progress = state.analyzeProgress;
   const progressPercent = progress
@@ -62,9 +69,7 @@ export default function AiImportBody() {
         <Card sx={{ p: 2 }}>
           <Stack spacing={1.5}>
             <Typography variant="body2" color="text.secondary">
-              Nahraj jednu alebo viac strán dokumentu (zdravotný pas, laboratórny výsledok, správa
-              od veterinára…). AI z nich extrahuje záznamy naraz a v ďalšom kroku ti dá zoznam na
-              schválenie.
+              {t('addRecord.aiImport.uploadDescription')}
             </Typography>
 
             <Box
@@ -75,35 +80,35 @@ export default function AiImportBody() {
               }}
             >
               <FormControl size="small">
-                <InputLabel>Hlavná kategória (voliteľné)</InputLabel>
+                <InputLabel>{t('addRecord.basics.mainCategoryOptional')}</InputLabel>
                 <Select
-                  label="Hlavná kategória (voliteľné)"
+                  label={t('addRecord.basics.mainCategoryOptional')}
                   value={state.selectedMainCategory}
                   onChange={(e) => setMainCategory(e.target.value)}
                 >
                   <MenuItem value="">
-                    <em>Nezvolené</em>
+                    <em>{t('visitCategory.notSelected')}</em>
                   </MenuItem>
                   {VISIT_CATEGORY_OPTIONS.map((opt) => (
-                    <MenuItem key={opt.main} value={opt.main}>
-                      {opt.main}
+                    <MenuItem key={opt.key} value={opt.key}>
+                      {t(`visitCategory.${opt.key}` as never)}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <FormControl size="small" disabled={!state.selectedMainCategory}>
-                <InputLabel>Podkategória</InputLabel>
+                <InputLabel>{t('addRecord.basics.subcategory')}</InputLabel>
                 <Select
-                  label="Podkategória"
+                  label={t('addRecord.basics.subcategory')}
                   value={state.selectedSubcategory}
                   onChange={(e) => setSubcategory(e.target.value)}
                 >
                   <MenuItem value="">
-                    <em>Nezvolené</em>
+                    <em>{t('visitCategory.notSelected')}</em>
                   </MenuItem>
                   {subOptions.map((sub) => (
-                    <MenuItem key={sub} value={sub}>
-                      {sub}
+                    <MenuItem key={sub.key} value={sub.key}>
+                      {t(`visitCategory.${sub.key}` as never)}
                     </MenuItem>
                   ))}
                 </Select>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -15,8 +16,6 @@ import {
 } from '@mui/material';
 import AiFormattedText from '../AiFormattedText';
 import {
-  EPISODE_CATEGORY_LABEL,
-  EPISODE_OUTCOME_LABEL,
   type HealthEpisodeRecord,
   type SimilarEpisodeSummary,
 } from '../../types/healthEpisode';
@@ -54,6 +53,7 @@ export default function SimilarEpisodesDialog({
   onClose,
   onOpenEpisode,
 }: SimilarEpisodesDialogProps) {
+  const { t } = useTranslation('episodes');
   const [state, setState] = useState<State>({ status: 'idle' });
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function SimilarEpisodesDialog({
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        const message = err instanceof Error ? err.message : 'Neznáma chyba';
+        const message = err instanceof Error ? err.message : 'unknown';
         logger.warn('AI sumarizácia podobných epizód zlyhala', { error: message });
         setState({ status: 'error', error: message });
       });
@@ -105,7 +105,7 @@ export default function SimilarEpisodesDialog({
     return (
       <Box>
         <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-          Podobné epizódy v minulosti
+          {t('similar.pastList')}
         </Typography>
         <Stack spacing={1}>
           {matched.map((e) => (
@@ -128,12 +128,12 @@ export default function SimilarEpisodesDialog({
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {e.symptomTitle}
                 </Typography>
-                <Chip size="small" label={EPISODE_CATEGORY_LABEL[e.category]} variant="outlined" />
-                <Chip size="small" label={EPISODE_OUTCOME_LABEL[e.outcome]} />
+                <Chip size="small" label={t(`category.${e.category}` as never)} variant="outlined" />
+                <Chip size="small" label={t(`outcome.${e.outcome}` as never)} />
               </Stack>
               {e.whatWorked.length > 0 && (
                 <Typography variant="caption" color="text.secondary">
-                  Zabralo: {e.whatWorked.join(', ')}
+                  {t('similar.workedLabel')} {e.whatWorked.join(', ')}
                 </Typography>
               )}
             </Box>
@@ -145,15 +145,15 @@ export default function SimilarEpisodesDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Podobné epizódy z minulosti</DialogTitle>
+      <DialogTitle>{t('similar.title')}</DialogTitle>
       <DialogContent dividers>
         {!currentEpisode ? (
-          <Typography variant="body2">Žiadna epizóda nie je vybraná.</Typography>
+          <Typography variant="body2">{t('similar.noSelected')}</Typography>
         ) : state.status === 'loading' ? (
           <Stack alignItems="center" spacing={2} sx={{ py: 4 }}>
             <CircularProgress size={32} />
             <Typography variant="body2" color="text.secondary">
-              Hľadám podobné epizódy a sumarizujem...
+              {t('similar.loading')}
             </Typography>
           </Stack>
         ) : state.status === 'success' && state.result ? (
@@ -161,7 +161,7 @@ export default function SimilarEpisodesDialog({
             {state.result.summary && (
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
-                  Zhrnutie
+                  {t('similar.summary')}
                 </Typography>
                 <AiFormattedText text={state.result.summary} />
               </Box>
@@ -169,7 +169,7 @@ export default function SimilarEpisodesDialog({
             {state.result.recommendation && (
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
-                  Odporúčanie
+                  {t('similar.recommendation')}
                 </Typography>
                 <AiFormattedText text={state.result.recommendation} />
               </Box>
@@ -181,30 +181,26 @@ export default function SimilarEpisodesDialog({
               </>
             )}
             {state.result.similarEpisodeIds.length === 0 && fallback.length === 0 && (
-              <Alert severity="info">
-                Zatiaľ neexistujú žiadne podobné epizódy v histórii. Pri závažnejšom stave
-                konzultujte veterinára.
-              </Alert>
+              <Alert severity="info">{t('similar.noSimilar')}</Alert>
             )}
           </Stack>
         ) : (
           <Stack spacing={2}>
             <Alert severity="warning">
-              AI sumarizáciu sa nepodarilo načítať: {state.error ?? 'neznáma chyba'}. Zobrazujem
-              aspoň lokálne podobné epizódy podľa kategórie.
+              {t('similar.aiError', { error: state.error ?? 'unknown' })}
             </Alert>
             {fallback.length > 0 ? (
               renderSimilarList(fallback.map((e) => e.id))
             ) : (
               <Typography variant="body2" color="text.secondary">
-                V histórii nie sú žiadne epizódy v rovnakej kategórii.
+                {t('similar.noLocalSimilar')}
               </Typography>
             )}
           </Stack>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Zavrieť</Button>
+        <Button onClick={onClose}>{t('actions.close', { ns: 'common' })}</Button>
       </DialogActions>
     </Dialog>
   );

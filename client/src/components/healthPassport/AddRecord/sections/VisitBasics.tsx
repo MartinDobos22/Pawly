@@ -1,5 +1,6 @@
 import { Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { InfoOutlined as InfoIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 import { VISIT_CATEGORY_OPTIONS } from '../../constants';
 import type { ErrorMap, VisitBasicsValues } from '../formTypes';
@@ -13,15 +14,16 @@ interface VisitBasicsProps {
 }
 
 export default function VisitBasics({ values, errors, onChange }: VisitBasicsProps) {
+  const { t } = useTranslation('healthPassport');
   const subOptions =
-    VISIT_CATEGORY_OPTIONS.find((opt) => opt.main === values.mainCategory)?.sub ?? [];
+    VISIT_CATEGORY_OPTIONS.find((opt) => opt.key === values.mainCategory)?.sub ?? [];
 
   return (
-    <SectionCard title="Základné info" icon={<InfoIcon />}>
+    <SectionCard title={t('addRecord.basics.title')} icon={<InfoIcon />}>
       <Stack spacing={1.5}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <DateField
-            label="Dátum"
+            label={t('addRecord.basics.date')}
             value={values.date}
             onChange={(v) => onChange('date', v)}
             error={Boolean(errors['basics.date'])}
@@ -30,7 +32,7 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
           />
           <TextField
             size="small"
-            label="Klinika / veterinár"
+            label={t('addRecord.basics.clinic')}
             value={values.clinicName}
             onChange={(e) => onChange('clinicName', e.target.value)}
             error={Boolean(errors['basics.clinicName'])}
@@ -41,17 +43,17 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
         </Stack>
         <TextField
           size="small"
-          label="Stručný popis návštevy"
-          placeholder="napr. preventívna prehliadka, akútne vracanie…"
+          label={t('addRecord.basics.reason')}
+          placeholder={t('addRecord.basics.reasonPlaceholder')}
           value={values.reason}
           onChange={(e) => onChange('reason', e.target.value)}
           fullWidth
         />
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
           <FormControl size="small">
-            <InputLabel>Hlavná kategória</InputLabel>
+            <InputLabel>{t('addRecord.basics.mainCategory')}</InputLabel>
             <Select
-              label="Hlavná kategória"
+              label={t('addRecord.basics.mainCategory')}
               value={values.mainCategory}
               onChange={(e) => {
                 onChange('mainCategory', e.target.value);
@@ -59,28 +61,28 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
               }}
             >
               <MenuItem value="">
-                <em>Nezvolené</em>
+                <em>{t('visitCategory.notSelected')}</em>
               </MenuItem>
               {VISIT_CATEGORY_OPTIONS.map((opt) => (
-                <MenuItem key={opt.main} value={opt.main}>
-                  {opt.main}
+                <MenuItem key={opt.key} value={opt.key}>
+                  {t(`visitCategory.${opt.key}` as never)}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl size="small" disabled={!values.mainCategory}>
-            <InputLabel>Podkategória</InputLabel>
+            <InputLabel>{t('addRecord.basics.subcategory')}</InputLabel>
             <Select
-              label="Podkategória"
+              label={t('addRecord.basics.subcategory')}
               value={values.subcategory}
               onChange={(e) => onChange('subcategory', e.target.value)}
             >
               <MenuItem value="">
-                <em>Nezvolené</em>
+                <em>{t('visitCategory.notSelected')}</em>
               </MenuItem>
               {subOptions.map((sub) => (
-                <MenuItem key={sub} value={sub}>
-                  {sub}
+                <MenuItem key={sub.key} value={sub.key}>
+                  {t(`visitCategory.${sub.key}` as never)}
                 </MenuItem>
               ))}
             </Select>

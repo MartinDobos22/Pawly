@@ -1,0 +1,38 @@
+{
+  "page": {
+    "title": "Vet Card",
+    "description": "Health summary for the veterinarian.",
+    "noPet": "Select a pet in the left menu.",
+    "exportPdf": "Export PDF",
+    "print": "Print"
+  },
+  "sections": {
+    "identity": "Identity",
+    "diagnoses": "Diagnoses",
+    "vaccinations": "Vaccinations",
+    "medications": "Medications",
+    "activeMedications": "Active medications",
+    "preventiveCare": "Preventive care",
+    "recentVisits": "Recent visits",
+    "allergies": "Allergies",
+    "chronicConditions": "Chronic conditions",
+    "notes": "Notes"
+  },
+  "fields": {
+    "name": "Name",
+    "species": "Species",
+    "breed": "Breed",
+    "age": "Age",
+    "weight": "Weight",
+    "sex": "Sex",
+    "microchip": "Microchip",
+    "passport": "Passport number",
+    "owner": "Owner"
+  },
+  "empty": {
+    "noData": "No data",
+    "noVaccinations": "No vaccinations",
+    "noMedications": "No medications",
+    "noVisits": "No visits"
+  }
+}

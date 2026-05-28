@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { sk } from 'date-fns/locale';
+import { sk, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { AuthProvider } from './contexts/AuthContext';
@@ -26,14 +27,16 @@ import NotificationsPage from './pages/NotificationsPage';
 
 export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
+  const { i18n } = useTranslation();
 
   const theme = useMemo(() => (darkMode ? darkTheme : lightTheme), [darkMode]);
   const onToggleTheme = () => setDarkMode((prev) => !prev);
+  const dateLocale = i18n.language === 'en' ? enUS : sk;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={sk}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
         <AuthProvider>
           <BrowserRouter>
             <Routes>

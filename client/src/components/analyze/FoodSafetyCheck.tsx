@@ -21,24 +21,29 @@ import {
   Search as SearchIcon,
   WarningAmber as CautionIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../../hooks/useActivePet';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { askFoodSafety } from '../../services/api';
 import type { FoodSafetyResult, FoodSafetyVerdict } from '../../types';
 
-const VERDICT_META: Record<
-  FoodSafetyVerdict,
-  { label: string; icon: typeof SafeIcon; toneKey: 'success' | 'warning' | 'error' }
-> = {
-  SAFE: { label: 'Bezpečné', icon: SafeIcon, toneKey: 'success' },
-  CAUTION: { label: 'Opatrne', icon: CautionIcon, toneKey: 'warning' },
-  UNSAFE: { label: 'Nedávaj', icon: UnsafeIcon, toneKey: 'error' },
+const VERDICT_ICON: Record<FoodSafetyVerdict, typeof SafeIcon> = {
+  SAFE: SafeIcon,
+  CAUTION: CautionIcon,
+  UNSAFE: UnsafeIcon,
+};
+
+const VERDICT_TONE: Record<FoodSafetyVerdict, 'success' | 'warning' | 'error'> = {
+  SAFE: 'success',
+  CAUTION: 'warning',
+  UNSAFE: 'error',
 };
 
 const RECENT_KEY = 'granule-check-food-safety-recent';
 
 export default function FoodSafetyCheck() {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
   const { activePet } = useActivePet();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,7 +66,7 @@ export default function FoodSafetyCheck() {
         return next.slice(0, 5);
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nepodarilo sa získať odpoveď.');
+      setError(err instanceof Error ? err.message : t('errors.noAnswer'));
     } finally {
       setLoading(false);
     }
@@ -81,9 +86,9 @@ export default function FoodSafetyCheck() {
   };
 
   const renderResult = (r: FoodSafetyResult) => {
-    const meta = VERDICT_META[r.verdict];
-    const Icon = meta.icon;
-    const toneColor = theme.palette[meta.toneKey].main;
+    const Icon = VERDICT_ICON[r.verdict];
+    const toneKey = VERDICT_TONE[r.verdict];
+    const toneColor = theme.palette[toneKey].main;
     return (
       <Box
         sx={{
@@ -114,10 +119,10 @@ export default function FoodSafetyCheck() {
             <Stack direction="row" alignItems="center" gap={1}>
               <Chip
                 size="small"
-                label={meta.label}
+                label={t(`foodSafety.verdicts.${r.verdict}`)}
                 sx={{
                   bgcolor: toneColor,
-                  color: meta.toneKey === 'warning' ? theme.palette.warning.contrastText : '#fff',
+                  color: toneKey === 'warning' ? theme.palette.warning.contrastText : '#fff',
                   fontWeight: 700,
                   height: 22,
                   fontSize: '0.7rem',
@@ -142,7 +147,7 @@ export default function FoodSafetyCheck() {
                   variant="caption"
                   sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}
                 >
-                  Pozor na:
+                  {t('foodSafety.watchOut')}
                 </Typography>
                 <Stack spacing={0.25} component="ul" sx={{ pl: 2.25, m: 0 }}>
                   {r.warnings.map((w, i) => (
@@ -164,7 +169,7 @@ export default function FoodSafetyCheck() {
                   variant="caption"
                   sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}
                 >
-                  Alternatívy:
+                  {t('foodSafety.alternatives')}
                 </Typography>
                 <Stack direction="row" gap={0.5} flexWrap="wrap">
                   {r.alternatives.map((a, i) => (
@@ -184,11 +189,11 @@ export default function FoodSafetyCheck() {
                 variant="caption"
                 sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0, mt: 0.5 }}
               >
-                Offline odpoveď (bez AI). Pre presnejšie vyhodnotenie nakonfiguruj OpenAI kľúč.
+                {t('foodSafety.offlineAnswer')}
               </Typography>
             )}
           </Stack>
-          <IconButton size="small" onClick={handleClear} aria-label="Vymazať odpoveď">
+          <IconButton size="small" onClick={handleClear} aria-label={t('foodSafety.clearAnswer')}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Stack>
@@ -201,7 +206,7 @@ export default function FoodSafetyCheck() {
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <QAIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Môže pes jesť…?
+          {t('foodSafety.title')}
         </Typography>
       </Stack>
 
@@ -209,7 +214,7 @@ export default function FoodSafetyCheck() {
         <TextField
           fullWidth
           size="small"
-          placeholder="napr. čokoláda, kuracie kosti, jablko…"
+          placeholder={t('foodSafety.placeholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -222,14 +227,14 @@ export default function FoodSafetyCheck() {
           sx={{ minWidth: 100, flexShrink: 0 }}
           startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SearchIcon />}
         >
-          {loading ? '' : 'Spýtať'}
+          {loading ? '' : t('foodSafety.ask')}
         </Button>
       </Stack>
 
       {recent.length > 0 && !result && !loading && (
         <Box sx={{ mt: 1.5 }}>
           <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            Posledné otázky
+            {t('foodSafety.recentQuestions')}
           </Typography>
           <Stack direction="row" gap={0.5} flexWrap="wrap">
             {recent.map((r) => (

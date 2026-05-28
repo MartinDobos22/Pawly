@@ -1,4 +1,7 @@
 import { useCallback, useMemo, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { VISIT_CATEGORY_OPTIONS } from '../constants';
 
 import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
 import {
@@ -296,6 +299,7 @@ function toWizardDraft(state: ManualFormState): WizardVisitDraft {
 
 export function useAddRecordForm() {
   const [state, dispatch] = useReducer(reducer, INITIAL_MANUAL_STATE);
+  const { t } = useTranslation('healthPassport');
 
   const errors = useMemo<ErrorMap>(
     () => (state.submitAttempted ? validateManualForm(state) : {}),
@@ -303,12 +307,24 @@ export function useAddRecordForm() {
   );
 
   const buildBundle = useCallback(
-    (ctx: BuildContext): VisitBundle =>
-      VetVisitHelper.createWizardVisitBundle({
+    (ctx: BuildContext): VisitBundle => {
+      const mainCatKey = state.basics.mainCategory;
+      const subCatKey = state.basics.subcategory;
+      const mainLabel = mainCatKey
+        ? t(`visitCategory.${mainCatKey}`, { defaultValue: mainCatKey })
+        : '';
+      const subLabel = subCatKey
+        ? (() => {
+            const cat = VISIT_CATEGORY_OPTIONS.find((o) => o.key === mainCatKey);
+            const sub = cat?.sub.find((s) => s.key === subCatKey);
+            return sub ? t(`visitCategory.${sub.key}`, { defaultValue: sub.key }) : subCatKey;
+          })()
+        : '';
+      return VetVisitHelper.createWizardVisitBundle({
         dogId: ctx.dogId,
         draft: toWizardDraft(state),
-        mainCategory: state.basics.mainCategory,
-        subcategory: state.basics.subcategory,
+        mainCategory: mainLabel,
+        subcategory: subLabel,
         attachmentDraft: {
           attachmentLabel: '',
           attachmentUrl: '',
@@ -317,8 +333,9 @@ export function useAddRecordForm() {
         currentDietEntryId: ctx.currentDietEntryId,
         plusDays,
         uid,
-      }),
-    [state]
+      });
+    },
+    [state, t]
   );
 
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);

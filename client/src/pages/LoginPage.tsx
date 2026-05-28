@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
@@ -19,9 +20,9 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
   const { user, login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('auth');
   const redirectTo = (location.state as LocationState | null)?.from ?? '/zdravotny-pas';
 
-  // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
   useEffect(() => {
     if (user) navigate(redirectTo, { replace: true });
   }, [user, navigate, redirectTo]);
@@ -42,7 +43,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
       await login(email, password);
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Prihlásenie zlyhalo.');
+      setError(err instanceof Error ? err.message : t('login.loginFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -52,16 +53,14 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
     setError(null);
     setInfo(null);
     if (inAppBrowser) {
-      setInfo(
-        'Si v Messengeri/Instagrame. Ak Google prihlásenie neprejde, otvor stránku cez „Otvoriť v externom prehliadači“.'
-      );
+      setInfo(t('login.inAppBrowserInfo'));
     }
     setSubmitting(true);
     try {
       await loginWithGoogle();
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Prihlásenie zlyhalo.');
+      setError(err instanceof Error ? err.message : t('login.loginFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -71,33 +70,31 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
     setError(null);
     setInfo(null);
     if (!email) {
-      setError('Zadaj e-mail pre obnovu hesla.');
+      setError(t('login.enterEmailForReset'));
       return;
     }
     try {
       await resetPassword(email);
-      setInfo('Poslali sme ti e-mail na obnovu hesla.');
+      setInfo(t('login.passwordResetSent'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Obnova hesla zlyhala.');
+      setError(err instanceof Error ? err.message : t('login.passwordResetFailed'));
     }
   };
 
   const handleOpenInBrowser = () => {
     const url = window.location.href;
     const encodedUrl = encodeURIComponent(url);
-    // Android: pokus otvoriť stránku mimo in-app browsera.
     if (/Android/i.test(navigator.userAgent)) {
       window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodedUrl};end`;
       return;
     }
-    // iOS / ostatné: fallback - otvor novú kartu, ktorú vie systém ponúknuť v Safari.
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <AuthLayout
-      title="Prihlásenie"
-      subtitle="Vitaj späť. Prihlás sa do svojho Pawport účtu."
+      title={t('login.title')}
+      subtitle={t('login.subtitle')}
       darkMode={darkMode}
       onToggleTheme={onToggleTheme}
     >
@@ -107,7 +104,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
           {info && <Alert severity="success">{info}</Alert>}
 
           <TextField
-            label="E-mail"
+            label={t('login.email')}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -116,7 +113,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
             fullWidth
           />
           <TextField
-            label="Heslo"
+            label={t('login.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -127,24 +124,23 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
 
           <Box sx={{ textAlign: 'right' }}>
             <Link component="button" type="button" variant="body2" onClick={handleResetPassword}>
-              Zabudnuté heslo?
+              {t('login.forgotPassword')}
             </Link>
           </Box>
 
           <Button type="submit" variant="contained" size="large" disabled={submitting} fullWidth>
-            Prihlásiť sa
+            {t('login.submit')}
           </Button>
 
-          <Divider sx={{ my: 0.5 }}>alebo</Divider>
+          <Divider sx={{ my: 0.5 }}>{t('login.or')}</Divider>
 
           {inAppBrowser && (
             <Stack gap={1}>
               <Alert severity="warning">
-                Prihlásenie cez Google v Messengeri/Instagrame je blokované. Otvor túto stránku v
-                Chrome/Safari (⋯ → Open in browser), alebo sa prihlás e-mailom.
+                {t('login.inAppBrowserWarning')}
               </Alert>
               <Button variant="text" size="small" onClick={handleOpenInBrowser}>
-                Otvoriť v externom prehliadači
+                {t('login.openInBrowser')}
               </Button>
             </Stack>
           )}
@@ -157,13 +153,13 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
             disabled={submitting || inAppBrowser}
             fullWidth
           >
-            Prihlásiť cez Google
+            {t('login.googleLogin')}
           </Button>
 
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Nemáš účet?{' '}
+            {t('login.noAccount')}{' '}
             <Link component={RouterLink} to="/register">
-              Zaregistruj sa
+              {t('login.register')}
             </Link>
           </Typography>
         </Stack>

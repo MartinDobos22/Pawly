@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "sectionMain": "Hlavné",
+    "sectionOther": "Ostatné",
+    "sectionSettings": "Nastavenia",
+    "healthPassport": "Zdravotný pas",
+    "vetCard": "Karta veterinára",
+    "diary": "Denník",
+    "analyze": "Analýza",
+    "history": "História",
+    "profiles": "Profily",
+    "notifications": "Notifikácie",
+    "faq": "Časté otázky",
+    "about": "O aplikácii",
+    "more": "Viac",
+    "home": "Domov — Pawport"
+  },
+  "actions": {
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "delete": "Zmazať",
+    "edit": "Upraviť",
+    "add": "Pridať",
+    "close": "Zatvoriť",
+    "confirm": "Potvrdiť",
+    "back": "Späť",
+    "continue": "Pokračovať",
+    "create": "Vytvoriť",
+    "update": "Aktualizovať",
+    "export": "Exportovať",
+    "print": "Vytlačiť",
+    "search": "Hľadať",
+    "clear": "Vymazať",
+    "clearAll": "Vymazať všetko",
+    "deleteAll": "Zmazať všetko"
+  },
+  "theme": {
+    "light": "Svetlý režim",
+    "dark": "Tmavý režim",
+    "toggleLight": "Prepnúť na svetlý režim",
+    "toggleDark": "Prepnúť na tmavý režim"
+  },
+  "auth": {
+    "logout": "Odhlásiť sa",
+    "deleteAccount": "Zmazať účet",
+    "confirmDeleteTitle": "Naozaj zmazať účet?",
+    "confirmDeleteMessage": "Naozaj zmazať účet? Vymažú sa všetky tvoje zvieratá a zdravotné záznamy. Túto akciu nie je možné vrátiť.",
+    "deleteAccountFailed": "Mazanie účtu zlyhalo. Skús to znova."
+  },
+  "language": {
+    "label": "Jazyk",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "skipToContent": "Preskočiť na obsah",
+  "openMenu": "Otvoriť menu",
+  "labels": {
+    "optional": "voliteľné",
+    "required": "povinné",
+    "notSet": "Nezadané",
+    "unknown": "Neznáme",
+    "all": "Všetko",
+    "none": "Žiadne"
+  },
+  "loading": "Načítavam…",
+  "saving": "Ukladám…",
+  "deleting": "Mažem…"
+}

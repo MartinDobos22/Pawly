@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -32,6 +33,7 @@ import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters
 import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
 
 export default function EpisodeDiaryPage() {
+  const { t } = useTranslation('episodes');
   const navigate = useNavigate();
 
   const { profiles } = usePetProfiles();
@@ -69,13 +71,13 @@ export default function EpisodeDiaryPage() {
       <Box sx={{ textAlign: 'center', py: 8 }}>
         <PetsIcon sx={{ fontSize: 80, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-          Najprv vytvorte profil psa
+          {t('page.noPetsTitle')}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Denník epizód potrebuje aspoň jeden profil zvieraťa.
+          {t('page.noPetsDescription')}
         </Typography>
         <Button variant="contained" onClick={() => navigate('/profily')}>
-          Vytvoriť profil
+          {t('page.createProfile')}
         </Button>
       </Box>
     );
@@ -100,7 +102,7 @@ export default function EpisodeDiaryPage() {
   };
 
   const handleDelete = (episode: HealthEpisodeRecord) => {
-    if (window.confirm(`Naozaj zmazať epizódu "${episode.symptomTitle}"?`)) {
+    if (window.confirm(t('delete.confirm', { title: episode.symptomTitle }))) {
       remove(episode.id);
       if (expandedId === episode.id) setExpandedId(null);
     }
@@ -111,7 +113,7 @@ export default function EpisodeDiaryPage() {
   };
 
   const storageWarning = storage.isCritical
-    ? `Úložisko prílohov sa blíži k limitu (${storage.megabytes.toFixed(1)} MB / ${storage.limitMb} MB). Zvážte zmazanie starších epizód alebo uloženie bez prílohy.`
+    ? t('page.storageWarning', { used: storage.megabytes.toFixed(1), limit: storage.limitMb })
     : undefined;
 
   return (
@@ -162,11 +164,10 @@ export default function EpisodeDiaryPage() {
                 letterSpacing: '-0.02em',
               }}
             >
-              Denník epizód
+              {t('page.title')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
-              Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš
-              overené riešenie.
+              {t('page.description')}
             </Typography>
           </Box>
           <Button
@@ -178,7 +179,7 @@ export default function EpisodeDiaryPage() {
             }}
             disabled={!selectedDogId}
           >
-            Nová epizóda
+            {t('page.newEpisode')}
           </Button>
         </Stack>
       </Box>
@@ -191,10 +192,10 @@ export default function EpisodeDiaryPage() {
             alignItems={{ xs: 'stretch', sm: 'center' }}
           >
             <FormControl size="small" sx={{ minWidth: 220 }}>
-              <InputLabel id="episode-dog-select">Pes</InputLabel>
+              <InputLabel id="episode-dog-select">{t('page.dogSelect')}</InputLabel>
               <Select
                 labelId="episode-dog-select"
-                label="Pes"
+                label={t('page.dogSelect')}
                 value={selectedDogId}
                 onChange={(e) => {
                   setSelectedDogId(e.target.value);
@@ -213,7 +214,7 @@ export default function EpisodeDiaryPage() {
               <Chip
                 size="small"
                 color={storage.isCritical ? 'error' : 'warning'}
-                label={`Úložisko: ${storage.megabytes.toFixed(1)} MB / ${storage.limitMb} MB`}
+                label={t('page.storageUsage', { used: storage.megabytes.toFixed(1), limit: storage.limitMb })}
               />
             )}
           </Stack>
@@ -233,10 +234,10 @@ export default function EpisodeDiaryPage() {
         <Box sx={{ pt: 2 }}>
           <EmptyState
             icon={<EventBusyIcon />}
-            title="Zatiaľ žiadne epizódy"
-            description="Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte overené riešenie."
+            title={t('empty.noEpisodesTitle')}
+            description={t('empty.noEpisodesDescription')}
             primaryAction={{
-              label: 'Pridať prvú epizódu',
+              label: t('empty.addFirst'),
               icon: <AddIcon />,
               onClick: () => {
                 setEditing(undefined);
@@ -249,8 +250,8 @@ export default function EpisodeDiaryPage() {
         <Box sx={{ pt: 2 }}>
           <EmptyState
             icon={<EventBusyIcon />}
-            title="Žiadne epizódy v aktuálnom filtri"
-            description="Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
+            title={t('empty.noFilterResultsTitle')}
+            description={t('empty.noFilterResultsDescription')}
             variant="inline"
           />
         </Box>

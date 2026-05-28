@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -71,14 +72,15 @@ const scoreColor = (theme: Theme, score: number) => {
 
 export default function AnalyzePage() {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
   const [composition, setComposition] = useState('');
-  const [sourceLabel, setSourceLabel] = useState('Ručne vložené zloženie');
+  const [sourceLabel, setSourceLabel] = useState('');
   const { analyze, extractTextOnly, result, loadingText, extractingText, error, extractError } =
     useAnalyze();
   const { activePet } = useActivePet();
   const { savedAnalyses, addSavedAnalysis, addDietEntry } = useHealthData();
   const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMessage, setSnackMessage] = useState('Hodnotenie bolo uložené');
+  const [snackMessage, setSnackMessage] = useState('');
   const [scanInfo, setScanInfo] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -88,7 +90,7 @@ export default function AnalyzePage() {
 
   const handleAnalyze = () => {
     if (composition.trim()) {
-      setSourceLabel('Ručne vložené zloženie');
+      setSourceLabel(t('form.sourceManual'));
       analyze(composition.trim(), activePet ?? undefined);
     }
   };
@@ -105,11 +107,11 @@ export default function AnalyzePage() {
     if (!file) return;
 
     if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-      setScanError('Nepodporovaný typ súboru. Použi JPG, PNG, WebP alebo PDF.');
+      setScanError(t('errors.unsupportedFileType'));
       return;
     }
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setScanError('Súbor je príliš veľký (max 5 MB).');
+      setScanError(t('errors.fileTooLarge'));
       return;
     }
 
@@ -122,11 +124,11 @@ export default function AnalyzePage() {
       });
       if (extracted) {
         setComposition(extracted);
-        setSourceLabel(`Fotka obalu: ${file.name}`);
-        setScanInfo('Text bol predvyplnený. Skontroluj ho a klikni Analyzovať.');
+        setSourceLabel(t('form.sourcePhoto', { fileName: file.name }));
+        setScanInfo(t('form.textPrefilled'));
       }
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.');
+      setScanError(err instanceof Error ? err.message : t('errors.fileLoadFailed'));
     }
   };
 
@@ -145,18 +147,18 @@ export default function AnalyzePage() {
       const suitability = deriveSuitability(displayResult);
       await addDietEntry({
         dogId: activePet.id,
-        foodName: sourceLabel || 'Krmivo z analýzy',
+        foodName: sourceLabel || t('foodFromAnalysis'),
         startedAt: today(),
         reactionNotes: displayResult.summary,
         suitabilityStatus: suitability,
         suitabilityReasons:
           suitability === 'SUITABLE'
-            ? ['Bez zistených alergénov a zdravotných rizík']
+            ? [t('suitabilityReasonNoAllergens')]
             : (displayResult.recommendation?.notRecommendedFor ?? []),
       });
-      setSnackMessage(`Hodnotenie uložené a pridané do Zdravotného pasu pre ${activePet.name}`);
+      setSnackMessage(t('snack.savedWithPet', { petName: activePet.name }));
     } else {
-      setSnackMessage('Hodnotenie uložené');
+      setSnackMessage(t('snack.saved'));
     }
     setSnackOpen(true);
   };
@@ -191,7 +193,7 @@ export default function AnalyzePage() {
           <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
             <ScienceIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Analyzuj kompozíciu
+              {t('form.analyzeComposition')}
             </Typography>
           </Stack>
 
@@ -217,7 +219,7 @@ export default function AnalyzePage() {
               onClick={handlePickFile}
               disabled={busy}
             >
-              {extractingText ? 'Načítavam text…' : 'Naskenovať obal'}
+              {extractingText ? t('form.scanning') : t('form.scanLabel')}
             </Button>
           </Stack>
 
@@ -237,7 +239,7 @@ export default function AnalyzePage() {
             multiline
             minRows={5}
             maxRows={12}
-            placeholder="Vlož zloženie krmiva alebo naskenuj obal…"
+            placeholder={t('form.placeholder')}
             value={composition}
             onChange={(e) => setComposition(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -256,7 +258,7 @@ export default function AnalyzePage() {
             disabled={busy || !composition.trim()}
             sx={{ py: 1.25, fontSize: '0.95rem' }}
           >
-            {loadingText ? 'Analyzujem…' : 'Analyzovať'}
+            {loadingText ? t('form.analyzing') : t('form.analyze')}
           </Button>
           {!activePet && (
             <Typography
@@ -269,15 +271,15 @@ export default function AnalyzePage() {
                 letterSpacing: 0,
               }}
             >
-              Pridaj profil zvieraťa v sekcii{' '}
+              {t('form.addProfileHint')}{' '}
               <Box
                 component="span"
                 onClick={() => navigate('/profily')}
                 sx={{ cursor: 'pointer', textDecoration: 'underline', color: 'primary.main' }}
               >
-                Profily
+                {t('form.addProfileHintProfiles')}
               </Box>{' '}
-              pre personalizované varovania o alergénoch.
+              {t('form.addProfileHintSuffix')}
             </Typography>
           )}
         </Card>
@@ -318,7 +320,7 @@ export default function AnalyzePage() {
             onClick={handleSave}
             sx={{ alignSelf: 'center', px: 4 }}
           >
-            Uložiť hodnotenie
+            {t('form.saveRating')}
           </Button>
         </Box>
       )}
@@ -327,7 +329,7 @@ export default function AnalyzePage() {
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <HistoryIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
           <Typography variant="caption" sx={{ color: 'text.secondary', flex: 1 }}>
-            Posledné analýzy
+            {t('recentAnalyses.title')}
           </Typography>
           {savedAnalyses.length > 0 && (
             <Button
@@ -335,7 +337,7 @@ export default function AnalyzePage() {
               onClick={() => navigate('/historia')}
               sx={{ minHeight: 28, py: 0.25 }}
             >
-              Pozrieť všetko
+              {t('history.runAnalysis')}
             </Button>
           )}
         </Stack>
@@ -343,7 +345,7 @@ export default function AnalyzePage() {
         {recentAnalyses.length === 0 ? (
           <Stack alignItems="center" spacing={1} sx={{ py: 2.5, textAlign: 'center' }}>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Vykonaj prvú analýzu a uvidíš ju tu.
+              {t('recentAnalyses.noAnalyses')}
             </Typography>
           </Stack>
         ) : (

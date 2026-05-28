@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "sectionMain": "Main",
+    "sectionOther": "Other",
+    "sectionSettings": "Settings",
+    "healthPassport": "Health Passport",
+    "vetCard": "Vet Card",
+    "diary": "Diary",
+    "analyze": "Analysis",
+    "history": "History",
+    "profiles": "Profiles",
+    "notifications": "Notifications",
+    "faq": "FAQ",
+    "about": "About",
+    "more": "More",
+    "home": "Home — Pawport"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "continue": "Continue",
+    "create": "Create",
+    "update": "Update",
+    "export": "Export",
+    "print": "Print",
+    "search": "Search",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "deleteAll": "Delete all"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "toggleLight": "Switch to light mode",
+    "toggleDark": "Switch to dark mode"
+  },
+  "auth": {
+    "logout": "Log out",
+    "deleteAccount": "Delete account",
+    "confirmDeleteTitle": "Really delete account?",
+    "confirmDeleteMessage": "Really delete your account? All your pets and health records will be permanently deleted. This action cannot be undone.",
+    "deleteAccountFailed": "Account deletion failed. Please try again."
+  },
+  "language": {
+    "label": "Language",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "skipToContent": "Skip to content",
+  "openMenu": "Open menu",
+  "labels": {
+    "optional": "optional",
+    "required": "required",
+    "notSet": "Not set",
+    "unknown": "Unknown",
+    "all": "All",
+    "none": "None"
+  },
+  "loading": "Loading…",
+  "saving": "Saving…",
+  "deleting": "Deleting…"
+}

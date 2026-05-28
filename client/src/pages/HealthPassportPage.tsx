@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Card, Stack, Typography } from '@mui/material';
 import { Pets as PetsIcon } from '@mui/icons-material';
 
@@ -33,9 +34,9 @@ import {
   computeIntervalDaysFromDates,
   escapeHtml,
 } from '../components/healthPassport/utils';
-import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 
 export default function HealthPassportPage() {
+  const { t } = useTranslation('healthPassport');
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
 
@@ -372,8 +373,7 @@ export default function HealthPassportPage() {
     if (!dog) return;
     const rows = timeline
       .map((event) => {
-        const meta = TIMELINE_TYPE_META[event.type];
-        return `<tr><td>${escapeHtml(event.date)}</td><td>${escapeHtml(meta.label)}</td><td>${escapeHtml(event.title)}${event.subtitle ? `<br><small>${escapeHtml(event.subtitle)}</small>` : ''}</td></tr>`;
+        return `<tr><td>${escapeHtml(event.date)}</td><td>${escapeHtml(t(`timeline.${event.type}` as never))}</td><td>${escapeHtml(event.title)}${event.subtitle ? `<br><small>${escapeHtml(event.subtitle)}</small>` : ''}</td></tr>`;
       })
       .join('');
     const html = `<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>Timeline – ${escapeHtml(dog.name)}</title><style>body{font-family:system-ui,sans-serif;padding:24px;color:#111}h1{font-size:22px;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #e2e8f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f5f9;font-weight:700}small{color:#64748b}@media print{body{padding:0}}</style></head><body><h1>Zdravotná timeline – ${escapeHtml(dog.name)}</h1><table><thead><tr><th>Dátum</th><th>Typ</th><th>Detail</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
@@ -14,6 +15,7 @@ interface Props {
 export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
   const { user, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('auth');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,6 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const inAppBrowser = isInAppBrowser();
 
-  // Po návrate z Google redirectu (fallback) sa user nastaví async — vtedy presmeruj.
   useEffect(() => {
     if (user) navigate('/zdravotny-pas', { replace: true });
   }, [user, navigate]);
@@ -32,11 +33,11 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     setError(null);
 
     if (password.length < 6) {
-      setError('Heslo musí mať aspoň 6 znakov.');
+      setError(t('register.passwordTooShort'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Heslá sa nezhodujú.');
+      setError(t('register.passwordMismatch'));
       return;
     }
 
@@ -45,7 +46,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
       await register(email, password);
       navigate('/zdravotny-pas', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registrácia zlyhala.');
+      setError(err instanceof Error ? err.message : t('register.registrationFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -58,7 +59,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
       await loginWithGoogle();
       navigate('/zdravotny-pas', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registrácia zlyhala.');
+      setError(err instanceof Error ? err.message : t('register.registrationFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -66,8 +67,8 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
 
   return (
     <AuthLayout
-      title="Registrácia"
-      subtitle="Vytvor si Pawport účet a začni sledovať zdravie svojho zvieraťa."
+      title={t('register.title')}
+      subtitle={t('register.subtitle')}
       darkMode={darkMode}
       onToggleTheme={onToggleTheme}
     >
@@ -76,7 +77,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
           {error && <Alert severity="error">{error}</Alert>}
 
           <TextField
-            label="E-mail"
+            label={t('register.email')}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -85,17 +86,17 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             fullWidth
           />
           <TextField
-            label="Heslo"
+            label={t('register.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
             required
             fullWidth
-            helperText="Aspoň 6 znakov"
+            helperText={t('register.passwordHint')}
           />
           <TextField
-            label="Potvrď heslo"
+            label={t('register.confirmPassword')}
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -105,15 +106,14 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
           />
 
           <Button type="submit" variant="contained" size="large" disabled={submitting} fullWidth>
-            Zaregistrovať sa
+            {t('register.submit')}
           </Button>
 
-          <Divider sx={{ my: 0.5 }}>alebo</Divider>
+          <Divider sx={{ my: 0.5 }}>{t('register.or')}</Divider>
 
           {inAppBrowser && (
             <Alert severity="info">
-              Registrácia cez Google nefunguje v prehliadači Messengera/Instagramu. Otvor stránku v
-              Chrome/Safari, alebo použi e-mail a heslo.
+              {t('register.inAppBrowserWarning')}
             </Alert>
           )}
 
@@ -125,13 +125,13 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             disabled={submitting || inAppBrowser}
             fullWidth
           >
-            Pokračovať cez Google
+            {t('register.googleRegister')}
           </Button>
 
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Už máš účet?{' '}
+            {t('register.hasAccount')}{' '}
             <Link component={RouterLink} to="/login">
-              Prihlás sa
+              {t('register.login')}
             </Link>
           </Typography>
         </Stack>

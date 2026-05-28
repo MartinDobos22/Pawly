@@ -1,0 +1,137 @@
+{
+  "about": {
+    "title": "O aplikácii",
+    "subtitle": "Malý pomocník pre veľkú lásku k tvojim zvieratkám.",
+    "appName": "Pawport",
+    "appTagline": "Všetko o zdraví tvojho zvieraťa na jednom mieste.",
+    "appDescription": "Pawport spája digitálny zdravotný pas a inteligentnú analýzu krmiva pre psy, mačky a ďalšie domáce zvieratá. Pomáha ti mať poriadok v očkovaniach, liekoch aj návštevách veterinára — a rozhodovať sa o krmive s istotou. Aby si sa mohol naplno venovať tomu najdôležitejšiemu: svojmu zvieratku.",
+    "featuresTitle": "Čo Pawport vie",
+    "privacyTitle": "Tvoje dáta sú v bezpečí",
+    "privacyDescription": "Prístup je chránený prihlásením a všetky záznamy o tvojich zvieratách sú súkromné — vidíš ich len ty.",
+    "madeWithLove": "Vytvorené s láskou pre zvieratá",
+    "features": {
+      "aiAnalysis": {
+        "title": "AI analýza krmiva",
+        "description": "Odpíš alebo odfoť zloženie a o pár sekúnd vieš, čo tvoje zviera dostáva."
+      },
+      "healthPassport": {
+        "title": "Digitálny zdravotný pas",
+        "description": "Vakcinácie, odčervenie, lieky aj návštevy veterinára prehľadne na jednom mieste."
+      },
+      "diary": {
+        "title": "Denník epizód",
+        "description": "Zapisuj zdravotné príhody a sleduj, čo zaberá a čo nie."
+      },
+      "vetCard": {
+        "title": "Karta pre veterinára",
+        "description": "Úhľadný súhrn, ktorý vieš ukázať alebo vytlačiť pri návšteve."
+      },
+      "profiles": {
+        "title": "Profily zvierat",
+        "description": "Psy, mačky aj ďalšie domáce zvieratá — každé so svojím profilom a alergiami."
+      }
+    }
+  },
+  "faq": {
+    "title": "Časté otázky",
+    "subtitle": "Stručné odpovede na to, ako Pawport funguje a čo sa deje s tvojimi dátami.",
+    "sections": {
+      "dataPrivacy": {
+        "title": "Dáta a súkromie",
+        "items": [
+          {
+            "q": "Kde sa ukladajú moje dáta?",
+            "a": "Tvoje profily zvierat a zdravotné záznamy sa ukladajú v zabezpečenej cloudovej databáze (Supabase) cez náš server. Sú viazané na tvoj účet — nie sú uložené len v prehliadači."
+          },
+          {
+            "q": "Kto vidí moje záznamy?",
+            "a": "Iba ty. Každá požiadavka je zviazaná s tvojím prihláseným účtom a databáza je nastavená tak, že bez tvojho prihlásenia sa k dátam nikto nedostane."
+          },
+          {
+            "q": "Dostanem sa k dátam z viacerých zariadení?",
+            "a": "Áno. Keďže dáta sú v cloude, po prihlásení ich uvidíš na mobile, tablete aj počítači — vždy aktuálne."
+          },
+          {
+            "q": "Sú moje dáta v bezpečí?",
+            "a": "Komunikácia prebieha cez šifrované HTTPS spojenie, prístup k dátam je možný len po prihlásení a tajné kľúče k databáze sú výhradne na serveri, nikdy nie v prehliadači."
+          }
+        ]
+      },
+      "photosAi": {
+        "title": "Fotky a AI",
+        "items": [
+          {
+            "q": "Ukladajú sa skeny a fotky, ktoré nahrám na rozpoznanie?",
+            "a": "Nie. Keď nahráš fotku pasu alebo obalu krmiva na AI rozpoznanie, použije sa len na prečítanie textu — výsledok dostaneš späť, ale samotný obrázok sa na server neukladá."
+          },
+          {
+            "q": "A fotky, ktoré priložím priamo k záznamu alebo epizóde?",
+            "a": "Tie áno — prílohy, ktoré vedome pridáš k záznamu, sa uložia ako jeho súčasť, aby si ich videl aj neskôr."
+          },
+          {
+            "q": "Ako funguje AI analýza?",
+            "a": "Text alebo fotku spracujú AI služby (OpenAI a Google Vision), ktoré rozpoznajú obsah a vrátia výsledok. Posielame len to, čo je potrebné na vyhodnotenie."
+          },
+          {
+            "q": "Je výsledok analýzy lekárska rada?",
+            "a": "Nie. Výsledky sú informatívne a slúžia ako pomôcka. Pri zdravotných rozhodnutiach sa vždy poraď s veterinárom."
+          }
+        ]
+      },
+      "account": {
+        "title": "Účet a používanie",
+        "items": [
+          { "q": "Ako sa prihlásim?", "a": "Cez e-mail a heslo, alebo jedným klikom cez Google účet." },
+          { "q": "Zabudol som heslo, čo teraz?", "a": "Na prihlasovacej stránke klikni na „Zabudnuté heslo?“ a pošleme ti e-mail na nastavenie nového hesla." },
+          { "q": "Môžem mať viac zvierat?", "a": "Áno. Vytvor si profil pre každé zviera — psy, mačky aj ďalšie domáce zvieratá, každé so svojimi alergiami a záznamami." },
+          { "q": "Čo sa stane, keď zmažem zviera?", "a": "Spolu s profilom sa zmažú aj všetky jeho súvisiace záznamy (vakcinácie, lieky, epizódy, výdavky…). Túto akciu nie je možné vrátiť." },
+          { "q": "Ako zmažem účet a všetky svoje dáta?", "a": "V bočnom menu klikni na „Zmazať účet“. Natrvalo sa odstráni tvoj účet aj všetky uložené dáta. Akcia je nevratná." },
+          { "q": "Funguje to na mobile?", "a": "Áno, aplikácia je plne responzívna a v prehliadači si ju vieš pridať na domovskú obrazovku ako appku." },
+          { "q": "Koľko to stojí?", "a": "Pawport je momentálne zadarmo." }
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifikácie",
+    "description": "Upozorníme ťa, keď sa blíži termín očkovaní, odčervenia, antiparazitík, kontroly u veterinára alebo koniec liečby liekom.",
+    "emailSection": "E-mail",
+    "emailEnabled": "Posielať pripomienky e-mailom",
+    "emailSentTo": "Pripomienky chodia na {{email}}",
+    "emailNoEmail": "Tvoj účet nemá e-mail — pridaj ho cez prihlásenie e-mailom.",
+    "leadDaysTitle": "Koľko dní vopred",
+    "leadDaysNote": "Pripomenieme aj v deň termínu a hneď po ňom.",
+    "leadDayChip_one": "{{count}} deň",
+    "leadDayChip_few": "{{count}} dni",
+    "leadDayChip_many": "{{count}} dní",
+    "typesTitle": "Typy záznamov",
+    "upcomingTitle": "Najbližšie termíny",
+    "loadError": "Nastavenia sa nepodarilo načítať.",
+    "minLeadDaysError": "Nechaj aspoň jeden interval pripomienky.",
+    "pushComing": "Push notifikácie do telefónu pripravujeme.",
+    "types": {
+      "notifyVaccinations": "Očkovania",
+      "notifyDewormings": "Odčervenie",
+      "notifyEctoparasites": "Ektoparazity (kliešte/blchy)",
+      "notifyVetChecks": "Kontroly u veterinára",
+      "notifyMedications": "Koniec liekov"
+    },
+    "status": {
+      "OVERDUE": "po termíne",
+      "DUE_SOON": "čoskoro",
+      "OK": "v poriadku"
+    },
+    "dueText": {
+      "overdue_one": "po termíne o {{count}} deň",
+      "overdue_few": "po termíne o {{count}} dni",
+      "overdue_many": "po termíne o {{count}} dní",
+      "today": "dnes",
+      "upcoming_one": "o {{count}} deň",
+      "upcoming_few": "o {{count}} dni",
+      "upcoming_many": "o {{count}} dní"
+    },
+    "noUpcoming": "Žiadne termíny v najbližšom období.",
+    "saveSuccess": "Nastavenia uložené",
+    "saveFailed": "Uloženie nastavení zlyhalo"
+  }
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Card, CardContent, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   Pets as PetsIcon,
@@ -9,51 +10,26 @@ import {
   Favorite as FavoriteIcon,
 } from '@mui/icons-material';
 
-interface Feature {
-  icon: typeof ScienceIcon;
-  title: string;
-  description: string;
-}
-
-const FEATURES: Feature[] = [
-  {
-    icon: ScienceIcon,
-    title: 'AI analýza krmiva',
-    description: 'Odpíš alebo odfoť zloženie a o pár sekúnd vieš, čo tvoje zviera dostáva.',
-  },
-  {
-    icon: HealthAndSafetyIcon,
-    title: 'Digitálny zdravotný pas',
-    description: 'Vakcinácie, odčervenie, lieky aj návštevy veterinára prehľadne na jednom mieste.',
-  },
-  {
-    icon: MenuBookIcon,
-    title: 'Denník epizód',
-    description: 'Zapisuj zdravotné príhody a sleduj, čo zaberá a čo nie.',
-  },
-  {
-    icon: DescriptionIcon,
-    title: 'Karta pre veterinára',
-    description: 'Úhľadný súhrn, ktorý vieš ukázať alebo vytlačiť pri návšteve.',
-  },
-  {
-    icon: PetsIcon,
-    title: 'Profily zvierat',
-    description: 'Psy, mačky aj ďalšie domáce zvieratá — každé so svojím profilom a alergiami.',
-  },
-];
-
 export default function AboutPage() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
   const isDark = theme.palette.mode === 'dark';
+
+  const FEATURES = [
+    { icon: ScienceIcon, title: t('about.features.aiAnalysis.title'), description: t('about.features.aiAnalysis.description') },
+    { icon: HealthAndSafetyIcon, title: t('about.features.healthPassport.title'), description: t('about.features.healthPassport.description') },
+    { icon: MenuBookIcon, title: t('about.features.diary.title'), description: t('about.features.diary.description') },
+    { icon: DescriptionIcon, title: t('about.features.vetCard.title'), description: t('about.features.vetCard.description') },
+    { icon: PetsIcon, title: t('about.features.profiles.title'), description: t('about.features.profiles.description') },
+  ];
 
   return (
     <Box sx={{ maxWidth: 760, mx: 'auto' }}>
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
-        O aplikácii
+        {t('about.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        Malý pomocník pre veľkú lásku k tvojim zvieratkám.
+        {t('about.subtitle')}
       </Typography>
 
       <Card sx={{ mb: 2.5 }}>
@@ -78,18 +54,15 @@ export default function AboutPage() {
             </Box>
             <Box>
               <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.015em' }}>
-                Pawport
+                {t('about.appName')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Všetko o zdraví tvojho zvieraťa na jednom mieste.
+                {t('about.appTagline')}
               </Typography>
             </Box>
           </Stack>
           <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
-            Pawport spája digitálny zdravotný pas a inteligentnú analýzu krmiva pre psy, mačky a
-            ďalšie domáce zvieratá. Pomáha ti mať poriadok v očkovaniach, liekoch aj návštevách
-            veterinára — a rozhodovať sa o krmive s istotou. Aby si sa mohol naplno venovať tomu
-            najdôležitejšiemu: svojmu zvieratku.
+            {t('about.appDescription')}
           </Typography>
         </CardContent>
       </Card>
@@ -97,7 +70,7 @@ export default function AboutPage() {
       <Card sx={{ mb: 2.5 }}>
         <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-            Čo Pawport vie
+            {t('about.featuresTitle')}
           </Typography>
           <Stack spacing={2.25}>
             {FEATURES.map(({ icon: Icon, title, description }) => (
@@ -151,11 +124,10 @@ export default function AboutPage() {
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.25 }}>
-                Tvoje dáta sú v bezpečí
+                {t('about.privacyTitle')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Prístup je chránený prihlásením a všetky záznamy o tvojich zvieratách sú súkromné —
-                vidíš ich len ty.
+                {t('about.privacyDescription')}
               </Typography>
             </Box>
           </Stack>
@@ -164,7 +136,7 @@ export default function AboutPage() {
 
       <Stack direction="row" alignItems="center" justifyContent="center" gap={0.75} sx={{ mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
-          Vytvorené s láskou pre zvieratá
+          {t('about.madeWithLove')}
         </Typography>
         <FavoriteIcon sx={{ fontSize: 16, color: 'error.main' }} />
       </Stack>

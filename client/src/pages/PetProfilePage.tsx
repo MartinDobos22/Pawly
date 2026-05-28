@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Autocomplete,
   Box,
@@ -70,6 +71,7 @@ const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 export default function PetProfilePage() {
+  const { t } = useTranslation('healthPassport');
   const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
   const {
     vaccinations,
@@ -98,16 +100,16 @@ export default function PetProfilePage() {
   const requestDelete = (profile: PetProfile) => {
     const id = profile.id;
     const counts = [
-      { label: 'Očkovania', count: vaccinations.filter((x) => x.dogId === id).length },
-      { label: 'Odčervenia', count: dewormings.filter((x) => x.dogId === id).length },
-      { label: 'Ektoparazity', count: ectos.filter((x) => x.dogId === id).length },
-      { label: 'Návštevy', count: visits.filter((x) => x.dogId === id).length },
-      { label: 'Lieky', count: medications.filter((x) => x.dogId === id).length },
-      { label: 'Dávky liekov', count: doseLogs.filter((x) => x.dogId === id).length },
-      { label: 'Diéta', count: dietEntries.filter((x) => x.dogId === id).length },
-      { label: 'Výdavky', count: expenses.filter((x) => x.dogId === id).length },
-      { label: 'Epizódy', count: episodes.filter((x) => x.dogId === id).length },
-      { label: 'Analýzy krmiva', count: savedAnalyses.filter((x) => x.petProfileId === id).length },
+      { label: t('profiles.recordVaccinations'), count: vaccinations.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordDewormings'), count: dewormings.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordEctos'), count: ectos.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordVisits'), count: visits.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordMedications'), count: medications.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordDoseLogs'), count: doseLogs.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordDietEntries'), count: dietEntries.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordExpenses'), count: expenses.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordEpisodes'), count: episodes.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordAnalyses'), count: savedAnalyses.filter((x) => x.petProfileId === id).length },
     ].filter((c) => c.count > 0);
     const total = counts.reduce((acc, c) => acc + c.count, 0);
     setPendingDelete({ id, name: profile.name, counts, total });
@@ -116,8 +118,6 @@ export default function PetProfilePage() {
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     const id = pendingDelete.id;
-    // DB má na pet_id ON DELETE CASCADE — zmazaním profilu sa odstránia aj
-    // všetky súvisiace zdravotné záznamy a analýzy na serveri.
     await deleteProfile(id);
     setLastClinicByDog((prev) => {
       const next = { ...prev };
@@ -157,14 +157,14 @@ export default function PetProfilePage() {
 
   const handleSave = async () => {
     if (!form.name.trim()) {
-      setNameError('Meno je povinné.');
+      setNameError(t('profiles.nameRequired'));
       return;
     }
     setNameError('');
     const hasFullDate = Boolean(form.dateOfBirth);
     const hasYear = typeof form.birthYear === 'number';
     if (!hasFullDate && !hasYear) {
-      setDobError('Dátum narodenia je povinný aspoň ako rok.');
+      setDobError(t('profiles.dobRequired'));
       return;
     }
     setDobError('');
@@ -182,12 +182,12 @@ export default function PetProfilePage() {
       if (!Number.isNaN(d.getTime())) {
         const diff = Date.now() - d.getTime();
         const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-        return `${years} r.`;
+        return t('profiles.ageYears', { years });
       }
     }
     const parts: string[] = [];
-    if (profile.ageYears) parts.push(`${profile.ageYears} r.`);
-    if (profile.ageMonths) parts.push(`${profile.ageMonths} mes.`);
+    if (profile.ageYears) parts.push(t('profiles.ageYears', { years: profile.ageYears }));
+    if (profile.ageMonths) parts.push(t('profiles.ageMonths', { months: profile.ageMonths }));
     return parts.join(' ') || undefined;
   };
 
@@ -239,15 +239,14 @@ export default function PetProfilePage() {
                 letterSpacing: '-0.02em',
               }}
             >
-              Profily zvierat
+              {t('profiles.pageTitle')}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
-              Rozšírený profil pre zdravie, vakcinácie a návštevy veterinára. Pridaj informácie o
-              alergiách, chronických stavoch a aktivite.
+              {t('profiles.pageSubtitle')}
             </Typography>
           </Box>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
-            Pridať psa
+            {t('profiles.addPet')}
           </Button>
         </Stack>
       </Box>
@@ -279,14 +278,13 @@ export default function PetProfilePage() {
               <PetsIcon sx={{ fontSize: 32 }} />
             </Box>
             <Typography variant="h3" sx={{ fontSize: '1.15rem', fontWeight: 700 }}>
-              Zatiaľ žiadny profil
+              {t('profiles.emptyTitle')}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
-              Vytvor prvý profil psa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte
-              pre veterinára.
+              {t('profiles.emptyDescription')}
             </Typography>
             <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
-              Vytvoriť profil
+              {t('profiles.createProfile')}
             </Button>
           </Stack>
         </Card>
@@ -304,7 +302,7 @@ export default function PetProfilePage() {
               <Box sx={{ flex: 1 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>{profile.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {[profile.breed, formatAge(profile), profile.weightKg ? `${profile.weightKg} kg` : undefined, profile.microchipNumber ? `Čip: ${profile.microchipNumber}` : undefined]
+                  {[profile.breed, formatAge(profile), profile.weightKg ? `${profile.weightKg} kg` : undefined, profile.microchipNumber ? t('profiles.chip', { chip: profile.microchipNumber }) : undefined]
                     .filter(Boolean)
                     .join(' · ')}
                 </Typography>
@@ -321,147 +319,146 @@ export default function PetProfilePage() {
       </Stack>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{editingId ? 'Upraviť profil psa' : 'Nový profil psa'}</DialogTitle>
+        <DialogTitle>{editingId ? t('profiles.dialogTitleEdit') : t('profiles.dialogTitleNew')}</DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Stack spacing={2}>
-            <TextField label="Meno *" value={form.name} onChange={(e) => {
+            <TextField label={t('profiles.nameLabel')} value={form.name} onChange={(e) => {
               setForm({ ...form, name: e.target.value });
               if (e.target.value.trim()) setNameError('');
-            }} error={Boolean(nameError)} helperText={nameError || 'Povinné pole'} required fullWidth />
+            }} error={Boolean(nameError)} helperText={nameError || t('profiles.nameHint')} required fullWidth />
             <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
               <FormControl fullWidth>
-                <InputLabel>Druh</InputLabel>
-                <Select value={form.animalType} label="Druh" onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}>
-                  <MenuItem value="dog">Pes</MenuItem>
-                  <MenuItem value="cat">Mačka</MenuItem>
-                  <MenuItem value="other">Iné</MenuItem>
+                <InputLabel>{t('profiles.animalType')}</InputLabel>
+                <Select value={form.animalType} label={t('profiles.animalType')} onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}>
+                  <MenuItem value="dog">{t('profiles.animalDog')}</MenuItem>
+                  <MenuItem value="cat">{t('profiles.animalCat')}</MenuItem>
+                  <MenuItem value="other">{t('profiles.animalOther')}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label="Plemeno" value={form.breed ?? ''} onChange={(e) => setForm({ ...form, breed: e.target.value })} fullWidth />
+              <TextField label={t('profiles.breed')} value={form.breed ?? ''} onChange={(e) => setForm({ ...form, breed: e.target.value })} fullWidth />
               <FormControl fullWidth>
-                <InputLabel>Presnosť dátumu narodenia</InputLabel>
+                <InputLabel>{t('profiles.dobPrecision')}</InputLabel>
                 <Select
                   value={form.dateOfBirthPrecision ?? 'full'}
-                  label="Presnosť dátumu narodenia"
+                  label={t('profiles.dobPrecision')}
                   onChange={(e) => setForm({ ...form, dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'] })}
                 >
-                  <MenuItem value="full">Presný dátum</MenuItem>
-                  <MenuItem value="year-month">Len rok a mesiac</MenuItem>
-                  <MenuItem value="year">Len rok</MenuItem>
+                  <MenuItem value="full">{t('profiles.dobPrecisionFull')}</MenuItem>
+                  <MenuItem value="year-month">{t('profiles.dobPrecisionYearMonth')}</MenuItem>
+                  <MenuItem value="year">{t('profiles.dobPrecisionYear')}</MenuItem>
                 </Select>
               </FormControl>
               {(form.dateOfBirthPrecision ?? 'full') === 'full' ? (
-                <TextField label="Dátum narodenia *" type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => { setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
+                <TextField label={t('profiles.dobLabel')} type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => { setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || t('profiles.nameHint')} required fullWidth />
               ) : (
                 <Stack direction="row" spacing={2}>
-                  <TextField label="Rok narodenia *" type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => { setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || 'Povinné pole'} required fullWidth />
+                  <TextField label={t('profiles.birthYearLabel')} type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => { setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || t('profiles.nameHint')} required fullWidth />
                   {(form.dateOfBirthPrecision ?? 'full') === 'year-month' && (
-                    <TextField label="Mesiac" type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
+                    <TextField label={t('profiles.birthMonthLabel')} type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
                   )}
                 </Stack>
               )}
               <FormControl fullWidth>
-                <InputLabel>Pohlavie</InputLabel>
-                <Select value={form.sex ?? 'UNKNOWN'} label="Pohlavie" onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}>
-                  <MenuItem value="MALE">Samec</MenuItem>
-                  <MenuItem value="FEMALE">Samica</MenuItem>
-                  <MenuItem value="UNKNOWN">Neznáme</MenuItem>
+                <InputLabel>{t('profiles.sex')}</InputLabel>
+                <Select value={form.sex ?? 'UNKNOWN'} label={t('profiles.sex')} onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}>
+                  <MenuItem value="MALE">{t('profiles.sexMale')}</MenuItem>
+                  <MenuItem value="FEMALE">{t('profiles.sexFemale')}</MenuItem>
+                  <MenuItem value="UNKNOWN">{t('profiles.sexUnknown')}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label="Váha (kg)" type="number" inputProps={{ min: 0, step: 0.1 }} value={form.weightKg ?? ''} onChange={(e) => setForm({ ...form, weightKg: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
-              <TextField label="Foto URL" value={form.photoUrl ?? ''} onChange={(e) => setForm({ ...form, photoUrl: e.target.value })} fullWidth />
-              <TextField label="Číslo čipu" value={form.microchipNumber ?? ''} onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })} fullWidth />
-              <TextField label="Číslo pasu" value={form.passportNumber ?? ''} onChange={(e) => setForm({ ...form, passportNumber: e.target.value })} fullWidth />
+              <TextField label={t('profiles.weight')} type="number" inputProps={{ min: 0, step: 0.1 }} value={form.weightKg ?? ''} onChange={(e) => setForm({ ...form, weightKg: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
+              <TextField label={t('profiles.photoUrl')} value={form.photoUrl ?? ''} onChange={(e) => setForm({ ...form, photoUrl: e.target.value })} fullWidth />
+              <TextField label={t('profiles.microchip')} value={form.microchipNumber ?? ''} onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })} fullWidth />
+              <TextField label={t('profiles.passportNumber')} value={form.passportNumber ?? ''} onChange={(e) => setForm({ ...form, passportNumber: e.target.value })} fullWidth />
             </Box>
 
             {form.animalType === 'dog' && (
               <FormControl fullWidth>
-                <InputLabel>Veľkosť</InputLabel>
-                <Select value={form.size ?? ''} label="Veľkosť" onChange={(e) => setForm({ ...form, size: (e.target.value || undefined) as AnimalSize | undefined })}>
+                <InputLabel>{t('profiles.size')}</InputLabel>
+                <Select value={form.size ?? ''} label={t('profiles.size')} onChange={(e) => setForm({ ...form, size: (e.target.value || undefined) as AnimalSize | undefined })}>
                   <MenuItem value="">–</MenuItem>
-                  <MenuItem value="mini">Mini</MenuItem>
-                  <MenuItem value="small">Malý</MenuItem>
-                  <MenuItem value="medium">Stredný</MenuItem>
-                  <MenuItem value="large">Veľký</MenuItem>
-                  <MenuItem value="giant">Obrovský</MenuItem>
+                  <MenuItem value="mini">{t('profiles.sizeMini')}</MenuItem>
+                  <MenuItem value="small">{t('profiles.sizeSmall')}</MenuItem>
+                  <MenuItem value="medium">{t('profiles.sizeMedium')}</MenuItem>
+                  <MenuItem value="large">{t('profiles.sizeLarge')}</MenuItem>
+                  <MenuItem value="giant">{t('profiles.sizeGiant')}</MenuItem>
                 </Select>
               </FormControl>
             )}
 
             <FormControl fullWidth>
-              <InputLabel>Životné štádium</InputLabel>
-              <Select value={form.lifeStage ?? ''} label="Životné štádium" onChange={(e) => setForm({ ...form, lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined })}>
+              <InputLabel>{t('profiles.lifeStage')}</InputLabel>
+              <Select value={form.lifeStage ?? ''} label={t('profiles.lifeStage')} onChange={(e) => setForm({ ...form, lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined })}>
                 <MenuItem value="">–</MenuItem>
-                <MenuItem value="puppy">Šteňa</MenuItem>
-                <MenuItem value="junior">Junior</MenuItem>
-                <MenuItem value="adult">Dospelý</MenuItem>
-                <MenuItem value="senior">Senior</MenuItem>
+                <MenuItem value="puppy">{t('profiles.lifeStagePuppy')}</MenuItem>
+                <MenuItem value="junior">{t('profiles.lifeStageJunior')}</MenuItem>
+                <MenuItem value="adult">{t('profiles.lifeStageAdult')}</MenuItem>
+                <MenuItem value="senior">{t('profiles.lifeStageSenior')}</MenuItem>
               </Select>
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel>Úroveň aktivity</InputLabel>
-              <Select value={form.activityLevel ?? ''} label="Úroveň aktivity" onChange={(e) => setForm({ ...form, activityLevel: (e.target.value || undefined) as ActivityLevel | undefined })}>
+              <InputLabel>{t('profiles.activityLevel')}</InputLabel>
+              <Select value={form.activityLevel ?? ''} label={t('profiles.activityLevel')} onChange={(e) => setForm({ ...form, activityLevel: (e.target.value || undefined) as ActivityLevel | undefined })}>
                 <MenuItem value="">–</MenuItem>
-                <MenuItem value="low">Nízka</MenuItem>
-                <MenuItem value="moderate">Stredná</MenuItem>
-                <MenuItem value="high">Vysoká</MenuItem>
-                <MenuItem value="working">Pracovný pes</MenuItem>
+                <MenuItem value="low">{t('profiles.activityLow')}</MenuItem>
+                <MenuItem value="moderate">{t('profiles.activityModerate')}</MenuItem>
+                <MenuItem value="high">{t('profiles.activityHigh')}</MenuItem>
+                <MenuItem value="working">{t('profiles.activityWorking')}</MenuItem>
               </Select>
             </FormControl>
 
-            <Autocomplete multiple freeSolo options={ALLERGY_SUGGESTIONS} value={form.allergies} onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })} renderInput={(params) => <TextField {...params} label="Alergie" />} />
-            <Autocomplete multiple freeSolo options={INTOLERANCE_SUGGESTIONS} value={form.intolerances} onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })} renderInput={(params) => <TextField {...params} label="Intolerancie" />} />
-            <Autocomplete multiple freeSolo options={HEALTH_SUGGESTIONS} value={form.healthConditions} onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })} renderInput={(params) => <TextField {...params} label="Zdravotné ťažkosti" />} />
+            <Autocomplete multiple freeSolo options={ALLERGY_SUGGESTIONS} value={form.allergies} onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.allergies')} />} />
+            <Autocomplete multiple freeSolo options={INTOLERANCE_SUGGESTIONS} value={form.intolerances} onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.intolerances')} />} />
+            <Autocomplete multiple freeSolo options={HEALTH_SUGGESTIONS} value={form.healthConditions} onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.healthConditions')} />} />
 
             <Divider />
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Chronické diagnózy</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{t('profiles.chronicTitle')}</Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label="Názov diagnózy" value={conditionDraft} onChange={(e) => setConditionDraft(e.target.value)} fullWidth />
+              <TextField label={t('profiles.conditionLabel')} value={conditionDraft} onChange={(e) => setConditionDraft(e.target.value)} fullWidth />
               <Button variant="outlined" onClick={() => {
                 if (!conditionDraft.trim()) return;
                 setForm({ ...form, chronicConditions: [...(form.chronicConditions ?? []), { id: uid(), title: conditionDraft.trim() }] });
                 setConditionDraft('');
-              }}>Pridať</Button>
+              }}>{t('actions.add', { ns: 'common' })}</Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
               {(form.chronicConditions ?? []).map((c) => <Chip key={c.id} label={c.title} onDelete={() => setForm({ ...form, chronicConditions: (form.chronicConditions ?? []).filter((x) => x.id !== c.id) })} />)}
             </Stack>
 
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Procedúry / operácie</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{t('profiles.proceduresTitle')}</Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label="Názov + dátum (napr. kastrácia 2024-02-10)" value={procedureDraft} onChange={(e) => setProcedureDraft(e.target.value)} fullWidth />
+              <TextField label={t('profiles.procedurePlaceholder')} value={procedureDraft} onChange={(e) => setProcedureDraft(e.target.value)} fullWidth />
               <Button variant="outlined" onClick={() => {
                 if (!procedureDraft.trim()) return;
                 setForm({ ...form, procedures: [...(form.procedures ?? []), { id: uid(), title: procedureDraft.trim(), date: new Date().toISOString().slice(0, 10) }] });
                 setProcedureDraft('');
-              }}>Pridať</Button>
+              }}>{t('actions.add', { ns: 'common' })}</Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
               {(form.procedures ?? []).map((p) => <Chip key={p.id} label={p.title} onDelete={() => setForm({ ...form, procedures: (form.procedures ?? []).filter((x) => x.id !== p.id) })} />)}
             </Stack>
 
-            <TextField label="Poznámky - na čo si dať pozor" multiline minRows={3} value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} fullWidth />
+            <TextField label={t('profiles.notes')} multiline minRows={3} value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} fullWidth />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setDialogOpen(false); setNameError(''); setDobError(''); }}>Zrušiť</Button>
-          <Button variant="contained" onClick={handleSave}>{editingId ? 'Uložiť' : 'Pridať'}</Button>
+          <Button onClick={() => { setDialogOpen(false); setNameError(''); setDobError(''); }}>{t('actions.cancel', { ns: 'common' })}</Button>
+          <Button variant="contained" onClick={handleSave}>{editingId ? t('profiles.saveUpdate') : t('profiles.saveCreate')}</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>Vymazať profil?</DialogTitle>
+        <DialogTitle>{t('profiles.deleteDialogTitle')}</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5}>
             <Typography variant="body2">
-              Vymazať profil <strong>{pendingDelete?.name}</strong>?
+              {t('profiles.deleteConfirm', { name: pendingDelete?.name })}
             </Typography>
             {pendingDelete && pendingDelete.total > 0 && (
               <>
                 <Typography variant="body2" color="text.secondary">
-                  Týmto sa zmaže aj <strong>{pendingDelete.total}</strong>{' '}
-                  {pendingDelete.total === 1 ? 'súvisiaci záznam' : 'súvisiacich záznamov'}:
+                  {t('profiles.deleteHasRecords', { count: pendingDelete.total })}
                 </Typography>
                 <Stack component="ul" sx={{ pl: 2, m: 0 }} spacing={0.25}>
                   {pendingDelete.counts.map((c) => (
@@ -475,14 +472,14 @@ export default function PetProfilePage() {
               </>
             )}
             <Typography variant="caption" color="error">
-              Túto akciu nie je možné vrátiť.
+              {t('profiles.deleteIrreversible')}
             </Typography>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPendingDelete(null)}>Zrušiť</Button>
+          <Button onClick={() => setPendingDelete(null)}>{t('actions.cancel', { ns: 'common' })}</Button>
           <Button color="error" variant="contained" onClick={confirmDelete}>
-            Vymazať
+            {t('actions.delete', { ns: 'common' })}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { AllergenWarning, HealthWarning } from '../types';
 
 interface AllergenWarningBannerProps {
@@ -8,6 +9,7 @@ interface AllergenWarningBannerProps {
 }
 
 export default function AllergenWarningBanner({ allergenWarnings, healthWarnings }: AllergenWarningBannerProps) {
+  const { t } = useTranslation('analyze');
   const criticalAllergens = allergenWarnings.filter((w) => w.severity === 'critical' || w.severity === 'high');
   const otherAllergens = allergenWarnings.filter((w) => w.severity === 'moderate');
   const allAllergens = [...criticalAllergens, ...otherAllergens];
@@ -33,7 +35,7 @@ export default function AllergenWarningBanner({ allergenWarnings, healthWarnings
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
             <WarningIcon sx={{ fontSize: 40 }} />
             <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: 0.5 }}>
-              NEBEZPEČENSTVO – ZISTENÉ ALERGÉNY!
+              {t('allergenWarning.dangerTitle')}
             </Typography>
           </Box>
 
@@ -49,7 +51,7 @@ export default function AllergenWarningBanner({ allergenWarnings, healthWarnings
           ))}
 
           <Typography variant="body2" sx={{ mt: 2, fontWeight: 700, opacity: 0.95, borderTop: '1px solid rgba(255,255,255,0.3)', pt: 1.5 }}>
-            Toto krmivo môže vážne ohroziť zdravie vášho zvieraťa!
+            {t('allergenWarning.petAtRisk')}
           </Typography>
         </Box>
       )}
@@ -68,7 +70,7 @@ export default function AllergenWarningBanner({ allergenWarnings, healthWarnings
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
             <WarningIcon sx={{ fontSize: 36 }} />
             <Typography variant="h6" sx={{ fontWeight: 800 }}>
-              ZDRAVOTNÉ VAROVANIE
+              {t('allergenWarning.healthWarningTitle')}
             </Typography>
           </Box>
 

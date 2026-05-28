@@ -1,5 +1,6 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
@@ -15,7 +16,6 @@ import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
-import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 import type { TimelineEvent } from '../types/dogHealth';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -336,6 +336,7 @@ function statusBadge(date: string | undefined, soonDays = 30): { cls: string; la
 }
 
 export default function VetCardPage() {
+  const { t } = useTranslation('healthPassport');
   const { profiles } = usePetProfiles();
   const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
@@ -696,7 +697,7 @@ export default function VetCardPage() {
       .map(
         (item) => `<tr>
           <td class="muted nowrap" style="width:90px">${formatDateShort(item.date)}</td>
-          <td class="bold nowrap" style="width:130px">${TIMELINE_TYPE_META[item.type].label}</td>
+          <td class="bold nowrap" style="width:130px">${t(`timeline.${item.type}` as never)}</td>
           <td>
             ${item.title}
             ${item.subtitle ? `<div class="muted" style="font-size:10px">${item.subtitle}</div>` : ''}

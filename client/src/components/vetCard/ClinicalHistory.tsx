@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Chip,
@@ -25,14 +26,8 @@ import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from '../healthPassport/constan
 type ClinicalEventType = Exclude<TimelineEvent['type'], 'EXPENSE'>;
 type Filter = 'ALL' | ClinicalEventType;
 
-const FILTER_OPTIONS: Array<{ value: Filter; label: string }> = [
-  { value: 'ALL', label: 'Všetko' },
-  { value: 'VET_VISIT', label: 'Návštevy' },
-  { value: 'VACCINATION', label: 'Vakcíny' },
-  { value: 'DEWORMING', label: 'Odčervenie' },
-  { value: 'ECTOPARASITE', label: 'Ektoparazity' },
-  { value: 'MEDICATION', label: 'Lieky' },
-  { value: 'DIET', label: 'Diéta' },
+const FILTER_VALUES: Filter[] = [
+  'ALL', 'VET_VISIT', 'VACCINATION', 'DEWORMING', 'ECTOPARASITE', 'MEDICATION', 'DIET',
 ];
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15, 20];
@@ -68,6 +63,7 @@ interface ClinicalHistoryProps {
 
 export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
   const [filter, setFilter] = useState<Filter>('ALL');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -167,17 +163,17 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
           '& > *': { flexShrink: 0 },
         }}
       >
-        {FILTER_OPTIONS.map((opt) => {
-          const active = filter === opt.value;
+        {FILTER_VALUES.map((v) => {
+          const active = filter === v;
           return (
             <Chip
-              key={opt.value}
-              label={opt.label}
+              key={v}
+              label={t(`filter.${v}` as never)}
               size="small"
               clickable
               variant={active ? 'filled' : 'outlined'}
               color={active ? 'primary' : 'default'}
-              onClick={() => setFilter(opt.value)}
+              onClick={() => setFilter(v)}
             />
           );
         })}
@@ -231,7 +227,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
                         <Stack direction="row" alignItems="center" gap={1.25} flexWrap="wrap">
                           <Chip
                             icon={TIMELINE_ICON_MAP[event.type]}
-                            label={meta.label}
+                            label={t(`timeline.${event.type}` as never)}
                             size="small"
                             color={meta.color}
                             variant="outlined"
