@@ -9,6 +9,9 @@ export interface PetProfile {
   animalType: AnimalType;
   breed?: string;
   dateOfBirth?: string;
+  dateOfBirthPrecision?: 'year' | 'year-month' | 'full';
+  birthYear?: number;
+  birthMonth?: number;
   sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
   ageYears?: number;
   ageMonths?: number;
@@ -100,14 +103,17 @@ export interface FileExtractionResult {
   healthPassportInterpretation?: {
     summary: string;
     aiUnderstanding: string;
-    vaccinations: Array<{
-      disease: string;
-      vaccineName: string;
-      dateAdministered: string;
+    records: Array<{
+      type: 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION' | 'NOTE';
+      name: string;
+      disease?: string;
+      date: string;
       validUntil?: string;
       batchNumber?: string;
-      veterinarian?: string;
+      dose?: string;
+      frequency?: string;
       manufacturer?: string;
+      veterinarian?: string;
       confidence: 'high' | 'medium' | 'low';
       notes?: string;
     }>;
@@ -125,6 +131,16 @@ export interface FileExtractionResult {
     };
   };
   feedAnalysis?: AnalysisResult;
+}
+
+export interface SavedAnalysis {
+  id: string;
+  date: string;
+  composition: string;
+  sourceLabel?: string;
+  result: AnalysisResult;
+  petProfileId?: string;
+  petProfileName?: string;
 }
 
 export interface ApiError {

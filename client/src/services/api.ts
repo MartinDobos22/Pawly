@@ -1,5 +1,12 @@
-import { AnalysisRequest, AnalysisResult, FileExtractionResult, PetProfile } from '../types';
+import {
+  AnalysisRequest,
+  AnalysisResult,
+  FileExtractionResult,
+  FoodSafetyResult,
+  PetProfile,
+} from '../types';
 import { logger } from '../utils/logger';
+import { getAuthHeader, handleUnauthorized } from './authToken';
 import type {
   EpisodeCategory,
   HealthEpisodeRecord,
@@ -50,11 +57,12 @@ export async function analyzeComposition(
 
   const res = await fetch(`${BASE_URL}/api/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Textová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -94,11 +102,12 @@ export async function analyzeAttachment(
 
   const res = await fetch(`${BASE_URL}/api/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Súborová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -135,11 +144,12 @@ export async function extractTextFromImage(attachment: {
 
   const res = await fetch(`${BASE_URL}/api/extract-text`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify({ attachment }),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('OCR extrakcia zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
@@ -170,20 +180,32 @@ export interface PassportHealthFlags {
   chronicConditions: string[];
 }
 
+export type PassportRecordType =
+  | 'VACCINATION'
+  | 'DEWORMING'
+  | 'ECTOPARASITE'
+  | 'MEDICATION'
+  | 'NOTE';
+
+export interface PassportRecord {
+  type: PassportRecordType;
+  name: string;
+  disease?: string;
+  date: string;
+  validUntil?: string;
+  batchNumber?: string;
+  dose?: string;
+  frequency?: string;
+  manufacturer?: string;
+  veterinarian?: string;
+  confidence: 'high' | 'medium' | 'low';
+  notes?: string;
+}
+
 export interface PassportInterpretation {
   summary?: string;
   aiUnderstanding?: string;
-  vaccinations: Array<{
-    disease: string;
-    vaccineName: string;
-    dateAdministered: string;
-    validUntil?: string;
-    batchNumber?: string;
-    veterinarian?: string;
-    manufacturer?: string;
-    confidence: 'high' | 'medium' | 'low';
-    notes?: string;
-  }>;
+  records: PassportRecord[];
   petIdentifiers?: PassportPetIdentifiers;
   healthFlags?: PassportHealthFlags;
 }
@@ -193,19 +215,20 @@ export async function interpretPassportText(text: string): Promise<PassportInter
 
   const res = await fetch(`${BASE_URL}/api/interpret-passport`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify({ text }),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     logger.error('Interpretácia pasu zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
   }
 
   const payload = (await res.json()) as PassportInterpretation;
-  logger.info('Interpretácia pasu prijatá', {
-    vaccinationsCount: payload.vaccinations?.length ?? 0,
+  logger.info('Interpretácia dokumentu prijatá', {
+    recordsCount: payload.records?.length ?? 0,
   });
   return payload;
 }
@@ -248,11 +271,12 @@ export async function fetchSimilarEpisodeSummary(
 
   const res = await fetch(`${BASE_URL}/api/episodes/similar-summary`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
+    await handleUnauthorized(res.status);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string } | string;
     } | null;
@@ -265,4 +289,35 @@ export async function fetchSimilarEpisodeSummary(
   }
 
   return (await res.json()) as SimilarEpisodeSummary;
+}
+
+export async function askFoodSafety(
+  query: string,
+  petProfile?: PetProfile
+): Promise<FoodSafetyResult> {
+  const payload = {
+    query,
+    petProfile: sanitizePetProfileForAnalyze(petProfile),
+  };
+
+  const res = await fetch(`${BASE_URL}/api/food-safety`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    await handleUnauthorized(res.status);
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string; code?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === 'string'
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    logger.error('food-safety zlyhalo', { status: res.status });
+    throw new Error(message);
+  }
+
+  return (await res.json()) as FoodSafetyResult;
 }

@@ -4,7 +4,7 @@ import {
   Warning as WarningIcon,
   Cancel as ExpiredIcon,
   HelpOutline as UnknownIcon,
-  Vaccines as VaccinesIcon,
+  VaccinesOutlined as VaccinesIcon,
 } from '@mui/icons-material';
 import type { ValidityStatus } from '../../types/dogHealth';
 import { statusColor } from '../healthPassport/utils.ts';
@@ -38,25 +38,10 @@ function formatDateShort(value?: string): string {
 
 export default function PreventiveCareCard({ items }: Props) {
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-      <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 1,
-            bgcolor: 'action.hover',
-            color: 'success.main',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            '& svg': { fontSize: 22 },
-          }}
-        >
-          <VaccinesIcon />
-        </Box>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+        <VaccinesIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Preventívna starostlivosť
         </Typography>
       </Stack>

@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: animalpassport-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # Plná Netlify URL (bez koncového /), napr. https://animalpassport.netlify.app
+      - key: CORS_ORIGIN
+        sync: false
+      # Notifikácie (e-mail cez Resend). Bez RESEND_API_KEY beží sweep v dry-run režime.
+      - key: RESEND_API_KEY
+        sync: false
+      # Odosielateľ, napr. "Pawport <noreply@tvojadomena.sk>" (overená doména v Resend)
+      - key: NOTIFY_FROM_EMAIL
+        sync: false
+      # Tajný token pre POST /api/cron/notifications (hlavička x-cron-secret)
+      - key: CRON_SECRET
+        sync: false
+      # Plná URL appky (bez koncového /) pre odkazy v e-mailoch
+      - key: APP_URL
+        sync: false

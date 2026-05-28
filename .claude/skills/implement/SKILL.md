@@ -35,9 +35,9 @@ Pred implementáciou over branch:
 1. `git rev-parse --abbrev-ref HEAD`
 2. Ak si na `main`:
    - `git fetch origin main && git pull origin main`
-   - `git checkout -b claude/<slug-z-úlohy>` (kebab-case, max 50 znakov)
-3. Ak si na `claude/*` branchi → zostaň, žiadne git operácie.
-4. Edge case: ak si na inej branchi než `main` alebo `claude/*` → spýtaj sa používateľa.
+   - `git checkout -b mdobos/<slug-z-úlohy>` (kebab-case, max 50 znakov)
+3. Ak si na `mdobos/*` branchi → zostaň, žiadne git operácie.
+4. Edge case: ak si na inej branchi než `main` alebo `mdobos/*` → spýtaj sa používateľa.
 
 (Branch guard hook tiež toto rieši ako bezpečnostnú sieť.)
 

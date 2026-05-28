@@ -23,11 +23,12 @@ export function useEpisodeStorageSize(episodes: HealthEpisodeRecord[]): EpisodeS
     }
 
     const megabytes = bytes / (1024 * 1024);
+    // Epizódy sú teraz v Supabase, nie v localStorage — kvótový warning už neplatí.
     return {
       bytes,
       megabytes,
-      isApproachingLimit: bytes >= WARNING_THRESHOLD_BYTES,
-      isCritical: bytes >= CRITICAL_THRESHOLD_BYTES,
+      isApproachingLimit: false,
+      isCritical: false,
       warningThresholdMb: WARNING_THRESHOLD_BYTES / (1024 * 1024),
       limitMb: 5,
     };

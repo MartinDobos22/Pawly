@@ -1,14 +1,8 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { ExpandMore as ExpandMoreIcon, NotesOutlined as NotesIcon } from '@mui/icons-material';
+import { Stack, TextField } from '@mui/material';
+import { NotesOutlined as NotesIcon } from '@mui/icons-material';
 
 import type { ClinicalNotesValues } from '../formTypes';
+import SectionCard from './SectionCard';
 
 interface ClinicalNotesProps {
   values: ClinicalNotesValues;
@@ -24,56 +18,48 @@ export default function ClinicalNotes({
   onChange,
 }: ClinicalNotesProps) {
   return (
-    <Accordion
+    <SectionCard
+      title="Klinický záznam"
+      icon={<NotesIcon />}
+      collapsible
       expanded={expanded}
-      onChange={(_, next) => onExpand(next)}
-      disableGutters
-      sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 1,
-        '&:before': { display: 'none' },
-      }}
+      onExpandChange={onExpand}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Stack direction="row" alignItems="center" gap={1}>
-          <NotesIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Klinický záznam
-          </Typography>
-        </Stack>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Stack spacing={1.5}>
-          <TextField
-            size="small"
-            label="Nález"
-            value={values.findings}
-            onChange={(e) => onChange('findings', e.target.value)}
-            multiline
-            minRows={2}
-            fullWidth
-          />
-          <TextField
-            size="small"
-            label="Diagnóza"
-            value={values.diagnosis}
-            onChange={(e) => onChange('diagnosis', e.target.value)}
-            multiline
-            minRows={2}
-            fullWidth
-          />
-          <TextField
-            size="small"
-            label="Odporúčania"
-            value={values.recommendations}
-            onChange={(e) => onChange('recommendations', e.target.value)}
-            multiline
-            minRows={2}
-            fullWidth
-          />
-        </Stack>
-      </AccordionDetails>
-    </Accordion>
+      <Stack spacing={1.5}>
+        <TextField
+          size="small"
+          label="Nález"
+          placeholder="Klinický nález pri vyšetrení…"
+          value={values.findings}
+          onChange={(e) => onChange('findings', e.target.value)}
+          multiline
+          minRows={3}
+          maxRows={8}
+          fullWidth
+        />
+        <TextField
+          size="small"
+          label="Diagnóza"
+          placeholder="Stanovená diagnóza alebo predbežné podozrenie…"
+          value={values.diagnosis}
+          onChange={(e) => onChange('diagnosis', e.target.value)}
+          multiline
+          minRows={3}
+          maxRows={8}
+          fullWidth
+        />
+        <TextField
+          size="small"
+          label="Odporúčania"
+          placeholder="Postup liečby, kontrola, životospráva…"
+          value={values.recommendations}
+          onChange={(e) => onChange('recommendations', e.target.value)}
+          multiline
+          minRows={3}
+          maxRows={8}
+          fullWidth
+        />
+      </Stack>
+    </SectionCard>
   );
 }

@@ -1,47 +1,29 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
-import {
-  HealthAndSafety as HealthIcon,
-  Add as AddIcon,
-  Description as CardIcon,
-} from '@mui/icons-material';
+import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Pets as PetsIcon } from '@mui/icons-material';
 
-import type { PetProfile } from '../types';
 import type {
-  DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
   ExpenseCategory,
-  ExpenseRecord,
-  MedicationDoseLog,
-  MedicationRecord,
   TimelineEvent,
   VaccinationRecord,
   VetVisitRecord,
 } from '../types/dogHealth';
 
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useActivePet } from '../hooks/useActivePet';
+import { useHealthData } from '../hooks/useHealthData';
 import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
+import PassportHero from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
-import QuickVisitButton from '../components/healthPassport/QuickVisitButton';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
+import WeightTrendCard from '../components/healthPassport/WeightTrendCard';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
 
@@ -54,32 +36,37 @@ import {
 import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 
 export default function HealthPassportPage() {
-  // ── Dog selection ──────────────────────────────────────────────────────────
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
-  const [selectedDogId, setSelectedDogId] = useState(dogProfiles[0]?.id ?? '');
+  // ── Dog selection (shared via useActivePet) ────────────────────────────────
+  const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
 
-  // ── Health records ────────────────────────────────────────────────────────
-  const [vaccinations, setVaccinations] = useLocalStorage<VaccinationRecord[]>(
-    'dog-health-vaccinations',
-    []
-  );
-  const [dewormings, setDewormings] = useLocalStorage<DewormingRecord[]>(
-    'dog-health-dewormings',
-    []
-  );
-  const [ectos, setEctos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);
-  const [visits, setVisits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
-  const [medications, setMedications] = useLocalStorage<MedicationRecord[]>(
-    'dog-health-medications',
-    []
-  );
-  const [doseLogs, setDoseLogs] = useLocalStorage<MedicationDoseLog[]>(
-    'dog-health-med-dose-logs',
-    []
-  );
-  const [dietEntries, setDietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
-  const [expenses, setExpenses] = useLocalStorage<ExpenseRecord[]>('dog-health-expenses', []);
+  // ── Health records (Supabase cez useHealthData) ─────────────────────────────
+  const {
+    vaccinations,
+    dewormings,
+    ectos,
+    visits,
+    medications,
+    doseLogs,
+    dietEntries,
+    expenses,
+    addVisitBundle,
+    addVisit,
+    updateVisit,
+    removeVisit,
+    updateVaccination,
+    updateDeworming,
+    updateEcto,
+    updateMedication,
+    updateDietEntry,
+    updateExpense,
+    removeVaccination,
+    removeDeworming,
+    removeEcto,
+    removeDietEntry,
+    removeExpense,
+    removeMedication,
+    toggleDose,
+  } = useHealthData();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
   const dogVaccinations = vaccinations.filter((v) => v.dogId === selectedDogId);
@@ -115,6 +102,20 @@ export default function HealthPassportPage() {
     : 'UNKNOWN';
 
   const currentDiet = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
+
+  // ── Latest records per domain (for metric cards) ───────────────────────────
+  const latestVaccination = useMemo(
+    () => [...dogVaccinations].sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0],
+    [dogVaccinations]
+  );
+  const latestDeworming = useMemo(
+    () => [...dogDewormings].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    [dogDewormings]
+  );
+  const latestEcto = useMemo(
+    () => [...dogEctos].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    [dogEctos]
+  );
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
@@ -199,35 +200,16 @@ export default function HealthPassportPage() {
 
   const dispatchBundle = useCallback(
     (bundle: VisitBundle) => {
-      setVisits((p) => [...p, bundle.visit]);
-      if (bundle.vaccinations.length) setVaccinations((p) => [...p, ...bundle.vaccinations]);
-      if (bundle.dewormings.length) setDewormings((p) => [...p, ...bundle.dewormings]);
-      if (bundle.ectos.length) setEctos((p) => [...p, ...bundle.ectos]);
-      if (bundle.medications.length) setMedications((p) => [...p, ...bundle.medications]);
-      if (bundle.doseLogs.length) setDoseLogs((p) => [...p, ...bundle.doseLogs]);
-      if (bundle.dietEntries.length) setDietEntries((p) => [...p, ...bundle.dietEntries]);
-      if (bundle.expenses.length) setExpenses((p) => [...p, ...bundle.expenses]);
+      void addVisitBundle(bundle);
     },
-    [
-      setVisits,
-      setVaccinations,
-      setDewormings,
-      setEctos,
-      setMedications,
-      setDoseLogs,
-      setDietEntries,
-      setExpenses,
-    ]
+    [addVisitBundle]
   );
 
   const handleQuickVisitCreate = useCallback(
-    (visit: VetVisitRecord) => setVisits((p) => [...p, visit]),
-    [setVisits]
+    (visit: VetVisitRecord) => addVisit(visit),
+    [addVisit]
   );
-  const handleQuickVisitUndo = useCallback(
-    (id: string) => setVisits((p) => p.filter((v) => v.id !== id)),
-    [setVisits]
-  );
+  const handleQuickVisitUndo = useCallback((id: string) => removeVisit(id), [removeVisit]);
 
   // ── Timeline open detail ────────────────────────────────────────────────────
   const handleOpenDetail = useCallback((event: TimelineEvent) => {
@@ -243,32 +225,25 @@ export default function HealthPassportPage() {
   const handleSaveVisit = useCallback(
     (draft: Parameters<React.ComponentProps<typeof VisitDetailDialog>['onSave']>[0]) => {
       if (!selectedVisitId) return;
-      setVisits((p) =>
-        p.map((v) =>
-          v.id !== selectedVisitId
-            ? v
-            : {
-                ...v,
-                date: draft.date,
-                clinicName: draft.clinicName,
-                vetName: draft.vetName.trim() || undefined,
-                reason: draft.reason,
-                findings: draft.findings.trim() || undefined,
-                diagnosis: draft.diagnosis.trim() || undefined,
-                recommendations: draft.recommendations.trim() || undefined,
-                nextCheckDate: draft.nextCheckDate || undefined,
-              }
-        )
-      );
+      void updateVisit(selectedVisitId, {
+        date: draft.date,
+        clinicName: draft.clinicName,
+        vetName: draft.vetName.trim() || undefined,
+        reason: draft.reason,
+        findings: draft.findings.trim() || undefined,
+        diagnosis: draft.diagnosis.trim() || undefined,
+        recommendations: draft.recommendations.trim() || undefined,
+        nextCheckDate: draft.nextCheckDate || undefined,
+      });
     },
-    [selectedVisitId, setVisits]
+    [selectedVisitId, updateVisit]
   );
 
   const handleDeleteVisit = useCallback(() => {
     if (!selectedVisitId) return;
-    setVisits((p) => p.filter((v) => v.id !== selectedVisitId));
+    void removeVisit(selectedVisitId);
     setSelectedVisitId(null);
-  }, [selectedVisitId, setVisits]);
+  }, [selectedVisitId, removeVisit]);
 
   // ── Record save handlers ────────────────────────────────────────────────────
   const handleSaveVaccination = useCallback(
@@ -282,30 +257,19 @@ export default function HealthPassportPage() {
         batchNumber: string;
       }
     ) => {
-      setVaccinations((p) =>
-        p.map((item) =>
-          item.id !== id ? item : { ...item, ...draft, batchNumber: draft.batchNumber || undefined }
-        )
-      );
+      void updateVaccination(id, { ...draft, batchNumber: draft.batchNumber || undefined });
     },
-    [setVaccinations]
+    [updateVaccination]
   );
 
   const handleSaveDeworming = useCallback(
     (id: string, draft: { productName: string; dateGiven: string; nextDueDate: string }) => {
-      setDewormings((p) =>
-        p.map((item) =>
-          item.id !== id
-            ? item
-            : {
-                ...item,
-                ...draft,
-                intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 90),
-              }
-        )
-      );
+      void updateDeworming(id, {
+        ...draft,
+        intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 90),
+      });
     },
-    [setDewormings]
+    [updateDeworming]
   );
 
   const handleSaveEcto = useCallback(
@@ -318,19 +282,12 @@ export default function HealthPassportPage() {
         nextDueDate: string;
       }
     ) => {
-      setEctos((p) =>
-        p.map((item) =>
-          item.id !== id
-            ? item
-            : {
-                ...item,
-                ...draft,
-                intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 30),
-              }
-        )
-      );
+      void updateEcto(id, {
+        ...draft,
+        intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 30),
+      });
     },
-    [setEctos]
+    [updateEcto]
   );
 
   const handleSaveMedication = useCallback(
@@ -345,13 +302,9 @@ export default function HealthPassportPage() {
         endDate: string;
       }
     ) => {
-      setMedications((p) =>
-        p.map((item) =>
-          item.id !== id ? item : { ...item, ...draft, endDate: draft.endDate || undefined }
-        )
-      );
+      void updateMedication(id, { ...draft, endDate: draft.endDate || undefined });
     },
-    [setMedications]
+    [updateMedication]
   );
 
   const handleSaveDiet = useCallback(
@@ -365,20 +318,13 @@ export default function HealthPassportPage() {
         suitabilityStatus: DietEntry['suitabilityStatus'];
       }
     ) => {
-      setDietEntries((p) =>
-        p.map((item) =>
-          item.id !== id
-            ? item
-            : {
-                ...item,
-                ...draft,
-                endedAt: draft.endedAt || undefined,
-                reactionNotes: draft.reactionNotes || undefined,
-              }
-        )
-      );
+      void updateDietEntry(id, {
+        ...draft,
+        endedAt: draft.endedAt || undefined,
+        reactionNotes: draft.reactionNotes || undefined,
+      });
     },
-    [setDietEntries]
+    [updateDietEntry]
   );
 
   const handleSaveExpense = useCallback(
@@ -392,54 +338,32 @@ export default function HealthPassportPage() {
         note: string;
       }
     ) => {
-      setExpenses((p) =>
-        p.map((item) =>
-          item.id !== id
-            ? item
-            : {
-                ...item,
-                ...draft,
-                amount: Number(draft.amount || 0),
-                note: draft.note || undefined,
-              }
-        )
-      );
+      void updateExpense(id, {
+        ...draft,
+        amount: Number(draft.amount || 0),
+        note: draft.note || undefined,
+      });
     },
-    [setExpenses]
+    [updateExpense]
   );
 
   const handleDeleteRecord = useCallback(() => {
     if (!selectedRecord) return;
-    if (selectedRecord.type === 'VACCINATION')
-      setVaccinations((p) => p.filter((x) => x.id !== selectedRecord.id));
-    else if (selectedRecord.type === 'DEWORMING')
-      setDewormings((p) => p.filter((x) => x.id !== selectedRecord.id));
-    else if (selectedRecord.type === 'ECTOPARASITE')
-      setEctos((p) => p.filter((x) => x.id !== selectedRecord.id));
-    else if (selectedRecord.type === 'MEDICATION') {
-      setMedications((p) => p.filter((x) => x.id !== selectedRecord.id));
-      setDoseLogs((p) => p.filter((x) => x.medicationId !== selectedRecord.id));
-      setVisits((p) =>
-        p.map((v) => ({
-          ...v,
-          medicationIds: v.medicationIds.filter((mid) => mid !== selectedRecord.id),
-        }))
-      );
-    } else if (selectedRecord.type === 'DIET')
-      setDietEntries((p) => p.filter((x) => x.id !== selectedRecord.id));
-    else if (selectedRecord.type === 'EXPENSE')
-      setExpenses((p) => p.filter((x) => x.id !== selectedRecord.id));
+    if (selectedRecord.type === 'VACCINATION') void removeVaccination(selectedRecord.id);
+    else if (selectedRecord.type === 'DEWORMING') void removeDeworming(selectedRecord.id);
+    else if (selectedRecord.type === 'ECTOPARASITE') void removeEcto(selectedRecord.id);
+    else if (selectedRecord.type === 'MEDICATION') void removeMedication(selectedRecord.id);
+    else if (selectedRecord.type === 'DIET') void removeDietEntry(selectedRecord.id);
+    else if (selectedRecord.type === 'EXPENSE') void removeExpense(selectedRecord.id);
     setSelectedRecord(null);
   }, [
     selectedRecord,
-    setVaccinations,
-    setDewormings,
-    setEctos,
-    setMedications,
-    setDoseLogs,
-    setVisits,
-    setDietEntries,
-    setExpenses,
+    removeVaccination,
+    removeDeworming,
+    removeEcto,
+    removeMedication,
+    removeDietEntry,
+    removeExpense,
   ]);
 
   // ── PDF export ──────────────────────────────────────────────────────────────
@@ -480,9 +404,43 @@ export default function HealthPassportPage() {
   // ── Early return if no dogs ─────────────────────────────────────────────────
   if (!dogProfiles.length) {
     return (
-      <Alert severity="info" sx={{ borderRadius: 3 }}>
-        Najprv si vytvorte profil psa v sekcii <strong>Profily</strong>.
-      </Alert>
+      <Card
+        sx={{
+          p: 4,
+          textAlign: 'center',
+          borderStyle: 'dashed',
+          maxWidth: 520,
+          mx: 'auto',
+          mt: 4,
+        }}
+      >
+        <Stack spacing={2} alignItems="center">
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <PetsIcon sx={{ fontSize: 32 }} />
+          </Box>
+          <Typography variant="h3" sx={{ fontSize: '1.25rem' }}>
+            Vitajte v zdravotnom pase
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>
+            Najprv si vytvorte profil psa v sekcii <strong>Profily</strong>. Potom tu uvidíte
+            timeline, najbližšie úlohy a celkový zdravotný stav.
+          </Typography>
+          <Button variant="contained" href="/profily" size="large">
+            Vytvoriť profil
+          </Button>
+        </Stack>
+      </Card>
     );
   }
 
@@ -490,79 +448,26 @@ export default function HealthPassportPage() {
   const selectedVisit = selectedVisitId
     ? (dogVisits.find((v) => v.id === selectedVisitId) ?? null)
     : null;
+  const dietStatus: 'VALID' | 'UNKNOWN' = currentDiet ? 'VALID' : 'UNKNOWN';
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
-      {/* ── Page header — flat outlined ───────────────────────────────────── */}
-      <Card sx={{ mb: 1.5, p: { xs: 1.5, md: 2 } }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          justifyContent="space-between"
-          gap={2}
-        >
-          <Stack direction="row" alignItems="center" gap={1.5}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 1,
-                bgcolor: 'action.hover',
-                color: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <HealthIcon sx={{ fontSize: 22 }} />
-            </Box>
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                Zdravotný pas
-              </Typography>
-              {selectedDog && (
-                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.25 }}>
-                  {selectedDog.name}
-                  {selectedDog.breed ? ` · ${selectedDog.breed}` : ''}
-                  {selectedDog.weightKg ? ` · ${selectedDog.weightKg} kg` : ''}
-                </Typography>
-              )}
-            </Box>
-          </Stack>
-
-          <Stack direction="row" flexWrap="wrap" gap={1}>
-            {dogProfiles.length > 1 && (
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <InputLabel>Pes</InputLabel>
-                <Select
-                  value={selectedDogId}
-                  label="Pes"
-                  onChange={(e) => setSelectedDogId(e.target.value)}
-                >
-                  {dogProfiles.map((p) => (
-                    <MenuItem key={p.id} value={p.id}>
-                      {p.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setWizardOpen(true)}>
-              Pridať záznam
-            </Button>
-            <QuickVisitButton
-              dogId={selectedDogId}
-              disabled={!selectedDogId}
-              onCreate={handleQuickVisitCreate}
-              onUndo={handleQuickVisitUndo}
-            />
-            <Button variant="outlined" startIcon={<CardIcon />} href="/karta-pre-veterinara">
-              Karta
-            </Button>
-          </Stack>
-        </Stack>
-      </Card>
+      {selectedDog && (
+        <PassportHero
+          dog={selectedDog}
+          dogProfiles={dogProfiles}
+          selectedDogId={selectedDogId}
+          onSelectDog={setSelectedDogId}
+          vaccinationStatus={vaccinationStatus}
+          dewormingStatus={dewormingStatus}
+          ectoStatus={ectoStatus}
+          dietStatus={dietStatus}
+          onAddRecord={() => setWizardOpen(true)}
+          onQuickVisitCreate={handleQuickVisitCreate}
+          onQuickVisitUndo={handleQuickVisitUndo}
+        />
+      )}
 
       {/* ── Status overview ────────────────────────────────────────────────── */}
       <HealthStatusOverview
@@ -570,6 +475,52 @@ export default function HealthPassportPage() {
         dewormingStatus={dewormingStatus}
         ectoStatus={ectoStatus}
         currentDiet={currentDiet}
+        vaccinationNextDate={latestVaccination?.validUntil}
+        vaccinationLastDate={latestVaccination?.dateApplied}
+        dewormingNextDate={latestDeworming?.nextDueDate}
+        dewormingLastDate={latestDeworming?.dateGiven}
+        dewormingIntervalDays={
+          latestDeworming
+            ? (latestDeworming.intervalDays ??
+              computeIntervalDaysFromDates(
+                latestDeworming.dateGiven,
+                latestDeworming.nextDueDate,
+                90
+              ))
+            : undefined
+        }
+        dewormingPreparation={latestDeworming?.productName}
+        ectoNextDate={latestEcto?.nextDueDate}
+        ectoLastDate={latestEcto?.dateGiven}
+        ectoIntervalDays={
+          latestEcto
+            ? (latestEcto.intervalDays ??
+              computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
+            : undefined
+        }
+        ectoPreparation={latestEcto?.productName}
+        onAddVaccination={() => setWizardOpen(true)}
+        onAddDeworming={() => setWizardOpen(true)}
+        onAddEcto={() => setWizardOpen(true)}
+        onAddDiet={() => setWizardOpen(true)}
+        onOpenVaccination={
+          latestVaccination
+            ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+            : undefined
+        }
+        onOpenDeworming={
+          latestDeworming
+            ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+            : undefined
+        }
+        onOpenEcto={
+          latestEcto
+            ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
+            : undefined
+        }
+        onOpenDiet={
+          currentDiet ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' }) : undefined
+        }
       />
 
       {/* ── Dashboard: timeline (left) + tasks/expenses stack (right) ─────── */}
@@ -594,10 +545,11 @@ export default function HealthPassportPage() {
             ectos={dogEctos}
             medications={dogMeds}
             doseLogs={dogDoseLogs}
-            onToggleDose={(logId) =>
-              setDoseLogs((p) => p.map((x) => (x.id === logId ? { ...x, taken: !x.taken } : x)))
-            }
+            onToggleDose={(logId) => {
+              void toggleDose(logId);
+            }}
           />
+          <WeightTrendCard dogId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
           <ExpenseSummaryCard expenses={dogExpenses} />
         </Stack>
       </Box>

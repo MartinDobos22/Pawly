@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Alert,
   Box,
   Button,
   Card,
@@ -20,27 +19,26 @@ import {
   EventBusy as EventBusyIcon,
   Pets as PetsIcon,
 } from '@mui/icons-material';
+import EmptyState from '../components/EmptyState';
 import EpisodeFiltersBar from '../components/episodes/EpisodeFiltersBar';
 import EpisodeListItem from '../components/episodes/EpisodeListItem';
 import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
 import SimilarEpisodesDialog from '../components/episodes/SimilarEpisodesDialog';
 import { useHealthEpisodes } from '../hooks/useHealthEpisodes';
 import { useEpisodeStorageSize } from '../hooks/useEpisodeStorageSize';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useHealthData } from '../hooks/useHealthData';
 import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters';
 import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
-import type { PetProfile } from '../types';
-import type { MedicationRecord, VetVisitRecord } from '../types/dogHealth';
 
 export default function EpisodeDiaryPage() {
   const navigate = useNavigate();
 
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
+  const { profiles } = usePetProfiles();
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
-  const [medications] = useLocalStorage<MedicationRecord[]>('dog-health-medications', []);
-  const [vetVisits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
+  const { medications, visits: vetVisits } = useHealthData();
 
   const { episodes, byDog, add, update, remove } = useHealthEpisodes();
   const dogEpisodes = byDog(selectedDogId);
@@ -83,14 +81,14 @@ export default function EpisodeDiaryPage() {
     );
   }
 
-  const handleSave = (
+  const handleSave = async (
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>,
     id?: string
   ) => {
     if (id) {
-      update(id, payload);
+      await update(id, payload);
     } else {
-      add(payload);
+      await add(payload);
     }
     setFormOpen(false);
     setEditing(undefined);
@@ -118,30 +116,72 @@ export default function EpisodeDiaryPage() {
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        spacing={2}
-        sx={{ mb: 3 }}
+      <Box
+        sx={{
+          mb: 2.5,
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 4,
+          bgcolor: (theme) =>
+            theme.palette.mode === 'light'
+              ? 'rgba(15, 76, 92, 0.05)'
+              : 'rgba(111, 190, 209, 0.10)',
+          border: (theme) =>
+            `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
+          p: { xs: 2, md: 2.5 },
+        }}
       >
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flex: 1 }}>
-          <MenuBookIcon color="primary" />
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Denník epizód
-          </Typography>
-        </Stack>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setEditing(undefined);
-            setFormOpen(true);
-          }}
-          disabled={!selectedDogId}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={2}
         >
-          Nová epizóda
-        </Button>
-      </Stack>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
+              flexShrink: 0,
+            }}
+          >
+            <MenuBookIcon />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                fontWeight: 700,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Denník epizód
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
+              Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš
+              overené riešenie.
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setEditing(undefined);
+              setFormOpen(true);
+            }}
+            disabled={!selectedDogId}
+          >
+            Nová epizóda
+          </Button>
+        </Stack>
+      </Box>
 
       <Card sx={{ mb: 2 }}>
         <CardContent>
@@ -190,30 +230,30 @@ export default function EpisodeDiaryPage() {
       />
 
       {dogEpisodes.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <EventBusyIcon sx={{ fontSize: 80, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-            Zatiaľ žiadne epizódy
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte
-            overené riešenie.
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setEditing(undefined);
-              setFormOpen(true);
+        <Box sx={{ pt: 2 }}>
+          <EmptyState
+            icon={<EventBusyIcon />}
+            title="Zatiaľ žiadne epizódy"
+            description="Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte overené riešenie."
+            primaryAction={{
+              label: 'Pridať prvú epizódu',
+              icon: <AddIcon />,
+              onClick: () => {
+                setEditing(undefined);
+                setFormOpen(true);
+              },
             }}
-          >
-            Pridať prvú epizódu
-          </Button>
+          />
         </Box>
       ) : filtered.length === 0 ? (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Žiadne epizódy nezodpovedajú aktuálnym filtrom.
-        </Alert>
+        <Box sx={{ pt: 2 }}>
+          <EmptyState
+            icon={<EventBusyIcon />}
+            title="Žiadne epizódy v aktuálnom filtri"
+            description="Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
+            variant="inline"
+          />
+        </Box>
       ) : (
         <Box>
           {filtered.map((episode) => (

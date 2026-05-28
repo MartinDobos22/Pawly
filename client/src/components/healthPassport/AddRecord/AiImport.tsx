@@ -13,6 +13,7 @@ interface AiImportContextValue {
   addAttachments: (files: File[]) => Promise<void>;
   removeAttachment: (id: string) => void;
   clearAttachments: () => void;
+  restartUpload: () => void;
   setAttachmentLabel: (value: string) => void;
   setMainCategory: (value: string) => void;
   setSubcategory: (value: string) => void;
@@ -52,6 +53,7 @@ export default function AiImportProvider({
     addAttachments,
     removeAttachment,
     clearAttachments,
+    restartUpload,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,
@@ -64,7 +66,6 @@ export default function AiImportProvider({
   } = useAiImportInternal(dogId);
 
   const submit = () => {
-    if (!state.visitDraft.clinicName.trim()) return;
     const bundle = buildBundle({ dogId });
     onSave(bundle);
     reset();
@@ -78,6 +79,7 @@ export default function AiImportProvider({
     addAttachments,
     removeAttachment,
     clearAttachments,
+    restartUpload,
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,

@@ -1,17 +1,10 @@
-import {
-  Box,
-  Card,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { InfoOutlined as InfoIcon } from '@mui/icons-material';
 
 import { VISIT_CATEGORY_OPTIONS } from '../../constants';
 import type { ErrorMap, VisitBasicsValues } from '../formTypes';
+import SectionCard from './SectionCard';
+import DateField from '../../../DateField';
 
 interface VisitBasicsProps {
   values: VisitBasicsValues;
@@ -24,22 +17,16 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
     VISIT_CATEGORY_OPTIONS.find((opt) => opt.main === values.mainCategory)?.sub ?? [];
 
   return (
-    <Card sx={{ p: 2 }}>
-      <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-        Základné info
-      </Typography>
+    <SectionCard title="Základné info" icon={<InfoIcon />}>
       <Stack spacing={1.5}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-          <TextField
-            size="small"
-            type="date"
+          <DateField
             label="Dátum"
-            InputLabelProps={{ shrink: true }}
             value={values.date}
-            onChange={(e) => onChange('date', e.target.value)}
+            onChange={(v) => onChange('date', v)}
             error={Boolean(errors['basics.date'])}
             helperText={errors['basics.date']}
-            fullWidth
+            sx={{ width: { xs: '100%', sm: 200 } }}
           />
           <TextField
             size="small"
@@ -54,7 +41,8 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
         </Stack>
         <TextField
           size="small"
-          label="Dôvod návštevy / poznámka"
+          label="Stručný popis návštevy"
+          placeholder="napr. preventívna prehliadka, akútne vracanie…"
           value={values.reason}
           onChange={(e) => onChange('reason', e.target.value)}
           fullWidth
@@ -99,6 +87,6 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
           </FormControl>
         </Box>
       </Stack>
-    </Card>
+    </SectionCard>
   );
 }

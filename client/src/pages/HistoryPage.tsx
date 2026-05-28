@@ -14,24 +14,26 @@ import {
   Delete as DeleteIcon,
   HistoryToggleOff as EmptyIcon,
 } from '@mui/icons-material';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useNavigate } from 'react-router-dom';
+import { useHealthData } from '../hooks/useHealthData';
 import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
-import type { SavedAnalysis } from '../types';
+import EmptyState from '../components/EmptyState';
 
 export default function HistoryPage() {
-  const [savedAnalyses, setSavedAnalyses] = useLocalStorage<SavedAnalysis[]>('granule-check-history', []);
+  const { savedAnalyses, removeSavedAnalysis, clearSavedAnalyses } = useHealthData();
   const [expanded, setExpanded] = useState<string | false>(false);
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleDelete = (id: string) => {
-    setSavedAnalyses((prev) => prev.filter((a) => a.id !== id));
+    void removeSavedAnalysis(id);
     if (expanded === id) setExpanded(false);
   };
 
   const handleClearAll = () => {
-    setSavedAnalyses([]);
+    void clearSavedAnalyses();
     setExpanded(false);
   };
 
@@ -47,14 +49,13 @@ export default function HistoryPage() {
 
   if (savedAnalyses.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 8 }}>
-        <EmptyIcon sx={{ fontSize: 80, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-          Žiadna história
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule a uložte výsledok.
-        </Typography>
+      <Box sx={{ pt: 4 }}>
+        <EmptyState
+          icon={<EmptyIcon />}
+          title="Žiadna história"
+          description="Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem."
+          primaryAction={{ label: 'Spustiť analýzu', onClick: () => navigate('/analyza') }}
+        />
       </Box>
     );
   }
@@ -77,7 +78,7 @@ export default function HistoryPage() {
           onChange={(_e, isExpanded) => setExpanded(isExpanded ? item.id : false)}
           sx={{
             mb: 1.5,
-            borderRadius: '12px !important',
+            borderRadius: '8px !important',
             '&:before': { display: 'none' },
             boxShadow: theme.shadows[1],
           }}
@@ -131,7 +132,11 @@ export default function HistoryPage() {
             </Box>
           </AccordionSummary>
           <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 0 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: 'italic', whiteSpace: 'pre-wrap' }}
+            >
               {item.composition}
             </Typography>
             <ScoreCard score={item.result.score} summary={item.result.summary} />

@@ -17,6 +17,7 @@ import type { AiDetectedDraftRecord, AiDetectedRecordType } from '../hpTypes';
 interface AiRecordsReviewProps {
   records: AiDetectedDraftRecord[];
   onChange: (id: string, patch: Partial<AiDetectedDraftRecord>) => void;
+  hasProfileData?: boolean;
 }
 
 const TARGET_LABEL: Record<AiDetectedRecordType, string> = {
@@ -43,11 +44,17 @@ const CONFIDENCE_LABEL: Record<AiDetectedDraftRecord['sourceConfidence'], string
   low: 'Nízka',
 };
 
-export default function AiRecordsReview({ records, onChange }: AiRecordsReviewProps) {
+export default function AiRecordsReview({
+  records,
+  onChange,
+  hasProfileData,
+}: AiRecordsReviewProps) {
   if (records.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
-        Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.
+        {hasProfileData
+          ? 'AI nenašla očkovania ani úkony, no navrhla údaje do profilu (vyššie). Môžeš pokračovať a uložiť dokument.'
+          : 'Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.'}
       </Typography>
     );
   }

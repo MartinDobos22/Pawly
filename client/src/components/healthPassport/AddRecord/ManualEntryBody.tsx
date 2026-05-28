@@ -44,6 +44,7 @@ export default function ManualEntryBody() {
       <LinkedRecords
         values={state.linked}
         errors={errors}
+        baseDate={state.basics.date}
         expanded={linkedOpen}
         onExpand={setLinkedOpen}
         dispatch={dispatch}

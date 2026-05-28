@@ -7,11 +7,16 @@ import {
   DialogTitle,
   IconButton,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
+  alpha,
+  useTheme,
 } from '@mui/material';
-import { AutoAwesome as AiIcon, Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
+import {
+  AutoAwesome as AiIcon,
+  Bolt as BoltIcon,
+  Close as CloseIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
 
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
 import ManualEntryProvider from './ManualEntry';
@@ -20,8 +25,9 @@ import ManualEntryFooter from './ManualEntryFooter';
 import AiImportProvider from './AiImport';
 import AiImportBody from './AiImportBody';
 import AiImportFooter from './AiImportFooter';
+import QuickEntryProvider, { QuickEntryBody, QuickEntryFooter } from './QuickEntry';
 
-type Mode = 'MANUAL' | 'AI';
+type Mode = 'QUICK' | 'MANUAL' | 'AI';
 
 interface AddRecordProps {
   open: boolean;
@@ -31,29 +37,84 @@ interface AddRecordProps {
   onSave: (bundle: VisitBundle) => void;
 }
 
+type ModeIcon = typeof EditIcon;
+
 function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => void }) {
+  const theme = useTheme();
+  const tabs: { value: Mode; label: string; icon: ModeIcon }[] = [
+    { value: 'QUICK', label: 'Rýchly', icon: BoltIcon },
+    { value: 'MANUAL', label: 'Manuálna návšteva', icon: EditIcon },
+    { value: 'AI', label: 'Z dokumentu (AI)', icon: AiIcon },
+  ];
+
   return (
-    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-      <ToggleButtonGroup
-        value={mode}
-        exclusive
-        color="primary"
-        size="small"
-        onChange={(_, next: Mode | null) => {
-          if (next) onChange(next);
+    <Box sx={{ mb: 2.5, display: 'flex', justifyContent: 'center' }}>
+      <Box
+        role="tablist"
+        sx={{
+          display: 'flex',
+          width: '100%',
+          maxWidth: 440,
+          p: 0.5,
+          gap: 0.5,
+          borderRadius: 999,
+          bgcolor: alpha(theme.palette.text.primary, 0.04),
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <ToggleButton value="MANUAL">
-          <EditIcon sx={{ fontSize: 16, mr: 0.75 }} />
-          Manuálne
-        </ToggleButton>
-        <ToggleButton value="AI">
-          <AiIcon sx={{ fontSize: 16, mr: 0.75 }} />Z dokumentu
-        </ToggleButton>
-      </ToggleButtonGroup>
+        {tabs.map(({ value, label, icon: Icon }) => {
+          const active = mode === value;
+          return (
+            <Box
+              key={value}
+              role="tab"
+              aria-selected={active}
+              component="button"
+              type="button"
+              onClick={() => onChange(value)}
+              sx={{
+                flex: '1 1 0',
+                minWidth: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                gap: 0.5,
+                px: { xs: 0.75, sm: 2 },
+                py: 0.75,
+                borderRadius: 999,
+                border: 'none',
+                cursor: 'pointer',
+                font: 'inherit',
+                fontSize: { xs: '0.72rem', sm: '0.85rem' },
+                fontWeight: 600,
+                lineHeight: 1.15,
+                color: active ? 'primary.contrastText' : 'text.secondary',
+                bgcolor: active ? 'primary.main' : 'transparent',
+                boxShadow: active ? '0 2px 6px rgba(15,76,92,0.18)' : 'none',
+                transition: 'background-color 150ms ease, color 150ms ease',
+                '&:hover': active ? {} : { color: 'text.primary' },
+                '&:focus-visible': {
+                  outline: `2px solid ${theme.palette.primary.main}`,
+                  outlineOffset: 2,
+                },
+              }}
+            >
+              <Icon sx={{ fontSize: 16, display: { xs: 'none', sm: 'block' }, flexShrink: 0 }} />
+              {label}
+            </Box>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
+
+const subtitleFor = (mode: Mode): string => {
+  if (mode === 'QUICK') return 'Rýchle zalogovanie jedného typu záznamu (bez detailov o návšteve).';
+  if (mode === 'MANUAL') return 'Vyplň formulár návštevy veterinára manuálne.';
+  return 'AI extrahuje vakcinácie a záznamy z nahraných dokumentov.';
+};
 
 export default function AddRecord({
   open,
@@ -62,10 +123,10 @@ export default function AddRecord({
   onClose,
   onSave,
 }: AddRecordProps) {
-  const [mode, setMode] = useState<Mode>('MANUAL');
+  const [mode, setMode] = useState<Mode>('QUICK');
 
   const handleClose = () => {
-    setMode('MANUAL');
+    setMode('QUICK');
     onClose();
   };
 
@@ -82,7 +143,7 @@ export default function AddRecord({
             Pridať záznam
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Manuálne vyplň formulár alebo nahraj dokument na AI extrakciu.
+            {subtitleFor(mode)}
           </Typography>
         </Box>
         <IconButton onClick={handleClose} size="small" aria-label="Zavrieť">
@@ -94,7 +155,24 @@ export default function AddRecord({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      {mode === 'MANUAL' ? (
+      {mode === 'QUICK' && (
+        <QuickEntryProvider
+          dogId={dogId}
+          currentDietEntryId={currentDietEntryId}
+          onSave={handleSave}
+          onCancel={handleClose}
+        >
+          {dialogTitle}
+          <DialogContent dividers>
+            <ModeToggle mode={mode} onChange={setMode} />
+            <QuickEntryBody />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <QuickEntryFooter />
+          </DialogActions>
+        </QuickEntryProvider>
+      )}
+      {mode === 'MANUAL' && (
         <ManualEntryProvider
           dogId={dogId}
           currentDietEntryId={currentDietEntryId}
@@ -110,7 +188,8 @@ export default function AddRecord({
             <ManualEntryFooter />
           </DialogActions>
         </ManualEntryProvider>
-      ) : (
+      )}
+      {mode === 'AI' && (
         <AiImportProvider dogId={dogId} onSave={handleSave} onCancel={handleClose}>
           {dialogTitle}
           <DialogContent dividers>

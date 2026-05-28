@@ -9,6 +9,9 @@ export interface PetProfile {
   animalType: AnimalType;
   breed?: string;
   dateOfBirth?: string;
+  dateOfBirthPrecision?: 'year' | 'year-month' | 'full';
+  birthYear?: number;
+  birthMonth?: number;
   sex?: 'MALE' | 'FEMALE' | 'UNKNOWN';
   ageYears?: number;
   ageMonths?: number;
@@ -88,14 +91,17 @@ export interface FileExtractionResult {
   healthPassportInterpretation?: {
     summary: string;
     aiUnderstanding: string;
-    vaccinations: Array<{
-      disease: string;
-      vaccineName: string;
-      dateAdministered: string;
+    records: Array<{
+      type: 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION' | 'NOTE';
+      name: string;
+      disease?: string;
+      date: string;
       validUntil?: string;
       batchNumber?: string;
-      veterinarian?: string;
+      dose?: string;
+      frequency?: string;
       manufacturer?: string;
+      veterinarian?: string;
       confidence: 'high' | 'medium' | 'low';
       notes?: string;
     }>;
@@ -140,4 +146,16 @@ export interface SavedAnalysis {
 export interface ApiError {
   error: { message: string; code?: string };
   status?: number;
+}
+
+export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
+
+export interface FoodSafetyResult {
+  query: string;
+  verdict: FoodSafetyVerdict;
+  shortAnswer: string;
+  explanation: string;
+  alternatives?: string[];
+  warnings?: string[];
+  source: 'openai' | 'mock';
 }

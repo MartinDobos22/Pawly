@@ -1,34 +1,25 @@
+import { useMemo, useState } from 'react';
 import {
-  Alert,
   Box,
+  Button,
   Chip,
   IconButton,
   InputAdornment,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
-  Tooltip,
   Typography,
+  alpha,
+  useTheme,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   PictureAsPdf as PdfIcon,
-  OpenInNew as OpenIcon,
   Clear as ClearIcon,
+  ChevronRight as ChevronIcon,
+  TuneOutlined as TuneIcon,
 } from '@mui/icons-material';
-import { useMemo, useState } from 'react';
 import type { TimelineEvent } from '../../types/dogHealth';
-import {
-  TIMELINE_FILTER_OPTIONS,
-  TIMELINE_ICON_MAP,
-  TIMELINE_TYPE_META,
-} from './constants.ts';
-import { formatDate } from './utils.ts';
+import { TIMELINE_FILTER_OPTIONS, TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 
 interface HealthTimelineProps {
   timeline: TimelineEvent[];
@@ -36,36 +27,118 @@ interface HealthTimelineProps {
   onExportPdf: () => void;
 }
 
-export default function HealthTimeline({ timeline, onOpenDetail, onExportPdf }: HealthTimelineProps) {
-  const [filter, setFilter] = useState<'ALL' | TimelineEvent['type']>('ALL');
+type SelectableType = TimelineEvent['type'];
+
+const dayKey = (iso: string) => iso.slice(0, 10);
+
+const formatDayHeader = (iso: string) => {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString('sk-SK', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+const weekdayName = (iso: string) => {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('sk-SK', { weekday: 'long' });
+};
+
+const dayDiffFromToday = (iso: string) => {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return Number.NaN;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  return Math.round((date.getTime() - today.getTime()) / 86_400_000);
+};
+
+const dayMeta = (iso: string) => {
+  const diff = dayDiffFromToday(iso);
+  if (Number.isNaN(diff)) return null;
+  if (diff === 0) return { label: 'Dnes', tone: 'today' as const };
+  if (diff === -1) return { label: 'Včera', tone: 'recent' as const };
+  if (diff > 0 && diff < 14) return { label: `o ${diff} dní`, tone: 'future' as const };
+  return null;
+};
+
+export default function HealthTimeline({
+  timeline,
+  onOpenDetail,
+  onExportPdf,
+}: HealthTimelineProps) {
+  const theme = useTheme();
+  const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
 
+  const toggleType = (type: SelectableType | 'ALL') => {
+    if (type === 'ALL') {
+      setSelected(new Set());
+      return;
+    }
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) next.delete(type);
+      else next.add(type);
+      return next;
+    });
+  };
+
+  const clearFilters = () => setSelected(new Set());
+
   const visible = useMemo(() => {
-    return (filter === 'ALL' ? timeline : timeline.filter((x) => x.type === filter)).filter((x) =>
-      `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(search.trim().toLowerCase()),
-    );
-  }, [timeline, filter, search]);
+    const q = search.trim().toLowerCase();
+    return timeline
+      .filter((x) => (selected.size === 0 ? true : selected.has(x.type)))
+      .filter((x) => (q ? `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(q) : true))
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [timeline, selected, search]);
+
+  const groups = useMemo(() => {
+    const map = new Map<string, TimelineEvent[]>();
+    for (const e of visible) {
+      const k = dayKey(e.date);
+      const list = map.get(k);
+      if (list) list.push(e);
+      else map.set(k, [e]);
+    }
+    return Array.from(map.entries());
+  }, [visible]);
+
+  const isAllActive = selected.size === 0;
+  const railColor = alpha(theme.palette.primary.main, 0.18);
 
   return (
     <Box>
-      {/* Header row */}
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        justifyContent="space-between"
-        gap={1.5}
-        sx={{ mb: 2 }}
+      <Box
+        sx={{
+          mb: 2,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          columnGap: 2,
+          rowGap: 1.5,
+        }}
       >
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>Timeline</Typography>
+        <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
+          <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
+            Timeline
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             Chronologický prehľad zdravotnej histórie
           </Typography>
         </Box>
-        <Stack direction="row" gap={1}>
+        <Stack
+          direction="row"
+          gap={1}
+          sx={{ flex: '1 1 320px', minWidth: 0, alignItems: 'center', justifyContent: 'flex-end' }}
+        >
           <TextField
-            size="small"
-            placeholder="Hľadať…"
+            placeholder="Hľadať v zdravotnom zázname…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             InputProps={{
@@ -76,26 +149,53 @@ export default function HealthTimeline({ timeline, onOpenDetail, onExportPdf }: 
               ),
               endAdornment: search ? (
                 <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setSearch('')}>
+                  <IconButton
+                    size="small"
+                    aria-label="Vyčistiť vyhľadávanie"
+                    onClick={() => setSearch('')}
+                  >
                     <ClearIcon sx={{ fontSize: 16 }} />
                   </IconButton>
                 </InputAdornment>
               ) : null,
             }}
-            sx={{ width: { xs: '100%', sm: 220 } }}
+            sx={{ flex: 1, minWidth: 0 }}
           />
-          <Tooltip title="Exportovať PDF">
-            <IconButton onClick={onExportPdf} size="small" sx={{ border: '1px solid', borderColor: 'divider' }}>
-              <PdfIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
+          <Button
+            variant="outlined"
+            startIcon={<PdfIcon sx={{ fontSize: 18 }} />}
+            onClick={onExportPdf}
+            aria-label="Exportovať timeline do PDF"
+            sx={{ flexShrink: 0 }}
+          >
+            Export PDF
+          </Button>
         </Stack>
-      </Stack>
+      </Box>
 
-      {/* Filter chips */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }}>
-        {TIMELINE_FILTER_OPTIONS.map((opt) => {
-          const isActive = filter === opt.value;
+      <Stack
+        direction="row"
+        alignItems="center"
+        gap={0.75}
+        sx={{
+          mb: 2.5,
+          pb: 1.5,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          flexWrap: 'wrap',
+          rowGap: 0.75,
+        }}
+      >
+        <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
+        <Chip
+          label="Všetko"
+          size="small"
+          clickable
+          variant={isAllActive ? 'filled' : 'outlined'}
+          color={isAllActive ? 'primary' : 'default'}
+          onClick={() => toggleType('ALL')}
+        />
+        {TIMELINE_FILTER_OPTIONS.filter((o) => o.value !== 'ALL').map((opt) => {
+          const isActive = selected.has(opt.value as SelectableType);
           return (
             <Chip
               key={opt.value}
@@ -104,69 +204,191 @@ export default function HealthTimeline({ timeline, onOpenDetail, onExportPdf }: 
               clickable
               variant={isActive ? 'filled' : 'outlined'}
               color={isActive ? 'primary' : 'default'}
-              onClick={() => setFilter(opt.value)}
+              onClick={() => toggleType(opt.value as SelectableType)}
             />
           );
         })}
-      </Box>
+        {selected.size > 0 && (
+          <Button
+            size="small"
+            onClick={clearFilters}
+            sx={{ ml: 0.5, color: 'text.secondary', minHeight: 28 }}
+          >
+            Vymazať filtre
+          </Button>
+        )}
+      </Stack>
 
-      {/* Table */}
-      {visible.length === 0 ? (
-        <Alert severity="info">
-          Nenašli sa žiadne záznamy pre zvolený filter.
-        </Alert>
+      {groups.length === 0 ? (
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 6,
+            color: 'text.secondary',
+            border: `1px dashed ${theme.palette.divider}`,
+            borderRadius: 3,
+          }}
+        >
+          <Typography variant="body2">Žiadne záznamy pre zvolený filter.</Typography>
+        </Box>
       ) : (
-        <TableContainer sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow sx={{ bgcolor: 'action.hover' }}>
-                <TableCell sx={{ width: { xs: 110, md: 140 } }}>Dátum</TableCell>
-                <TableCell sx={{ width: { xs: 130, md: 160 } }}>Typ</TableCell>
-                <TableCell>Detail</TableCell>
-                <TableCell align="right" sx={{ width: 56 }} />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {visible.map((event) => {
-                const meta = TIMELINE_TYPE_META[event.type];
-                return (
-                  <TableRow
-                    key={event.id}
-                    hover
-                    onClick={() => onOpenDetail(event)}
-                    sx={{ cursor: 'pointer', '&:last-child td': { border: 0 } }}
-                  >
-                    <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
-                      {formatDate(event.date)}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        icon={TIMELINE_ICON_MAP[event.type]}
-                        label={meta.label}
-                        size="small"
-                        color={meta.color}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {event.title}
-                      </Typography>
-                      {event.subtitle && (
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                          {event.subtitle}
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell align="right">
-                      <OpenIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box
+          sx={{
+            position: 'relative',
+            pl: { xs: 3.25, md: 4 },
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              left: { xs: 10, md: 14 },
+              top: 8,
+              bottom: 8,
+              width: 2,
+              bgcolor: railColor,
+              borderRadius: 2,
+            },
+          }}
+        >
+          {groups.map(([day, events]) => {
+            const meta = dayMeta(day);
+            return (
+              <Box key={day} sx={{ position: 'relative', mb: 3 }}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: { xs: -22, md: -27 },
+                    top: 2,
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    bgcolor: 'background.paper',
+                    border: `2px solid ${theme.palette.primary.main}`,
+                    boxShadow:
+                      meta?.tone === 'today'
+                        ? `0 0 0 4px ${alpha(theme.palette.primary.main, 0.18)}`
+                        : 'none',
+                  }}
+                />
+                <Stack direction="row" alignItems="baseline" gap={1} sx={{ mb: 1 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                    {formatDayHeader(day)}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {weekdayName(day)}
+                  </Typography>
+                  {meta && (
+                    <Chip
+                      label={meta.label}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: '0.7rem',
+                        bgcolor:
+                          meta.tone === 'today'
+                            ? alpha(theme.palette.primary.main, 0.14)
+                            : alpha(theme.palette.text.secondary, 0.08),
+                        color: meta.tone === 'today' ? 'primary.main' : 'text.secondary',
+                        fontWeight: 600,
+                      }}
+                    />
+                  )}
+                </Stack>
+
+                <Stack spacing={1}>
+                  {events.map((event) => {
+                    const typeMeta = TIMELINE_TYPE_META[event.type];
+                    return (
+                      <Box
+                        key={event.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => onOpenDetail(event)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onOpenDetail(event);
+                          }
+                        }}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          p: 1.25,
+                          borderRadius: 2.5,
+                          border: `1px solid ${theme.palette.divider}`,
+                          bgcolor: 'background.paper',
+                          cursor: 'pointer',
+                          transition:
+                            'border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease',
+                          '&:hover': {
+                            borderColor: alpha(theme.palette.primary.main, 0.4),
+                            boxShadow: '0 4px 12px rgba(15,76,92,0.08)',
+                          },
+                          '&:focus-visible': {
+                            outline: `2px solid ${theme.palette.primary.main}`,
+                            outlineOffset: 2,
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 2,
+                            bgcolor: alpha(theme.palette.primary.main, 0.08),
+                            color: 'primary.main',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {TIMELINE_ICON_MAP[event.type]}
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.25 }}>
+                            <Chip
+                              label={typeMeta.label}
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                height: 20,
+                                fontSize: '0.68rem',
+                                fontWeight: 600,
+                                borderColor: alpha(theme.palette.primary.main, 0.25),
+                                color: 'primary.main',
+                              }}
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600, color: 'text.primary' }}
+                              noWrap
+                            >
+                              {event.title}
+                            </Typography>
+                          </Stack>
+                          {event.subtitle && (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: 'text.secondary',
+                                letterSpacing: 0,
+                                textTransform: 'none',
+                              }}
+                              noWrap
+                            >
+                              {event.subtitle}
+                            </Typography>
+                          )}
+                        </Box>
+                        <ChevronIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              </Box>
+            );
+          })}
+        </Box>
       )}
     </Box>
   );

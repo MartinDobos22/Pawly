@@ -1,6 +1,7 @@
 import { Stack, TextField } from '@mui/material';
 
 import type { MedicationFieldsValues } from '../../formTypes';
+import DateField from '../../../../DateField';
 
 interface MedicationFieldsProps {
   values: MedicationFieldsValues;
@@ -42,13 +43,10 @@ export default function MedicationFields({ values, errorName, onChange }: Medica
           onChange={(e) => onChange('frequency', e.target.value)}
           fullWidth
         />
-        <TextField
-          size="small"
-          type="date"
+        <DateField
           label="Koniec liečby"
-          InputLabelProps={{ shrink: true }}
           value={values.endDate}
-          onChange={(e) => onChange('endDate', e.target.value)}
+          onChange={(v) => onChange('endDate', v)}
           fullWidth
         />
       </Stack>

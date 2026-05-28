@@ -1,30 +1,22 @@
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
-import { Print as PrintIcon } from '@mui/icons-material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { PetProfile } from '../types';
+import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useHealthData } from '../hooks/useHealthData';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
-import ExportSectionsToolbar, {
+import {
   DEFAULT_EXPORT_SECTIONS,
   type ExportSectionsState,
 } from '../components/vetCard/ExportSectionsToolbar';
-import VetCardHeader from '../components/vetCard/VetCardHeader';
+import DocumentIdentityBlock from '../components/vetCard/DocumentIdentityBlock';
+import HealthProfileChips from '../components/vetCard/HealthProfileChips';
+import VetCardActionBar from '../components/vetCard/VetCardActionBar';
 import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
-import HealthProfileCard from '../components/vetCard/HealthProfileCard';
 import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
 import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
-import type {
-  DewormingRecord,
-  DietEntry,
-  EctoparasiteRecord,
-  MedicationRecord,
-  TimelineEvent,
-  VaccinationRecord,
-  VetVisitRecord,
-} from '../types/dogHealth';
+import type { TimelineEvent } from '../types/dogHealth';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const formatDate = (value?: string) => {
@@ -344,13 +336,8 @@ function statusBadge(date: string | undefined, soonDays = 30): { cls: string; la
 }
 
 export default function VetCardPage() {
-  const [profiles] = useLocalStorage<PetProfile[]>('granule-check-pet-profiles', []);
-  const [vaccinations] = useLocalStorage<VaccinationRecord[]>('dog-health-vaccinations', []);
-  const [dewormings] = useLocalStorage<DewormingRecord[]>('dog-health-dewormings', []);
-  const [ectos] = useLocalStorage<EctoparasiteRecord[]>('dog-health-ectos', []);
-  const [visits] = useLocalStorage<VetVisitRecord[]>('dog-health-visits', []);
-  const [medications] = useLocalStorage<MedicationRecord[]>('dog-health-medications', []);
-  const [dietEntries] = useLocalStorage<DietEntry[]>('dog-health-diet-entries', []);
+  const { profiles } = usePetProfiles();
+  const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
@@ -389,8 +376,7 @@ export default function VetCardPage() {
 
     const significantVisits = dogVisits
       .filter((x) => x.diagnosis || x.findings || x.recommendations || x.aiExtractedText)
-      .sort((a, b) => b.date.localeCompare(a.date))
-      .slice(0, 5);
+      .sort((a, b) => b.date.localeCompare(a.date));
 
     const timeline: TimelineEvent[] = [
       ...dogVaccines.map((x) => ({
@@ -913,7 +899,7 @@ export default function VetCardPage() {
   }
 
   <footer class="doc-foot">
-    GranuleCheck · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
+    Pawport · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
   </footer>
 
 </div>
@@ -1008,66 +994,57 @@ export default function VetCardPage() {
     });
 
   return (
-    <Stack spacing={1.5}>
-      <VetCardHeader
-        dog={dog}
-        dogProfiles={dogProfiles}
-        selectedDogId={selectedDogId}
-        onSelectDog={setSelectedDogId}
+    <Box>
+      <VetCardActionBar
+        exportSections={exportSections}
+        onChangeSections={setExportSections}
+        onExportPdf={handlePrint}
+        onPrintPreview={() => window.print()}
       />
 
-      <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={1.5}
+      <Stack spacing={1.5}>
+        <DocumentIdentityBlock
+          dog={dog}
+          dogProfiles={dogProfiles}
+          selectedDogId={selectedDogId}
+          onSelectDog={setSelectedDogId}
+        />
+
+        <HealthProfileChips dog={dog} />
+
+        <VetCardStatusOverview
+          rabies={rabiesStatus}
+          combined={combinedStatus}
+          deworming={dewormingStatus}
+          ecto={ectoStatus}
+        />
+
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
+            gap: 1.5,
+            alignItems: 'start',
+          }}
         >
-          <ExportSectionsToolbar value={exportSections} onChange={setExportSections} />
-          <Button
-            variant="contained"
-            onClick={handlePrint}
-            startIcon={<PrintIcon />}
-            disabled={!Object.values(exportSections).some(Boolean)}
-          >
-            Export PDF
-          </Button>
-        </Stack>
-      </Card>
-
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
-          gap: 1.5,
-        }}
-      >
-        <Stack spacing={1.5}>
-          <VetCardStatusOverview
-            rabies={rabiesStatus}
-            combined={combinedStatus}
-            deworming={dewormingStatus}
-            ecto={ectoStatus}
-          />
           <PreventiveCareCard items={preventiveItems} />
-          <RecentVisitsCard visits={data.significantVisits} />
-          <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
-            <ClinicalHistory timeline={data.timeline} />
-          </Card>
-        </Stack>
-        <Stack spacing={1.5}>
-          <HealthProfileCard dog={dog} />
           <ActiveMedicationsCard medications={data.activeMeds} />
-        </Stack>
-      </Box>
+        </Box>
 
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ textAlign: 'center', display: 'block', py: 2 }}
-      >
-        GranuleCheck · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
-      </Typography>
-    </Stack>
+        <RecentVisitsCard visits={data.significantVisits} />
+
+        <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
+          <ClinicalHistory timeline={data.timeline} />
+        </Card>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ textAlign: 'center', display: 'block', py: 2 }}
+        >
+          Pawport · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
+        </Typography>
+      </Stack>
+    </Box>
   );
 }

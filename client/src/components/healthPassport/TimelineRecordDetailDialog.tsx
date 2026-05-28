@@ -284,7 +284,7 @@ export default function TimelineRecordDetailDialog({
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
         {meta2 && (
-          <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: alpha(meta2.hex, 0.12), color: meta2.hex, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box sx={{ width: 36, height: 36, borderRadius: 1.5, bgcolor: alpha(meta2.hex, 0.12), color: meta2.hex, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {TIMELINE_ICON_MAP[state.type as keyof typeof TIMELINE_ICON_MAP]}
           </Box>
         )}

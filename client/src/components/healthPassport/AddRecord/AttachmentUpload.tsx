@@ -1,20 +1,13 @@
 import { useId, useRef } from 'react';
-import {
-  Alert,
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import {
   AttachFile as AttachFileIcon,
   Close as CloseIcon,
+  PhotoLibrary as PhotoLibraryIcon,
   UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
-import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
+import { MAX_FILE_SIZE_BYTES } from '../constants';
 import type { AiAttachmentEntry } from './formTypes';
 
 interface AttachmentUploadProps {
@@ -42,10 +35,11 @@ export default function AttachmentUpload({
   onAddFiles,
   onRemove,
 }: AttachmentUploadProps) {
-  const inputId = useId();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const imageInputId = useId();
+  const fileInputId = useId();
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePick = () => inputRef.current?.click();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = '';
@@ -67,11 +61,20 @@ export default function AttachmentUpload({
       />
 
       <input
-        ref={inputRef}
-        id={inputId}
+        ref={imageInputRef}
+        id={imageInputId}
         type="file"
         multiple
-        accept={SUPPORTED_FILE_TYPES.join(',')}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleChange}
+      />
+      <input
+        ref={fileInputRef}
+        id={fileInputId}
+        type="file"
+        multiple
+        accept="application/pdf"
         style={{ display: 'none' }}
         onChange={handleChange}
       />
@@ -79,13 +82,25 @@ export default function AttachmentUpload({
       <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
         <Button
           variant="outlined"
-          startIcon={<UploadFileIcon />}
-          onClick={handlePick}
+          startIcon={<PhotoLibraryIcon />}
+          onClick={() => imageInputRef.current?.click()}
           disabled={limitReached}
         >
-          {attachments.length === 0 ? 'Vybrať strany pasu' : 'Pridať ďalšie strany'}
+          Fotka / galéria
         </Button>
-        <Typography variant="caption" color="text.secondary">
+        <Button
+          variant="outlined"
+          startIcon={<UploadFileIcon />}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={limitReached}
+        >
+          PDF / súbor
+        </Button>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ textTransform: 'none', letterSpacing: 0, fontSize: '0.75rem', fontWeight: 400 }}
+        >
           {attachments.length} / {maxFiles} strán
         </Typography>
       </Stack>
@@ -112,7 +127,16 @@ export default function AttachmentUpload({
                   <Typography variant="body2" sx={{ fontWeight: 500 }} noWrap>
                     Strana {index + 1} · {entry.file.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{
+                      textTransform: 'none',
+                      letterSpacing: 0,
+                      fontSize: '0.75rem',
+                      fontWeight: 400,
+                    }}
+                  >
                     {formatBytes(entry.file.size)}
                   </Typography>
                 </Box>
@@ -132,7 +156,11 @@ export default function AttachmentUpload({
       {error ? (
         <Alert severity="warning">{error}</Alert>
       ) : (
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ textTransform: 'none', letterSpacing: 0, fontSize: '0.75rem', fontWeight: 400 }}
+        >
           Podporované formáty: PDF, JPEG, PNG, WebP. Max{' '}
           {Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024))} MB per stranu, max {maxFiles} strán.
         </Typography>

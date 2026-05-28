@@ -2,14 +2,21 @@ import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mu
 
 import type { EctoparasiteRecord } from '../../../../../types/dogHealth';
 import type { EctoFieldsValues } from '../../formTypes';
+import { formatDate, plusDays } from '../../../utils';
 
 interface EctoFieldsProps {
   values: EctoFieldsValues;
+  baseDate: string;
   errorProduct?: string;
   onChange: <K extends keyof EctoFieldsValues>(field: K, value: EctoFieldsValues[K]) => void;
 }
 
-export default function EctoFields({ values, errorProduct, onChange }: EctoFieldsProps) {
+export default function EctoFields({ values, baseDate, errorProduct, onChange }: EctoFieldsProps) {
+  const nextDue =
+    baseDate && values.intervalDays > 0
+      ? formatDate(plusDays(baseDate, values.intervalDays))
+      : '—';
+
   return (
     <Stack spacing={1.5}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
@@ -35,26 +42,16 @@ export default function EctoFields({ values, errorProduct, onChange }: EctoField
           </Select>
         </FormControl>
       </Stack>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
-        <TextField
-          size="small"
-          type="date"
-          label="Ďalší termín"
-          InputLabelProps={{ shrink: true }}
-          value={values.validUntil}
-          onChange={(e) => onChange('validUntil', e.target.value)}
-          fullWidth
-        />
-        <TextField
-          size="small"
-          type="number"
-          label="Interval (dni)"
-          value={values.intervalDays}
-          onChange={(e) => onChange('intervalDays', Number(e.target.value) || 0)}
-          inputProps={{ min: 1, step: 1 }}
-          fullWidth
-        />
-      </Stack>
+      <TextField
+        size="small"
+        type="number"
+        label="Interval (dni)"
+        value={values.intervalDays}
+        onChange={(e) => onChange('intervalDays', Number(e.target.value) || 0)}
+        inputProps={{ min: 1, step: 1 }}
+        helperText={`Ďalší termín: ${nextDue}`}
+        fullWidth
+      />
     </Stack>
   );
 }

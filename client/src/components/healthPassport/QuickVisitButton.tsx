@@ -24,7 +24,7 @@ const SNACK_DURATION_MS = 6000;
 interface QuickVisitButtonProps {
   dogId: string;
   disabled?: boolean;
-  onCreate: (visit: VetVisitRecord) => void;
+  onCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onUndo: (id: string) => void;
 }
 
@@ -49,7 +49,7 @@ export default function QuickVisitButton({
 
   const lastClinic = dogId ? (lastClinicByDog[dogId] ?? '') : '';
 
-  const buildAndSave = (clinic: string) => {
+  const buildAndSave = async (clinic: string) => {
     if (!dogId || !clinic.trim()) return;
     const trimmed = clinic.trim();
     const visit: VetVisitRecord = {
@@ -61,8 +61,8 @@ export default function QuickVisitButton({
       diagnosis: QUICK_VISIT_DIAGNOSIS,
       medicationIds: [],
     };
-    onCreate(visit);
-    setLastCreated({ id: visit.id, clinic: visit.clinicName });
+    const created = await onCreate(visit);
+    setLastCreated({ id: created.id, clinic: created.clinicName });
     if (trimmed !== lastClinic) {
       setLastClinicByDog((prev) => ({ ...prev, [dogId]: trimmed }));
     }
@@ -75,12 +75,12 @@ export default function QuickVisitButton({
       setPromptOpen(true);
       return;
     }
-    buildAndSave(lastClinic);
+    void buildAndSave(lastClinic);
   };
 
   const handlePromptSave = () => {
     if (!promptClinic.trim()) return;
-    buildAndSave(promptClinic);
+    void buildAndSave(promptClinic);
     setPromptOpen(false);
   };
 

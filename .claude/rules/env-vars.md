@@ -8,7 +8,16 @@
 | `OPENAI_API_KEY` | áno (na analýzu) | — | Kľúč pre OpenAI API |
 | `GOOGLE_VISION_API_KEY` | áno (na OCR) | — | Kľúč pre Google Vision API |
 | `NODE_ENV` | nie | `development` | `production` v deployi |
-| `CORS_ORIGIN` | odporúčané v prod | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated allowed originy. **POZOR:** `server/src/index.ts` má aktuálne hardcoded `['http://localhost:5173','http://127.0.0.1:5173']` — pri deploy treba premennú reálne čítať, inak CORS error. |
+| `CORS_ORIGIN` | odporúčané v prod | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated allowed originy. `server/src/index.ts` ich reálne číta (split podľa `,`); ak premenná chýba, fallbackne na localhost. V prod (Render) nastav na Netlify URL **bez** koncového `/`. |
+| `FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID (Service Account). |
+| `FIREBASE_CLIENT_EMAIL` | áno (auth) | — | Service Account client email. |
+| `FIREBASE_PRIVATE_KEY` | áno (auth) | — | Service Account privátny kľúč; novelines ako `\n` v úvodzovkách (`config/firebase.ts` ich nahradí). Z Firebase Console → Project Settings → Service Accounts → Generate new private key. |
+| `SUPABASE_URL` | áno (DB) | — | URL Supabase projektu. Z Supabase Dashboard → Project Settings → API. |
+| `SUPABASE_SERVICE_ROLE_KEY` | áno (DB) | — | **TAJOMSTVO** — service_role kľúč (obchádza RLS). Výhradne server-side, NIKDY do klienta. Z Supabase Dashboard → Project Settings → API. Číta `config/supabase.ts`. |
+
+> **Supabase premenné sú povinné pre DB.** `server/src/config/supabase.ts` fail-fastne ak `SUPABASE_URL` alebo `SUPABASE_SERVICE_ROLE_KEY` chýba. service_role kľúč obchádza RLS — autorizácia sa vynucuje v API vrstve (scope na `req.appUserId` cez `middleware/ensureUser.ts`).
+
+> **Auth premenné sú povinné.** `server/src/config/firebase.ts` fail-fastne pri prvom overení tokenu ak ktorákoľvek `FIREBASE_*` chýba. Všetky `/api/*` endpointy okrem `/api/health` overujú Firebase ID token cez `middleware/firebaseAuth.ts`.
 
 ## Klient (`client/.env`)
 
@@ -17,6 +26,12 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 | Premenná | Povinná | Default | Popis |
 |---|---|---|---|
 | `VITE_API_URL` | nie (dev) | `''` (relatívne, cez Vite proxy na `:3001`) | Plná base URL pre API v produkcii (napr. `https://api.example.com`). Konzumuje sa v `client/src/services/api.ts`. |
+| `VITE_FIREBASE_API_KEY` | áno (auth) | — | Firebase Web App apiKey. |
+| `VITE_FIREBASE_AUTH_DOMAIN` | áno (auth) | — | Firebase authDomain (`<projekt>.firebaseapp.com`). |
+| `VITE_FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID. |
+| `VITE_FIREBASE_STORAGE_BUCKET` | nie | — | Firebase storage bucket. |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | nie | — | Firebase messaging sender ID. |
+| `VITE_FIREBASE_APP_ID` | áno (auth) | — | Firebase Web App appId. Z Firebase Console → Project Settings → Your apps → Web app → SDK config. |
 
 > **Konvencia:** premenná sa volá `VITE_API_URL`, nie `VITE_API_BASE_URL`. Ak ju premenuješ v kóde, updatni aj túto tabuľku, README a `.env.example`.
 

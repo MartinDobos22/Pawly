@@ -9,15 +9,21 @@ import type {
   VetVisitRecord,
 } from '../types/dogHealth';
 import type { PetProfile } from '../types';
+import { getAuthHeader, handleUnauthorized } from './authToken';
 
 const BASE_URL = '/api/v1';
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(await getAuthHeader()),
+      ...(init?.headers ?? {}),
+    },
     ...init,
   });
   if (!response.ok) {
+    await handleUnauthorized(response.status);
     throw new Error(`API request failed: ${response.status}`);
   }
   return response.json() as Promise<T>;

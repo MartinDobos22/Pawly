@@ -1,10 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
+import { useHealthData } from './useHealthData';
 import type { HealthEpisodeRecord } from '../types/healthEpisode';
-
-const STORAGE_KEY = 'dog-health-episodes';
-
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 export interface UseHealthEpisodesApi {
   episodes: HealthEpisodeRecord[];
@@ -12,13 +8,16 @@ export interface UseHealthEpisodesApi {
   getById: (id: string) => HealthEpisodeRecord | undefined;
   add: (
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>
-  ) => HealthEpisodeRecord;
-  update: (id: string, payload: Partial<Omit<HealthEpisodeRecord, 'id' | 'createdAt'>>) => void;
-  remove: (id: string) => void;
+  ) => Promise<HealthEpisodeRecord>;
+  update: (
+    id: string,
+    payload: Partial<Omit<HealthEpisodeRecord, 'id' | 'createdAt'>>
+  ) => Promise<void>;
+  remove: (id: string) => Promise<void>;
 }
 
 export function useHealthEpisodes(): UseHealthEpisodesApi {
-  const [episodes, setEpisodes] = useLocalStorage<HealthEpisodeRecord[]>(STORAGE_KEY, []);
+  const { episodes, addEpisode, updateEpisode, removeEpisode } = useHealthData();
 
   const byDog = useCallback(
     (dogId: string) => episodes.filter((e) => e.dogId === dogId),
@@ -28,44 +27,20 @@ export function useHealthEpisodes(): UseHealthEpisodesApi {
   const getById = useCallback((id: string) => episodes.find((e) => e.id === id), [episodes]);
 
   const add: UseHealthEpisodesApi['add'] = useCallback(
-    (payload) => {
-      const now = new Date().toISOString();
-      const record: HealthEpisodeRecord = {
-        ...payload,
-        id: uid(),
-        createdAt: now,
-        updatedAt: now,
-      };
-      setEpisodes((prev) => [record, ...prev]);
-      return record;
-    },
-    [setEpisodes]
+    (payload) => addEpisode(payload as Partial<HealthEpisodeRecord>),
+    [addEpisode]
   );
 
   const update: UseHealthEpisodesApi['update'] = useCallback(
-    (id, payload) => {
-      setEpisodes((prev) =>
-        prev.map((e) =>
-          e.id === id
-            ? {
-                ...e,
-                ...payload,
-                id: e.id,
-                createdAt: e.createdAt,
-                updatedAt: new Date().toISOString(),
-              }
-            : e
-        )
-      );
+    async (id, payload) => {
+      await updateEpisode(id, payload as Partial<HealthEpisodeRecord>);
     },
-    [setEpisodes]
+    [updateEpisode]
   );
 
   const remove: UseHealthEpisodesApi['remove'] = useCallback(
-    (id) => {
-      setEpisodes((prev) => prev.filter((e) => e.id !== id));
-    },
-    [setEpisodes]
+    (id) => removeEpisode(id),
+    [removeEpisode]
   );
 
   return useMemo(

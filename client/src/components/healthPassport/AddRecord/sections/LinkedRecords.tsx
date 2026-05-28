@@ -1,16 +1,6 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Collapse,
-  Stack,
-  Switch,
-  Typography,
-} from '@mui/material';
+import { Box, Collapse, Stack, Switch, Typography } from '@mui/material';
 import {
   Biotech as DewormIcon,
-  ExpandMore as ExpandMoreIcon,
   Link as LinkIcon,
   Medication as MedIcon,
   PestControl as EctoIcon,
@@ -36,10 +26,12 @@ import DewormingFields from './linked/DewormingFields';
 import EctoFields from './linked/EctoFields';
 import MedicationFields from './linked/MedicationFields';
 import DietFields from './linked/DietFields';
+import SectionCard from './SectionCard';
 
 interface LinkedRecordsProps {
   values: LinkedRecordsValues;
   errors: ErrorMap;
+  baseDate: string;
   expanded: boolean;
   onExpand: (next: boolean) => void;
   dispatch: Dispatch<ManualFormAction>;
@@ -48,19 +40,28 @@ interface LinkedRecordsProps {
 interface RowProps {
   icon: React.ReactNode;
   label: string;
+  hint: string;
   on: boolean;
   onToggle: (next: boolean) => void;
   children?: React.ReactNode;
 }
 
-function Row({ icon, label, on, onToggle, children }: RowProps) {
+function Row({ icon, label, hint, on, onToggle, children }: RowProps) {
   return (
-    <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1.5 }}>
-      <Stack direction="row" alignItems="center" gap={1.5}>
-        <Box sx={{ color: 'text.secondary', display: 'flex' }}>{icon}</Box>
-        <Typography variant="body2" sx={{ fontWeight: 500, flex: 1 }}>
-          {label}
-        </Typography>
+    <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, p: 1.5 }}>
+      <Stack direction="row" alignItems="flex-start" gap={1.5}>
+        <Box sx={{ color: 'text.secondary', display: 'flex', mt: 0.25 }}>{icon}</Box>
+        <Stack sx={{ flex: 1, minWidth: 0 }} spacing={0.25}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {label}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+          >
+            {hint}
+          </Typography>
+        </Stack>
         <Switch checked={on} onChange={(e) => onToggle(e.target.checked)} />
       </Stack>
       <Collapse in={on} timeout="auto" unmountOnExit>
@@ -73,6 +74,7 @@ function Row({ icon, label, on, onToggle, children }: RowProps) {
 export default function LinkedRecords({
   values,
   errors,
+  baseDate,
   expanded,
   onExpand,
   dispatch,
@@ -101,103 +103,96 @@ export default function LinkedRecords({
   const toggle = (kind: LinkedKind, on: boolean) => dispatch({ type: 'TOGGLE_LINKED', kind, on });
 
   return (
-    <Accordion
+    <SectionCard
+      title="Súvisiace záznamy"
+      icon={<LinkIcon />}
+      collapsible
       expanded={expanded}
-      onChange={(_, next) => onExpand(next)}
-      disableGutters
-      sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 1,
-        '&:before': { display: 'none' },
-      }}
+      onExpandChange={onExpand}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Stack direction="row" alignItems="center" gap={1}>
-          <LinkIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            Súvisiace záznamy
-          </Typography>
-        </Stack>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Stack spacing={1.25}>
-          <Row
-            icon={<VaccinesIcon fontSize="small" />}
-            label="Očkovanie"
-            on={Boolean(values.vaccination)}
-            onToggle={(next) => toggle('vaccination', next)}
-          >
-            {values.vaccination && (
-              <VaccinationFields
-                values={values.vaccination}
-                errorName={errors['linked.vaccination.name']}
-                onChange={setVaccinationField}
-              />
-            )}
-          </Row>
+      <Stack spacing={1.25}>
+        <Row
+          icon={<VaccinesIcon fontSize="small" />}
+          label="Očkovanie"
+          hint="Pridať vakcínu aplikovanú pri tejto návšteve"
+          on={Boolean(values.vaccination)}
+          onToggle={(next) => toggle('vaccination', next)}
+        >
+          {values.vaccination && (
+            <VaccinationFields
+              values={values.vaccination}
+              errorName={errors['linked.vaccination.name']}
+              onChange={setVaccinationField}
+            />
+          )}
+        </Row>
 
-          <Row
-            icon={<DewormIcon fontSize="small" />}
-            label="Odčervenie"
-            on={Boolean(values.deworming)}
-            onToggle={(next) => toggle('deworming', next)}
-          >
-            {values.deworming && (
-              <DewormingFields
-                values={values.deworming}
-                errorProduct={errors['linked.deworming.product']}
-                onChange={setDewormingField}
-              />
-            )}
-          </Row>
+        <Row
+          icon={<DewormIcon fontSize="small" />}
+          label="Odčervenie"
+          hint="Odčervovací prípravok a interval ďalšej aplikácie"
+          on={Boolean(values.deworming)}
+          onToggle={(next) => toggle('deworming', next)}
+        >
+          {values.deworming && (
+            <DewormingFields
+              values={values.deworming}
+              baseDate={baseDate}
+              errorProduct={errors['linked.deworming.product']}
+              onChange={setDewormingField}
+            />
+          )}
+        </Row>
 
-          <Row
-            icon={<EctoIcon fontSize="small" />}
-            label="Ektoparazity (kliešte / blchy)"
-            on={Boolean(values.ecto)}
-            onToggle={(next) => toggle('ecto', next)}
-          >
-            {values.ecto && (
-              <EctoFields
-                values={values.ecto}
-                errorProduct={errors['linked.ecto.product']}
-                onChange={setEctoField}
-              />
-            )}
-          </Row>
+        <Row
+          icon={<EctoIcon fontSize="small" />}
+          label="Ektoparazity (kliešte / blchy)"
+          hint="Antiparazitiká, spot-on alebo tablety"
+          on={Boolean(values.ecto)}
+          onToggle={(next) => toggle('ecto', next)}
+        >
+          {values.ecto && (
+            <EctoFields
+              values={values.ecto}
+              baseDate={baseDate}
+              errorProduct={errors['linked.ecto.product']}
+              onChange={setEctoField}
+            />
+          )}
+        </Row>
 
-          <Row
-            icon={<MedIcon fontSize="small" />}
-            label="Liek"
-            on={Boolean(values.medication)}
-            onToggle={(next) => toggle('medication', next)}
-          >
-            {values.medication && (
-              <MedicationFields
-                values={values.medication}
-                errorName={errors['linked.medication.name']}
-                onChange={setMedicationField}
-              />
-            )}
-          </Row>
+        <Row
+          icon={<MedIcon fontSize="small" />}
+          label="Liek"
+          hint="Predpísaný liek s dávkovaním a dĺžkou liečby"
+          on={Boolean(values.medication)}
+          onToggle={(next) => toggle('medication', next)}
+        >
+          {values.medication && (
+            <MedicationFields
+              values={values.medication}
+              errorName={errors['linked.medication.name']}
+              onChange={setMedicationField}
+            />
+          )}
+        </Row>
 
-          <Row
-            icon={<DietIcon fontSize="small" />}
-            label="Diéta"
-            on={Boolean(values.diet)}
-            onToggle={(next) => toggle('diet', next)}
-          >
-            {values.diet && (
-              <DietFields
-                values={values.diet}
-                errorFoodName={errors['linked.diet.foodName']}
-                onChange={setDietField}
-              />
-            )}
-          </Row>
-        </Stack>
-      </AccordionDetails>
-    </Accordion>
+        <Row
+          icon={<DietIcon fontSize="small" />}
+          label="Diéta"
+          hint="Zmena alebo overenie aktuálneho krmiva"
+          on={Boolean(values.diet)}
+          onToggle={(next) => toggle('diet', next)}
+        >
+          {values.diet && (
+            <DietFields
+              values={values.diet}
+              errorFoodName={errors['linked.diet.foodName']}
+              onChange={setDietField}
+            />
+          )}
+        </Row>
+      </Stack>
+    </SectionCard>
   );
 }

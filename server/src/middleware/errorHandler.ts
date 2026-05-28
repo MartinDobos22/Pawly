@@ -15,8 +15,9 @@ export function errorHandler(
   });
 
   const status = (err as Error & { status?: number }).status ?? 500;
+  const code = (err as Error & { code?: string }).code;
   res.status(status).json({
-    error: { message: err.message || 'Interná chyba servera' },
+    error: { message: err.message || 'Interná chyba servera', ...(code ? { code } : {}) },
     status,
   });
 }

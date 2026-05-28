@@ -1,41 +1,20 @@
 import { Box, Card, Divider, Stack, Typography } from '@mui/material';
-import { Medication as MedicationIcon } from '@mui/icons-material';
+import { MedicationOutlined as MedicationIcon } from '@mui/icons-material';
 import type { MedicationRecord } from '../../types/dogHealth';
 
 interface Props {
   medications: MedicationRecord[];
 }
 
-function SectionHeader() {
-  return (
-    <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
-      <Box
-        sx={{
-          width: 40,
-          height: 40,
-          borderRadius: 1,
-          bgcolor: 'action.hover',
-          color: 'success.main',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          '& svg': { fontSize: 22 },
-        }}
-      >
-        <MedicationIcon />
-      </Box>
-      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-        Aktívne lieky a doplnky
-      </Typography>
-    </Stack>
-  );
-}
-
 export default function ActiveMedicationsCard({ medications }: Props) {
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 }, height: '100%' }}>
-      <SectionHeader />
+    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
+        <MedicationIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          Aktívne lieky a doplnky
+        </Typography>
+      </Stack>
 
       {medications.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
