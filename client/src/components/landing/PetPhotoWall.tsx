@@ -1,20 +1,15 @@
 import { Box, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-interface Pet {
-  id: string;
-  label: string;
-  ratio: number;
-}
-
-const PETS: Pet[] = [
-  { id: 'photo-1517849845537-4d257902454a', label: 'Pes', ratio: 1 },
-  { id: 'photo-1514888286974-6c03e2ca1dba', label: 'Mačka', ratio: 1.3 },
-  { id: 'photo-1585110396000-c9ffd4e4b308', label: 'Králik', ratio: 0.85 },
-  { id: 'photo-1552728089-57bdde30beb3', label: 'Papagáj', ratio: 1.2 },
-  { id: 'photo-1425082661705-1834bfd09dca', label: 'Škrečok', ratio: 1 },
-  { id: 'photo-1553284965-83fd3e82fa5a', label: 'Kôň', ratio: 0.9 },
-  { id: 'photo-1437622368342-7a3d73a34c8f', label: 'Korytnačka', ratio: 1.25 },
-  { id: 'photo-1561037404-61cd46aa615b', label: 'Pes', ratio: 1.1 },
+const PET_PHOTOS = [
+  { id: 'photo-1517849845537-4d257902454a', ratio: 1 },
+  { id: 'photo-1514888286974-6c03e2ca1dba', ratio: 1.3 },
+  { id: 'photo-1585110396000-c9ffd4e4b308', ratio: 0.85 },
+  { id: 'photo-1552728089-57bdde30beb3', ratio: 1.2 },
+  { id: 'photo-1425082661705-1834bfd09dca', ratio: 1 },
+  { id: 'photo-1553284965-83fd3e82fa5a', ratio: 0.9 },
+  { id: 'photo-1437622368342-7a3d73a34c8f', ratio: 1.25 },
+  { id: 'photo-1561037404-61cd46aa615b', ratio: 1.1 },
 ];
 
 const srcFor = (id: string, w = 500) =>
@@ -22,6 +17,8 @@ const srcFor = (id: string, w = 500) =>
 
 export default function PetPhotoWall() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
+  const petLabels = t('photoWall.pets', { returnObjects: true }) as Array<{ label: string }>;
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>
@@ -36,7 +33,7 @@ export default function PetPhotoWall() {
               lineHeight: 1.1,
             }}
           >
-            Pre každého chlpáča{' '}
+            {t('photoWall.title1')}{' '}
             <Box
               component="span"
               sx={{
@@ -46,15 +43,14 @@ export default function PetPhotoWall() {
                 backgroundClip: 'text',
               }}
             >
-              aj nechlpáča
+              {t('photoWall.title2')}
             </Box>
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: 'text.secondary', maxWidth: 540, fontSize: { xs: '1rem', md: '1.1rem' } }}
           >
-            Psy, mačky, králiky, vtáky, plazy aj kone — Pawport zvládne zdravotnú kartu pre každé
-            domáce zviera.
+            {t('photoWall.subtitle')}
           </Typography>
         </Stack>
 
@@ -64,7 +60,7 @@ export default function PetPhotoWall() {
             columnGap: { xs: 1.5, md: 2 },
           }}
         >
-          {PETS.map((pet, idx) => (
+          {PET_PHOTOS.map((pet, idx) => (
             <Box
               key={`${pet.id}-${idx}`}
               sx={{
@@ -73,19 +69,16 @@ export default function PetPhotoWall() {
                 borderRadius: 4,
                 overflow: 'hidden',
                 breakInside: 'avoid',
-                boxShadow: '0 8px 24px rgba(15,76,92,0.12)',
-                cursor: 'default',
-                '&:hover img': { transform: 'scale(1.05)' },
                 '&:hover .pet-label': { opacity: 1 },
+                '&:hover img': { transform: 'scale(1.06)' },
               }}
             >
               <Box
                 component="img"
                 src={srcFor(pet.id)}
-                alt={pet.label}
+                alt={petLabels[idx]?.label ?? ''}
                 loading="lazy"
                 sx={{
-                  display: 'block',
                   width: '100%',
                   aspectRatio: String(pet.ratio),
                   objectFit: 'cover',
@@ -94,7 +87,7 @@ export default function PetPhotoWall() {
               />
               <Chip
                 className="pet-label"
-                label={pet.label}
+                label={petLabels[idx]?.label}
                 size="small"
                 sx={{
                   position: 'absolute',

@@ -81,12 +81,30 @@
       "account": {
         "title": "Účet a používanie",
         "items": [
-          { "q": "Ako sa prihlásim?", "a": "Cez e-mail a heslo, alebo jedným klikom cez Google účet." },
-          { "q": "Zabudol som heslo, čo teraz?", "a": "Na prihlasovacej stránke klikni na „Zabudnuté heslo?“ a pošleme ti e-mail na nastavenie nového hesla." },
-          { "q": "Môžem mať viac zvierat?", "a": "Áno. Vytvor si profil pre každé zviera — psy, mačky aj ďalšie domáce zvieratá, každé so svojimi alergiami a záznamami." },
-          { "q": "Čo sa stane, keď zmažem zviera?", "a": "Spolu s profilom sa zmažú aj všetky jeho súvisiace záznamy (vakcinácie, lieky, epizódy, výdavky…). Túto akciu nie je možné vrátiť." },
-          { "q": "Ako zmažem účet a všetky svoje dáta?", "a": "V bočnom menu klikni na „Zmazať účet“. Natrvalo sa odstráni tvoj účet aj všetky uložené dáta. Akcia je nevratná." },
-          { "q": "Funguje to na mobile?", "a": "Áno, aplikácia je plne responzívna a v prehliadači si ju vieš pridať na domovskú obrazovku ako appku." },
+          {
+            "q": "Ako sa prihlásim?",
+            "a": "Cez e-mail a heslo, alebo jedným klikom cez Google účet."
+          },
+          {
+            "q": "Zabudol som heslo, čo teraz?",
+            "a": "Na prihlasovacej stránke klikni na „Zabudnuté heslo?“ a pošleme ti e-mail na nastavenie nového hesla."
+          },
+          {
+            "q": "Môžem mať viac zvierat?",
+            "a": "Áno. Vytvor si profil pre každé zviera — psy, mačky aj ďalšie domáce zvieratá, každé so svojimi alergiami a záznamami."
+          },
+          {
+            "q": "Čo sa stane, keď zmažem zviera?",
+            "a": "Spolu s profilom sa zmažú aj všetky jeho súvisiace záznamy (vakcinácie, lieky, epizódy, výdavky…). Túto akciu nie je možné vrátiť."
+          },
+          {
+            "q": "Ako zmažem účet a všetky svoje dáta?",
+            "a": "V bočnom menu klikni na „Zmazať účet“. Natrvalo sa odstráni tvoj účet aj všetky uložené dáta. Akcia je nevratná."
+          },
+          {
+            "q": "Funguje to na mobile?",
+            "a": "Áno, aplikácia je plne responzívna a v prehliadači si ju vieš pridať na domovskú obrazovku ako appku."
+          },
           { "q": "Koľko to stojí?", "a": "Pawport je momentálne zadarmo." }
         ]
       }
@@ -110,9 +128,18 @@
     "title": "3 kroky a máš zdravotný pas v mobile",
     "subtitle": "Žiadne komplikované formuláre, žiadne mesačné poplatky. Začni za pár minút.",
     "steps": [
-      { "title": "Vytvor profil zvieraťa", "text": "Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd." },
-      { "title": "Naskenuj zdravotný pas", "text": "AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF." },
-      { "title": "Karta pre veterinára", "text": "Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným." }
+      {
+        "title": "Vytvor profil zvieraťa",
+        "text": "Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd."
+      },
+      {
+        "title": "Naskenuj zdravotný pas",
+        "text": "AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF."
+      },
+      {
+        "title": "Karta pre veterinára",
+        "text": "Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným."
+      }
     ]
   },
   "features": {
@@ -120,12 +147,30 @@
     "title2": "na jednom mieste",
     "subtitle": "Šesť funkcií, ktoré spolu pokrývajú celý zdravotný život tvojho zvieratka.",
     "items": [
-      { "title": "Zdravotný pas", "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline." },
-      { "title": "AI analýza krmiva", "text": "Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera." },
-      { "title": "Pripomienky", "text": "Karta vždy ukazuje čo treba: odčervenie po termíne, blížiace sa očkovanie, kontrola." },
-      { "title": "Karta pre veterinára", "text": "Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou." },
-      { "title": "Môže môj miláčik jesť…?", "text": "Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď." },
-      { "title": "Denník epizód", "text": "Zaznamenaj zdravotné epizódy a podľa minulosti vidíš čo zabralo a čo nie." }
+      {
+        "title": "Zdravotný pas",
+        "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline."
+      },
+      {
+        "title": "AI analýza krmiva",
+        "text": "Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera."
+      },
+      {
+        "title": "Pripomienky",
+        "text": "Karta vždy ukazuje čo treba: odčervenie po termíne, blížiace sa očkovanie, kontrola."
+      },
+      {
+        "title": "Karta pre veterinára",
+        "text": "Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou."
+      },
+      {
+        "title": "Môže môj miláčik jesť…?",
+        "text": "Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď."
+      },
+      {
+        "title": "Denník epizód",
+        "text": "Zaznamenaj zdravotné epizódy a podľa minulosti vidíš čo zabralo a čo nie."
+      }
     ]
   },
   "comparison": {
@@ -167,6 +212,21 @@
       { "label": "aplikovaných vakcinácií" },
       { "label": "druhov zvierat" },
       { "label": "zadarmo, bez registrácie" }
+    ]
+  },
+  "photoWall": {
+    "title1": "Pre každého chlpáča",
+    "title2": "aj nechlpáča",
+    "subtitle": "Psy, mačky, králiky, vtáky, plazy aj kone — Pawport zvládne zdravotnú kartu pre každé domáce zviera.",
+    "pets": [
+      { "label": "Pes" },
+      { "label": "Mačka" },
+      { "label": "Králik" },
+      { "label": "Papagáj" },
+      { "label": "Škrečok" },
+      { "label": "Kôň" },
+      { "label": "Korytnačka" },
+      { "label": "Pes" }
     ]
   },
   "demo": {

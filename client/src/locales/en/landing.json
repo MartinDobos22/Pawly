@@ -81,12 +81,30 @@
       "account": {
         "title": "Account & usage",
         "items": [
-          { "q": "How do I sign in?", "a": "With email and password, or with a single click via your Google account." },
-          { "q": "I forgot my password, what now?", "a": "On the login page click \"Forgot password?\" and we'll send you an email to set a new one." },
-          { "q": "Can I have multiple pets?", "a": "Yes. Create a profile for each pet — dogs, cats and other animals, each with their own allergies and records." },
-          { "q": "What happens when I delete a pet?", "a": "Along with the profile, all related records are deleted too (vaccinations, medications, episodes, expenses…). This action cannot be undone." },
-          { "q": "How do I delete my account and all my data?", "a": "In the side menu click \"Delete account\". Your account and all saved data will be permanently removed. This action is irreversible." },
-          { "q": "Does it work on mobile?", "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app." },
+          {
+            "q": "How do I sign in?",
+            "a": "With email and password, or with a single click via your Google account."
+          },
+          {
+            "q": "I forgot my password, what now?",
+            "a": "On the login page click \"Forgot password?\" and we'll send you an email to set a new one."
+          },
+          {
+            "q": "Can I have multiple pets?",
+            "a": "Yes. Create a profile for each pet — dogs, cats and other animals, each with their own allergies and records."
+          },
+          {
+            "q": "What happens when I delete a pet?",
+            "a": "Along with the profile, all related records are deleted too (vaccinations, medications, episodes, expenses…). This action cannot be undone."
+          },
+          {
+            "q": "How do I delete my account and all my data?",
+            "a": "In the side menu click \"Delete account\". Your account and all saved data will be permanently removed. This action is irreversible."
+          },
+          {
+            "q": "Does it work on mobile?",
+            "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app."
+          },
           { "q": "How much does it cost?", "a": "Pawport is currently free." }
         ]
       }
@@ -110,9 +128,18 @@
     "title": "3 steps and your health passport is on your phone",
     "subtitle": "No complicated forms, no monthly fees. Get started in a few minutes.",
     "steps": [
-      { "title": "Create a pet profile", "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds." },
-      { "title": "Scan the health passport", "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF." },
-      { "title": "Vet card", "text": "Before every vet visit, export a clear PDF card with everything that matters." }
+      {
+        "title": "Create a pet profile",
+        "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds."
+      },
+      {
+        "title": "Scan the health passport",
+        "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF."
+      },
+      {
+        "title": "Vet card",
+        "text": "Before every vet visit, export a clear PDF card with everything that matters."
+      }
     ]
   },
   "features": {
@@ -120,12 +147,30 @@
     "title2": "in one place",
     "subtitle": "Six features that together cover the entire health life of your pet.",
     "items": [
-      { "title": "Health passport", "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline." },
-      { "title": "AI food analysis", "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet." },
-      { "title": "Reminders", "text": "The card always shows what's needed: overdue deworming, upcoming vaccination, check-up." },
-      { "title": "Vet card", "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history." },
-      { "title": "Can my pet eat…?", "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer." },
-      { "title": "Health diary", "text": "Record health episodes and based on history see what worked and what didn't." }
+      {
+        "title": "Health passport",
+        "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline."
+      },
+      {
+        "title": "AI food analysis",
+        "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet."
+      },
+      {
+        "title": "Reminders",
+        "text": "The card always shows what's needed: overdue deworming, upcoming vaccination, check-up."
+      },
+      {
+        "title": "Vet card",
+        "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history."
+      },
+      {
+        "title": "Can my pet eat…?",
+        "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer."
+      },
+      {
+        "title": "Health diary",
+        "text": "Record health episodes and based on history see what worked and what didn't."
+      }
     ]
   },
   "comparison": {
@@ -167,6 +212,21 @@
       { "label": "vaccinations recorded" },
       { "label": "animal species" },
       { "label": "free, no registration" }
+    ]
+  },
+  "photoWall": {
+    "title1": "For every furry friend",
+    "title2": "and every scaly one",
+    "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawport handles a health card for every pet.",
+    "pets": [
+      { "label": "Dog" },
+      { "label": "Cat" },
+      { "label": "Rabbit" },
+      { "label": "Parrot" },
+      { "label": "Hamster" },
+      { "label": "Horse" },
+      { "label": "Turtle" },
+      { "label": "Dog" }
     ]
   },
   "demo": {
