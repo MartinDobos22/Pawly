@@ -145,52 +145,147 @@
       "subcategory": "Subcategory",
       "mainCategoryOptional": "Main category (optional)"
     },
+    "required_one": "Fill in {{count}} required field",
+    "required_other": "Fill in {{count}} required fields",
+    "tipSave": "Tip: {{modKey}} + Enter to save",
+    "saveRecord": "Save record",
     "clinical": {
-      "title": "Clinical notes",
-      "findings": "Findings",
+      "title": "Clinical record",
+      "findings": "Finding",
+      "findingsPlaceholder": "Clinical finding on examination…",
       "diagnosis": "Diagnosis",
-      "recommendations": "Recommendations"
+      "diagnosisPlaceholder": "Confirmed diagnosis or preliminary suspicion…",
+      "recommendations": "Recommendations",
+      "recommendationsPlaceholder": "Treatment plan, follow-up, lifestyle…"
     },
     "expenses": {
-      "title": "Expenses",
-      "total": "Total expenses",
-      "medication": "Medications (extra)",
-      "food": "Food (extra)",
-      "nextCheck": "Next check-up"
+      "title": "Expenses & next appointment",
+      "nextCheck": "Next check-up date",
+      "total": "Total expense (€)",
+      "medication": "Of which medications (€)",
+      "food": "Of which food (€)"
     },
     "aiImport": {
       "uploadDescription": "Upload one or more pages of a document (health passport, lab results, vet report…). AI will extract records at once and give you a list to approve in the next step.",
       "required": "Fill in {{count}} required field",
-      "required_other": "Fill in {{count}} required fields"
+      "required_other": "Fill in {{count}} required fields",
+      "analyzing": "Analysing…",
+      "analyze": "Analyse",
+      "saveRecords": "Save records"
+    }
+  },
+  "attachmentUpload": {
+    "docLabel": "Document description (optional)",
+    "docPlaceholder": "e.g. Health passport — Aiko",
+    "photo": "Photo / gallery",
+    "file": "PDF / file",
+    "pageCount": "{{count}} / {{max}} pages",
+    "pageLabel": "Page {{n}}",
+    "removePage": "Remove page",
+    "formatsHint": "Supported formats: PDF, JPEG, PNG, WebP. Max {{maxMb}} MB per page, max {{maxFiles}} pages."
+  },
+  "aiRecordsReview": {
+    "emptyWithProfile": "AI found no vaccinations or procedures, but suggested profile data above. You can continue and save the document.",
+    "empty": "Recognised records will appear here after analysis. None extracted yet.",
+    "hint": "Review the recognised records. Set the target type for each or skip it.",
+    "duplicate": "Already exists",
+    "confidence": "Confidence: {{level}}",
+    "targetTypeLabel": "Target type",
+    "recordFallback": "Record",
+    "fieldName": "Name",
+    "fieldDate": "Date",
+    "fieldValidUntil": "Valid until",
+    "fieldBatch": "Batch (optional)",
+    "type": {
+      "VACCINATION": "Vaccination",
+      "DEWORMING": "Deworming",
+      "ECTOPARASITE": "Ectoparasites",
+      "MEDICATION": "Medication",
+      "NOTE": "Note",
+      "SKIP": "Skip"
+    },
+    "confidenceLevel": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "aiProfileMerge": {
+    "noPet": "AI suggested adding pet profile data, but no active profile was found. Add the details manually in the Profiles section.",
+    "addToProfile": "Add to profile \"{{name}}\"",
+    "description": "AI found new pet data in the document. Select what to add to the profile. Existing non-empty fields are never overwritten without your consent.",
+    "identifiers": "Basic details",
+    "empty": "(empty)",
+    "currentValue": "current: {{value}}",
+    "preserved": "(kept if unchecked)",
+    "allergies": "New allergies",
+    "chronic": "New chronic conditions",
+    "skip": "Skip",
+    "apply": "Add to profile",
+    "sexMale": "male",
+    "sexFemale": "female",
+    "sexUnknown": "unknown"
+  },
+  "linkedRecords": {
+    "title": "Linked records",
+    "vaccination": {
+      "label": "Vaccination",
+      "hint": "Add a vaccine administered during this visit"
+    },
+    "deworming": {
+      "label": "Deworming",
+      "hint": "Deworming product and next application interval"
+    },
+    "ecto": {
+      "label": "Ectoparasites (ticks / fleas)",
+      "hint": "Antiparasitics, spot-on or tablets"
+    },
+    "medication": {
+      "label": "Medication",
+      "hint": "Prescribed medication with dosage and treatment duration"
+    },
+    "diet": {
+      "label": "Diet",
+      "hint": "Change or verification of current food"
     }
   },
   "vaccination": {
     "name": "Vaccine name",
     "type": "Type",
     "validUntil": "Valid until",
-    "batchNumber": "Batch number"
+    "batchNumber": "Batch (optional)",
+    "typeRabies": "Rabies",
+    "typeCombined": "Combined",
+    "typeOther": "Other"
   },
   "deworming": {
-    "product": "Product",
+    "product": "Product name",
     "validUntil": "Valid until",
-    "intervalDays": "Interval (days)"
+    "intervalDays": "Interval (days)",
+    "nextDue": "Next due: {{date}}"
   },
   "ectoparasite": {
-    "product": "Product",
+    "product": "Product name",
     "form": "Form",
     "validUntil": "Valid until",
-    "intervalDays": "Interval (days)"
+    "intervalDays": "Interval (days)",
+    "nextDue": "Next due: {{date}}",
+    "formTablet": "Tablet",
+    "formSpotOn": "Spot-on",
+    "formCollar": "Collar"
   },
   "medication": {
     "name": "Medication name",
-    "reason": "Reason",
-    "dose": "Dose",
+    "reason": "Reason / indication (optional)",
+    "dose": "Dosage",
+    "dosePlaceholder": "e.g. 1 tablet",
     "frequency": "Frequency",
+    "frequencyPlaceholder": "e.g. twice daily",
     "endDate": "End of treatment"
   },
   "diet": {
     "foodName": "Food name",
-    "reactionNotes": "Reaction notes",
+    "reactionNotes": "Reaction / notes",
     "suitability": "Suitability"
   },
   "profiles": {

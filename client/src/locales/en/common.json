@@ -64,5 +64,13 @@
   },
   "loading": "Loading…",
   "saving": "Saving…",
-  "deleting": "Deleting…"
+  "deleting": "Deleting…",
+  "petSwitcher": {
+    "noProfile": "No profile",
+    "aria": "Switch active pet",
+    "addPet": "Add a pet",
+    "noProfiles": "No pet profiles",
+    "defaultBreed": "Dog",
+    "manage": "Manage profiles"
+  }
 }

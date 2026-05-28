@@ -146,52 +146,148 @@
       "subcategory": "Podkategória",
       "mainCategoryOptional": "Hlavná kategória (voliteľné)"
     },
+    "required_one": "Doplňte {{count}} povinné pole",
+    "required_few": "Doplňte {{count}} povinné polia",
+    "required_many": "Doplňte {{count}} povinných polí",
+    "tipSave": "Tip: {{modKey}} + Enter pre uloženie",
+    "saveRecord": "Uložiť záznam",
     "clinical": {
-      "title": "Klinické poznámky",
-      "findings": "Nálezy",
+      "title": "Klinický záznam",
+      "findings": "Nález",
+      "findingsPlaceholder": "Klinický nález pri vyšetrení…",
       "diagnosis": "Diagnóza",
-      "recommendations": "Odporúčania"
+      "diagnosisPlaceholder": "Stanovená diagnóza alebo predbežné podozrenie…",
+      "recommendations": "Odporúčania",
+      "recommendationsPlaceholder": "Postup liečby, kontrola, životospráva…"
     },
     "expenses": {
-      "title": "Výdavky",
-      "total": "Celkové výdavky",
-      "medication": "Lieky (extra)",
-      "food": "Krmivo (extra)",
-      "nextCheck": "Ďalšia kontrola"
+      "title": "Výdavky a ďalší termín",
+      "nextCheck": "Dátum ďalšej kontroly",
+      "total": "Celkový výdavok (€)",
+      "medication": "Z toho lieky (€)",
+      "food": "Z toho krmivo (€)"
     },
     "aiImport": {
       "uploadDescription": "Nahraj jednu alebo viac strán dokumentu (zdravotný pas, laboratórny výsledok, správa od veterinára…). AI z nich extrahuje záznamy naraz a v ďalšom kroku ti dá zoznam na schválenie.",
       "required": "Doplňte {{count}} povinné pole",
-      "required_other": "Doplňte {{count}} povinných polí"
+      "required_other": "Doplňte {{count}} povinných polí",
+      "analyzing": "Analyzujem…",
+      "analyze": "Analyzovať",
+      "saveRecords": "Uložiť záznamy"
+    }
+  },
+  "attachmentUpload": {
+    "docLabel": "Popis dokumentu (voliteľné)",
+    "docPlaceholder": "napr. Zdravotný pas — Aiko",
+    "photo": "Fotka / galéria",
+    "file": "PDF / súbor",
+    "pageCount": "{{count}} / {{max}} strán",
+    "pageLabel": "Strana {{n}}",
+    "removePage": "Odstrániť stranu",
+    "formatsHint": "Podporované formáty: PDF, JPEG, PNG, WebP. Max {{maxMb}} MB per stranu, max {{maxFiles}} strán."
+  },
+  "aiRecordsReview": {
+    "emptyWithProfile": "AI nenašla očkovania ani úkony, no navrhla údaje do profilu (vyššie). Môžeš pokračovať a uložiť dokument.",
+    "empty": "Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.",
+    "hint": "Skontroluj rozpoznané záznamy. Pre každý nastav cieľový typ alebo ho preskoč.",
+    "duplicate": "Už existuje",
+    "confidence": "Istota: {{level}}",
+    "targetTypeLabel": "Cieľový typ",
+    "recordFallback": "Záznam",
+    "fieldName": "Názov",
+    "fieldDate": "Dátum",
+    "fieldValidUntil": "Platnosť do",
+    "fieldBatch": "Šarža (voliteľné)",
+    "type": {
+      "VACCINATION": "Očkovanie",
+      "DEWORMING": "Odčervenie",
+      "ECTOPARASITE": "Ektoparazity",
+      "MEDICATION": "Liek",
+      "NOTE": "Poznámka",
+      "SKIP": "Preskočiť"
+    },
+    "confidenceLevel": {
+      "high": "Vysoká",
+      "medium": "Stredná",
+      "low": "Nízka"
+    }
+  },
+  "aiProfileMerge": {
+    "noPet": "AI navrhla doplniť profil zvieraťa, ale aktívny profil nebol nájdený. Doplň údaje ručne v sekcii Profily.",
+    "addToProfile": "Doplniť do profilu „{{name}}“",
+    "description": "AI z dokumentu navrhla nové údaje o zvierati. Vyber, čo má pridať do profilu. Existujúce neprázdne polia nikdy nepretkávame bez tvojho súhlasu.",
+    "identifiers": "Základné údaje",
+    "empty": "(prázdne)",
+    "currentValue": "aktuálne: {{value}}",
+    "preserved": "(zachované, ak nezatrhneš)",
+    "allergies": "Nové alergie",
+    "chronic": "Nové chronické stavy",
+    "skip": "Preskočiť",
+    "apply": "Pridať do profilu",
+    "sexMale": "samec",
+    "sexFemale": "samica",
+    "sexUnknown": "neuvedené"
+  },
+  "linkedRecords": {
+    "title": "Súvisiace záznamy",
+    "vaccination": {
+      "label": "Očkovanie",
+      "hint": "Pridať vakcínu aplikovanú pri tejto návšteve"
+    },
+    "deworming": {
+      "label": "Odčervenie",
+      "hint": "Odčervovací prípravok a interval ďalšej aplikácie"
+    },
+    "ecto": {
+      "label": "Ektoparazity (kliešte / blchy)",
+      "hint": "Antiparazitiká, spot-on alebo tablety"
+    },
+    "medication": {
+      "label": "Liek",
+      "hint": "Predpísaný liek s dávkovaním a dĺžkou liečby"
+    },
+    "diet": {
+      "label": "Diéta",
+      "hint": "Zmena alebo overenie aktuálneho krmiva"
     }
   },
   "vaccination": {
     "name": "Názov vakcíny",
     "type": "Typ",
     "validUntil": "Platnosť do",
-    "batchNumber": "Číslo šarže"
+    "batchNumber": "Šarža (voliteľné)",
+    "typeRabies": "Besnota",
+    "typeCombined": "Kombinovaná",
+    "typeOther": "Iná"
   },
   "deworming": {
-    "product": "Prípravok",
+    "product": "Názov prípravku",
     "validUntil": "Platnosť do",
-    "intervalDays": "Interval (dni)"
+    "intervalDays": "Interval (dni)",
+    "nextDue": "Ďalší termín: {{date}}"
   },
   "ectoparasite": {
-    "product": "Prípravok",
+    "product": "Názov prípravku",
     "form": "Forma",
     "validUntil": "Platnosť do",
-    "intervalDays": "Interval (dni)"
+    "intervalDays": "Interval (dni)",
+    "nextDue": "Ďalší termín: {{date}}",
+    "formTablet": "Tableta",
+    "formSpotOn": "Spot-on",
+    "formCollar": "Obojok"
   },
   "medication": {
     "name": "Názov lieku",
-    "reason": "Dôvod",
-    "dose": "Dávka",
+    "reason": "Dôvod / indikácia (voliteľné)",
+    "dose": "Dávkovanie",
+    "dosePlaceholder": "napr. 1 tableta",
     "frequency": "Frekvencia",
+    "frequencyPlaceholder": "napr. 2x denne",
     "endDate": "Koniec liečby"
   },
   "diet": {
     "foodName": "Názov krmiva",
-    "reactionNotes": "Poznámky k reakcii",
+    "reactionNotes": "Reakcia / poznámky",
     "suitability": "Vhodnosť"
   },
   "profiles": {

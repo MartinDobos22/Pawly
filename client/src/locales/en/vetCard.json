@@ -34,5 +34,37 @@
     "noVaccinations": "No vaccinations",
     "noMedications": "No medications",
     "noVisits": "No visits"
+  },
+  "identity": {
+    "sexMale": "male",
+    "sexFemale": "female",
+    "ageYears": "{{age}} yr.",
+    "cardCaption": "Vet Card",
+    "switchTo": "Switch to {{name}}",
+    "dateOfBirth": "Date of birth"
+  },
+  "healthProfile": {
+    "title": "Health profile",
+    "empty": "No special health records",
+    "chronic": "Chronic diagnoses",
+    "allergies": "Allergies",
+    "intolerances": "Intolerances",
+    "notes": "Notes"
+  },
+  "actionBar": {
+    "sectionCount": "{{enabled}}/{{total}} sections",
+    "selectSections": "Select sections for export",
+    "sectionsAria": "Sections for export",
+    "printPreview": "Print preview",
+    "exportPdf": "Export PDF",
+    "note": "Selected sections will be included in the PDF and print.",
+    "sections": {
+      "identity": "Identity",
+      "conditions": "Diagnoses",
+      "medications": "Medications",
+      "prevention": "Preventive care",
+      "visits": "Clinical records",
+      "history": "Clinical history"
+    }
   }
 }

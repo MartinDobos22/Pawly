@@ -95,5 +95,14 @@
     "medsUsed": "Použité lieky",
     "lessonsTitle": "Poučenie pre budúcnosť",
     "attachment": "Príloha"
+  },
+  "attachments": {
+    "title": "Foto prílohy",
+    "errorImageOnly": "Podporované sú len obrázky (JPG, PNG, WEBP).",
+    "errorTooLarge": "Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skúste menšie rozlíšenie.",
+    "empty": "Žiadne prílohy.",
+    "captionAlt": "Príloha",
+    "captionPlaceholder": "Popis (voliteľné)",
+    "deleteAria": "Zmazať prílohu"
   }
 }

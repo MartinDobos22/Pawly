@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
 import type { EctoparasiteRecord } from '../../../../../types/dogHealth';
@@ -12,17 +13,16 @@ interface EctoFieldsProps {
 }
 
 export default function EctoFields({ values, baseDate, errorProduct, onChange }: EctoFieldsProps) {
+  const { t } = useTranslation('healthPassport');
   const nextDue =
-    baseDate && values.intervalDays > 0
-      ? formatDate(plusDays(baseDate, values.intervalDays))
-      : '—';
+    baseDate && values.intervalDays > 0 ? formatDate(plusDays(baseDate, values.intervalDays)) : '—';
 
   return (
     <Stack spacing={1.5}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <TextField
           size="small"
-          label="Názov prípravku"
+          label={t('ectoparasite.product')}
           value={values.product}
           onChange={(e) => onChange('product', e.target.value)}
           error={Boolean(errorProduct)}
@@ -30,26 +30,26 @@ export default function EctoFields({ values, baseDate, errorProduct, onChange }:
           fullWidth
         />
         <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel>Forma</InputLabel>
+          <InputLabel>{t('ectoparasite.form')}</InputLabel>
           <Select
-            label="Forma"
+            label={t('ectoparasite.form')}
             value={values.form}
             onChange={(e) => onChange('form', e.target.value as EctoparasiteRecord['form'])}
           >
-            <MenuItem value="TABLET">Tableta</MenuItem>
-            <MenuItem value="SPOT_ON">Spot-on</MenuItem>
-            <MenuItem value="COLLAR">Obojok</MenuItem>
+            <MenuItem value="TABLET">{t('ectoparasite.formTablet')}</MenuItem>
+            <MenuItem value="SPOT_ON">{t('ectoparasite.formSpotOn')}</MenuItem>
+            <MenuItem value="COLLAR">{t('ectoparasite.formCollar')}</MenuItem>
           </Select>
         </FormControl>
       </Stack>
       <TextField
         size="small"
         type="number"
-        label="Interval (dni)"
+        label={t('ectoparasite.intervalDays')}
         value={values.intervalDays}
         onChange={(e) => onChange('intervalDays', Number(e.target.value) || 0)}
         inputProps={{ min: 1, step: 1 }}
-        helperText={`Ďalší termín: ${nextDue}`}
+        helperText={t('ectoparasite.nextDue', { date: nextDue })}
         fullWidth
       />
     </Stack>

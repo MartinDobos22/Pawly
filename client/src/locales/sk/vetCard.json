@@ -34,5 +34,37 @@
     "noVaccinations": "Žiadne vakcinácie",
     "noMedications": "Žiadne lieky",
     "noVisits": "Žiadne návštevy"
+  },
+  "identity": {
+    "sexMale": "samec",
+    "sexFemale": "samica",
+    "ageYears": "{{age}} r.",
+    "cardCaption": "Karta pre veterinára",
+    "switchTo": "Prepnúť na {{name}}",
+    "dateOfBirth": "Dátum narodenia"
+  },
+  "healthProfile": {
+    "title": "Zdravotný profil",
+    "empty": "Žiadne špeciálne zdravotné záznamy",
+    "chronic": "Chronické diagnózy",
+    "allergies": "Alergie",
+    "intolerances": "Intolerancie",
+    "notes": "Poznámky"
+  },
+  "actionBar": {
+    "sectionCount": "{{enabled}}/{{total}} sekcií",
+    "selectSections": "Vybrať sekcie pre export",
+    "sectionsAria": "Sekcie pre export",
+    "printPreview": "Náhľad tlače",
+    "exportPdf": "Export PDF",
+    "note": "Vybrané sekcie sa zahrnú do PDF aj tlače.",
+    "sections": {
+      "identity": "Identita",
+      "conditions": "Diagnózy",
+      "medications": "Lieky",
+      "prevention": "Preventíva",
+      "visits": "Klinické záznamy",
+      "history": "Klinická história"
+    }
   }
 }

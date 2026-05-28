@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, IconButton, TextField, Typography, useTheme } from '@mui/material';
 import { AddPhotoAlternate as AddPhotoIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { downscaleImage, fileToDataUrl } from '../../utils/imageDownscale';
@@ -20,6 +21,7 @@ export default function AttachmentGallery({
   onChange,
   disabled = false,
 }: AttachmentGalleryProps) {
+  const { t } = useTranslation('episodes');
   const theme = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function AttachmentGallery({
       const next: EpisodeAttachment[] = [...attachments];
       for (const file of Array.from(files)) {
         if (!file.type.startsWith('image/')) {
-          setError('Podporované sú len obrázky (JPG, PNG, WEBP).');
+          setError(t('attachments.errorImageOnly'));
           continue;
         }
 
@@ -62,9 +64,7 @@ export default function AttachmentGallery({
               mimeType: file.type,
             });
           } else {
-            setError(
-              'Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skúste menšie rozlíšenie.'
-            );
+            setError(t('attachments.errorTooLarge'));
           }
         }
       }
@@ -91,7 +91,7 @@ export default function AttachmentGallery({
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1 }}>
-          Foto prílohy
+          {t('attachments.title')}
         </Typography>
         <Button
           size="small"
@@ -100,7 +100,7 @@ export default function AttachmentGallery({
           onClick={() => inputRef.current?.click()}
           disabled={disabled || busy}
         >
-          Pridať
+          {t('actions.add', { ns: 'common' })}
         </Button>
         <input ref={inputRef} type="file" accept="image/*" multiple hidden onChange={onFileInput} />
       </Box>
@@ -113,7 +113,7 @@ export default function AttachmentGallery({
 
       {attachments.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
-          Žiadne prílohy.
+          {t('attachments.empty')}
         </Typography>
       ) : (
         <Box
@@ -137,7 +137,7 @@ export default function AttachmentGallery({
               <Box
                 component="img"
                 src={attachment.dataUrl}
-                alt={attachment.caption ?? 'Príloha'}
+                alt={attachment.caption ?? t('attachments.captionAlt')}
                 sx={{ width: '100%', height: 120, objectFit: 'cover' }}
               />
               <Box sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -145,7 +145,7 @@ export default function AttachmentGallery({
                   size="small"
                   fullWidth
                   variant="standard"
-                  placeholder="Popis (voliteľné)"
+                  placeholder={t('attachments.captionPlaceholder')}
                   value={attachment.caption ?? ''}
                   onChange={(e) => handleCaptionChange(attachment.id, e.target.value)}
                   disabled={disabled}
@@ -154,7 +154,7 @@ export default function AttachmentGallery({
                   size="small"
                   onClick={() => handleDelete(attachment.id)}
                   disabled={disabled}
-                  aria-label="Zmazať prílohu"
+                  aria-label={t('attachments.deleteAria')}
                 >
                   <DeleteIcon fontSize="small" />
                 </IconButton>

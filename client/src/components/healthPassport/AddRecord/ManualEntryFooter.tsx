@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Tooltip, Typography } from '@mui/material';
 import { useManualEntry } from './ManualEntry';
 
@@ -5,6 +6,7 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(naviga
 const modKey = isMac ? '⌘' : 'Ctrl';
 
 export default function ManualEntryFooter() {
+  const { t } = useTranslation('healthPassport');
   const { submit, cancel } = useManualEntry();
   return (
     <>
@@ -13,13 +15,13 @@ export default function ManualEntryFooter() {
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
         >
-          Tip: {modKey} + Enter pre uloženie
+          {t('addRecord.tipSave', { modKey })}
         </Typography>
       </Box>
-      <Button onClick={cancel}>Zrušiť</Button>
+      <Button onClick={cancel}>{t('actions.cancel', { ns: 'common' })}</Button>
       <Tooltip title={`${modKey} + Enter`} placement="top">
         <Button variant="contained" onClick={submit}>
-          Uložiť záznam
+          {t('addRecord.saveRecord')}
         </Button>
       </Tooltip>
     </>

@@ -64,5 +64,13 @@
   },
   "loading": "Načítavam…",
   "saving": "Ukladám…",
-  "deleting": "Mažem…"
+  "deleting": "Mažem…",
+  "petSwitcher": {
+    "noProfile": "Žiadny profil",
+    "aria": "Prepnúť aktívne zviera",
+    "addPet": "Pridajte zviera",
+    "noProfiles": "Žiadne profily zvierat",
+    "defaultBreed": "Pes",
+    "manage": "Spravovať profily"
+  }
 }

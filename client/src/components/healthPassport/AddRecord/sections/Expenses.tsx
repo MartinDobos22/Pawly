@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Stack, TextField } from '@mui/material';
 import { ReceiptLong as ReceiptIcon } from '@mui/icons-material';
 
@@ -14,9 +15,10 @@ interface ExpensesProps {
 }
 
 export default function Expenses({ values, errors, expanded, onExpand, onChange }: ExpensesProps) {
+  const { t } = useTranslation('healthPassport');
   return (
     <SectionCard
-      title="Výdavky a ďalší termín"
+      title={t('addRecord.expenses.title')}
       icon={<ReceiptIcon />}
       collapsible
       expanded={expanded}
@@ -24,7 +26,7 @@ export default function Expenses({ values, errors, expanded, onExpand, onChange 
     >
       <Stack spacing={1.5}>
         <DateField
-          label="Dátum ďalšej kontroly"
+          label={t('addRecord.expenses.nextCheck')}
           value={values.nextCheckDate}
           onChange={(v) => onChange('nextCheckDate', v)}
           sx={{ width: { xs: '100%', sm: 240 } }}
@@ -39,7 +41,7 @@ export default function Expenses({ values, errors, expanded, onExpand, onChange 
           <TextField
             size="small"
             type="number"
-            label="Celkový výdavok (€)"
+            label={t('addRecord.expenses.total')}
             value={values.totalExpense}
             onChange={(e) => onChange('totalExpense', e.target.value)}
             error={Boolean(errors['expenses.totalExpense'])}
@@ -49,7 +51,7 @@ export default function Expenses({ values, errors, expanded, onExpand, onChange 
           <TextField
             size="small"
             type="number"
-            label="Z toho lieky (€)"
+            label={t('addRecord.expenses.medication')}
             value={values.extraMedicationExpense}
             onChange={(e) => onChange('extraMedicationExpense', e.target.value)}
             error={Boolean(errors['expenses.extraMedicationExpense'])}
@@ -59,7 +61,7 @@ export default function Expenses({ values, errors, expanded, onExpand, onChange 
           <TextField
             size="small"
             type="number"
-            label="Z toho krmivo (€)"
+            label={t('addRecord.expenses.food')}
             value={values.extraFoodExpense}
             onChange={(e) => onChange('extraFoodExpense', e.target.value)}
             error={Boolean(errors['expenses.extraFoodExpense'])}

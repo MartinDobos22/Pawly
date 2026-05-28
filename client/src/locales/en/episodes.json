@@ -95,5 +95,14 @@
     "medsUsed": "Medications used",
     "lessonsTitle": "Lessons for the future",
     "attachment": "Attachment"
+  },
+  "attachments": {
+    "title": "Photo attachments",
+    "errorImageOnly": "Only images are supported (JPG, PNG, WEBP).",
+    "errorTooLarge": "Image is too large and could not be resized. Try a lower resolution.",
+    "empty": "No attachments.",
+    "captionAlt": "Attachment",
+    "captionPlaceholder": "Description (optional)",
+    "deleteAria": "Delete attachment"
   }
 }

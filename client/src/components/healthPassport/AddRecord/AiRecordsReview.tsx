@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -20,15 +21,6 @@ interface AiRecordsReviewProps {
   hasProfileData?: boolean;
 }
 
-const TARGET_LABEL: Record<AiDetectedRecordType, string> = {
-  VACCINATION: 'Očkovanie',
-  DEWORMING: 'Odčervenie',
-  ECTOPARASITE: 'Ektoparazity',
-  MEDICATION: 'Liek',
-  NOTE: 'Poznámka',
-  SKIP: 'Preskočiť',
-};
-
 const CONFIDENCE_COLOR: Record<
   AiDetectedDraftRecord['sourceConfidence'],
   'success' | 'warning' | 'error'
@@ -38,23 +30,26 @@ const CONFIDENCE_COLOR: Record<
   low: 'error',
 };
 
-const CONFIDENCE_LABEL: Record<AiDetectedDraftRecord['sourceConfidence'], string> = {
-  high: 'Vysoká',
-  medium: 'Stredná',
-  low: 'Nízka',
-};
+const TARGET_TYPES: AiDetectedRecordType[] = [
+  'VACCINATION',
+  'DEWORMING',
+  'ECTOPARASITE',
+  'MEDICATION',
+  'NOTE',
+  'SKIP',
+];
 
 export default function AiRecordsReview({
   records,
   onChange,
   hasProfileData,
 }: AiRecordsReviewProps) {
+  const { t } = useTranslation('healthPassport');
+
   if (records.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
-        {hasProfileData
-          ? 'AI nenašla očkovania ani úkony, no navrhla údaje do profilu (vyššie). Môžeš pokračovať a uložiť dokument.'
-          : 'Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.'}
+        {hasProfileData ? t('aiRecordsReview.emptyWithProfile') : t('aiRecordsReview.empty')}
       </Typography>
     );
   }
@@ -62,21 +57,28 @@ export default function AiRecordsReview({
   return (
     <Stack spacing={1.5}>
       <Typography variant="body2" color="text.secondary">
-        Skontroluj rozpoznané záznamy. Pre každý nastav cieľový typ alebo ho preskoč.
+        {t('aiRecordsReview.hint')}
       </Typography>
       {records.map((record) => (
         <Card key={record.id}>
           <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
             <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }} flexWrap="wrap">
               <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1, minWidth: 0 }} noWrap>
-                {record.sourceDisease || record.productName || 'Záznam'}
+                {record.sourceDisease || record.productName || t('aiRecordsReview.recordFallback')}
               </Typography>
               {record.isDuplicate && (
-                <Chip size="small" label="Už existuje" color="warning" variant="filled" />
+                <Chip
+                  size="small"
+                  label={t('aiRecordsReview.duplicate')}
+                  color="warning"
+                  variant="filled"
+                />
               )}
               <Chip
                 size="small"
-                label={`Istota: ${CONFIDENCE_LABEL[record.sourceConfidence]}`}
+                label={t('aiRecordsReview.confidence', {
+                  level: t(`aiRecordsReview.confidenceLevel.${record.sourceConfidence}` as never),
+                })}
                 color={CONFIDENCE_COLOR[record.sourceConfidence]}
                 variant="outlined"
               />
@@ -86,31 +88,31 @@ export default function AiRecordsReview({
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.25 }}
             >
               <FormControl size="small">
-                <InputLabel>Cieľový typ</InputLabel>
+                <InputLabel>{t('aiRecordsReview.targetTypeLabel')}</InputLabel>
                 <Select
-                  label="Cieľový typ"
+                  label={t('aiRecordsReview.targetTypeLabel')}
                   value={record.targetType}
                   onChange={(e) =>
                     onChange(record.id, { targetType: e.target.value as AiDetectedRecordType })
                   }
                 >
-                  {(Object.keys(TARGET_LABEL) as AiDetectedRecordType[]).map((key) => (
+                  {TARGET_TYPES.map((key) => (
                     <MenuItem key={key} value={key}>
-                      {TARGET_LABEL[key]}
+                      {t(`aiRecordsReview.type.${key}` as never)}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <TextField
                 size="small"
-                label="Názov"
+                label={t('aiRecordsReview.fieldName')}
                 value={record.productName}
                 onChange={(e) => onChange(record.id, { productName: e.target.value })}
               />
               <TextField
                 size="small"
                 type="date"
-                label="Dátum"
+                label={t('aiRecordsReview.fieldDate')}
                 InputLabelProps={{ shrink: true }}
                 value={record.date}
                 onChange={(e) => onChange(record.id, { date: e.target.value })}
@@ -118,14 +120,14 @@ export default function AiRecordsReview({
               <TextField
                 size="small"
                 type="date"
-                label="Platnosť do"
+                label={t('aiRecordsReview.fieldValidUntil')}
                 InputLabelProps={{ shrink: true }}
                 value={record.validUntil}
                 onChange={(e) => onChange(record.id, { validUntil: e.target.value })}
               />
               <TextField
                 size="small"
-                label="Šarža (voliteľné)"
+                label={t('aiRecordsReview.fieldBatch')}
                 value={record.batchNumber}
                 onChange={(e) => onChange(record.id, { batchNumber: e.target.value })}
               />

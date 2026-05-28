@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Box,
@@ -36,12 +37,6 @@ const ageInYears = (dog: PetProfile): number | null => {
   return dog.ageYears ?? null;
 };
 
-const sexLabel = (sex: PetProfile['sex']): string | null => {
-  if (sex === 'MALE') return 'samec';
-  if (sex === 'FEMALE') return 'samica';
-  return null;
-};
-
 const formatDob = (iso?: string): string | null => {
   if (!iso) return null;
   const d = new Date(iso);
@@ -68,26 +63,46 @@ export default function DocumentIdentityBlock({
   selectedDogId,
   onSelectDog,
 }: Props) {
+  const { t } = useTranslation('vetCard');
   const theme = useTheme();
   const age = ageInYears(dog);
-  const sex = sexLabel(dog.sex);
+
+  const sexLabel =
+    dog.sex === 'MALE'
+      ? t('identity.sexMale')
+      : dog.sex === 'FEMALE'
+        ? t('identity.sexFemale')
+        : null;
 
   const subtitleParts = [
     dog.breed,
-    age != null ? `${age} r.` : null,
+    age != null ? t('identity.ageYears', { age }) : null,
     dog.weightKg ? `${dog.weightKg} kg` : null,
-    sex,
+    sexLabel,
   ].filter(Boolean);
 
   const identifiers: IdentifierItem[] = [];
   if (dog.microchipNumber)
-    identifiers.push({ icon: <ChipIcon />, label: 'Mikročip', value: dog.microchipNumber });
+    identifiers.push({
+      icon: <ChipIcon />,
+      label: t('fields.microchip'),
+      value: dog.microchipNumber,
+    });
   if (dog.passportNumber)
-    identifiers.push({ icon: <PassportIcon />, label: 'Číslo pasu', value: dog.passportNumber });
+    identifiers.push({
+      icon: <PassportIcon />,
+      label: t('fields.passport'),
+      value: dog.passportNumber,
+    });
   const dob = formatDob(dog.dateOfBirth);
-  if (dob) identifiers.push({ icon: <CalendarIcon />, label: 'Dátum narodenia', value: dob });
+  if (dob)
+    identifiers.push({ icon: <CalendarIcon />, label: t('identity.dateOfBirth'), value: dob });
   if (dog.weightKg)
-    identifiers.push({ icon: <WeightIcon />, label: 'Hmotnosť', value: `${dog.weightKg} kg` });
+    identifiers.push({
+      icon: <WeightIcon />,
+      label: t('fields.weight'),
+      value: `${dog.weightKg} kg`,
+    });
 
   return (
     <Box
@@ -131,7 +146,7 @@ export default function DocumentIdentityBlock({
             variant="caption"
             sx={{ color: 'text.secondary', fontSize: '0.7rem', letterSpacing: '0.1em' }}
           >
-            Karta pre veterinára
+            {t('identity.cardCaption')}
           </Typography>
           <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
             <Typography
@@ -160,7 +175,7 @@ export default function DocumentIdentityBlock({
                 >
                   {dogProfiles.map((p) => (
                     <MenuItem key={p.id} value={p.id}>
-                      Prepnúť na {p.name}
+                      {t('identity.switchTo', { name: p.name })}
                     </MenuItem>
                   ))}
                 </Select>

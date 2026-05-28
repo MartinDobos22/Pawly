@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Chip, IconButton, TextField, Typography } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
@@ -19,6 +20,7 @@ export default function StringListEditor({
   chipColor = 'default',
   helperText,
 }: StringListEditorProps) {
+  const { t } = useTranslation('common');
   const [draft, setDraft] = useState('');
 
   const commit = () => {
@@ -58,7 +60,12 @@ export default function StringListEditor({
           placeholder={placeholder}
           helperText={helperText}
         />
-        <IconButton onClick={commit} disabled={!draft.trim()} color="primary" aria-label="Pridať">
+        <IconButton
+          onClick={commit}
+          disabled={!draft.trim()}
+          color="primary"
+          aria-label={t('actions.add')}
+        >
           <AddIcon />
         </IconButton>
       </Box>
