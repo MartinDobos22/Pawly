@@ -12,6 +12,7 @@
     "exportColDetail": "Detail"
   },
   "timeline": {
+    "title": "Časová os",
     "VACCINATION": "Očkovanie",
     "DEWORMING": "Odčervenie",
     "ECTOPARASITE": "Ektoparazity",
@@ -429,9 +430,24 @@
     "recordAnalyses": "Analýzy krmiva",
     "saveCreate": "Pridať",
     "saveUpdate": "Uložiť",
-    "allergySuggestions": ["Kura/kuriatko", "Hovädzie", "Jahňacie", "Ryby", "Vajcia", "Pšenica", "Kukurica", "Sója"],
+    "allergySuggestions": [
+      "Kura/kuriatko",
+      "Hovädzie",
+      "Jahňacie",
+      "Ryby",
+      "Vajcia",
+      "Pšenica",
+      "Kukurica",
+      "Sója"
+    ],
     "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
-    "healthSuggestions": ["Diabetes", "Problémy s obličkami", "Obezita", "Problémy s kĺbmi", "Citlivé trávenie"]
+    "healthSuggestions": [
+      "Diabetes",
+      "Problémy s obličkami",
+      "Obezita",
+      "Problémy s kĺbmi",
+      "Citlivé trávenie"
+    ]
   },
   "score": {
     "excellent": "Výborný",

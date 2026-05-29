@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Box, Card, Collapse, IconButton, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { ExpandMore as ExpandIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   title: string;
@@ -24,6 +25,7 @@ export default function SectionCard({
   children,
 }: Props) {
   const theme = useTheme();
+  const { t } = useTranslation('common');
   const [uncontrolled, setUncontrolled] = useState(defaultExpanded);
   const expanded = controlled ?? uncontrolled;
 
@@ -68,7 +70,7 @@ export default function SectionCard({
             ml: 0.5,
           }}
         >
-          (povinné)
+          ({t('labels.required')})
         </Typography>
       )}
     </Stack>

@@ -129,7 +129,7 @@ export default function HealthTimeline({
       >
         <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
           <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
-            Timeline
+            {t('timeline.title')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {t('timeline.chronologicalOverview')}

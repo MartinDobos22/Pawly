@@ -12,6 +12,7 @@
     "exportColDetail": "Detail"
   },
   "timeline": {
+    "title": "Timeline",
     "VACCINATION": "Vaccination",
     "DEWORMING": "Deworming",
     "ECTOPARASITE": "Ectoparasites",
@@ -427,7 +428,13 @@
     "saveUpdate": "Save",
     "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
     "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
-    "healthSuggestions": ["Diabetes", "Kidney problems", "Obesity", "Joint problems", "Sensitive digestion"]
+    "healthSuggestions": [
+      "Diabetes",
+      "Kidney problems",
+      "Obesity",
+      "Joint problems",
+      "Sensitive digestion"
+    ]
   },
   "score": {
     "excellent": "Excellent",
