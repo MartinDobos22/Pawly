@@ -64,6 +64,8 @@
   },
   "loading": "Načítavam…",
   "saving": "Ukladám…",
+  "saved": "Uložené",
+  "saveFailed": "Ukladanie zlyhalo",
   "deleting": "Mažem…",
   "petSwitcher": {
     "noProfile": "Žiadny profil",

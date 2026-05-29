@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -11,6 +12,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material';
@@ -34,6 +36,7 @@ import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../ty
 
 export default function EpisodeDiaryPage() {
   const { t } = useTranslation('episodes');
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
   const { profiles } = usePetProfiles();
@@ -53,6 +56,13 @@ export default function EpisodeDiaryPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<HealthEpisodeRecord | undefined>(undefined);
   const [similarFor, setSimilarFor] = useState<HealthEpisodeRecord | null>(null);
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
 
   const filtered = useMemo(
     () =>
@@ -87,13 +97,18 @@ export default function EpisodeDiaryPage() {
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>,
     id?: string
   ) => {
-    if (id) {
-      await update(id, payload);
-    } else {
-      await add(payload);
+    try {
+      if (id) {
+        await update(id, payload);
+      } else {
+        await add(payload);
+      }
+      setFormOpen(false);
+      setEditing(undefined);
+      setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+    } catch {
+      setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
     }
-    setFormOpen(false);
-    setEditing(undefined);
   };
 
   const handleEdit = (episode: HealthEpisodeRecord) => {
@@ -125,9 +140,7 @@ export default function EpisodeDiaryPage() {
           overflow: 'hidden',
           borderRadius: 4,
           bgcolor: (theme) =>
-            theme.palette.mode === 'light'
-              ? 'rgba(15, 76, 92, 0.05)'
-              : 'rgba(111, 190, 209, 0.10)',
+            theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
           border: (theme) =>
             `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
           p: { xs: 2, md: 2.5 },
@@ -214,7 +227,10 @@ export default function EpisodeDiaryPage() {
               <Chip
                 size="small"
                 color={storage.isCritical ? 'error' : 'warning'}
-                label={t('page.storageUsage', { used: storage.megabytes.toFixed(1), limit: storage.limitMb })}
+                label={t('page.storageUsage', {
+                  used: storage.megabytes.toFixed(1),
+                  limit: storage.limitMb,
+                })}
               />
             )}
           </Stack>
@@ -301,6 +317,21 @@ export default function EpisodeDiaryPage() {
           });
         }}
       />
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

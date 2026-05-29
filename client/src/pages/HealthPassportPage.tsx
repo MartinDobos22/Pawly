@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Card, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, Snackbar, Stack, Typography } from '@mui/material';
 import { Pets as PetsIcon } from '@mui/icons-material';
 
 import type {
@@ -37,6 +37,7 @@ import {
 
 export default function HealthPassportPage() {
   const { t, i18n } = useTranslation('healthPassport');
+  const { t: tCommon } = useTranslation('common');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
@@ -205,6 +206,13 @@ export default function HealthPassportPage() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [selectedVisitId, setSelectedVisitId] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<RecordDetailState | null>(null);
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
 
   const dispatchBundle = useCallback(
     (bundle: VisitBundle) => {
@@ -231,20 +239,25 @@ export default function HealthPassportPage() {
 
   // ── Visit save/delete ───────────────────────────────────────────────────────
   const handleSaveVisit = useCallback(
-    (draft: Parameters<React.ComponentProps<typeof VisitDetailDialog>['onSave']>[0]) => {
+    async (draft: Parameters<React.ComponentProps<typeof VisitDetailDialog>['onSave']>[0]) => {
       if (!selectedVisitId) return;
-      void updateVisit(selectedVisitId, {
-        date: draft.date,
-        clinicName: draft.clinicName,
-        vetName: draft.vetName.trim() || undefined,
-        reason: draft.reason,
-        findings: draft.findings.trim() || undefined,
-        diagnosis: draft.diagnosis.trim() || undefined,
-        recommendations: draft.recommendations.trim() || undefined,
-        nextCheckDate: draft.nextCheckDate || undefined,
-      });
+      try {
+        await updateVisit(selectedVisitId, {
+          date: draft.date,
+          clinicName: draft.clinicName,
+          vetName: draft.vetName.trim() || undefined,
+          reason: draft.reason,
+          findings: draft.findings.trim() || undefined,
+          diagnosis: draft.diagnosis.trim() || undefined,
+          recommendations: draft.recommendations.trim() || undefined,
+          nextCheckDate: draft.nextCheckDate || undefined,
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [selectedVisitId, updateVisit]
+    [selectedVisitId, updateVisit, tCommon]
   );
 
   const handleDeleteVisit = useCallback(() => {
@@ -255,7 +268,7 @@ export default function HealthPassportPage() {
 
   // ── Record save handlers ────────────────────────────────────────────────────
   const handleSaveVaccination = useCallback(
-    (
+    async (
       id: string,
       draft: {
         name: string;
@@ -265,23 +278,33 @@ export default function HealthPassportPage() {
         batchNumber: string;
       }
     ) => {
-      void updateVaccination(id, { ...draft, batchNumber: draft.batchNumber || undefined });
+      try {
+        await updateVaccination(id, { ...draft, batchNumber: draft.batchNumber || undefined });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateVaccination]
+    [updateVaccination, tCommon]
   );
 
   const handleSaveDeworming = useCallback(
-    (id: string, draft: { productName: string; dateGiven: string; nextDueDate: string }) => {
-      void updateDeworming(id, {
-        ...draft,
-        intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 90),
-      });
+    async (id: string, draft: { productName: string; dateGiven: string; nextDueDate: string }) => {
+      try {
+        await updateDeworming(id, {
+          ...draft,
+          intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 90),
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateDeworming]
+    [updateDeworming, tCommon]
   );
 
   const handleSaveEcto = useCallback(
-    (
+    async (
       id: string,
       draft: {
         productName: string;
@@ -290,16 +313,21 @@ export default function HealthPassportPage() {
         nextDueDate: string;
       }
     ) => {
-      void updateEcto(id, {
-        ...draft,
-        intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 30),
-      });
+      try {
+        await updateEcto(id, {
+          ...draft,
+          intervalDays: computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 30),
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateEcto]
+    [updateEcto, tCommon]
   );
 
   const handleSaveMedication = useCallback(
-    (
+    async (
       id: string,
       draft: {
         name: string;
@@ -310,13 +338,18 @@ export default function HealthPassportPage() {
         endDate: string;
       }
     ) => {
-      void updateMedication(id, { ...draft, endDate: draft.endDate || undefined });
+      try {
+        await updateMedication(id, { ...draft, endDate: draft.endDate || undefined });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateMedication]
+    [updateMedication, tCommon]
   );
 
   const handleSaveDiet = useCallback(
-    (
+    async (
       id: string,
       draft: {
         foodName: string;
@@ -326,17 +359,22 @@ export default function HealthPassportPage() {
         suitabilityStatus: DietEntry['suitabilityStatus'];
       }
     ) => {
-      void updateDietEntry(id, {
-        ...draft,
-        endedAt: draft.endedAt || undefined,
-        reactionNotes: draft.reactionNotes || undefined,
-      });
+      try {
+        await updateDietEntry(id, {
+          ...draft,
+          endedAt: draft.endedAt || undefined,
+          reactionNotes: draft.reactionNotes || undefined,
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateDietEntry]
+    [updateDietEntry, tCommon]
   );
 
   const handleSaveExpense = useCallback(
-    (
+    async (
       id: string,
       draft: {
         date: string;
@@ -346,13 +384,18 @@ export default function HealthPassportPage() {
         note: string;
       }
     ) => {
-      void updateExpense(id, {
-        ...draft,
-        amount: Number(draft.amount || 0),
-        note: draft.note || undefined,
-      });
+      try {
+        await updateExpense(id, {
+          ...draft,
+          amount: Number(draft.amount || 0),
+          note: draft.note || undefined,
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
     },
-    [updateExpense]
+    [updateExpense, tCommon]
   );
 
   const handleDeleteRecord = useCallback(() => {
@@ -621,6 +664,21 @@ export default function HealthPassportPage() {
         onSaveExpense={handleSaveExpense}
         onDelete={handleDeleteRecord}
       />
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
