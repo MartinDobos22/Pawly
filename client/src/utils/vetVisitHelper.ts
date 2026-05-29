@@ -9,6 +9,7 @@ import type {
   VaccinationRecord,
   VetVisitRecord,
 } from '../types/dogHealth';
+import i18n from '../i18n';
 
 interface VisitAttachmentDraft {
   attachmentLabel: string;
@@ -127,34 +128,45 @@ export class VetVisitHelper {
     draft: VisitAttachmentDraft,
     fallbackLabel: string,
     createdAt: string,
-    uid: () => string,
+    uid: () => string
   ): AttachmentRef[] | undefined {
     const attachmentUrl = draft.attachmentPreviewUrl || draft.attachmentUrl;
     if (!draft.attachmentLabel && !attachmentUrl && !draft.attachmentFileName) return undefined;
 
-    return [{
-      id: uid(),
-      label: draft.attachmentLabel || draft.attachmentFileName || fallbackLabel,
-      imageUrl: attachmentUrl || undefined,
-      fileName: draft.attachmentFileName || undefined,
-      createdAt,
-    }];
+    return [
+      {
+        id: uid(),
+        label: draft.attachmentLabel || draft.attachmentFileName || fallbackLabel,
+        imageUrl: attachmentUrl || undefined,
+        fileName: draft.attachmentFileName || undefined,
+        createdAt,
+      },
+    ];
   }
 
   static buildAttachments(
     drafts: VisitAttachmentDraft[],
     fallbackLabel: string,
     createdAt: string,
-    uid: () => string,
+    uid: () => string
   ): AttachmentRef[] | undefined {
     const refs = drafts.flatMap(
-      (draft) => VetVisitHelper.buildAttachment(draft, fallbackLabel, createdAt, uid) ?? [],
+      (draft) => VetVisitHelper.buildAttachment(draft, fallbackLabel, createdAt, uid) ?? []
     );
     return refs.length > 0 ? refs : undefined;
   }
 
   static createWizardVisitBundle(input: WizardVisitBundleInput): VisitBundle {
-    const { dogId, draft, mainCategory, subcategory, attachmentDraft, currentDietEntryId, plusDays, uid } = input;
+    const {
+      dogId,
+      draft,
+      mainCategory,
+      subcategory,
+      attachmentDraft,
+      currentDietEntryId,
+      plusDays,
+      uid,
+    } = input;
     const visitId = uid();
     const createdAt = new Date().toISOString();
     const reason = VetVisitHelper.buildVisitReason(mainCategory, subcategory, draft.reason);
@@ -193,56 +205,86 @@ export class VetVisitHelper {
       attachments,
     };
 
-    const vaccinations: VaccinationRecord[] = draft.addVaccination && draft.vaccineName.trim()
-      ? [{
-          id: uid(),
-          dogId,
-          type: draft.vaccineType,
-          name: draft.vaccineName,
-          dateApplied: draft.date,
-          validUntil: draft.vaccineValidUntil || plusDays(draft.date, 365),
-          attachments,
-        }]
-      : [];
+    const vaccinations: VaccinationRecord[] =
+      draft.addVaccination && draft.vaccineName.trim()
+        ? [
+            {
+              id: uid(),
+              dogId,
+              type: draft.vaccineType,
+              name: draft.vaccineName,
+              dateApplied: draft.date,
+              validUntil: draft.vaccineValidUntil || plusDays(draft.date, 365),
+              attachments,
+            },
+          ]
+        : [];
 
-    const dewormings: DewormingRecord[] = draft.addDeworming && draft.dewormProduct.trim()
-      ? [{
-          id: uid(),
-          dogId,
-          productName: draft.dewormProduct,
-          dateGiven: draft.date,
-          intervalDays: computeIntervalDays(draft.date, draft.dewormValidUntil, draft.dewormInterval || 90),
-          nextDueDate: draft.dewormValidUntil || plusDays(draft.date, draft.dewormInterval || 90),
-          attachments,
-        }]
-      : [];
+    const dewormings: DewormingRecord[] =
+      draft.addDeworming && draft.dewormProduct.trim()
+        ? [
+            {
+              id: uid(),
+              dogId,
+              productName: draft.dewormProduct,
+              dateGiven: draft.date,
+              intervalDays: computeIntervalDays(
+                draft.date,
+                draft.dewormValidUntil,
+                draft.dewormInterval || 90
+              ),
+              nextDueDate:
+                draft.dewormValidUntil || plusDays(draft.date, draft.dewormInterval || 90),
+              attachments,
+            },
+          ]
+        : [];
 
-    const ectos: EctoparasiteRecord[] = draft.addEcto && draft.ectoProduct.trim()
-      ? [{
-          id: uid(),
-          dogId,
-          productName: draft.ectoProduct,
-          form: draft.ectoForm,
-          dateGiven: draft.date,
-          intervalDays: computeIntervalDays(draft.date, draft.ectoValidUntil, draft.ectoInterval || 30),
-          nextDueDate: draft.ectoValidUntil || plusDays(draft.date, draft.ectoInterval || 30),
-          attachments,
-        }]
-      : [];
+    const ectos: EctoparasiteRecord[] =
+      draft.addEcto && draft.ectoProduct.trim()
+        ? [
+            {
+              id: uid(),
+              dogId,
+              productName: draft.ectoProduct,
+              form: draft.ectoForm,
+              dateGiven: draft.date,
+              intervalDays: computeIntervalDays(
+                draft.date,
+                draft.ectoValidUntil,
+                draft.ectoInterval || 30
+              ),
+              nextDueDate: draft.ectoValidUntil || plusDays(draft.date, draft.ectoInterval || 30),
+              attachments,
+            },
+          ]
+        : [];
 
-    const dietEntries: DietEntry[] = draft.addDiet && draft.foodName.trim()
-      ? [{
-          id: uid(),
-          dogId,
-          foodName: draft.foodName,
-          startedAt: draft.date,
-          reactionNotes: draft.reactionNotes,
-          suitabilityStatus: draft.suitabilityStatus,
-          suitabilityReasons: draft.suitabilityStatus === 'SUITABLE'
-            ? ['Bez konfliktu s alergiami a diagnózami']
-            : ['Skontrolovať zloženie voči alergénom'],
-        }]
-      : [];
+    const dietEntries: DietEntry[] =
+      draft.addDiet && draft.foodName.trim()
+        ? [
+            {
+              id: uid(),
+              dogId,
+              foodName: draft.foodName,
+              startedAt: draft.date,
+              reactionNotes: draft.reactionNotes,
+              suitabilityStatus: draft.suitabilityStatus,
+              suitabilityReasons:
+                draft.suitabilityStatus === 'SUITABLE'
+                  ? [
+                      i18n.t('addRecord.aiImport.suitabilityNoAllergens', {
+                        ns: 'healthPassport',
+                      }) as string,
+                    ]
+                  : [
+                      i18n.t('addRecord.aiImport.suitabilityCheckAllergens', {
+                        ns: 'healthPassport',
+                      }) as string,
+                    ],
+            },
+          ]
+        : [];
 
     const expenses: ExpenseRecord[] = [];
     if (draft.totalExpense) {
@@ -284,19 +326,41 @@ export class VetVisitHelper {
   }
 
   static createAiVisitBundle(input: AiVisitBundleInput): VisitBundle {
-    const { dogId, draft, selectedVisitMainCategory, selectedVisitSubcategory, examType, aiSummary, selectedRecords, attachmentDraft, attachmentDrafts, plusDays, uid } = input;
+    const {
+      dogId,
+      draft,
+      selectedVisitMainCategory,
+      selectedVisitSubcategory,
+      examType,
+      aiSummary,
+      selectedRecords,
+      attachmentDraft,
+      attachmentDrafts,
+      plusDays,
+      uid,
+    } = input;
     const visitId = uid();
     const createdAt = new Date().toISOString();
-    const reasonSource = selectedVisitSubcategory || examType || 'AI import zdravotného pasu';
+    const reasonSource =
+      selectedVisitSubcategory ||
+      examType ||
+      (i18n.t('addRecord.aiImport.defaultReason', { ns: 'healthPassport' }) as string);
     const reason = VetVisitHelper.buildVisitReason(selectedVisitMainCategory, reasonSource, '');
-    const drafts = attachmentDrafts && attachmentDrafts.length > 0
-      ? attachmentDrafts
-      : attachmentDraft
-        ? [attachmentDraft]
-        : [];
-    const attachments = drafts.length > 0
-      ? VetVisitHelper.buildAttachments(drafts, 'AI analyzovaný dokument', createdAt, uid)
-      : undefined;
+    const drafts =
+      attachmentDrafts && attachmentDrafts.length > 0
+        ? attachmentDrafts
+        : attachmentDraft
+          ? [attachmentDraft]
+          : [];
+    const attachments =
+      drafts.length > 0
+        ? VetVisitHelper.buildAttachments(
+            drafts,
+            i18n.t('addRecord.aiImport.defaultAttachmentLabel', { ns: 'healthPassport' }) as string,
+            createdAt,
+            uid
+          )
+        : undefined;
 
     const vaccinations: VaccinationRecord[] = [];
     const dewormings: DewormingRecord[] = [];
@@ -305,9 +369,9 @@ export class VetVisitHelper {
 
     selectedRecords.forEach((record) => {
       if (record.targetType === 'VACCINATION') {
-        const vaccineType: VaccinationRecord['type'] = KNOWN_RABIES_KEYWORDS.some((keyword) => (
+        const vaccineType: VaccinationRecord['type'] = KNOWN_RABIES_KEYWORDS.some((keyword) =>
           `${record.productName} ${record.sourceDisease ?? ''}`.toLowerCase().includes(keyword)
-        ))
+        )
           ? 'RABIES'
           : 'OTHER';
         vaccinations.push({
@@ -323,7 +387,11 @@ export class VetVisitHelper {
       }
 
       if (record.targetType === 'DEWORMING') {
-        const intervalDays = computeIntervalDays(record.date, record.validUntil, record.intervalDays ?? 90);
+        const intervalDays = computeIntervalDays(
+          record.date,
+          record.validUntil,
+          record.intervalDays ?? 90
+        );
         dewormings.push({
           id: uid(),
           dogId,
@@ -336,7 +404,11 @@ export class VetVisitHelper {
       }
 
       if (record.targetType === 'ECTOPARASITE') {
-        const intervalDays = computeIntervalDays(record.date, record.validUntil, record.intervalDays ?? 30);
+        const intervalDays = computeIntervalDays(
+          record.date,
+          record.validUntil,
+          record.intervalDays ?? 30
+        );
         ectos.push({
           id: uid(),
           dogId,
@@ -354,9 +426,13 @@ export class VetVisitHelper {
           id: uid(),
           dogId,
           name: record.productName,
-          reason: record.sourceDisease || 'AI import zo zdravotného pasu',
-          dose: 'Neuvedené',
-          frequency: 'Podľa odporúčania veterinára',
+          reason:
+            record.sourceDisease ||
+            (i18n.t('addRecord.aiImport.defaultMedReason', { ns: 'healthPassport' }) as string),
+          dose: i18n.t('addRecord.aiImport.defaultDose', { ns: 'healthPassport' }) as string,
+          frequency: i18n.t('addRecord.aiImport.defaultFrequency', {
+            ns: 'healthPassport',
+          }) as string,
           startDate: record.date,
           fromVetVisitId: visitId,
         });
@@ -368,8 +444,18 @@ export class VetVisitHelper {
       dogId,
       date: draft.date,
       clinicName: draft.clinicName.trim(),
-      reason: reason || 'AI analýza dokumentu',
-      findings: [aiSummary, selectedRecords.length ? `AI import záznamov: ${selectedRecords.length}` : '']
+      reason:
+        reason ||
+        (i18n.t('addRecord.aiImport.defaultVisitReason', { ns: 'healthPassport' }) as string),
+      findings: [
+        aiSummary,
+        selectedRecords.length
+          ? (i18n.t('addRecord.aiImport.importRecordCount', {
+              ns: 'healthPassport',
+              count: selectedRecords.length,
+            }) as string)
+          : '',
+      ]
         .filter(Boolean)
         .join('\n\n'),
       diagnosis: draft.diagnosis.trim() || undefined,

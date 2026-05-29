@@ -216,7 +216,16 @@
       "noTextExtracted": "Z dokumentov sa nepodarilo extrahovať žiadny text.",
       "analyzeFailed": "Analýza pasu zlyhala.",
       "importNote_one": "AI import z {{count}} strany dokumentu",
-      "importNote_other": "AI import z {{count}} strán dokumentu"
+      "importNote_other": "AI import z {{count}} strán dokumentu",
+      "defaultReason": "AI import zdravotného pasu",
+      "defaultAttachmentLabel": "AI analyzovaný dokument",
+      "defaultMedReason": "AI import zo zdravotného pasu",
+      "defaultVisitReason": "AI analýza dokumentu",
+      "defaultDose": "Neuvedené",
+      "defaultFrequency": "Podľa odporúčania veterinára",
+      "suitabilityNoAllergens": "Bez konfliktu s alergiami a diagnózami",
+      "suitabilityCheckAllergens": "Skontrolovať zloženie voči alergénom",
+      "importRecordCount": "AI import záznamov: {{count}}"
     },
     "modeQuick": "Rýchly",
     "modeManual": "Manuálna návšteva",

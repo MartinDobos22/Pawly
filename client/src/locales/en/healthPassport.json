@@ -213,7 +213,16 @@
       "noTextExtracted": "Could not extract any text from the documents.",
       "analyzeFailed": "Passport analysis failed.",
       "importNote_one": "AI import from {{count}} page",
-      "importNote_other": "AI import from {{count}} pages"
+      "importNote_other": "AI import from {{count}} pages",
+      "defaultReason": "AI health passport import",
+      "defaultAttachmentLabel": "AI-analysed document",
+      "defaultMedReason": "AI import from health passport",
+      "defaultVisitReason": "AI document analysis",
+      "defaultDose": "Not specified",
+      "defaultFrequency": "As recommended by vet",
+      "suitabilityNoAllergens": "No conflict with allergies or diagnoses",
+      "suitabilityCheckAllergens": "Check ingredients against allergens",
+      "importRecordCount": "AI records imported: {{count}}"
     },
     "modeQuick": "Quick",
     "modeManual": "Manual visit",
