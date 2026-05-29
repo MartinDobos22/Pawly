@@ -30,14 +30,7 @@ import {
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
-import type {
-  PetProfile,
-  AnimalType,
-  AnimalSize,
-  AnimalLifeStage,
-  ActivityLevel,
-} from '../types';
-
+import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
 
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   name: '',
@@ -70,9 +63,17 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 export default function PetProfilePage() {
   const { t } = useTranslation('healthPassport');
   const ALLERGY_SUGGESTIONS = t('profiles.allergySuggestions', { returnObjects: true }) as string[];
-  const INTOLERANCE_SUGGESTIONS = t('profiles.intoleranceSuggestions', { returnObjects: true }) as string[];
+  const INTOLERANCE_SUGGESTIONS = t('profiles.intoleranceSuggestions', {
+    returnObjects: true,
+  }) as string[];
   const HEALTH_SUGGESTIONS = t('profiles.healthSuggestions', { returnObjects: true }) as string[];
-  const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
+  const {
+    profiles,
+    loading: petsLoading,
+    createProfile,
+    updateProfile,
+    deleteProfile,
+  } = usePetProfiles();
   const {
     vaccinations,
     dewormings,
@@ -87,7 +88,7 @@ export default function PetProfilePage() {
   } = useHealthData();
   const [, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
     'granule-check-last-clinic-by-dog',
-    {},
+    {}
   );
 
   const [pendingDelete, setPendingDelete] = useState<{
@@ -100,16 +101,31 @@ export default function PetProfilePage() {
   const requestDelete = (profile: PetProfile) => {
     const id = profile.id;
     const counts = [
-      { label: t('profiles.recordVaccinations'), count: vaccinations.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordDewormings'), count: dewormings.filter((x) => x.dogId === id).length },
+      {
+        label: t('profiles.recordVaccinations'),
+        count: vaccinations.filter((x) => x.dogId === id).length,
+      },
+      {
+        label: t('profiles.recordDewormings'),
+        count: dewormings.filter((x) => x.dogId === id).length,
+      },
       { label: t('profiles.recordEctos'), count: ectos.filter((x) => x.dogId === id).length },
       { label: t('profiles.recordVisits'), count: visits.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordMedications'), count: medications.filter((x) => x.dogId === id).length },
+      {
+        label: t('profiles.recordMedications'),
+        count: medications.filter((x) => x.dogId === id).length,
+      },
       { label: t('profiles.recordDoseLogs'), count: doseLogs.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordDietEntries'), count: dietEntries.filter((x) => x.dogId === id).length },
+      {
+        label: t('profiles.recordDietEntries'),
+        count: dietEntries.filter((x) => x.dogId === id).length,
+      },
       { label: t('profiles.recordExpenses'), count: expenses.filter((x) => x.dogId === id).length },
       { label: t('profiles.recordEpisodes'), count: episodes.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordAnalyses'), count: savedAnalyses.filter((x) => x.petProfileId === id).length },
+      {
+        label: t('profiles.recordAnalyses'),
+        count: savedAnalyses.filter((x) => x.petProfileId === id).length,
+      },
     ].filter((c) => c.count > 0);
     const total = counts.reduce((acc, c) => acc + c.count, 0);
     setPendingDelete({ id, name: profile.name, counts, total });
@@ -149,7 +165,15 @@ export default function PetProfilePage() {
 
   const openEdit = (profile: PetProfile) => {
     setEditingId(profile.id);
-    setForm({ ...EMPTY_PROFILE, ...profile, allergies: [...profile.allergies], intolerances: [...profile.intolerances], healthConditions: [...profile.healthConditions], chronicConditions: [...(profile.chronicConditions ?? [])], procedures: [...(profile.procedures ?? [])] });
+    setForm({
+      ...EMPTY_PROFILE,
+      ...profile,
+      allergies: [...profile.allergies],
+      intolerances: [...profile.intolerances],
+      healthConditions: [...profile.healthConditions],
+      chronicConditions: [...(profile.chronicConditions ?? [])],
+      procedures: [...(profile.procedures ?? [])],
+    });
     setDobError('');
     setNameError('');
     setDialogOpen(true);
@@ -200,9 +224,7 @@ export default function PetProfilePage() {
           overflow: 'hidden',
           borderRadius: 4,
           bgcolor: (theme) =>
-            theme.palette.mode === 'light'
-              ? 'rgba(15, 76, 92, 0.05)'
-              : 'rgba(111, 190, 209, 0.10)',
+            theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
           border: (theme) =>
             `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
           p: { xs: 2, md: 2.5 },
@@ -251,7 +273,7 @@ export default function PetProfilePage() {
         </Stack>
       </Box>
 
-      {dogProfiles.length === 0 && (
+      {!petsLoading && dogProfiles.length === 0 && (
         <Card
           sx={{
             p: 4,
@@ -295,53 +317,101 @@ export default function PetProfilePage() {
           <Card key={profile.id} sx={{ borderRadius: 3 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {profile.photoUrl ? (
-                <Box component="img" src={profile.photoUrl} alt={profile.name} sx={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+                <Box
+                  component="img"
+                  src={profile.photoUrl}
+                  alt={profile.name}
+                  sx={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }}
+                />
               ) : (
                 <PetsIcon color="primary" sx={{ fontSize: 42 }} />
               )}
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>{profile.name}</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {profile.name}
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {[profile.breed, formatAge(profile), profile.weightKg ? `${profile.weightKg} kg` : undefined, profile.microchipNumber ? t('profiles.chip', { chip: profile.microchipNumber }) : undefined]
+                  {[
+                    profile.breed,
+                    formatAge(profile),
+                    profile.weightKg ? `${profile.weightKg} kg` : undefined,
+                    profile.microchipNumber
+                      ? t('profiles.chip', { chip: profile.microchipNumber })
+                      : undefined,
+                  ]
                     .filter(Boolean)
                     .join(' · ')}
                 </Typography>
                 <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ mt: 1 }}>
-                  {profile.allergies.map((a) => <Chip key={a} label={a} size="small" color="error" variant="outlined" />)}
-                  {profile.healthConditions.map((h) => <Chip key={h} label={h} size="small" color="info" variant="outlined" />)}
+                  {profile.allergies.map((a) => (
+                    <Chip key={a} label={a} size="small" color="error" variant="outlined" />
+                  ))}
+                  {profile.healthConditions.map((h) => (
+                    <Chip key={h} label={h} size="small" color="info" variant="outlined" />
+                  ))}
                 </Stack>
               </Box>
-              <IconButton onClick={() => openEdit(profile)}><EditIcon /></IconButton>
-              <IconButton color="error" onClick={() => requestDelete(profile)}><DeleteIcon /></IconButton>
+              <IconButton onClick={() => openEdit(profile)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton color="error" onClick={() => requestDelete(profile)}>
+                <DeleteIcon />
+              </IconButton>
             </CardContent>
           </Card>
         ))}
       </Stack>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{editingId ? t('profiles.dialogTitleEdit') : t('profiles.dialogTitleNew')}</DialogTitle>
+        <DialogTitle>
+          {editingId ? t('profiles.dialogTitleEdit') : t('profiles.dialogTitleNew')}
+        </DialogTitle>
         <DialogContent sx={{ pt: '12px !important' }}>
           <Stack spacing={2}>
-            <TextField label={t('profiles.nameLabel')} value={form.name} onChange={(e) => {
-              setForm({ ...form, name: e.target.value });
-              if (e.target.value.trim()) setNameError('');
-            }} error={Boolean(nameError)} helperText={nameError || t('profiles.nameHint')} required fullWidth />
-            <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+            <TextField
+              label={t('profiles.nameLabel')}
+              value={form.name}
+              onChange={(e) => {
+                setForm({ ...form, name: e.target.value });
+                if (e.target.value.trim()) setNameError('');
+              }}
+              error={Boolean(nameError)}
+              helperText={nameError || t('profiles.nameHint')}
+              required
+              fullWidth
+            />
+            <Box
+              sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}
+            >
               <FormControl fullWidth>
                 <InputLabel>{t('profiles.animalType')}</InputLabel>
-                <Select value={form.animalType} label={t('profiles.animalType')} onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}>
+                <Select
+                  value={form.animalType}
+                  label={t('profiles.animalType')}
+                  onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}
+                >
                   <MenuItem value="dog">{t('profiles.animalDog')}</MenuItem>
                   <MenuItem value="cat">{t('profiles.animalCat')}</MenuItem>
                   <MenuItem value="other">{t('profiles.animalOther')}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label={t('profiles.breed')} value={form.breed ?? ''} onChange={(e) => setForm({ ...form, breed: e.target.value })} fullWidth />
+              <TextField
+                label={t('profiles.breed')}
+                value={form.breed ?? ''}
+                onChange={(e) => setForm({ ...form, breed: e.target.value })}
+                fullWidth
+              />
               <FormControl fullWidth>
                 <InputLabel>{t('profiles.dobPrecision')}</InputLabel>
                 <Select
                   value={form.dateOfBirthPrecision ?? 'full'}
                   label={t('profiles.dobPrecision')}
-                  onChange={(e) => setForm({ ...form, dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'] })}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      dateOfBirthPrecision: e.target.value as PetProfile['dateOfBirthPrecision'],
+                    })
+                  }
                 >
                   <MenuItem value="full">{t('profiles.dobPrecisionFull')}</MenuItem>
                   <MenuItem value="year-month">{t('profiles.dobPrecisionYearMonth')}</MenuItem>
@@ -349,33 +419,120 @@ export default function PetProfilePage() {
                 </Select>
               </FormControl>
               {(form.dateOfBirthPrecision ?? 'full') === 'full' ? (
-                <TextField label={t('profiles.dobLabel')} type="date" InputLabelProps={{ shrink: true }} value={form.dateOfBirth ?? ''} onChange={(e) => { setForm({ ...form, dateOfBirth: e.target.value, birthYear: undefined, birthMonth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || t('profiles.nameHint')} required fullWidth />
+                <TextField
+                  label={t('profiles.dobLabel')}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={form.dateOfBirth ?? ''}
+                  onChange={(e) => {
+                    setForm({
+                      ...form,
+                      dateOfBirth: e.target.value,
+                      birthYear: undefined,
+                      birthMonth: undefined,
+                    });
+                    if (e.target.value) setDobError('');
+                  }}
+                  error={Boolean(dobError)}
+                  helperText={dobError || t('profiles.nameHint')}
+                  required
+                  fullWidth
+                />
               ) : (
                 <Stack direction="row" spacing={2}>
-                  <TextField label={t('profiles.birthYearLabel')} type="number" inputProps={{ min: 1900, max: 2100 }} value={form.birthYear ?? ''} onChange={(e) => { setForm({ ...form, birthYear: e.target.value ? Number(e.target.value) : undefined, dateOfBirth: undefined }); if (e.target.value) setDobError(''); }} error={Boolean(dobError)} helperText={dobError || t('profiles.nameHint')} required fullWidth />
+                  <TextField
+                    label={t('profiles.birthYearLabel')}
+                    type="number"
+                    inputProps={{ min: 1900, max: 2100 }}
+                    value={form.birthYear ?? ''}
+                    onChange={(e) => {
+                      setForm({
+                        ...form,
+                        birthYear: e.target.value ? Number(e.target.value) : undefined,
+                        dateOfBirth: undefined,
+                      });
+                      if (e.target.value) setDobError('');
+                    }}
+                    error={Boolean(dobError)}
+                    helperText={dobError || t('profiles.nameHint')}
+                    required
+                    fullWidth
+                  />
                   {(form.dateOfBirthPrecision ?? 'full') === 'year-month' && (
-                    <TextField label={t('profiles.birthMonthLabel')} type="number" inputProps={{ min: 1, max: 12 }} value={form.birthMonth ?? ''} onChange={(e) => setForm({ ...form, birthMonth: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
+                    <TextField
+                      label={t('profiles.birthMonthLabel')}
+                      type="number"
+                      inputProps={{ min: 1, max: 12 }}
+                      value={form.birthMonth ?? ''}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          birthMonth: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                      }
+                      fullWidth
+                    />
                   )}
                 </Stack>
               )}
               <FormControl fullWidth>
                 <InputLabel>{t('profiles.sex')}</InputLabel>
-                <Select value={form.sex ?? 'UNKNOWN'} label={t('profiles.sex')} onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}>
+                <Select
+                  value={form.sex ?? 'UNKNOWN'}
+                  label={t('profiles.sex')}
+                  onChange={(e) => setForm({ ...form, sex: e.target.value as PetProfile['sex'] })}
+                >
                   <MenuItem value="MALE">{t('profiles.sexMale')}</MenuItem>
                   <MenuItem value="FEMALE">{t('profiles.sexFemale')}</MenuItem>
                   <MenuItem value="UNKNOWN">{t('profiles.sexUnknown')}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField label={t('profiles.weight')} type="number" inputProps={{ min: 0, step: 0.1 }} value={form.weightKg ?? ''} onChange={(e) => setForm({ ...form, weightKg: e.target.value ? Number(e.target.value) : undefined })} fullWidth />
-              <TextField label={t('profiles.photoUrl')} value={form.photoUrl ?? ''} onChange={(e) => setForm({ ...form, photoUrl: e.target.value })} fullWidth />
-              <TextField label={t('profiles.microchip')} value={form.microchipNumber ?? ''} onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })} fullWidth />
-              <TextField label={t('profiles.passportNumber')} value={form.passportNumber ?? ''} onChange={(e) => setForm({ ...form, passportNumber: e.target.value })} fullWidth />
+              <TextField
+                label={t('profiles.weight')}
+                type="number"
+                inputProps={{ min: 0, step: 0.1 }}
+                value={form.weightKg ?? ''}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    weightKg: e.target.value ? Number(e.target.value) : undefined,
+                  })
+                }
+                fullWidth
+              />
+              <TextField
+                label={t('profiles.photoUrl')}
+                value={form.photoUrl ?? ''}
+                onChange={(e) => setForm({ ...form, photoUrl: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label={t('profiles.microchip')}
+                value={form.microchipNumber ?? ''}
+                onChange={(e) => setForm({ ...form, microchipNumber: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label={t('profiles.passportNumber')}
+                value={form.passportNumber ?? ''}
+                onChange={(e) => setForm({ ...form, passportNumber: e.target.value })}
+                fullWidth
+              />
             </Box>
 
             {form.animalType === 'dog' && (
               <FormControl fullWidth>
                 <InputLabel>{t('profiles.size')}</InputLabel>
-                <Select value={form.size ?? ''} label={t('profiles.size')} onChange={(e) => setForm({ ...form, size: (e.target.value || undefined) as AnimalSize | undefined })}>
+                <Select
+                  value={form.size ?? ''}
+                  label={t('profiles.size')}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      size: (e.target.value || undefined) as AnimalSize | undefined,
+                    })
+                  }
+                >
                   <MenuItem value="">–</MenuItem>
                   <MenuItem value="mini">{t('profiles.sizeMini')}</MenuItem>
                   <MenuItem value="small">{t('profiles.sizeSmall')}</MenuItem>
@@ -388,7 +545,16 @@ export default function PetProfilePage() {
 
             <FormControl fullWidth>
               <InputLabel>{t('profiles.lifeStage')}</InputLabel>
-              <Select value={form.lifeStage ?? ''} label={t('profiles.lifeStage')} onChange={(e) => setForm({ ...form, lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined })}>
+              <Select
+                value={form.lifeStage ?? ''}
+                label={t('profiles.lifeStage')}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    lifeStage: (e.target.value || undefined) as AnimalLifeStage | undefined,
+                  })
+                }
+              >
                 <MenuItem value="">–</MenuItem>
                 <MenuItem value="puppy">{t('profiles.lifeStagePuppy')}</MenuItem>
                 <MenuItem value="junior">{t('profiles.lifeStageJunior')}</MenuItem>
@@ -399,7 +565,16 @@ export default function PetProfilePage() {
 
             <FormControl fullWidth>
               <InputLabel>{t('profiles.activityLevel')}</InputLabel>
-              <Select value={form.activityLevel ?? ''} label={t('profiles.activityLevel')} onChange={(e) => setForm({ ...form, activityLevel: (e.target.value || undefined) as ActivityLevel | undefined })}>
+              <Select
+                value={form.activityLevel ?? ''}
+                label={t('profiles.activityLevel')}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    activityLevel: (e.target.value || undefined) as ActivityLevel | undefined,
+                  })
+                }
+              >
                 <MenuItem value="">–</MenuItem>
                 <MenuItem value="low">{t('profiles.activityLow')}</MenuItem>
                 <MenuItem value="moderate">{t('profiles.activityModerate')}</MenuItem>
@@ -408,47 +583,156 @@ export default function PetProfilePage() {
               </Select>
             </FormControl>
 
-            <Autocomplete multiple freeSolo options={ALLERGY_SUGGESTIONS} value={form.allergies} onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.allergies')} />} />
-            <Autocomplete multiple freeSolo options={INTOLERANCE_SUGGESTIONS} value={form.intolerances} onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.intolerances')} />} />
-            <Autocomplete multiple freeSolo options={HEALTH_SUGGESTIONS} value={form.healthConditions} onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })} renderInput={(params) => <TextField {...params} label={t('profiles.healthConditions')} />} />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={ALLERGY_SUGGESTIONS}
+              value={form.allergies}
+              onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })}
+              renderInput={(params) => <TextField {...params} label={t('profiles.allergies')} />}
+            />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={INTOLERANCE_SUGGESTIONS}
+              value={form.intolerances}
+              onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })}
+              renderInput={(params) => <TextField {...params} label={t('profiles.intolerances')} />}
+            />
+            <Autocomplete
+              multiple
+              freeSolo
+              options={HEALTH_SUGGESTIONS}
+              value={form.healthConditions}
+              onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })}
+              renderInput={(params) => (
+                <TextField {...params} label={t('profiles.healthConditions')} />
+              )}
+            />
 
             <Divider />
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{t('profiles.chronicTitle')}</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              {t('profiles.chronicTitle')}
+            </Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label={t('profiles.conditionLabel')} value={conditionDraft} onChange={(e) => setConditionDraft(e.target.value)} fullWidth />
-              <Button variant="outlined" onClick={() => {
-                if (!conditionDraft.trim()) return;
-                setForm({ ...form, chronicConditions: [...(form.chronicConditions ?? []), { id: uid(), title: conditionDraft.trim() }] });
-                setConditionDraft('');
-              }}>{t('actions.add', { ns: 'common' })}</Button>
+              <TextField
+                label={t('profiles.conditionLabel')}
+                value={conditionDraft}
+                onChange={(e) => setConditionDraft(e.target.value)}
+                fullWidth
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  if (!conditionDraft.trim()) return;
+                  setForm({
+                    ...form,
+                    chronicConditions: [
+                      ...(form.chronicConditions ?? []),
+                      { id: uid(), title: conditionDraft.trim() },
+                    ],
+                  });
+                  setConditionDraft('');
+                }}
+              >
+                {t('actions.add', { ns: 'common' })}
+              </Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {(form.chronicConditions ?? []).map((c) => <Chip key={c.id} label={c.title} onDelete={() => setForm({ ...form, chronicConditions: (form.chronicConditions ?? []).filter((x) => x.id !== c.id) })} />)}
+              {(form.chronicConditions ?? []).map((c) => (
+                <Chip
+                  key={c.id}
+                  label={c.title}
+                  onDelete={() =>
+                    setForm({
+                      ...form,
+                      chronicConditions: (form.chronicConditions ?? []).filter(
+                        (x) => x.id !== c.id
+                      ),
+                    })
+                  }
+                />
+              ))}
             </Stack>
 
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{t('profiles.proceduresTitle')}</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              {t('profiles.proceduresTitle')}
+            </Typography>
             <Stack direction="row" spacing={1}>
-              <TextField label={t('profiles.procedurePlaceholder')} value={procedureDraft} onChange={(e) => setProcedureDraft(e.target.value)} fullWidth />
-              <Button variant="outlined" onClick={() => {
-                if (!procedureDraft.trim()) return;
-                setForm({ ...form, procedures: [...(form.procedures ?? []), { id: uid(), title: procedureDraft.trim(), date: new Date().toISOString().slice(0, 10) }] });
-                setProcedureDraft('');
-              }}>{t('actions.add', { ns: 'common' })}</Button>
+              <TextField
+                label={t('profiles.procedurePlaceholder')}
+                value={procedureDraft}
+                onChange={(e) => setProcedureDraft(e.target.value)}
+                fullWidth
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  if (!procedureDraft.trim()) return;
+                  setForm({
+                    ...form,
+                    procedures: [
+                      ...(form.procedures ?? []),
+                      {
+                        id: uid(),
+                        title: procedureDraft.trim(),
+                        date: new Date().toISOString().slice(0, 10),
+                      },
+                    ],
+                  });
+                  setProcedureDraft('');
+                }}
+              >
+                {t('actions.add', { ns: 'common' })}
+              </Button>
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {(form.procedures ?? []).map((p) => <Chip key={p.id} label={p.title} onDelete={() => setForm({ ...form, procedures: (form.procedures ?? []).filter((x) => x.id !== p.id) })} />)}
+              {(form.procedures ?? []).map((p) => (
+                <Chip
+                  key={p.id}
+                  label={p.title}
+                  onDelete={() =>
+                    setForm({
+                      ...form,
+                      procedures: (form.procedures ?? []).filter((x) => x.id !== p.id),
+                    })
+                  }
+                />
+              ))}
             </Stack>
 
-            <TextField label={t('profiles.notes')} multiline minRows={3} value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} fullWidth />
+            <TextField
+              label={t('profiles.notes')}
+              multiline
+              minRows={3}
+              value={form.notes ?? ''}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              fullWidth
+            />
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setDialogOpen(false); setNameError(''); setDobError(''); }}>{t('actions.cancel', { ns: 'common' })}</Button>
-          <Button variant="contained" onClick={handleSave}>{editingId ? t('profiles.saveUpdate') : t('profiles.saveCreate')}</Button>
+          <Button
+            onClick={() => {
+              setDialogOpen(false);
+              setNameError('');
+              setDobError('');
+            }}
+          >
+            {t('actions.cancel', { ns: 'common' })}
+          </Button>
+          <Button variant="contained" onClick={handleSave}>
+            {editingId ? t('profiles.saveUpdate') : t('profiles.saveCreate')}
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={pendingDelete !== null} onClose={() => setPendingDelete(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={pendingDelete !== null}
+        onClose={() => setPendingDelete(null)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>{t('profiles.deleteDialogTitle')}</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5}>
@@ -477,7 +761,9 @@ export default function PetProfilePage() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPendingDelete(null)}>{t('actions.cancel', { ns: 'common' })}</Button>
+          <Button onClick={() => setPendingDelete(null)}>
+            {t('actions.cancel', { ns: 'common' })}
+          </Button>
           <Button color="error" variant="contained" onClick={confirmDelete}>
             {t('actions.delete', { ns: 'common' })}
           </Button>
