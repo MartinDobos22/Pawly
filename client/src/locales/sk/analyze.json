@@ -25,7 +25,8 @@
     "fileLoadFailed": "Nepodarilo sa načítať súbor.",
     "noAnswer": "Nepodarilo sa získať odpoveď.",
     "unexpectedAnalysis": "Neočakávaná chyba pri analýze.",
-    "unexpectedFileAnalysis": "Neočakávaná chyba pri analýze súboru."
+    "unexpectedFileAnalysis": "Neočakávaná chyba pri analýze súboru.",
+    "extractTextFailed": "Nepodarilo sa extrahovať text."
   },
   "score": {
     "poor": "Nevyhovujúce",

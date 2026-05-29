@@ -265,6 +265,7 @@
     "pageCount": "{{count}} / {{max}} strán",
     "pageLabel": "Strana {{n}}",
     "documentFallback": "Dokument",
+    "receiptFallback": "Doklad",
     "removePage": "Odstrániť stranu",
     "formatsHint": "Podporované formáty: PDF, JPEG, PNG, WebP. Max {{maxMb}} MB per stranu, max {{maxFiles}} strán."
   },

@@ -25,7 +25,8 @@
     "fileLoadFailed": "Failed to load file.",
     "noAnswer": "Failed to get an answer.",
     "unexpectedAnalysis": "Unexpected error during analysis.",
-    "unexpectedFileAnalysis": "Unexpected error during file analysis."
+    "unexpectedFileAnalysis": "Unexpected error during file analysis.",
+    "extractTextFailed": "Failed to extract text."
   },
   "score": {
     "poor": "Poor",

@@ -96,7 +96,10 @@ export function useAnalyze() {
         });
         return extractedText;
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Nepodarilo sa extrahovať text';
+        const message =
+          err instanceof Error
+            ? err.message
+            : (i18n.t('errors.extractTextFailed' as never, { ns: 'analyze' }) as string);
         setExtractError(message);
         logger.error('Hook useAnalyze zachytil chybu OCR extrakcie', { message });
         return null;

@@ -60,7 +60,7 @@ const readFileAsBase64 = (file: File) =>
       }
       resolve({ base64 });
     };
-    reader.onerror = () => reject(new Error('Nepodarilo sa načítať súbor.'));
+    reader.onerror = () => reject(new Error('FILE_LOAD_FAILED'));
     reader.readAsDataURL(file);
   });
 

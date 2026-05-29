@@ -170,7 +170,12 @@ export class VetVisitHelper {
     const visitId = uid();
     const createdAt = new Date().toISOString();
     const reason = VetVisitHelper.buildVisitReason(mainCategory, subcategory, draft.reason);
-    const attachments = VetVisitHelper.buildAttachment(attachmentDraft, 'Doklad', createdAt, uid);
+    const attachments = VetVisitHelper.buildAttachment(
+      attachmentDraft,
+      i18n.t('attachmentUpload.receiptFallback', { ns: 'healthPassport' }) as string,
+      createdAt,
+      uid
+    );
 
     const medications: MedicationRecord[] = [];
     const doseLogs: MedicationDoseLog[] = [];
