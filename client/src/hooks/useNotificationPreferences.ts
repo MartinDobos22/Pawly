@@ -52,17 +52,22 @@ export function useNotificationPreferences() {
   }, []);
 
   const save = useCallback(async (patch: Partial<NotificationPreferences>) => {
-    setState((s) => ({ ...s, saving: true, error: null }));
+    let snapshot: NotificationPreferences | null = null;
+    setState((s) => {
+      snapshot = s.prefs;
+      if (!s.prefs) return { ...s, error: null };
+      return { ...s, prefs: { ...s.prefs, ...patch }, error: null };
+    });
     try {
       const prefs = await notificationsApi.updatePreferences(patch);
-      setState((s) => ({ ...s, prefs, saving: false }));
+      setState((s) => ({ ...s, prefs }));
     } catch (err) {
       logger.error('Uloženie notifikačných nastavení zlyhalo', {
         message: err instanceof Error ? err.message : String(err),
       });
       setState((s) => ({
         ...s,
-        saving: false,
+        prefs: snapshot,
         error:
           err instanceof Error
             ? err.message
