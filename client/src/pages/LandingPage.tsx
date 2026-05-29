@@ -18,6 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
@@ -112,6 +113,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
               Pawport
             </Typography>
           </Stack>
+          <LanguageSwitcher variant="compact" />
           <IconButton
             onClick={onToggleTheme}
             color="inherit"

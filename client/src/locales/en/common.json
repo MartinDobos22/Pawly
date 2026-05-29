@@ -64,6 +64,8 @@
   },
   "loading": "Loading…",
   "saving": "Saving…",
+  "saved": "Saved",
+  "saveFailed": "Save failed",
   "deleting": "Deleting…",
   "petSwitcher": {
     "noProfile": "No profile",

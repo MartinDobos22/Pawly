@@ -44,7 +44,7 @@ interface EpisodeFormDialogProps {
   onSave: (
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>,
     id?: string
-  ) => void;
+  ) => Promise<void> | void;
 }
 
 interface FormState {
@@ -145,36 +145,42 @@ export default function EpisodeFormDialog({
     [vetVisits, dogId]
   );
 
+  const [isSaving, setIsSaving] = useState(false);
   const canSave = state.symptomTitle.trim().length > 0;
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setState((prev) => ({ ...prev, [key]: value }));
 
-  const handleSave = () => {
-    if (!canSave) return;
-    onSave(
-      {
-        dogId,
-        symptomTitle: state.symptomTitle.trim(),
-        symptomDescription: state.symptomDescription.trim(),
-        category: state.category,
-        startedAt: state.startedAt || todayIso(),
-        endedAt: state.endedAt || undefined,
-        location: state.location.trim() || undefined,
-        triggers: state.triggers.length > 0 ? state.triggers : undefined,
-        diagnosis: state.diagnosis.trim() || undefined,
-        vetVisitId: state.vetVisitId || undefined,
-        medicationIds: state.medicationIds,
-        treatmentNotes: state.treatmentNotes.trim() || undefined,
-        whatWorked: state.whatWorked,
-        whatDidntWork: state.whatDidntWork,
-        outcome: state.outcome,
-        severity: state.severity,
-        lessonsLearned: state.lessonsLearned.trim() || undefined,
-        attachments: state.attachments.length > 0 ? state.attachments : undefined,
-      },
-      initial?.id
-    );
+  const handleSave = async () => {
+    if (!canSave || isSaving) return;
+    setIsSaving(true);
+    try {
+      await onSave(
+        {
+          dogId,
+          symptomTitle: state.symptomTitle.trim(),
+          symptomDescription: state.symptomDescription.trim(),
+          category: state.category,
+          startedAt: state.startedAt || todayIso(),
+          endedAt: state.endedAt || undefined,
+          location: state.location.trim() || undefined,
+          triggers: state.triggers.length > 0 ? state.triggers : undefined,
+          diagnosis: state.diagnosis.trim() || undefined,
+          vetVisitId: state.vetVisitId || undefined,
+          medicationIds: state.medicationIds,
+          treatmentNotes: state.treatmentNotes.trim() || undefined,
+          whatWorked: state.whatWorked,
+          whatDidntWork: state.whatDidntWork,
+          outcome: state.outcome,
+          severity: state.severity,
+          lessonsLearned: state.lessonsLearned.trim() || undefined,
+          attachments: state.attachments.length > 0 ? state.attachments : undefined,
+        },
+        initial?.id
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -415,9 +421,15 @@ export default function EpisodeFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t('actions.cancel', { ns: 'common' })}</Button>
-        <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-          {t('actions.save', { ns: 'common' })}
+        <Button onClick={onClose} disabled={isSaving}>
+          {t('actions.cancel', { ns: 'common' })}
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => void handleSave()}
+          disabled={!canSave || isSaving}
+        >
+          {isSaving ? t('saving', { ns: 'common' }) : t('actions.save', { ns: 'common' })}
         </Button>
       </DialogActions>
     </Dialog>

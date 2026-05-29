@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -11,6 +12,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material';
@@ -34,6 +36,7 @@ import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../ty
 
 export default function EpisodeDiaryPage() {
   const { t } = useTranslation('episodes');
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
   const { profiles, loading: petsLoading } = usePetProfiles();
@@ -53,6 +56,13 @@ export default function EpisodeDiaryPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<HealthEpisodeRecord | undefined>(undefined);
   const [similarFor, setSimilarFor] = useState<HealthEpisodeRecord | null>(null);
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
 
   const filtered = useMemo(
     () =>
@@ -88,13 +98,18 @@ export default function EpisodeDiaryPage() {
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>,
     id?: string
   ) => {
-    if (id) {
-      await update(id, payload);
-    } else {
-      await add(payload);
+    try {
+      if (id) {
+        await update(id, payload);
+      } else {
+        await add(payload);
+      }
+      setFormOpen(false);
+      setEditing(undefined);
+      setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+    } catch {
+      setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
     }
-    setFormOpen(false);
-    setEditing(undefined);
   };
 
   const handleEdit = (episode: HealthEpisodeRecord) => {
@@ -303,6 +318,21 @@ export default function EpisodeDiaryPage() {
           });
         }}
       />
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

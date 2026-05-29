@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -17,6 +18,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -62,6 +64,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 export default function PetProfilePage() {
   const { t } = useTranslation('healthPassport');
+  const { t: tCommon } = useTranslation('common');
   const ALLERGY_SUGGESTIONS = t('profiles.allergySuggestions', { returnObjects: true }) as string[];
   const INTOLERANCE_SUGGESTIONS = t('profiles.intoleranceSuggestions', {
     returnObjects: true,
@@ -150,6 +153,14 @@ export default function PetProfilePage() {
   const [nameError, setNameError] = useState('');
   const [conditionDraft, setConditionDraft] = useState('');
   const [procedureDraft, setProcedureDraft] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
+    {
+      open: false,
+      msg: '',
+      severity: 'success',
+    }
+  );
 
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
@@ -192,12 +203,20 @@ export default function PetProfilePage() {
       return;
     }
     setDobError('');
-    if (editingId) {
-      await updateProfile(editingId, form);
-    } else {
-      await createProfile(form);
+    setIsSaving(true);
+    try {
+      if (editingId) {
+        await updateProfile(editingId, form);
+      } else {
+        await createProfile(form);
+      }
+      setDialogOpen(false);
+      setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+    } catch {
+      setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+    } finally {
+      setIsSaving(false);
     }
-    setDialogOpen(false);
   };
 
   const formatAge = (profile: PetProfile) => {
@@ -769,6 +788,21 @@ export default function PetProfilePage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          sx={{ width: '100%' }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
