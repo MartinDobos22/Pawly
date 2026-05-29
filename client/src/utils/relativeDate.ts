@@ -1,32 +1,19 @@
+import i18n from '../i18n';
+
 const MS_PER_DAY = 86_400_000;
 
-const pluralDay = (n: number) => {
-  const abs = Math.abs(n);
-  if (abs === 1) return 'deň';
-  if (abs >= 2 && abs <= 4) return 'dni';
-  return 'dní';
-};
+type UnitKey = 'day' | 'week' | 'month' | 'year';
 
-const pluralWeek = (n: number) => {
-  const abs = Math.abs(n);
-  if (abs === 1) return 'týždeň';
-  if (abs >= 2 && abs <= 4) return 'týždne';
-  return 'týždňov';
-};
+function pickUnit(abs: number): { value: number; unit: UnitKey } {
+  if (abs < 14) return { value: abs, unit: 'day' };
+  if (abs < 60) return { value: Math.round(abs / 7), unit: 'week' };
+  if (abs < 730) return { value: Math.round(abs / 30), unit: 'month' };
+  return { value: Math.round(abs / 365), unit: 'year' };
+}
 
-const pluralMonth = (n: number) => {
-  const abs = Math.abs(n);
-  if (abs === 1) return 'mesiac';
-  if (abs >= 2 && abs <= 4) return 'mesiace';
-  return 'mesiacov';
-};
-
-const pluralYear = (n: number) => {
-  const abs = Math.abs(n);
-  if (abs === 1) return 'rok';
-  if (abs >= 2 && abs <= 4) return 'roky';
-  return 'rokov';
-};
+function unitWord(unit: UnitKey, count: number): string {
+  return i18n.t(`relativeDate.${unit}`, { ns: 'common', count }) as string;
+}
 
 export function daysDiff(target: string | Date): number {
   const date = typeof target === 'string' ? new Date(target) : target;
@@ -54,25 +41,32 @@ export function relativeDate(target: string | Date): RelativeDate | null {
   const isPast = diff < 0;
   const abs = Math.abs(diff);
 
-  let unit: { value: number; word: (n: number) => string };
-  if (abs < 14) unit = { value: abs, word: pluralDay };
-  else if (abs < 60) unit = { value: Math.round(abs / 7), word: pluralWeek };
-  else if (abs < 730) unit = { value: Math.round(abs / 30), word: pluralMonth };
-  else unit = { value: Math.round(abs / 365), word: pluralYear };
-
   if (isToday) {
-    return { diffDays: 0, text: 'Dnes', short: 'dnes', isPast: false, isToday: true };
+    return {
+      diffDays: 0,
+      text: i18n.t('relativeDate.today', { ns: 'common' }) as string,
+      short: i18n.t('relativeDate.todayShort', { ns: 'common' }) as string,
+      isPast: false,
+      isToday: true,
+    };
   }
 
-  const word = unit.word(unit.value);
-  const text = isPast ? `Pred ${unit.value} ${word}` : `O ${unit.value} ${word}`;
-  const short = isPast ? `−${unit.value} ${word}` : `+${unit.value} ${word}`;
+  const { value, unit } = pickUnit(abs);
+  const word = unitWord(unit, value);
+
+  const text = isPast
+    ? (i18n.t('relativeDate.past', { ns: 'common', count: value, unit: word }) as string)
+    : (i18n.t('relativeDate.future', { ns: 'common', count: value, unit: word }) as string);
+  const short = isPast
+    ? (i18n.t('relativeDate.pastShort', { ns: 'common', count: value, unit: word }) as string)
+    : (i18n.t('relativeDate.futureShort', { ns: 'common', count: value, unit: word }) as string);
 
   return { diffDays: diff, text, short, isPast, isToday: false };
 }
 
-export function formatDateShort(target: string | Date): string {
+export function formatDateShort(target: string | Date, locale?: string): string {
   const date = typeof target === 'string' ? new Date(target) : target;
   if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' });
+  const loc = locale ?? (i18n.language === 'en' ? 'en-GB' : 'sk-SK');
+  return date.toLocaleDateString(loc, { day: 'numeric', month: 'numeric', year: 'numeric' });
 }

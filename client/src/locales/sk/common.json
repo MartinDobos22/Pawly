@@ -76,5 +76,25 @@
   "errors": {
     "loadProfilesFailed": "Načítanie profilov zlyhalo.",
     "loadHealthDataFailed": "Načítanie zdravotných dát zlyhalo."
+  },
+  "relativeDate": {
+    "today": "Dnes",
+    "todayShort": "dnes",
+    "past": "Pred {{count}} {{unit}}",
+    "future": "O {{count}} {{unit}}",
+    "pastShort": "−{{count}} {{unit}}",
+    "futureShort": "+{{count}} {{unit}}",
+    "day_one": "deň",
+    "day_few": "dni",
+    "day_many": "dní",
+    "week_one": "týždeň",
+    "week_few": "týždne",
+    "week_many": "týždňov",
+    "month_one": "mesiac",
+    "month_few": "mesiace",
+    "month_many": "mesiacov",
+    "year_one": "rok",
+    "year_few": "roky",
+    "year_many": "rokov"
   }
 }

@@ -76,5 +76,21 @@
   "errors": {
     "loadProfilesFailed": "Failed to load profiles.",
     "loadHealthDataFailed": "Failed to load health data."
+  },
+  "relativeDate": {
+    "today": "Today",
+    "todayShort": "today",
+    "past": "{{count}} {{unit}} ago",
+    "future": "In {{count}} {{unit}}",
+    "pastShort": "−{{count}} {{unit}}",
+    "futureShort": "+{{count}} {{unit}}",
+    "day_one": "day",
+    "day_other": "days",
+    "week_one": "week",
+    "week_other": "weeks",
+    "month_one": "month",
+    "month_other": "months",
+    "year_one": "year",
+    "year_other": "years"
   }
 }
