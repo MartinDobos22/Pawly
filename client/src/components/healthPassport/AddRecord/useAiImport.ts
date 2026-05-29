@@ -332,7 +332,7 @@ export function useAiImport(dogId: string) {
           : inferAiTargetType(disease, item.name);
         const date = normalizeDateInput(item.date);
         const fallback = recordType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
-        const productName = item.name || disease || 'Neznámy záznam';
+        const productName = item.name || disease || t('addRecord.unknownRecord');
         const isDuplicate =
           recordType === 'VACCINATION' &&
           dogId !== '' &&
