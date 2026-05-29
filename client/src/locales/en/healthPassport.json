@@ -251,7 +251,8 @@
     "confirmVisitHint": "Add visit information for the record that will be created from the extracted entries.",
     "clinicOptional": "Clinic / vet (optional)",
     "diagnosisOptional": "Diagnosis (optional)",
-    "recommendationsOptional": "Recommendations (optional)"
+    "recommendationsOptional": "Recommendations (optional)",
+    "unknownRecord": "Unknown record"
   },
   "attachmentUpload": {
     "docLabel": "Document description (optional)",

@@ -269,7 +269,93 @@
     "askBtn": "Ask",
     "askingBtn": "Asking…",
     "tryLabel": "Try:",
-    "continueBtn": "Continue with real AI in the app"
+    "continueBtn": "Continue with real AI in the app",
+    "quickFills": ["chocolate", "carrot", "grapes", "chicken bones"],
+    "resultLabels": {
+      "question": "Question:",
+      "warnings": "Watch out for:",
+      "alternatives": "Alternatives:"
+    },
+    "fallback": {
+      "verdict": "CAUTION",
+      "short": "Without full AI I can't give a reliable answer.",
+      "explanation": "This is just a demo with a limited list of foods. For accurate evaluation, use the real AI in the app.",
+      "warnings": ["Consult your vet before giving any new food"]
+    },
+    "responses": {
+      "chocolate": {
+        "verdict": "UNSAFE",
+        "short": "No, chocolate is toxic to dogs.",
+        "explanation": "It contains theobromine, which is toxic to dogs and can cause vomiting, tremors, seizures or heart failure.",
+        "alternatives": ["dog treats", "a piece of apple", "carrot"]
+      },
+      "grapes": {
+        "verdict": "UNSAFE",
+        "short": "No, grapes can cause kidney failure.",
+        "explanation": "Even a small amount of grapes or raisins can cause acute kidney failure in dogs.",
+        "alternatives": ["blueberries", "apple without seeds", "banana"]
+      },
+      "onion": {
+        "verdict": "UNSAFE",
+        "short": "No, onions damage red blood cells.",
+        "explanation": "Onions, garlic and chives contain thiosulfates that break down red blood cells and can cause anaemia.",
+        "alternatives": ["plain cooked meat"]
+      },
+      "xylitol": {
+        "verdict": "UNSAFE",
+        "short": "No, xylitol is extremely dangerous.",
+        "explanation": "The sweetener xylitol rapidly lowers blood sugar and can cause liver failure even in small doses.",
+        "alternatives": ["dog treats without sweeteners"]
+      },
+      "carrot": {
+        "verdict": "SAFE",
+        "short": "Yes, carrots are an excellent snack.",
+        "explanation": "Carrots are low in calories, contain fibre and beta-carotene. Raw carrots also help clean teeth."
+      },
+      "apple": {
+        "verdict": "CAUTION",
+        "short": "Yes, but remove the seeds and stem.",
+        "explanation": "Apples are healthy and tasty, but the seeds contain traces of cyanide. Only give the fleshy pieces.",
+        "warnings": ["Remove seeds and stem", "In moderate amounts"]
+      },
+      "banana": {
+        "verdict": "SAFE",
+        "short": "Yes, bananas are fine.",
+        "explanation": "Rich in potassium and vitamins. Give only in moderate amounts due to high sugar content."
+      },
+      "chicken bones": {
+        "verdict": "CAUTION",
+        "short": "Depends on preparation — never give cooked.",
+        "explanation": "Cooked bones splinter and can injure the digestive tract. Raw large bones are acceptable under supervision.",
+        "warnings": [
+          "Cooked bones can injure the digestive tract",
+          "Only raw and larger bones under supervision"
+        ]
+      },
+      "milk": {
+        "verdict": "CAUTION",
+        "short": "Many dogs are lactose intolerant.",
+        "explanation": "Some dogs digest milk fine, others get diarrhoea. Try a small amount and monitor the reaction.",
+        "warnings": ["Watch for digestive issues", "Lactose-free versions are better"]
+      },
+      "cheese": {
+        "verdict": "CAUTION",
+        "short": "In small amounts, yes.",
+        "explanation": "Hard cheeses low in lactose are OK as treats. Watch out for salt content.",
+        "warnings": ["Watch out for salt", "Not for dogs with dairy allergies"]
+      },
+      "avocado": {
+        "verdict": "UNSAFE",
+        "short": "No, avocado contains persin.",
+        "explanation": "Persin in avocado can cause digestive problems and vomiting. The pit is also a choking hazard.",
+        "alternatives": ["banana", "carrot", "apple without seeds"]
+      },
+      "salmon": {
+        "verdict": "SAFE",
+        "short": "Yes, but only cooked and boneless.",
+        "explanation": "Salmon is an excellent source of omega-3 fatty acids. Raw salmon may contain parasites."
+      }
+    }
   },
   "petTypes": {
     "heading": "PAWPORT FOR ALL PETS",

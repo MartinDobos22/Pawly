@@ -254,7 +254,8 @@
     "confirmVisitHint": "Doplň informácie o návšteve, ktorá sa vytvorí z extrahovaných záznamov.",
     "clinicOptional": "Klinika / veterinár (voliteľné)",
     "diagnosisOptional": "Diagnóza (voliteľné)",
-    "recommendationsOptional": "Odporúčania (voliteľné)"
+    "recommendationsOptional": "Odporúčania (voliteľné)",
+    "unknownRecord": "Neznámy záznam"
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",

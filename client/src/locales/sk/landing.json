@@ -269,7 +269,90 @@
     "askBtn": "Spýtať sa",
     "askingBtn": "Pýtam sa…",
     "tryLabel": "Skús:",
-    "continueBtn": "Pokračovať so skutočnou AI v aplikácii"
+    "continueBtn": "Pokračovať so skutočnou AI v aplikácii",
+    "quickFills": ["čokoláda", "mrkva", "hrozno", "kuracie kosti"],
+    "resultLabels": {
+      "question": "Otázka:",
+      "warnings": "Pozor na:",
+      "alternatives": "Alternatívy:"
+    },
+    "fallback": {
+      "verdict": "CAUTION",
+      "short": "Bez plnej AI to neviem spoľahlivo posúdiť.",
+      "explanation": "Toto je len demo s obmedzeným zoznamom potravín. Pre presné vyhodnotenie použi skutočnú AI v aplikácii.",
+      "warnings": ["Pred podaním novej potraviny sa poraď s veterinárom"]
+    },
+    "responses": {
+      "čokoláda": {
+        "verdict": "UNSAFE",
+        "short": "Nie, čokoláda je pre psa toxická.",
+        "explanation": "Obsahuje teobromín, ktorý je pre psov toxický a môže spôsobiť vracanie, triašku, kŕče alebo zlyhanie srdca.",
+        "alternatives": ["psie pamlsky", "kúsok jablka", "mrkva"]
+      },
+      "hrozno": {
+        "verdict": "UNSAFE",
+        "short": "Nie, hrozno môže spôsobiť zlyhanie obličiek.",
+        "explanation": "Aj malé množstvo hrozna alebo hrozienok môže u psov spôsobiť akútne zlyhanie obličiek.",
+        "alternatives": ["čučoriedky", "jablko bez jadierok", "banán"]
+      },
+      "cibuľa": {
+        "verdict": "UNSAFE",
+        "short": "Nie, cibuľa poškodzuje červené krvinky.",
+        "explanation": "Cibuľa, cesnak a pažítka obsahujú tioskloridy, ktoré rozkladajú červené krvinky a môžu spôsobiť anémiu.",
+        "alternatives": ["varené mäso bez korenia"]
+      },
+      "xylitol": {
+        "verdict": "UNSAFE",
+        "short": "Nie, xylitol je extrémne nebezpečný.",
+        "explanation": "Sladidlo xylitol prudko znižuje hladinu cukru v krvi a môže spôsobiť zlyhanie pečene už pri malých dávkach.",
+        "alternatives": ["psie pamlsky bez sladidiel"]
+      },
+      "mrkva": {
+        "verdict": "SAFE",
+        "short": "Áno, mrkva je výborný snack.",
+        "explanation": "Mrkva je nízkokalorická, obsahuje vlákninu a betakarotén. Surová slúži aj na čistenie zubov."
+      },
+      "jablko": {
+        "verdict": "CAUTION",
+        "short": "Áno, ale bez jadierok a stopky.",
+        "explanation": "Jablko je zdravé a chutné, ale jadierka obsahujú stopy kyanidu. Daj len mäsité kúsky.",
+        "warnings": ["Odstráň jadierka a stopku", "V miernych množstvách"]
+      },
+      "banán": {
+        "verdict": "SAFE",
+        "short": "Áno, banán je v poriadku.",
+        "explanation": "Bohatý na draslík a vitamíny. Daj len v miernych množstvách kvôli vysokému obsahu cukru."
+      },
+      "kuracie kosti": {
+        "verdict": "CAUTION",
+        "short": "Záleží na úprave — varené nikdy nedávaj.",
+        "explanation": "Varené kosti sa štiepia a môžu poraniť tráviaci trakt. Surové veľké kosti sú prijateľné pod dozorom.",
+        "warnings": ["Varené kosti môžu poraniť trávenie", "Iba surové a väčšie kosti pod dozorom"]
+      },
+      "mlieko": {
+        "verdict": "CAUTION",
+        "short": "Mnoho psov má intoleranciu laktózy.",
+        "explanation": "Niektoré psy strávia mlieko bez problému, iné dostanú hnačku. Vyskúšaj malé množstvo a sleduj reakciu.",
+        "warnings": ["Sleduj prípadné tráviace ťažkosti", "Bezlaktózové verzie sú lepšie"]
+      },
+      "syr": {
+        "verdict": "CAUTION",
+        "short": "V malých množstvách áno.",
+        "explanation": "Tvrdé syry s nízkym obsahom laktózy sú OK ako pamlsky. Pozor na obsah soli.",
+        "warnings": ["Pozor na soľ", "Nie pre psy s alergiou na mliečne produkty"]
+      },
+      "avokádo": {
+        "verdict": "UNSAFE",
+        "short": "Nie, avokádo obsahuje persín.",
+        "explanation": "Persín v avokáde môže spôsobiť tráviace ťažkosti a vracanie. Kôstka je aj rizikom udusenia.",
+        "alternatives": ["banán", "mrkva", "jablko bez jadierok"]
+      },
+      "losos": {
+        "verdict": "SAFE",
+        "short": "Áno, ale len varený a bez kostí.",
+        "explanation": "Losos je výborný zdroj omega-3 mastných kyselín. Surový môže obsahovať parazity."
+      }
+    }
   },
   "petTypes": {
     "heading": "PAWPORT PRE VŠETKY DOMÁCE ZVIERATÁ",
