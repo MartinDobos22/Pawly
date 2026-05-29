@@ -72,5 +72,9 @@
     "noProfiles": "No pet profiles",
     "defaultBreed": "Dog",
     "manage": "Manage profiles"
+  },
+  "errors": {
+    "loadProfilesFailed": "Failed to load profiles.",
+    "loadHealthDataFailed": "Failed to load health data."
   }
 }

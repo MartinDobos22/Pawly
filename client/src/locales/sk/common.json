@@ -72,5 +72,9 @@
     "noProfiles": "Žiadne profily zvierat",
     "defaultBreed": "Pes",
     "manage": "Spravovať profily"
+  },
+  "errors": {
+    "loadProfilesFailed": "Načítanie profilov zlyhalo.",
+    "loadHealthDataFailed": "Načítanie zdravotných dát zlyhalo."
   }
 }

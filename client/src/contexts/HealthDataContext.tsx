@@ -28,6 +28,7 @@ import {
   weightLogsApi,
   type CrudApi,
 } from '../services/healthApi';
+import i18n from '../i18n';
 
 interface Collection<T> {
   items: T[];
@@ -164,7 +165,11 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       weightLogs.setItems(wl);
       setSavedAnalyses(sa);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Načítanie zdravotných dát zlyhalo.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : (i18n.t('errors.loadHealthDataFailed', { ns: 'common' }) as string)
+      );
     } finally {
       setLoading(false);
     }
