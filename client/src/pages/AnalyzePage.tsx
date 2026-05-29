@@ -55,7 +55,7 @@ const readFileAsBase64 = (file: File) =>
       const raw = typeof reader.result === 'string' ? reader.result : '';
       const base64 = raw.split(',')[1] ?? '';
       if (!base64) {
-        reject(new Error('Nepodarilo sa načítať súbor.'));
+        reject(new Error('FILE_LOAD_FAILED'));
         return;
       }
       resolve({ base64 });
@@ -128,7 +128,8 @@ export default function AnalyzePage() {
         setScanInfo(t('form.textPrefilled'));
       }
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : t('errors.fileLoadFailed'));
+      const msg = err instanceof Error ? err.message : '';
+      setScanError(msg === 'FILE_LOAD_FAILED' || !msg ? t('errors.fileLoadFailed') : msg);
     }
   };
 

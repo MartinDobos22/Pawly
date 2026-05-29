@@ -69,5 +69,16 @@
     "title": "Posledné analýzy",
     "noAnalyses": "Vykonaj prvú analýzu"
   },
-  "defaultLabel": "Analýza"
+  "defaultLabel": "Analýza",
+  "proscons": {
+    "pros": "Výhody",
+    "cons": "Nevýhody"
+  },
+  "recommendation": {
+    "suitableFor": "Vhodné pre:",
+    "notRecommendedFor": "Nevhodné pre:"
+  },
+  "personalizedVerdict": {
+    "title": "Hodnotenie pre {{name}}"
+  }
 }

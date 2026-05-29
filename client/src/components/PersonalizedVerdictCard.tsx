@@ -1,11 +1,12 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { PersonalizedNote } from '../types';
 
 const VERDICT_COLORS: Record<string, { bg: string; color: string }> = {
-  'NEBEZPEČNÉ': { bg: '#D32F2F', color: '#fff' },
+  NEBEZPEČNÉ: { bg: '#D32F2F', color: '#fff' },
   'S VÝHRADAMI': { bg: '#F57C00', color: '#fff' },
-  'VHODNÉ': { bg: '#388E3C', color: '#fff' },
-  'VÝBORNÉ': { bg: '#1B5E20', color: '#fff' },
+  VHODNÉ: { bg: '#388E3C', color: '#fff' },
+  VÝBORNÉ: { bg: '#1B5E20', color: '#fff' },
 };
 
 interface PersonalizedVerdictCardProps {
@@ -13,13 +14,14 @@ interface PersonalizedVerdictCardProps {
 }
 
 export default function PersonalizedVerdictCard({ note }: PersonalizedVerdictCardProps) {
+  const { t } = useTranslation('analyze');
   const verdictStyle = VERDICT_COLORS[note.overallVerdict] ?? VERDICT_COLORS['S VÝHRADAMI'];
 
   return (
     <Card sx={{ borderRadius: 4, overflow: 'hidden' }}>
       <CardContent sx={{ p: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-          Hodnotenie pre {note.petName}
+          {t('personalizedVerdict.title', { name: note.petName })}
         </Typography>
 
         <Box

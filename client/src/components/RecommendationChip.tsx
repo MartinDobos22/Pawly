@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, Chip, Typography, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { Recommendation } from '../types';
 
 interface RecommendationChipProps {
@@ -7,6 +8,7 @@ interface RecommendationChipProps {
 
 export default function RecommendationChip({ recommendation }: RecommendationChipProps) {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
 
   return (
     <Card>
@@ -14,7 +16,7 @@ export default function RecommendationChip({ recommendation }: RecommendationChi
         {/* Vhodné pre */}
         <Box sx={{ mb: 2.5 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
-            Vhodné pre:
+            {t('recommendation.suitableFor')}
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {recommendation.suitableFor.map((item, i) => (
@@ -38,7 +40,7 @@ export default function RecommendationChip({ recommendation }: RecommendationChi
         {/* Nevhodné pre */}
         <Box>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
-            Nevhodné pre:
+            {t('recommendation.notRecommendedFor')}
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {recommendation.notRecommendedFor.map((item, i) => (

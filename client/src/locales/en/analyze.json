@@ -69,5 +69,16 @@
     "title": "Recent analyses",
     "noAnalyses": "Run your first analysis"
   },
-  "defaultLabel": "Analysis"
+  "defaultLabel": "Analysis",
+  "proscons": {
+    "pros": "Pros",
+    "cons": "Cons"
+  },
+  "recommendation": {
+    "suitableFor": "Suitable for:",
+    "notRecommendedFor": "Not recommended for:"
+  },
+  "personalizedVerdict": {
+    "title": "Rating for {{name}}"
+  }
 }
