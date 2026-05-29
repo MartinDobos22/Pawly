@@ -7,12 +7,21 @@ import {
   Restaurant as DietIcon,
   Vaccines as VaccinesIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import HealthScoreRing from '../healthPassport/HealthScoreRing';
 import BrowserFrame from './BrowserFrame';
 import PhoneFrame from './PhoneFrame';
 
 function DesktopPreview() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
+
+  const cells = [
+    { icon: VaccinesIcon, label: t('appPreview.mockCard.vaccination'), tone: 'success' as const, value: t('appPreview.mockCard.valid') },
+    { icon: DewormIcon, label: t('appPreview.mockCard.deworming'), tone: 'success' as const, value: t('appPreview.mockCard.inWeeks') },
+    { icon: EctoIcon, label: t('appPreview.mockCard.ticks'), tone: 'warning' as const, value: t('appPreview.mockCard.expiresSoon') },
+    { icon: DietIcon, label: t('appPreview.mockCard.diet'), tone: 'success' as const, value: t('appPreview.mockCard.suitable') },
+  ];
 
   return (
     <Stack spacing={1.5}>
@@ -42,7 +51,7 @@ function DesktopPreview() {
               variant="caption"
               sx={{ color: 'text.secondary', fontSize: '0.62rem', letterSpacing: '0.1em' }}
             >
-              Karta pre veterinára
+              {t('appPreview.vetCardLabel')}
             </Typography>
             <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', lineHeight: 1.1 }}>
               Nalina
@@ -58,10 +67,10 @@ function DesktopPreview() {
             score={82}
             size={72}
             breakdown={[
-              { label: 'Očkovanie', shortLabel: 'Očk.', status: 'good' },
-              { label: 'Odčervenie', shortLabel: 'Odč.', status: 'good' },
-              { label: 'Kliešte', shortLabel: 'Klš.', status: 'soon' },
-              { label: 'Diéta', shortLabel: 'Diéta', status: 'good' },
+              { label: t('appPreview.mockCard.vaccination'), shortLabel: t('appPreview.mockCard.vaccShort'), status: 'good' },
+              { label: t('appPreview.mockCard.deworming'), shortLabel: t('appPreview.mockCard.dewormShort'), status: 'good' },
+              { label: t('appPreview.mockCard.ticks'), shortLabel: t('appPreview.mockCard.ticksShort'), status: 'soon' },
+              { label: t('appPreview.mockCard.diet'), shortLabel: t('appPreview.mockCard.dietShort'), status: 'good' },
             ]}
           />
         </Stack>
@@ -75,12 +84,7 @@ function DesktopPreview() {
           gap: 1,
         }}
       >
-        {[
-          { icon: VaccinesIcon, label: 'Očkovanie', tone: 'success' as const, value: 'Platné' },
-          { icon: DewormIcon, label: 'Odčervenie', tone: 'success' as const, value: 'O 5 t.' },
-          { icon: EctoIcon, label: 'Kliešte', tone: 'warning' as const, value: 'Vyprší' },
-          { icon: DietIcon, label: 'Diéta', tone: 'success' as const, value: 'Vhodná' },
-        ].map((cell, i) => {
+        {cells.map((cell, i) => {
           const Icon = cell.icon;
           const color = theme.palette[cell.tone].main;
           return (
@@ -129,6 +133,7 @@ function DesktopPreview() {
 
 function MobilePreview() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
 
   const items = [
     { date: '21. máj', label: 'Antiparazitiká', tone: 'warning' as const },
@@ -143,7 +148,7 @@ function MobilePreview() {
         variant="caption"
         sx={{ color: 'text.secondary', fontSize: '0.62rem', letterSpacing: '0.1em' }}
       >
-        Klinická história
+        {t('appPreview.clinicalHistory')}
       </Typography>
       <Stack spacing={1}>
         {items.map((it, i) => {
@@ -197,6 +202,9 @@ function MobilePreview() {
 export default function AppPreview() {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation('landing');
+  const statValues = ['6', 'PDF', 'AI', 'PWA'];
+  const statItems = t('appPreview.stats', { returnObjects: true }) as Array<{ label: string }>;
 
   return (
     <Box
@@ -233,13 +241,13 @@ export default function AppPreview() {
               maxWidth: 720,
             }}
           >
-            Takto vyzerá tvoj digitálny pas
+            {t('appPreview.title')}
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
           >
-            Funguje na počítači aj v mobile — všetky záznamy synchronizované, vždy s tebou.
+            {t('appPreview.subtitle')}
           </Typography>
         </Stack>
 
@@ -292,10 +300,10 @@ export default function AppPreview() {
                   variant="caption"
                   sx={{ color: 'text.secondary', fontSize: '0.62rem', letterSpacing: '0.08em' }}
                 >
-                  Po termíne
+                  {t('appPreview.overdueBadge')}
                 </Typography>
                 <Typography sx={{ fontWeight: 700, color: 'error.main', fontSize: '0.8rem' }}>
-                  Antiparazitiká · 26 dní
+                  {t('appPreview.overdueDetail')}
                 </Typography>
               </Stack>
             </Box>
@@ -324,7 +332,9 @@ export default function AppPreview() {
               }}
             >
               <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
-              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>Synchronizované</Typography>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                {t('appPreview.syncBadge')}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -340,17 +350,12 @@ export default function AppPreview() {
             pt: 4,
           }}
         >
-          {[
-            { value: '6', label: 'Hlavných sekcií' },
-            { value: 'PDF', label: 'Export pre veterinára' },
-            { value: 'AI', label: 'Skenovanie dokumentov' },
-            { value: 'PWA', label: 'Funguje offline' },
-          ].map((s) => (
-            <Stack key={s.label} alignItems="center" spacing={0.5}>
+          {statValues.map((value, idx) => (
+            <Stack key={idx} alignItems="center" spacing={0.5}>
               <Typography
                 sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'primary.main', lineHeight: 1 }}
               >
-                {s.value}
+                {value}
               </Typography>
               <Typography
                 variant="caption"
@@ -361,7 +366,7 @@ export default function AppPreview() {
                   textAlign: 'center',
                 }}
               >
-                {s.label}
+                {statItems[idx]?.label}
               </Typography>
             </Stack>
           ))}

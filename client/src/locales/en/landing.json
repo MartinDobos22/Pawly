@@ -122,7 +122,10 @@
     "statOffline": "Offline-ready",
     "dogPhotoAlt": "Golden retriever looking at the camera",
     "floatingVaccination": "Vaccination",
-    "floatingValidUntil": "Valid until 23 Jun 2026"
+    "floatingValidUntil": "Valid until 23 Jun 2026",
+    "navEnter": "Open app",
+    "navLogin": "Sign in",
+    "navRegister": "Sign up"
   },
   "howItWorks": {
     "title": "3 steps and your health passport is on your phone",
@@ -213,6 +216,35 @@
       { "label": "animal species" },
       { "label": "free, no registration" }
     ]
+  },
+  "appPreview": {
+    "title": "This is what your digital passport looks like",
+    "subtitle": "Works on desktop and mobile — all records synced, always with you.",
+    "overdueBadge": "Overdue",
+    "overdueDetail": "Antiparasitic · 26 days",
+    "syncBadge": "Synced",
+    "stats": [
+      { "label": "Main sections" },
+      { "label": "PDF export for vet" },
+      { "label": "Document scanning" },
+      { "label": "Works offline" }
+    ],
+    "vetCardLabel": "Vet card",
+    "clinicalHistory": "Clinical history",
+    "mockCard": {
+      "vaccination": "Vaccination",
+      "deworming": "Deworming",
+      "ticks": "Ticks",
+      "diet": "Diet",
+      "vaccShort": "Vacc.",
+      "dewormShort": "Dew.",
+      "ticksShort": "Tck.",
+      "dietShort": "Diet",
+      "valid": "Valid",
+      "inWeeks": "In 5 wk.",
+      "expiresSoon": "Expires",
+      "suitable": "Suitable"
+    }
   },
   "photoWall": {
     "title1": "For every furry friend",
