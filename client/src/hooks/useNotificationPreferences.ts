@@ -6,6 +6,7 @@ import {
   type UpcomingItem,
 } from '../services/notificationsApi';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface State {
   prefs: NotificationPreferences | null;
@@ -38,7 +39,10 @@ export function useNotificationPreferences() {
           setState((s) => ({
             ...s,
             loading: false,
-            error: err instanceof Error ? err.message : 'Načítanie zlyhalo.',
+            error:
+              err instanceof Error
+                ? err.message
+                : i18n.t('notifications.loadError', { ns: 'landing' }),
           }));
       }
     })();
@@ -59,7 +63,10 @@ export function useNotificationPreferences() {
       setState((s) => ({
         ...s,
         saving: false,
-        error: err instanceof Error ? err.message : 'Uloženie zlyhalo.',
+        error:
+          err instanceof Error
+            ? err.message
+            : i18n.t('notifications.saveFailed', { ns: 'landing' }),
       }));
     }
   }, []);

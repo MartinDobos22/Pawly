@@ -23,7 +23,9 @@
     "unsupportedFileType": "Unsupported file type. Use JPG, PNG, WebP or PDF.",
     "fileTooLarge": "File is too large (max 5 MB).",
     "fileLoadFailed": "Failed to load file.",
-    "noAnswer": "Failed to get an answer."
+    "noAnswer": "Failed to get an answer.",
+    "unexpectedAnalysis": "Unexpected error during analysis.",
+    "unexpectedFileAnalysis": "Unexpected error during file analysis."
   },
   "score": {
     "poor": "Poor",

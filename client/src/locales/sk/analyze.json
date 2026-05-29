@@ -23,7 +23,9 @@
     "unsupportedFileType": "Nepodporovaný typ súboru. Použi JPG, PNG, WebP alebo PDF.",
     "fileTooLarge": "Súbor je príliš veľký (max 5 MB).",
     "fileLoadFailed": "Nepodarilo sa načítať súbor.",
-    "noAnswer": "Nepodarilo sa získať odpoveď."
+    "noAnswer": "Nepodarilo sa získať odpoveď.",
+    "unexpectedAnalysis": "Neočakávaná chyba pri analýze.",
+    "unexpectedFileAnalysis": "Neočakávaná chyba pri analýze súboru."
   },
   "score": {
     "poor": "Nevyhovujúce",
