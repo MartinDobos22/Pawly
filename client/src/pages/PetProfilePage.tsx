@@ -153,7 +153,6 @@ export default function PetProfilePage() {
   const [nameError, setNameError] = useState('');
   const [conditionDraft, setConditionDraft] = useState('');
   const [procedureDraft, setProcedureDraft] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
     {
       open: false,
@@ -203,7 +202,6 @@ export default function PetProfilePage() {
       return;
     }
     setDobError('');
-    setIsSaving(true);
     try {
       if (editingId) {
         await updateProfile(editingId, form);
@@ -214,8 +212,6 @@ export default function PetProfilePage() {
       setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
     } catch {
       setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
-    } finally {
-      setIsSaving(false);
     }
   };
 
