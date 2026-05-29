@@ -1,0 +1,87 @@
+{
+  "hero": {
+    "title": "Analýza krmiva",
+    "description": "Vlož zloženie krmiva alebo vyfoť obal — AI vyhodnotí kvalitu, riziká alergénov a odporúčanie pre psa. Alebo sa rýchlo opýtaj „Môže pes jesť…?\"",
+    "forPet": "Pre {{petName}}"
+  },
+  "form": {
+    "analyzeComposition": "Analyzuj kompozíciu",
+    "placeholder": "Vlož zloženie krmiva alebo naskenuj obal…",
+    "scanLabel": "Naskenovať obal",
+    "scanning": "Načítavam text…",
+    "analyze": "Analyzovať",
+    "analyzing": "Analyzujem…",
+    "saveRating": "Uložiť hodnotenie",
+    "addProfileHint": "Pridaj profil zvieraťa v sekcii",
+    "addProfileHintProfiles": "Profily",
+    "addProfileHintSuffix": "pre personalizovanú analýzu alergénov.",
+    "sourceManual": "Ručne vložené zloženie",
+    "sourcePhoto": "Fotka obalu: {{fileName}}",
+    "textPrefilled": "Text bol predvyplnený. Skontroluj ho a klikni Analyzovať."
+  },
+  "errors": {
+    "unsupportedFileType": "Nepodporovaný typ súboru. Použi JPG, PNG, WebP alebo PDF.",
+    "fileTooLarge": "Súbor je príliš veľký (max 5 MB).",
+    "fileLoadFailed": "Nepodarilo sa načítať súbor.",
+    "noAnswer": "Nepodarilo sa získať odpoveď.",
+    "unexpectedAnalysis": "Neočakávaná chyba pri analýze.",
+    "unexpectedFileAnalysis": "Neočakávaná chyba pri analýze súboru.",
+    "extractTextFailed": "Nepodarilo sa extrahovať text."
+  },
+  "score": {
+    "poor": "Nevyhovujúce",
+    "average": "Priemerné",
+    "good": "Dobré",
+    "excellent": "Výborné",
+    "totalQuality": "Celkové skóre kvality",
+    "outOf": "z 100"
+  },
+  "allergenWarning": {
+    "dangerTitle": "NEBEZPEČENSTVO – ZISTENÉ ALERGÉNY!",
+    "healthWarningTitle": "ZDRAVOTNÉ VAROVANIE",
+    "petAtRisk": "Toto krmivo môže vážne ohroziť zdravie vášho zvieraťa!"
+  },
+  "foodSafety": {
+    "title": "Môže pes jesť…?",
+    "placeholder": "napr. čokoláda, kuracie kosti, jablko…",
+    "ask": "Spýtať",
+    "recentQuestions": "Posledné otázky",
+    "watchOut": "Pozor na:",
+    "alternatives": "Alternatívy:",
+    "clearAnswer": "Vymazať odpoveď",
+    "offlineAnswer": "Offline odpoveď (bez AI). Pre presnejšie vyhodnotenie nakonfiguruj OpenAI kľúč.",
+    "verdicts": {
+      "SAFE": "Bezpečné",
+      "CAUTION": "Opatrne",
+      "UNSAFE": "Nedávaj"
+    }
+  },
+  "history": {
+    "title": "História hodnotení",
+    "emptyTitle": "Žiadna história",
+    "emptyDescription": "Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem.",
+    "runAnalysis": "Spustiť analýzu"
+  },
+  "snack": {
+    "saved": "Hodnotenie uložené",
+    "savedWithPet": "Hodnotenie uložené a pridané do Zdravotného pasu pre {{petName}}"
+  },
+  "foodFromAnalysis": "Krmivo z analýzy",
+  "suitabilityReasonNoAllergens": "Bez zistených alergénov a zdravotných rizík",
+  "recentAnalyses": {
+    "title": "Posledné analýzy",
+    "noAnalyses": "Vykonaj prvú analýzu"
+  },
+  "defaultLabel": "Analýza",
+  "proscons": {
+    "pros": "Výhody",
+    "cons": "Nevýhody"
+  },
+  "recommendation": {
+    "suitableFor": "Vhodné pre:",
+    "notRecommendedFor": "Nevhodné pre:"
+  },
+  "personalizedVerdict": {
+    "title": "Hodnotenie pre {{name}}"
+  }
+}

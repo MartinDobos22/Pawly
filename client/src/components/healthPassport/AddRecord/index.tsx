@@ -17,6 +17,7 @@ import {
   Close as CloseIcon,
   Edit as EditIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
 import ManualEntryProvider from './ManualEntry';
@@ -41,10 +42,11 @@ type ModeIcon = typeof EditIcon;
 
 function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => void }) {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
   const tabs: { value: Mode; label: string; icon: ModeIcon }[] = [
-    { value: 'QUICK', label: 'Rýchly', icon: BoltIcon },
-    { value: 'MANUAL', label: 'Manuálna návšteva', icon: EditIcon },
-    { value: 'AI', label: 'Z dokumentu (AI)', icon: AiIcon },
+    { value: 'QUICK', label: t('addRecord.modeQuick'), icon: BoltIcon },
+    { value: 'MANUAL', label: t('addRecord.modeManual'), icon: EditIcon },
+    { value: 'AI', label: t('addRecord.modeAi'), icon: AiIcon },
   ];
 
   return (
@@ -110,12 +112,6 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
   );
 }
 
-const subtitleFor = (mode: Mode): string => {
-  if (mode === 'QUICK') return 'Rýchle zalogovanie jedného typu záznamu (bez detailov o návšteve).';
-  if (mode === 'MANUAL') return 'Vyplň formulár návštevy veterinára manuálne.';
-  return 'AI extrahuje vakcinácie a záznamy z nahraných dokumentov.';
-};
-
 export default function AddRecord({
   open,
   dogId,
@@ -123,7 +119,14 @@ export default function AddRecord({
   onClose,
   onSave,
 }: AddRecordProps) {
+  const { t } = useTranslation('healthPassport');
   const [mode, setMode] = useState<Mode>('QUICK');
+
+  const subtitleFor = (m: Mode): string => {
+    if (m === 'QUICK') return t('addRecord.subtitleQuick');
+    if (m === 'MANUAL') return t('addRecord.subtitleManual');
+    return t('addRecord.subtitleAi');
+  };
 
   const handleClose = () => {
     setMode('QUICK');
@@ -140,13 +143,13 @@ export default function AddRecord({
       <Stack direction="row" alignItems="center" gap={1}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Pridať záznam
+            {t('addRecord.addTitle')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {subtitleFor(mode)}
           </Typography>
         </Box>
-        <IconButton onClick={handleClose} size="small" aria-label="Zavrieť">
+        <IconButton onClick={handleClose} size="small" aria-label={t('detail.close')}>
           <CloseIcon />
         </IconButton>
       </Stack>

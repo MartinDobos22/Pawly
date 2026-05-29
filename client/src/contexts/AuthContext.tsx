@@ -13,6 +13,7 @@ import {
 import { FirebaseError } from 'firebase/app';
 import { auth, googleProvider } from '../config/firebase';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface AuthContextValue {
   user: User | null;
@@ -27,30 +28,31 @@ interface AuthContextValue {
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 function mapFirebaseAuthError(err: unknown): Error {
+  const t = (k: string) => i18n.t(k as never, { ns: 'auth' }) as string;
   if (err instanceof FirebaseError) {
     logger.error('Firebase auth chyba', { code: err.code, message: err.message });
     switch (err.code) {
       case 'auth/invalid-email':
-        return new Error('Neplatný formát e-mailu.');
+        return new Error(t('errors.invalidEmail'));
       case 'auth/user-not-found':
       case 'auth/wrong-password':
       case 'auth/invalid-credential':
-        return new Error('Nesprávny e-mail alebo heslo.');
+        return new Error(t('errors.wrongCredentials'));
       case 'auth/email-already-in-use':
-        return new Error('Tento e-mail je už zaregistrovaný.');
+        return new Error(t('errors.emailInUse'));
       case 'auth/weak-password':
-        return new Error('Heslo musí mať aspoň 6 znakov.');
+        return new Error(t('errors.weakPassword'));
       case 'auth/too-many-requests':
-        return new Error('Príliš veľa pokusov. Skús to neskôr.');
+        return new Error(t('errors.tooManyRequests'));
       case 'auth/popup-closed-by-user':
-        return new Error('Prihlásenie cez Google bolo zrušené.');
+        return new Error(t('errors.popupClosed'));
       case 'auth/network-request-failed':
-        return new Error('Chyba siete. Skontroluj pripojenie.');
+        return new Error(t('errors.networkError'));
       default:
-        return new Error('Prihlásenie zlyhalo. Skús to znova.');
+        return new Error(t('errors.loginFailed'));
     }
   }
-  return new Error('Prihlásenie zlyhalo. Skús to znova.');
+  return new Error(t('errors.loginFailed'));
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

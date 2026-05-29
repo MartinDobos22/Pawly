@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionDetails,
@@ -21,9 +22,6 @@ import {
 } from '@mui/icons-material';
 import ProsConsCard from '../ProsConsCard';
 import {
-  EPISODE_CATEGORY_LABEL,
-  EPISODE_OUTCOME_LABEL,
-  EPISODE_SEVERITY_LABEL,
   type EpisodeOutcome,
   type EpisodeSeverity,
   type HealthEpisodeRecord,
@@ -73,12 +71,13 @@ export default function EpisodeListItem({
   vetVisits,
 }: EpisodeListItemProps) {
   const theme = useTheme();
+  const { t } = useTranslation('episodes');
 
   const linkedMeds = episode.medicationIds
     .map((id) => medications.find((m) => m.id === id))
     .map(
       (m, i) =>
-        m ?? { id: episode.medicationIds[i], name: 'Liek bol vymazaný', dose: '', frequency: '' }
+        m ?? { id: episode.medicationIds[i], name: t('item.deletedMed'), dose: '', frequency: '' }
     );
 
   const linkedVisit = episode.vetVisitId
@@ -112,7 +111,7 @@ export default function EpisodeListItem({
               </Typography>
               <Chip
                 size="small"
-                label={EPISODE_CATEGORY_LABEL[episode.category]}
+                label={t(`category.${episode.category}` as never)}
                 variant="outlined"
               />
             </Stack>
@@ -144,12 +143,12 @@ export default function EpisodeListItem({
             <Chip
               size="small"
               color={SEVERITY_CHIP_COLOR[episode.severity]}
-              label={EPISODE_SEVERITY_LABEL[episode.severity]}
+              label={t(`severity.${episode.severity}` as never)}
             />
             <Chip
               size="small"
               color={OUTCOME_CHIP_COLOR[episode.outcome]}
-              label={EPISODE_OUTCOME_LABEL[episode.outcome]}
+              label={t(`outcome.${episode.outcome}` as never)}
             />
           </Stack>
         </Box>
@@ -162,7 +161,7 @@ export default function EpisodeListItem({
         {episode.triggers && episode.triggers.length > 0 && (
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              Spúšťače
+              {t('form.triggers')}
             </Typography>
             <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
               {episode.triggers.map((t) => (
@@ -175,23 +174,23 @@ export default function EpisodeListItem({
         {(episode.diagnosis || linkedVisit || linkedMeds.length > 0 || episode.treatmentNotes) && (
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              Diagnóza a liečba
+              {t('form.diagnosisTreatment')}
             </Typography>
             {episode.diagnosis && (
               <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', mb: 1 }}>
-                <strong>Diagnóza:</strong> {episode.diagnosis}
+                <strong>{t('form.diagnosis')}:</strong> {episode.diagnosis}
               </Typography>
             )}
             {linkedVisit && (
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Návšteva veterinára:</strong> {linkedVisit.clinicName}
+                <strong>{t('form.vetVisit')}:</strong> {linkedVisit.clinicName}
                 {linkedVisit.date ? ` (${formatDate(linkedVisit.date)})` : ''}
               </Typography>
             )}
             {linkedMeds.length > 0 && (
               <Box sx={{ mb: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Použité lieky:
+                  {t('item.medsUsed')}:
                 </Typography>
                 <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 0.5 }}>
                   {linkedMeds.map((m) => (
@@ -199,7 +198,7 @@ export default function EpisodeListItem({
                       key={m.id}
                       size="small"
                       label={m.dose ? `${m.name} (${m.dose})` : m.name}
-                      color={m.name === 'Liek bol vymazaný' ? 'default' : 'primary'}
+                      color={m.name === t('item.deletedMed') ? 'default' : 'primary'}
                       variant="outlined"
                     />
                   ))}
@@ -208,7 +207,7 @@ export default function EpisodeListItem({
             )}
             {episode.treatmentNotes && (
               <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                <strong>Poznámky k liečbe:</strong> {episode.treatmentNotes}
+                <strong>{t('form.treatmentNotes')}:</strong> {episode.treatmentNotes}
               </Typography>
             )}
           </Box>
@@ -229,7 +228,7 @@ export default function EpisodeListItem({
               variant="subtitle2"
               sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.primary.main }}
             >
-              Poučenie pre budúcnosť
+              {t('item.lessonsTitle')}
             </Typography>
             <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
               {episode.lessonsLearned}
@@ -240,7 +239,7 @@ export default function EpisodeListItem({
         {episode.attachments && episode.attachments.length > 0 && (
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              Prílohy
+              {t('form.attachments')}
             </Typography>
             <Box
               sx={{
@@ -261,7 +260,7 @@ export default function EpisodeListItem({
                   <Box
                     component="img"
                     src={a.dataUrl}
-                    alt={a.caption ?? 'Príloha'}
+                    alt={a.caption ?? t('item.attachment')}
                     sx={{ width: '100%', height: 100, objectFit: 'cover', display: 'block' }}
                   />
                   {a.caption && (
@@ -284,13 +283,13 @@ export default function EpisodeListItem({
             startIcon={<AutoAwesomeIcon />}
             onClick={onFindSimilar}
           >
-            Nájsť podobné z minulosti
+            {t('similar.findSimilar')}
           </Button>
           <Stack direction="row" spacing={0.5}>
-            <IconButton size="small" onClick={onEdit} aria-label="Upraviť">
+            <IconButton size="small" onClick={onEdit} aria-label={t('actions.edit', { ns: 'common' })}>
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton size="small" onClick={onDelete} aria-label="Zmazať" color="error">
+            <IconButton size="small" onClick={onDelete} aria-label={t('actions.delete', { ns: 'common' })} color="error">
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Stack>

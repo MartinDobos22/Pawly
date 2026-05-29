@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { PetProfile } from '../types';
 import { createPet, deletePet, listPets, updatePet } from '../services/petsApi';
+import i18n from '../i18n';
 
 interface PetProfilesContextValue {
   profiles: PetProfile[];
@@ -25,7 +26,11 @@ export function PetProfilesProvider({ children }: { children: ReactNode }) {
     try {
       setProfiles(await listPets());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Načítanie profilov zlyhalo.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : (i18n.t('errors.loadProfilesFailed', { ns: 'common' }) as string)
+      );
     } finally {
       setLoading(false);
     }

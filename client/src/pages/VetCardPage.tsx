@@ -1,5 +1,6 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
@@ -15,22 +16,9 @@ import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
-import { TIMELINE_TYPE_META } from '../components/healthPassport/constants';
 import type { TimelineEvent } from '../types/dogHealth';
 
 const today = () => new Date().toISOString().slice(0, 10);
-const formatDate = (value?: string) => {
-  if (!value) return '–';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
-};
-const formatDateShort = (value?: string) => {
-  if (!value) return '–';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' });
-};
 
 const PRINT_STYLES = `
   @page { size: A4; margin: 14mm; }
@@ -325,17 +313,33 @@ const PRINT_STYLES = `
   }
 `;
 
-function statusBadge(date: string | undefined, soonDays = 30): { cls: string; label: string } {
-  if (!date) return { cls: 'badge-unknown', label: 'Nezadané' };
-  const now = new Date();
-  const t = new Date(date);
-  const diff = Math.ceil((t.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (diff < 0) return { cls: 'badge-expired', label: `Expirované` };
-  if (diff <= soonDays) return { cls: 'badge-warning', label: `Vyprší ${formatDateShort(date)}` };
-  return { cls: 'badge-valid', label: `Platné do ${formatDateShort(date)}` };
-}
 
 export default function VetCardPage() {
+  const { t, i18n } = useTranslation('healthPassport');
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
+  const fmtDate = (value?: string) => {
+    if (!value) return '–';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+  const fmtDateShort = (value?: string) => {
+    if (!value) return '–';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+  const statusBadge = (date: string | undefined, soonDays = 30): { cls: string; label: string } => {
+    if (!date) return { cls: 'badge-unknown', label: t('vetPage.statusUnknown') };
+    const now = new Date();
+    const target = new Date(date);
+    const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return { cls: 'badge-expired', label: t('vetPage.statusExpired') };
+    const formatted = fmtDateShort(date);
+    if (diff <= soonDays)
+      return { cls: 'badge-warning', label: t('vetPage.statusWillExpire', { date: formatted }) };
+    return { cls: 'badge-valid', label: t('vetPage.statusValidUntil', { date: formatted }) };
+  };
   const { profiles } = usePetProfiles();
   const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
@@ -383,31 +387,31 @@ export default function VetCardPage() {
         id: `vac-${x.id}`,
         dogId,
         type: 'VACCINATION' as const,
-        title: `Očkovanie: ${x.name}`,
-        subtitle: `Platné do ${formatDateShort(x.validUntil)}`,
+        title: t('timeline.titleVaccination', { name: x.name }),
+        subtitle: x.validUntil ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) }) : undefined,
         date: x.dateApplied,
       })),
       ...dogDeworm.map((x) => ({
         id: `dew-${x.id}`,
         dogId,
         type: 'DEWORMING' as const,
-        title: `Odčervenie: ${x.productName}`,
-        subtitle: `Ďalší termín ${formatDateShort(x.nextDueDate)}`,
+        title: t('timeline.titleDeworming', { product: x.productName }),
+        subtitle: x.nextDueDate ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) }) : undefined,
         date: x.dateGiven,
       })),
       ...dogEctos.map((x) => ({
         id: `ect-${x.id}`,
         dogId,
         type: 'ECTOPARASITE' as const,
-        title: `Antiparazitikum: ${x.productName}`,
-        subtitle: `Ďalší termín ${formatDateShort(x.nextDueDate)}`,
+        title: t('timeline.titleEcto', { product: x.productName }),
+        subtitle: x.nextDueDate ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) }) : undefined,
         date: x.dateGiven,
       })),
       ...dogVisits.map((x) => ({
         id: `vis-${x.id}`,
         dogId,
         type: 'VET_VISIT' as const,
-        title: `Veterinár: ${x.clinicName}`,
+        title: t('timeline.titleVisit', { clinic: x.clinicName }),
         subtitle: x.reason,
         date: x.date,
       })),
@@ -415,7 +419,7 @@ export default function VetCardPage() {
         id: `med-${x.id}`,
         dogId,
         type: 'MEDICATION' as const,
-        title: `Liek: ${x.name}`,
+        title: t('timeline.titleMedication', { name: x.name }),
         subtitle: `${x.dose} · ${x.frequency}`,
         date: x.startDate,
       })),
@@ -423,7 +427,7 @@ export default function VetCardPage() {
         id: `diet-${x.id}`,
         dogId,
         type: 'DIET' as const,
-        title: `Diéta: ${x.foodName}`,
+        title: t('timeline.titleDiet', { food: x.foodName }),
         subtitle: x.suitabilityStatus,
         date: x.startedAt,
       })),
@@ -440,7 +444,7 @@ export default function VetCardPage() {
       significantVisits,
       timeline,
     };
-  }, [dogId, vaccinations, dewormings, ectos, visits, medications, dietEntries]);
+  }, [dogId, vaccinations, dewormings, ectos, visits, medications, dietEntries, t, fmtDateShort]);
 
   const handlePrint = () => {
     if (!dog || !data) return;
@@ -603,18 +607,18 @@ export default function VetCardPage() {
         <td class="muted nowrap">${type}</td>
         <td>
           <div class="bold">${name}</div>
-          ${batch ? `<div class="muted" style="font-size:10px">šarža ${batch}</div>` : ''}
+          ${batch ? `<div class="muted" style="font-size:10px">${t('vetPage.batch', { batch })}</div>` : ''}
         </td>
-        <td class="muted nowrap">${applied ? formatDateShort(applied) : '–'}</td>
-        <td class="muted nowrap">${until ? formatDateShort(until) : '–'}</td>
+        <td class="muted nowrap">${applied ? fmtDateShort(applied) : '–'}</td>
+        <td class="muted nowrap">${until ? fmtDateShort(until) : '–'}</td>
         <td class="nowrap bold" style="color:${statusColorVar(s.cls)}">${s.label}</td>
       </tr>`;
 
     const vaccineRows = [
       data.rabies
         ? vaccineRow(
-            'Besnota',
-            'Rabies',
+            t('vetPage.vaccineRabiesType'),
+            t('vetPage.vaccineRabiesName'),
             data.rabies.batchNumber,
             data.rabies.dateApplied,
             data.rabies.validUntil,
@@ -623,8 +627,8 @@ export default function VetCardPage() {
         : '',
       data.combined
         ? vaccineRow(
-            'Kombinovaná',
-            'Kombinovaná vakcína',
+            t('vetPage.vaccineCombinedType'),
+            t('vetPage.vaccineCombinedName'),
             data.combined.batchNumber,
             data.combined.dateApplied,
             data.combined.validUntil,
@@ -633,7 +637,7 @@ export default function VetCardPage() {
         : '',
       ...(data.otherVax ?? []).map((v) =>
         vaccineRow(
-          'Vakcína',
+          t('vetPage.vaccineOtherType'),
           v.name,
           v.batchNumber,
           v.dateApplied,
@@ -643,7 +647,7 @@ export default function VetCardPage() {
       ),
       data.lastDeworming
         ? vaccineRow(
-            'Odčervenie',
+            t('vetPage.dewormingType'),
             data.lastDeworming.productName,
             undefined,
             data.lastDeworming.dateGiven,
@@ -653,7 +657,7 @@ export default function VetCardPage() {
         : '',
       data.lastEcto
         ? vaccineRow(
-            'Antiparazitikum',
+            t('vetPage.antiparasiticType'),
             data.lastEcto.productName,
             undefined,
             data.lastEcto.dateGiven,
@@ -681,13 +685,13 @@ export default function VetCardPage() {
         (v) => `
         <div class="visit">
           <div class="visit-head">
-            <span class="visit-date">${formatDate(v.date)}</span>
-            <span class="visit-clinic">${v.clinicName ?? 'Bez kliniky'}${v.aiExamType ? ` · ${v.aiExamType}` : ''}</span>
+            <span class="visit-date">${fmtDate(v.date)}</span>
+            <span class="visit-clinic">${v.clinicName ?? t('vetPage.noClinic')}${v.aiExamType ? ` · ${v.aiExamType}` : ''}</span>
           </div>
           <div class="visit-reason">${v.reason ?? ''}</div>
-          ${v.diagnosis ? `<div class="visit-section-label">Diagnóza</div><div class="visit-md">${mdToHtml(v.diagnosis)}</div>` : ''}
-          ${v.findings ? `<div class="visit-section-label">Nález</div><div class="visit-md">${mdToHtml(v.findings)}</div>` : ''}
-          ${v.recommendations ? `<div class="visit-section-label">Odporúčania</div><div class="visit-md">${mdToHtml(v.recommendations)}</div>` : ''}
+          ${v.diagnosis ? `<div class="visit-section-label">${t('vetPage.visitDiagnosis')}</div><div class="visit-md">${mdToHtml(v.diagnosis)}</div>` : ''}
+          ${v.findings ? `<div class="visit-section-label">${t('vetPage.visitFindings')}</div><div class="visit-md">${mdToHtml(v.findings)}</div>` : ''}
+          ${v.recommendations ? `<div class="visit-section-label">${t('vetPage.visitRecommendations')}</div><div class="visit-md">${mdToHtml(v.recommendations)}</div>` : ''}
         </div>`
       )
       .join('');
@@ -695,8 +699,8 @@ export default function VetCardPage() {
     const timelineItems = data.timeline
       .map(
         (item) => `<tr>
-          <td class="muted nowrap" style="width:90px">${formatDateShort(item.date)}</td>
-          <td class="bold nowrap" style="width:130px">${TIMELINE_TYPE_META[item.type].label}</td>
+          <td class="muted nowrap" style="width:90px">${fmtDateShort(item.date)}</td>
+          <td class="bold nowrap" style="width:130px">${t(`timeline.${item.type}` as never)}</td>
           <td>
             ${item.title}
             ${item.subtitle ? `<div class="muted" style="font-size:10px">${item.subtitle}</div>` : ''}
@@ -711,13 +715,13 @@ export default function VetCardPage() {
     const heroBadges = sections.identity
       ? [
           allergyCount
-            ? `<span class="b-allergies">${allergyCount} ${allergyCount === 1 ? 'alergia' : allergyCount < 5 ? 'alergie' : 'alergií'}</span>`
+            ? `<span class="b-allergies">${t('vetPage.allergies', { count: allergyCount })}</span>`
             : '',
           chronicCount
-            ? `<span class="b-chronic">${chronicCount} ${chronicCount === 1 ? 'chronická diagnóza' : chronicCount < 5 ? 'chronické diagnózy' : 'chronických diagnóz'}</span>`
+            ? `<span class="b-chronic">${t('vetPage.chronic', { count: chronicCount })}</span>`
             : '',
           data.activeMeds.length
-            ? `<span class="b-meds">${data.activeMeds.length} ${data.activeMeds.length === 1 ? 'aktívny liek' : data.activeMeds.length < 5 ? 'aktívne lieky' : 'aktívnych liekov'}</span>`
+            ? `<span class="b-meds">${t('vetPage.activeMeds', { count: data.activeMeds.length })}</span>`
             : '',
         ]
           .filter(Boolean)
@@ -726,19 +730,23 @@ export default function VetCardPage() {
 
     const metaParts = [
       dog.breed,
-      age != null ? `${age} r.` : '',
-      dog.weightKg != null ? `${dog.weightKg} kg` : '',
-      dog.sex && dog.sex !== 'UNKNOWN' ? (dog.sex === 'MALE' ? 'Samec' : 'Samica') : '',
-      dog.microchipNumber ? `Čip: ${dog.microchipNumber}` : '',
-      dog.passportNumber ? `Pas: ${dog.passportNumber}` : '',
+      age != null ? t('vetPage.metaAge', { age }) : '',
+      dog.weightKg != null ? t('vetPage.metaWeight', { weight: dog.weightKg }) : '',
+      dog.sex && dog.sex !== 'UNKNOWN'
+        ? dog.sex === 'MALE'
+          ? t('vetPage.metaMale')
+          : t('vetPage.metaFemale')
+        : '',
+      dog.microchipNumber ? t('vetPage.metaChip', { chip: dog.microchipNumber }) : '',
+      dog.passportNumber ? t('vetPage.metaPassport', { passport: dog.passportNumber }) : '',
     ].filter(Boolean);
 
     const html = `<!DOCTYPE html>
-<html lang="sk">
+<html lang="${lang}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Klinická karta – ${dog.name}</title>
+  <title>${t('vetPage.docTitle', { name: dog.name })}</title>
   <style>${PRINT_STYLES}</style>
 </head>
 <body>
@@ -746,8 +754,8 @@ export default function VetCardPage() {
 
   <header class="doc-head">
     <div class="head-strip">
-      <span class="label">Klinická karta zvieraťa</span>
-      <span>${new Date().toLocaleDateString('sk-SK')}</span>
+      <span class="label">${t('vetPage.docLabel')}</span>
+      <span>${new Date().toLocaleDateString(lang)}</span>
     </div>
     <h1 class="dog-name">${dog.name}</h1>
     ${
@@ -763,32 +771,32 @@ export default function VetCardPage() {
     sections.conditions
       ? `
   <section class="block">
-    <h2 class="block-title">Zdravotný profil</h2>
+    <h2 class="block-title">${t('vetPage.sectionHealth')}</h2>
     ${
       dog.chronicConditions?.length || dog.healthConditions.length
         ? `
-    <div class="sub-label">Chronické diagnózy</div>
+    <div class="sub-label">${t('vetPage.labelChronicDiagnoses')}</div>
     <div class="tags">${tagHtml(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions, 'tag-blue')}</div>`
         : ''
     }
     ${
       dog.allergies.length
         ? `
-    <div class="sub-label warn">Alergie</div>
+    <div class="sub-label warn">${t('vetPage.labelAllergies')}</div>
     <div class="tags">${tagHtml(dog.allergies, 'tag-red')}</div>`
         : ''
     }
     ${
       dog.intolerances.length
         ? `
-    <div class="sub-label">Intolerancie</div>
+    <div class="sub-label">${t('vetPage.labelIntolerances')}</div>
     <div class="tags">${tagHtml(dog.intolerances, 'tag-amber')}</div>`
         : ''
     }
     ${
       dog.procedures?.length
         ? `
-    <div class="sub-label">Výkony / operácie</div>
+    <div class="sub-label">${t('vetPage.labelProcedures')}</div>
     <div class="tags">${tagHtml(
       dog.procedures.map((p) => `${p.title}${p.date ? ` (${p.date})` : ''}`),
       'tag-slate'
@@ -798,7 +806,7 @@ export default function VetCardPage() {
     ${
       dog.notes
         ? `
-    <div class="sub-label">Poznámky majiteľa</div>
+    <div class="sub-label">${t('vetPage.labelOwnerNotes')}</div>
     <div class="notes">${dog.notes}</div>`
         : ''
     }
@@ -811,7 +819,7 @@ export default function VetCardPage() {
         dog.procedures?.length ||
         dog.notes
       )
-        ? '<div class="empty">Žiadne klinické záznamy v profile</div>'
+        ? `<div class="empty">${t('vetPage.emptyHealth')}</div>`
         : ''
     }
   </section>`
@@ -822,22 +830,22 @@ export default function VetCardPage() {
     sections.medications
       ? `
   <section class="block">
-    <h2 class="block-title">Aktívne lieky a doplnky</h2>
+    <h2 class="block-title">${t('vetPage.sectionMeds')}</h2>
     ${
       data.activeMeds.length
         ? `
     <table class="data">
       <thead>
         <tr>
-          <th>Názov</th>
-          <th>Dávkovanie</th>
-          <th>Frekvencia</th>
-          <th>Dôvod</th>
+          <th>${t('vetPage.thName')}</th>
+          <th>${t('vetPage.thDosage')}</th>
+          <th>${t('vetPage.thFrequency')}</th>
+          <th>${t('vetPage.thReason')}</th>
         </tr>
       </thead>
       <tbody>${medRows}</tbody>
     </table>`
-        : '<div class="empty">Bez aktívnych liekov</div>'
+        : `<div class="empty">${t('vetPage.emptyMeds')}</div>`
     }
   </section>`
       : ''
@@ -847,23 +855,23 @@ export default function VetCardPage() {
     sections.prevention
       ? `
   <section class="block">
-    <h2 class="block-title">Preventívna starostlivosť</h2>
+    <h2 class="block-title">${t('vetPage.sectionPrevention')}</h2>
     ${
       vaccineRows
         ? `
     <table class="data">
       <thead>
         <tr>
-          <th>Typ</th>
-          <th>Názov</th>
-          <th>Podané</th>
-          <th>Platné do</th>
-          <th>Stav</th>
+          <th>${t('vetPage.thType')}</th>
+          <th>${t('vetPage.thName')}</th>
+          <th>${t('vetPage.thApplied')}</th>
+          <th>${t('vetPage.thValidUntil')}</th>
+          <th>${t('vetPage.thStatus')}</th>
         </tr>
       </thead>
       <tbody>${vaccineRows}</tbody>
     </table>`
-        : '<div class="empty">Žiadne záznamy</div>'
+        : `<div class="empty">${t('vetPage.emptyPrevention')}</div>`
     }
   </section>`
       : ''
@@ -873,7 +881,7 @@ export default function VetCardPage() {
     sections.visits && data.significantVisits.length
       ? `
   <section class="block">
-    <h2 class="block-title">Posledné klinické záznamy</h2>
+    <h2 class="block-title">${t('vetPage.sectionVisits')}</h2>
     ${visitCards}
   </section>`
       : ''
@@ -883,13 +891,13 @@ export default function VetCardPage() {
     sections.history && data.timeline.length
       ? `
   <section class="block">
-    <h2 class="block-title">Klinická história (${data.timeline.length})</h2>
+    <h2 class="block-title">${t('vetPage.sectionHistory', { count: data.timeline.length })}</h2>
     <table class="data">
       <thead>
         <tr>
-          <th>Dátum</th>
-          <th>Typ</th>
-          <th>Detail</th>
+          <th>${t('vetPage.thDate')}</th>
+          <th>${t('vetPage.thType')}</th>
+          <th>${t('vetPage.thDetail')}</th>
         </tr>
       </thead>
       <tbody>${timelineItems}</tbody>
@@ -899,7 +907,7 @@ export default function VetCardPage() {
   }
 
   <footer class="doc-foot">
-    Pawport · Karta vygenerovaná ${new Date().toLocaleDateString('sk-SK')}
+    ${t('vetPage.footer', { date: new Date().toLocaleDateString(lang) })}
   </footer>
 
 </div>
@@ -943,24 +951,24 @@ export default function VetCardPage() {
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-          Žiadny profil psa
+          {t('vetPage.noProfile')}
         </Typography>
-        <Typography color="text.secondary">
-          Najprv vytvorte profil psa a pridajte zdravotné záznamy.
-        </Typography>
+        <Typography color="text.secondary">{t('vetPage.noProfileDescription')}</Typography>
       </Box>
     );
   }
 
-  const rabiesStatus = vetStatusFor(data.rabies?.validUntil);
-  const combinedStatus = vetStatusFor(data.combined?.validUntil);
-  const dewormingStatus = vetStatusFor(data.lastDeworming?.nextDueDate, 7);
-  const ectoStatus = vetStatusFor(data.lastEcto?.nextDueDate, 7);
+  const tVetCard = (key: string, opts?: Record<string, unknown>): string =>
+    String(t(`vetPage.${key}` as never, opts as never));
+  const rabiesStatus = vetStatusFor(data.rabies?.validUntil, 30, tVetCard, lang);
+  const combinedStatus = vetStatusFor(data.combined?.validUntil, 30, tVetCard, lang);
+  const dewormingStatus = vetStatusFor(data.lastDeworming?.nextDueDate, 7, tVetCard, lang);
+  const ectoStatus = vetStatusFor(data.lastEcto?.nextDueDate, 7, tVetCard, lang);
 
   const preventiveItems: PreventiveItem[] = [];
   if (data.rabies)
     preventiveItems.push({
-      name: 'Besnota (Rabies)',
+      name: t('vetPage.rabiesItem'),
       dateGiven: data.rabies.dateApplied,
       validUntil: data.rabies.validUntil,
       batch: data.rabies.batchNumber,
@@ -969,7 +977,7 @@ export default function VetCardPage() {
     });
   if (data.combined)
     preventiveItems.push({
-      name: 'Kombinovaná vakcína',
+      name: t('vetPage.combinedItem'),
       dateGiven: data.combined.dateApplied,
       validUntil: data.combined.validUntil,
       batch: data.combined.batchNumber,
@@ -978,7 +986,7 @@ export default function VetCardPage() {
     });
   if (data.lastDeworming)
     preventiveItems.push({
-      name: `Odčervenie: ${data.lastDeworming.productName}`,
+      name: t('vetPage.dewormingItem', { product: data.lastDeworming.productName }),
       dateGiven: data.lastDeworming.dateGiven,
       validUntil: data.lastDeworming.nextDueDate,
       status: dewormingStatus.status,
@@ -986,7 +994,7 @@ export default function VetCardPage() {
     });
   if (data.lastEcto)
     preventiveItems.push({
-      name: `Antiparazitikum: ${data.lastEcto.productName}`,
+      name: t('vetPage.antiparasiticItem', { product: data.lastEcto.productName }),
       dateGiven: data.lastEcto.dateGiven,
       validUntil: data.lastEcto.nextDueDate,
       status: ectoStatus.status,
@@ -1042,7 +1050,7 @@ export default function VetCardPage() {
           color="text.secondary"
           sx={{ textAlign: 'center', display: 'block', py: 2 }}
         >
-          Pawport · Karta vygenerovaná {new Date().toLocaleDateString('sk-SK')}
+          {t('vetPage.footer', { date: new Date().toLocaleDateString(lang) })}
         </Typography>
       </Stack>
     </Box>

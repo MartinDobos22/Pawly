@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -22,11 +23,8 @@ import StringListEditor from './StringListEditor';
 import AttachmentGallery from './AttachmentGallery';
 import {
   EPISODE_CATEGORIES,
-  EPISODE_CATEGORY_LABEL,
   EPISODE_OUTCOMES,
-  EPISODE_OUTCOME_LABEL,
   EPISODE_SEVERITIES,
-  EPISODE_SEVERITY_LABEL,
   type EpisodeAttachment,
   type EpisodeCategory,
   type EpisodeOutcome,
@@ -129,6 +127,7 @@ export default function EpisodeFormDialog({
 }: EpisodeFormDialogProps) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation('episodes');
   const [state, setState] = useState<FormState>(emptyState());
 
   useEffect(() => {
@@ -180,26 +179,26 @@ export default function EpisodeFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" fullScreen={fullScreen}>
-      <DialogTitle>{initial ? 'Upraviť epizódu' : 'Nová epizóda'}</DialogTitle>
+      <DialogTitle>{initial ? t('form.titleEdit') : t('form.titleNew')}</DialogTitle>
       <DialogContent dividers>
         <Stack spacing={3}>
           {storageWarning && <Alert severity="warning">{storageWarning}</Alert>}
 
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-              Symptóm a kontext
+              {t('form.symptomContext')}
             </Typography>
             <Stack spacing={2}>
               <TextField
-                label="Názov symptómu"
-                placeholder="napr. Reflux, Hnačka, Krívanie"
+                label={t('form.symptomTitle')}
+                placeholder={t('form.symptomTitlePlaceholder')}
                 value={state.symptomTitle}
                 onChange={(e) => update('symptomTitle', e.target.value)}
                 required
                 fullWidth
               />
               <TextField
-                label="Popis"
+                label={t('form.symptomDescription')}
                 value={state.symptomDescription}
                 onChange={(e) => update('symptomDescription', e.target.value)}
                 multiline
@@ -208,46 +207,46 @@ export default function EpisodeFormDialog({
               />
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <FormControl fullWidth>
-                  <InputLabel id="episode-form-category">Kategória</InputLabel>
+                  <InputLabel id="episode-form-category">{t('form.category')}</InputLabel>
                   <Select
                     labelId="episode-form-category"
-                    label="Kategória"
+                    label={t('form.category')}
                     value={state.category}
                     onChange={(e) => update('category', e.target.value as EpisodeCategory)}
                   >
                     {EPISODE_CATEGORIES.map((c) => (
                       <MenuItem key={c} value={c}>
-                        {EPISODE_CATEGORY_LABEL[c]}
+                        {t(`category.${c}` as never)}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>
-                  <InputLabel id="episode-form-severity">Závažnosť</InputLabel>
+                  <InputLabel id="episode-form-severity">{t('form.severity')}</InputLabel>
                   <Select
                     labelId="episode-form-severity"
-                    label="Závažnosť"
+                    label={t('form.severity')}
                     value={state.severity}
                     onChange={(e) => update('severity', e.target.value as EpisodeSeverity)}
                   >
                     {EPISODE_SEVERITIES.map((s) => (
                       <MenuItem key={s} value={s}>
-                        {EPISODE_SEVERITY_LABEL[s]}
+                        {t(`severity.${s}` as never)}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>
-                  <InputLabel id="episode-form-outcome">Stav</InputLabel>
+                  <InputLabel id="episode-form-outcome">{t('form.outcome')}</InputLabel>
                   <Select
                     labelId="episode-form-outcome"
-                    label="Stav"
+                    label={t('form.outcome')}
                     value={state.outcome}
                     onChange={(e) => update('outcome', e.target.value as EpisodeOutcome)}
                   >
                     {EPISODE_OUTCOMES.map((o) => (
                       <MenuItem key={o} value={o}>
-                        {EPISODE_OUTCOME_LABEL[o]}
+                        {t(`outcome.${o}` as never)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -255,7 +254,7 @@ export default function EpisodeFormDialog({
               </Stack>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField
-                  label="Začiatok"
+                  label={t('form.startedAt')}
                   type="date"
                   value={state.startedAt}
                   onChange={(e) => update('startedAt', e.target.value)}
@@ -263,7 +262,7 @@ export default function EpisodeFormDialog({
                   fullWidth
                 />
                 <TextField
-                  label="Koniec (voliteľné)"
+                  label={t('form.endedAt')}
                   type="date"
                   value={state.endedAt}
                   onChange={(e) => update('endedAt', e.target.value)}
@@ -271,16 +270,16 @@ export default function EpisodeFormDialog({
                   fullWidth
                 />
                 <TextField
-                  label="Miesto"
-                  placeholder="napr. na výlete v Tatrách"
+                  label={t('form.location')}
+                  placeholder={t('form.locationPlaceholder')}
                   value={state.location}
                   onChange={(e) => update('location', e.target.value)}
                   fullWidth
                 />
               </Stack>
               <StringListEditor
-                label="Spúšťače (voliteľné)"
-                placeholder="Stres, nové krmivo, kliešť..."
+                label={t('form.triggers')}
+                placeholder={t('form.triggersPlaceholder')}
                 values={state.triggers}
                 onChange={(v) => update('triggers', v)}
               />
@@ -291,11 +290,11 @@ export default function EpisodeFormDialog({
 
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-              Diagnóza a liečba
+              {t('form.diagnosisTreatment')}
             </Typography>
             <Stack spacing={2}>
               <TextField
-                label="Diagnóza (od veterinára alebo predpoklad)"
+                label={t('form.diagnosis')}
                 value={state.diagnosis}
                 onChange={(e) => update('diagnosis', e.target.value)}
                 multiline
@@ -303,29 +302,29 @@ export default function EpisodeFormDialog({
                 fullWidth
               />
               <FormControl fullWidth>
-                <InputLabel id="episode-form-visit">Súvisiaca návšteva veterinára</InputLabel>
+                <InputLabel id="episode-form-visit">{t('form.vetVisitLabel')}</InputLabel>
                 <Select
                   labelId="episode-form-visit"
-                  label="Súvisiaca návšteva veterinára"
+                  label={t('form.vetVisitLabel')}
                   value={state.vetVisitId}
                   onChange={(e) => update('vetVisitId', e.target.value)}
                 >
                   <MenuItem value="">
-                    <em>Žiadna</em>
+                    <em>{t('form.noVetVisit')}</em>
                   </MenuItem>
                   {dogVetVisits.map((v) => (
                     <MenuItem key={v.id} value={v.id}>
                       {v.clinicName}
-                      {v.date ? ` – ${new Date(v.date).toLocaleDateString('sk-SK')}` : ''}
+                      {v.date ? ` – ${new Date(v.date).toLocaleDateString()}` : ''}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel id="episode-form-meds">Použité lieky</InputLabel>
+                <InputLabel id="episode-form-meds">{t('form.medications')}</InputLabel>
                 <Select
                   labelId="episode-form-meds"
-                  label="Použité lieky"
+                  label={t('form.medications')}
                   multiple
                   value={state.medicationIds}
                   onChange={(e) =>
@@ -344,7 +343,7 @@ export default function EpisodeFormDialog({
                 >
                   {dogMedications.length === 0 && (
                     <MenuItem disabled value="">
-                      Žiadne lieky v zdravotnom pase
+                      {t('form.noMedications')}
                     </MenuItem>
                   )}
                   {dogMedications.map((m) => (
@@ -356,7 +355,7 @@ export default function EpisodeFormDialog({
                 </Select>
               </FormControl>
               <TextField
-                label="Poznámky k liečbe"
+                label={t('form.treatmentNotes')}
                 value={state.treatmentNotes}
                 onChange={(e) => update('treatmentNotes', e.target.value)}
                 multiline
@@ -370,19 +369,19 @@ export default function EpisodeFormDialog({
 
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-              Výsledok
+              {t('form.outcomeSection')}
             </Typography>
             <Stack spacing={2}>
               <StringListEditor
-                label="Čo zabralo"
-                placeholder="napr. lieky XY, diéta, pokoj"
+                label={t('form.whatWorked')}
+                placeholder={t('form.whatWorkedPlaceholder')}
                 values={state.whatWorked}
                 onChange={(v) => update('whatWorked', v)}
                 chipColor="success"
               />
               <StringListEditor
-                label="Čo nezabralo"
-                placeholder="napr. liek YZ, neúčinné opatrenie"
+                label={t('form.whatDidntWork')}
+                placeholder={t('form.whatDidntWorkPlaceholder')}
                 values={state.whatDidntWork}
                 onChange={(v) => update('whatDidntWork', v)}
                 chipColor="error"
@@ -394,11 +393,11 @@ export default function EpisodeFormDialog({
 
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-              Poučenie pre budúcnosť
+              {t('form.lessonsSection')}
             </Typography>
             <TextField
-              label="Čo si nabudúce zapamätať"
-              placeholder="napr. pri reflukse hneď podať Y, vyhnúť sa Z"
+              label={t('form.lessonsFieldLabel')}
+              placeholder={t('form.lessonsPlaceholder')}
               value={state.lessonsLearned}
               onChange={(e) => update('lessonsLearned', e.target.value)}
               multiline
@@ -416,9 +415,9 @@ export default function EpisodeFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Zrušiť</Button>
+        <Button onClick={onClose}>{t('actions.cancel', { ns: 'common' })}</Button>
         <Button variant="contained" onClick={handleSave} disabled={!canSave}>
-          Uložiť
+          {t('actions.save', { ns: 'common' })}
         </Button>
       </DialogActions>
     </Dialog>

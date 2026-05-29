@@ -10,6 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { CheckCircle as CheckIcon, Cancel as CancelIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 interface ProsConsCardProps {
   pros: string[];
@@ -18,6 +19,7 @@ interface ProsConsCardProps {
 
 export default function ProsConsCard({ pros, cons }: ProsConsCardProps) {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
 
   return (
     <Box
@@ -42,7 +44,7 @@ export default function ProsConsCard({ pros, cons }: ProsConsCardProps) {
             }}
           >
             <CheckIcon fontSize="small" />
-            Výhody
+            {t('proscons.pros')}
           </Typography>
           <List dense disablePadding>
             {pros.map((pro, i) => (
@@ -72,7 +74,7 @@ export default function ProsConsCard({ pros, cons }: ProsConsCardProps) {
             }}
           >
             <CancelIcon fontSize="small" />
-            Nevýhody
+            {t('proscons.cons')}
           </Typography>
           <List dense disablePadding>
             {cons.map((con, i) => (

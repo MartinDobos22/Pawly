@@ -19,6 +19,7 @@ import {
   WarningAmber as CautionIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type Verdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
 
@@ -30,113 +31,27 @@ interface MockResponse {
   warnings?: string[];
 }
 
-const RESPONSES: Record<string, MockResponse> = {
-  čokoláda: {
-    verdict: 'UNSAFE',
-    short: 'Nie, čokoláda je pre psa toxická.',
-    explanation:
-      'Obsahuje teobromín, ktorý je pre psov toxický a môže spôsobiť vracanie, triašku, kŕče alebo zlyhanie srdca.',
-    alternatives: ['psie pamlsky', 'kúsok jablka', 'mrkva'],
-  },
-  hrozno: {
-    verdict: 'UNSAFE',
-    short: 'Nie, hrozno môže spôsobiť zlyhanie obličiek.',
-    explanation:
-      'Aj malé množstvo hrozna alebo hrozienok môže u psov spôsobiť akútne zlyhanie obličiek.',
-    alternatives: ['čučoriedky', 'jablko bez jadierok', 'banán'],
-  },
-  cibuľa: {
-    verdict: 'UNSAFE',
-    short: 'Nie, cibuľa poškodzuje červené krvinky.',
-    explanation:
-      'Cibuľa, cesnak a pažítka obsahujú tioskloridy, ktoré rozkladajú červené krvinky a môžu spôsobiť anémiu.',
-    alternatives: ['varené mäso bez korenia'],
-  },
-  xylitol: {
-    verdict: 'UNSAFE',
-    short: 'Nie, xylitol je extrémne nebezpečný.',
-    explanation:
-      'Sladidlo xylitol prudko znižuje hladinu cukru v krvi a môže spôsobiť zlyhanie pečene už pri malých dávkach.',
-    alternatives: ['psie pamlsky bez sladidiel'],
-  },
-  mrkva: {
-    verdict: 'SAFE',
-    short: 'Áno, mrkva je výborný snack.',
-    explanation:
-      'Mrkva je nízkokalorická, obsahuje vlákninu a betakarotén. Surová slúži aj na čistenie zubov.',
-  },
-  jablko: {
-    verdict: 'CAUTION',
-    short: 'Áno, ale bez jadierok a stopky.',
-    explanation:
-      'Jablko je zdravé a chutné, ale jadierka obsahujú stopy kyanidu. Daj len mäsité kúsky.',
-    warnings: ['Odstráň jadierka a stopku', 'V miernych množstvách'],
-  },
-  banán: {
-    verdict: 'SAFE',
-    short: 'Áno, banán je v poriadku.',
-    explanation:
-      'Bohatý na draslík a vitamíny. Daj len v miernych množstvách kvôli vysokému obsahu cukru.',
-  },
-  'kuracie kosti': {
-    verdict: 'CAUTION',
-    short: 'Záleží na úprave — varené nikdy nedávaj.',
-    explanation:
-      'Varené kosti sa štiepia a môžu poraniť tráviaci trakt. Surové veľké kosti sú prijateľné pod dozorom.',
-    warnings: ['Varené kosti môžu poraniť trávenie', 'Iba surové a väčšie kosti pod dozorom'],
-  },
-  mlieko: {
-    verdict: 'CAUTION',
-    short: 'Mnoho psov má intoleranciu laktózy.',
-    explanation:
-      'Niektoré psy strávia mlieko bez problému, iné dostanú hnačku. Vyskúšaj malé množstvo a sleduj reakciu.',
-    warnings: ['Sleduj prípadné tráviace ťažkosti', 'Bezlaktózové verzie sú lepšie'],
-  },
-  syr: {
-    verdict: 'CAUTION',
-    short: 'V malých množstvách áno.',
-    explanation: 'Tvrdé syry s nízkym obsahom laktózy sú OK ako pamlsky. Pozor na obsah soli.',
-    warnings: ['Pozor na soľ', 'Nie pre psy s alergiou na mliečne produkty'],
-  },
-  avokádo: {
-    verdict: 'UNSAFE',
-    short: 'Nie, avokádo obsahuje persín.',
-    explanation:
-      'Persín v avokáde môže spôsobiť tráviace ťažkosti a vracanie. Kôstka je aj rizikom udusenia.',
-    alternatives: ['banán', 'mrkva', 'jablko bez jadierok'],
-  },
-  losos: {
-    verdict: 'SAFE',
-    short: 'Áno, ale len varený a bez kostí.',
-    explanation: 'Losos je výborný zdroj omega-3 mastných kyselín. Surový môže obsahovať parazity.',
-  },
-};
-
-const QUICK_FILLS = ['čokoláda', 'mrkva', 'hrozno', 'kuracie kosti'];
-
-const FALLBACK: MockResponse = {
-  verdict: 'CAUTION',
-  short: 'Bez plnej AI to neviem spoľahlivo posúdiť.',
-  explanation:
-    'Toto je len demo s obmedzeným zoznamom potravín. Pre presné vyhodnotenie použi skutočnú AI v aplikácii.',
-  warnings: ['Pred podaním novej potraviny sa poraď s veterinárom'],
-};
-
-const VERDICT_META: Record<
+const VERDICT_ICONS: Record<
   Verdict,
-  { label: string; icon: typeof SafeIcon; toneKey: 'success' | 'warning' | 'error' }
+  { icon: typeof SafeIcon; toneKey: 'success' | 'warning' | 'error' }
 > = {
-  SAFE: { label: 'Bezpečné', icon: SafeIcon, toneKey: 'success' },
-  CAUTION: { label: 'Opatrne', icon: CautionIcon, toneKey: 'warning' },
-  UNSAFE: { label: 'Nedávaj', icon: UnsafeIcon, toneKey: 'error' },
+  SAFE: { icon: SafeIcon, toneKey: 'success' },
+  CAUTION: { icon: CautionIcon, toneKey: 'warning' },
+  UNSAFE: { icon: UnsafeIcon, toneKey: 'error' },
 };
 
 export default function InteractiveAiDemo() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation('landing');
+  const { t: tAnalyze } = useTranslation('analyze');
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ query: string; data: MockResponse } | null>(null);
+
+  const responses = t('demo.responses', { returnObjects: true }) as Record<string, MockResponse>;
+  const quickFills = t('demo.quickFills', { returnObjects: true }) as string[];
+  const fallback = t('demo.fallback', { returnObjects: true }) as MockResponse;
 
   const handleAsk = (raw?: string) => {
     const q = (raw ?? query).trim();
@@ -146,8 +61,8 @@ export default function InteractiveAiDemo() {
     setResult(null);
     setTimeout(() => {
       const key = q.toLowerCase();
-      const matched = Object.keys(RESPONSES).find((k) => key.includes(k));
-      const data = matched ? RESPONSES[matched] : FALLBACK;
+      const matched = Object.keys(responses).find((k) => key.includes(k));
+      const data = matched ? responses[matched] : fallback;
       setResult({ query: q, data });
       setLoading(false);
     }, 380);
@@ -161,7 +76,8 @@ export default function InteractiveAiDemo() {
   };
 
   const renderResult = (entry: { query: string; data: MockResponse }) => {
-    const meta = VERDICT_META[entry.data.verdict];
+    const meta = VERDICT_ICONS[entry.data.verdict];
+    const verdictLabel = tAnalyze(`foodSafety.verdicts.${entry.data.verdict}` as never);
     const Icon = meta.icon;
     const tone = theme.palette[meta.toneKey].main;
     return (
@@ -199,7 +115,7 @@ export default function InteractiveAiDemo() {
             <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
               <Chip
                 size="small"
-                label={meta.label}
+                label={verdictLabel}
                 sx={{
                   bgcolor: tone,
                   color: meta.toneKey === 'warning' ? theme.palette.warning.contrastText : '#fff',
@@ -217,7 +133,7 @@ export default function InteractiveAiDemo() {
                   fontStyle: 'italic',
                 }}
               >
-                Otázka: {entry.query}
+                {t('demo.resultLabels.question')} {entry.query}
               </Typography>
             </Stack>
             <Typography variant="h3" sx={{ fontSize: '1.1rem', fontWeight: 700 }}>
@@ -232,7 +148,7 @@ export default function InteractiveAiDemo() {
                   variant="caption"
                   sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}
                 >
-                  Pozor na:
+                  {t('demo.resultLabels.warnings')}
                 </Typography>
                 <Stack component="ul" sx={{ pl: 2.25, m: 0 }} spacing={0.25}>
                   {entry.data.warnings.map((w, i) => (
@@ -254,7 +170,7 @@ export default function InteractiveAiDemo() {
                   variant="caption"
                   sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}
                 >
-                  Alternatívy:
+                  {t('demo.resultLabels.alternatives')}
                 </Typography>
                 <Stack direction="row" gap={0.5} flexWrap="wrap">
                   {entry.data.alternatives.map((a, i) => (
@@ -298,7 +214,7 @@ export default function InteractiveAiDemo() {
               variant="caption"
               sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.12em' }}
             >
-              Žiadna registrácia, vyskúšaj hneď
+              {t('demo.badge')}
             </Typography>
           </Stack>
           <Typography
@@ -310,7 +226,7 @@ export default function InteractiveAiDemo() {
               lineHeight: 1.1,
             }}
           >
-            Spýtaj sa AI, čo môže tvoj miláčik jesť
+            {t('demo.title')}
           </Typography>
           <Typography
             variant="body1"
@@ -320,8 +236,7 @@ export default function InteractiveAiDemo() {
               fontSize: { xs: '1rem', md: '1.1rem' },
             }}
           >
-            Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre psa, mačku alebo iné
-            zvieratko bezpečná.
+            {t('demo.subtitle')}
           </Typography>
         </Stack>
 
@@ -340,7 +255,7 @@ export default function InteractiveAiDemo() {
             <TextField
               fullWidth
               size="medium"
-              placeholder="napr. čokoláda, mrkva, jablko, hrozno…"
+              placeholder={t('demo.placeholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -360,7 +275,7 @@ export default function InteractiveAiDemo() {
               sx={{ minWidth: 130, flexShrink: 0, fontSize: '1rem' }}
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
             >
-              {loading ? 'Pýtam sa…' : 'Spýtať sa'}
+              {loading ? t('demo.askingBtn') : t('demo.askBtn')}
             </Button>
           </Stack>
 
@@ -375,9 +290,9 @@ export default function InteractiveAiDemo() {
                 mr: 0.5,
               }}
             >
-              Skús:
+              {t('demo.tryLabel')}
             </Typography>
-            {QUICK_FILLS.map((q) => (
+            {quickFills.map((q) => (
               <Chip
                 key={q}
                 label={q}
@@ -400,7 +315,7 @@ export default function InteractiveAiDemo() {
             onClick={() => navigate('/analyza')}
             sx={{ color: 'primary.main' }}
           >
-            Pokračovať so skutočnou AI v aplikácii
+            {t('demo.continueBtn')}
           </Button>
         </Stack>
       </Box>

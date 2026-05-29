@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { ArrowForward as ArrowIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CTA_PHOTO =
   'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1400&q=80';
@@ -9,6 +10,7 @@ export default function FinalCta() {
   const theme = useTheme();
   const navigate = useNavigate();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation('landing');
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>
@@ -27,7 +29,7 @@ export default function FinalCta() {
           <Box
             component="img"
             src={CTA_PHOTO}
-            alt="Veterinárna kontrola domáceho zvieraťa"
+            alt={t('cta.vetPhotoAlt')}
             loading="lazy"
             sx={{
               position: 'absolute',
@@ -67,7 +69,7 @@ export default function FinalCta() {
                 color: 'inherit',
               }}
             >
-              Začni sa starať o zdravie tvojho miláčika ešte dnes
+              {t('cta.title')}
             </Typography>
             <Typography
               variant="body1"
@@ -77,8 +79,7 @@ export default function FinalCta() {
                 maxWidth: 520,
               }}
             >
-              Žiadna registrácia, žiadne poplatky. Stačí pridať profil zvieraťa a môžeš naplno
-              využívať digitálny zdravotný pas.
+              {t('cta.subtitle')}
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
               <Button
@@ -95,7 +96,7 @@ export default function FinalCta() {
                   '&:hover': { bgcolor: alpha('#fff', 0.9) },
                 }}
               >
-                Vstúpiť do aplikácie
+                {t('cta.btnStart')}
               </Button>
               <Button
                 variant="outlined"
@@ -113,7 +114,7 @@ export default function FinalCta() {
                   },
                 }}
               >
-                Vytvoriť profil
+                {t('cta.btnProfile')}
               </Button>
             </Stack>
           </Stack>

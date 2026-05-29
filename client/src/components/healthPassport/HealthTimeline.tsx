@@ -18,8 +18,11 @@ import {
   ChevronRight as ChevronIcon,
   TuneOutlined as TuneIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/dogHealth';
-import { TIMELINE_FILTER_OPTIONS, TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
+import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
+
+const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');
 
 interface HealthTimelineProps {
   timeline: TimelineEvent[];
@@ -31,38 +34,13 @@ type SelectableType = TimelineEvent['type'];
 
 const dayKey = (iso: string) => iso.slice(0, 10);
 
-const formatDayHeader = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString('sk-SK', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-};
-
-const weekdayName = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('sk-SK', { weekday: 'long' });
-};
-
 const dayDiffFromToday = (iso: string) => {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return Number.NaN;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
-  return Math.round((date.getTime() - today.getTime()) / 86_400_000);
-};
-
-const dayMeta = (iso: string) => {
-  const diff = dayDiffFromToday(iso);
-  if (Number.isNaN(diff)) return null;
-  if (diff === 0) return { label: 'Dnes', tone: 'today' as const };
-  if (diff === -1) return { label: 'Včera', tone: 'recent' as const };
-  if (diff > 0 && diff < 14) return { label: `o ${diff} dní`, tone: 'future' as const };
-  return null;
+  return Math.round((date.getTime() - now.getTime()) / 86_400_000);
 };
 
 export default function HealthTimeline({
@@ -71,8 +49,33 @@ export default function HealthTimeline({
   onExportPdf,
 }: HealthTimelineProps) {
   const theme = useTheme();
+  const { t, i18n } = useTranslation('healthPassport');
   const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
+
+  const lang = localeTag(i18n.language);
+
+  const formatDayHeader = (iso: string) => {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return iso;
+    return date.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const weekdayName = (iso: string) => {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString(lang, { weekday: 'long' });
+  };
+
+  const dayMeta = (iso: string) => {
+    const diff = dayDiffFromToday(iso);
+    if (Number.isNaN(diff)) return null;
+    if (diff === 0) return { label: t('timeline.today'), tone: 'today' as const };
+    if (diff === -1) return { label: t('timeline.yesterday'), tone: 'recent' as const };
+    if (diff > 0 && diff < 14)
+      return { label: t('timeline.inDays', { count: diff }), tone: 'future' as const };
+    return null;
+  };
 
   const toggleType = (type: SelectableType | 'ALL') => {
     if (type === 'ALL') {
@@ -126,10 +129,10 @@ export default function HealthTimeline({
       >
         <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
           <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
-            Timeline
+            {t('timeline.title')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Chronologický prehľad zdravotnej histórie
+            {t('timeline.chronologicalOverview')}
           </Typography>
         </Box>
         <Stack
@@ -138,7 +141,7 @@ export default function HealthTimeline({
           sx={{ flex: '1 1 320px', minWidth: 0, alignItems: 'center', justifyContent: 'flex-end' }}
         >
           <TextField
-            placeholder="Hľadať v zdravotnom zázname…"
+            placeholder={t('timeline.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             InputProps={{
@@ -151,7 +154,7 @@ export default function HealthTimeline({
                 <InputAdornment position="end">
                   <IconButton
                     size="small"
-                    aria-label="Vyčistiť vyhľadávanie"
+                    aria-label={t('timeline.clearSearch')}
                     onClick={() => setSearch('')}
                   >
                     <ClearIcon sx={{ fontSize: 16 }} />
@@ -165,10 +168,10 @@ export default function HealthTimeline({
             variant="outlined"
             startIcon={<PdfIcon sx={{ fontSize: 18 }} />}
             onClick={onExportPdf}
-            aria-label="Exportovať timeline do PDF"
+            aria-label={t('timeline.exportPdfAriaLabel')}
             sx={{ flexShrink: 0 }}
           >
-            Export PDF
+            {t('timeline.exportPdf')}
           </Button>
         </Stack>
       </Box>
@@ -187,24 +190,24 @@ export default function HealthTimeline({
       >
         <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
         <Chip
-          label="Všetko"
+          label={t('filter.ALL')}
           size="small"
           clickable
           variant={isAllActive ? 'filled' : 'outlined'}
           color={isAllActive ? 'primary' : 'default'}
           onClick={() => toggleType('ALL')}
         />
-        {TIMELINE_FILTER_OPTIONS.filter((o) => o.value !== 'ALL').map((opt) => {
-          const isActive = selected.has(opt.value as SelectableType);
+        {TIMELINE_FILTER_VALUES.filter((v) => v !== 'ALL').map((v) => {
+          const isActive = selected.has(v as SelectableType);
           return (
             <Chip
-              key={opt.value}
-              label={opt.label}
+              key={v}
+              label={t(`filter.${v}`)}
               size="small"
               clickable
               variant={isActive ? 'filled' : 'outlined'}
               color={isActive ? 'primary' : 'default'}
-              onClick={() => toggleType(opt.value as SelectableType)}
+              onClick={() => toggleType(v as SelectableType)}
             />
           );
         })}
@@ -214,7 +217,7 @@ export default function HealthTimeline({
             onClick={clearFilters}
             sx={{ ml: 0.5, color: 'text.secondary', minHeight: 28 }}
           >
-            Vymazať filtre
+            {t('timeline.clearFilters')}
           </Button>
         )}
       </Stack>
@@ -229,7 +232,7 @@ export default function HealthTimeline({
             borderRadius: 3,
           }}
         >
-          <Typography variant="body2">Žiadne záznamy pre zvolený filter.</Typography>
+          <Typography variant="body2">{t('timeline.noRecords')}</Typography>
         </Box>
       ) : (
         <Box
@@ -295,7 +298,6 @@ export default function HealthTimeline({
 
                 <Stack spacing={1}>
                   {events.map((event) => {
-                    const typeMeta = TIMELINE_TYPE_META[event.type];
                     return (
                       <Box
                         key={event.id}
@@ -347,7 +349,7 @@ export default function HealthTimeline({
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.25 }}>
                             <Chip
-                              label={typeMeta.label}
+                              label={t(`timeline.${event.type}`)}
                               size="small"
                               variant="outlined"
                               sx={{

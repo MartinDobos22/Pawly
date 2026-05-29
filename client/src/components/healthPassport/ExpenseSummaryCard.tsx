@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Card, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   ReceiptLong as ReceiptIcon,
@@ -17,13 +18,6 @@ interface ExpenseSummaryCardProps {
 
 type CategoryKey = 'VET_VISIT' | 'MEDICATION' | 'FOOD' | 'OTHER';
 
-const CATEGORY_LABELS: Record<CategoryKey, string> = {
-  VET_VISIT: 'Veterinár',
-  MEDICATION: 'Lieky',
-  FOOD: 'Krmivo',
-  OTHER: 'Ostatné',
-};
-
 const monthKey = (iso: string) => iso.slice(0, 7);
 const prevMonthKey = (iso: string) => {
   const d = new Date(`${iso}-01`);
@@ -32,8 +26,16 @@ const prevMonthKey = (iso: string) => {
 };
 
 export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const todayStr = today();
+
+  const CATEGORY_LABELS: Record<CategoryKey, string> = {
+    VET_VISIT: t('expenseCard.categoryVet'),
+    MEDICATION: t('expenseCard.categoryMed'),
+    FOOD: t('expenseCard.categoryFood'),
+    OTHER: t('expenseCard.categoryOther'),
+  };
 
   const thisMonthKey = monthKey(todayStr);
   const lastMonthKey = prevMonthKey(thisMonthKey);
@@ -87,7 +89,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
       value: map[key],
       color: palette[key],
     }));
-  }, [expenses, palette]);
+  }, [expenses, palette, CATEGORY_LABELS]);
 
   const totalAll = useMemo(() => expenses.reduce((acc, e) => acc + e.amount, 0), [expenses]);
 
@@ -115,8 +117,11 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
       }
       label={
         trend.pct === null
-          ? 'nový'
-          : `${trend.pct > 0 ? '+' : ''}${trend.pct.toFixed(0)}% vs min. mesiac`
+          ? t('expenseCard.trendNew')
+          : t('expenseCard.trendVsLastMonth', {
+              sign: trend.pct > 0 ? '+' : '',
+              pct: Math.abs(trend.pct).toFixed(0),
+            })
       }
       sx={{
         height: 22,
@@ -146,7 +151,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <ReceiptIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          Výdavky
+          {t('expenseCard.title')}
         </Typography>
       </Stack>
 
@@ -155,7 +160,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Tento mesiac
+            {t('expenseCard.thisMonth')}
           </Typography>
           <Stack direction="row" alignItems="baseline" gap={1} sx={{ mt: 0.25 }}>
             <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, lineHeight: 1 }}>
@@ -208,7 +213,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
             variant="caption"
             sx={{ color: 'text.secondary', display: 'block', mb: 0.75 }}
           >
-            Najväčšie výdavky (90 dní)
+            {t('expenseCard.topExpenses')}
           </Typography>
           <Stack spacing={0.5}>
             {recentTop.map((e) => (

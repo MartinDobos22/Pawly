@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Collapse, Stack, Switch, Typography } from '@mui/material';
 import {
   Biotech as DewormIcon,
@@ -79,6 +80,8 @@ export default function LinkedRecords({
   onExpand,
   dispatch,
 }: LinkedRecordsProps) {
+  const { t } = useTranslation('healthPassport');
+
   const setVaccinationField = <K extends keyof VaccinationFieldsValues>(
     field: K,
     value: VaccinationFieldsValues[K]
@@ -104,7 +107,7 @@ export default function LinkedRecords({
 
   return (
     <SectionCard
-      title="Súvisiace záznamy"
+      title={t('linkedRecords.title')}
       icon={<LinkIcon />}
       collapsible
       expanded={expanded}
@@ -113,8 +116,8 @@ export default function LinkedRecords({
       <Stack spacing={1.25}>
         <Row
           icon={<VaccinesIcon fontSize="small" />}
-          label="Očkovanie"
-          hint="Pridať vakcínu aplikovanú pri tejto návšteve"
+          label={t('linkedRecords.vaccination.label')}
+          hint={t('linkedRecords.vaccination.hint')}
           on={Boolean(values.vaccination)}
           onToggle={(next) => toggle('vaccination', next)}
         >
@@ -129,8 +132,8 @@ export default function LinkedRecords({
 
         <Row
           icon={<DewormIcon fontSize="small" />}
-          label="Odčervenie"
-          hint="Odčervovací prípravok a interval ďalšej aplikácie"
+          label={t('linkedRecords.deworming.label')}
+          hint={t('linkedRecords.deworming.hint')}
           on={Boolean(values.deworming)}
           onToggle={(next) => toggle('deworming', next)}
         >
@@ -146,8 +149,8 @@ export default function LinkedRecords({
 
         <Row
           icon={<EctoIcon fontSize="small" />}
-          label="Ektoparazity (kliešte / blchy)"
-          hint="Antiparazitiká, spot-on alebo tablety"
+          label={t('linkedRecords.ecto.label')}
+          hint={t('linkedRecords.ecto.hint')}
           on={Boolean(values.ecto)}
           onToggle={(next) => toggle('ecto', next)}
         >
@@ -163,8 +166,8 @@ export default function LinkedRecords({
 
         <Row
           icon={<MedIcon fontSize="small" />}
-          label="Liek"
-          hint="Predpísaný liek s dávkovaním a dĺžkou liečby"
+          label={t('linkedRecords.medication.label')}
+          hint={t('linkedRecords.medication.hint')}
           on={Boolean(values.medication)}
           onToggle={(next) => toggle('medication', next)}
         >
@@ -179,8 +182,8 @@ export default function LinkedRecords({
 
         <Row
           icon={<DietIcon fontSize="small" />}
-          label="Diéta"
-          hint="Zmena alebo overenie aktuálneho krmiva"
+          label={t('linkedRecords.diet.label')}
+          hint={t('linkedRecords.diet.hint')}
           on={Boolean(values.diet)}
           onToggle={(next) => toggle('diet', next)}
         >

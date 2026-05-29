@@ -1,4 +1,5 @@
 import { useId, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import {
   AttachFile as AttachFileIcon,
@@ -35,6 +36,7 @@ export default function AttachmentUpload({
   onAddFiles,
   onRemove,
 }: AttachmentUploadProps) {
+  const { t } = useTranslation('healthPassport');
   const imageInputId = useId();
   const fileInputId = useId();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -53,8 +55,8 @@ export default function AttachmentUpload({
     <Stack spacing={1.5}>
       <TextField
         size="small"
-        label="Popis dokumentu (voliteľné)"
-        placeholder="napr. Zdravotný pas — Aiko"
+        label={t('attachmentUpload.docLabel')}
+        placeholder={t('attachmentUpload.docPlaceholder')}
         value={label}
         onChange={(e) => onLabelChange(e.target.value)}
         fullWidth
@@ -86,7 +88,7 @@ export default function AttachmentUpload({
           onClick={() => imageInputRef.current?.click()}
           disabled={limitReached}
         >
-          Fotka / galéria
+          {t('attachmentUpload.photo')}
         </Button>
         <Button
           variant="outlined"
@@ -94,14 +96,14 @@ export default function AttachmentUpload({
           onClick={() => fileInputRef.current?.click()}
           disabled={limitReached}
         >
-          PDF / súbor
+          {t('attachmentUpload.file')}
         </Button>
         <Typography
           variant="caption"
           color="text.secondary"
           sx={{ textTransform: 'none', letterSpacing: 0, fontSize: '0.75rem', fontWeight: 400 }}
         >
-          {attachments.length} / {maxFiles} strán
+          {t('attachmentUpload.pageCount', { count: attachments.length, max: maxFiles })}
         </Typography>
       </Stack>
 
@@ -125,7 +127,7 @@ export default function AttachmentUpload({
                 )}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography variant="body2" sx={{ fontWeight: 500 }} noWrap>
-                    Strana {index + 1} · {entry.file.name}
+                    {t('attachmentUpload.pageLabel', { n: index + 1 })} · {entry.file.name}
                   </Typography>
                   <Typography
                     variant="caption"
@@ -143,7 +145,7 @@ export default function AttachmentUpload({
                 <IconButton
                   size="small"
                   onClick={() => onRemove(entry.id)}
-                  aria-label="Odstrániť stranu"
+                  aria-label={t('attachmentUpload.removePage')}
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
@@ -161,8 +163,10 @@ export default function AttachmentUpload({
           color="text.secondary"
           sx={{ textTransform: 'none', letterSpacing: 0, fontSize: '0.75rem', fontWeight: 400 }}
         >
-          Podporované formáty: PDF, JPEG, PNG, WebP. Max{' '}
-          {Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024))} MB per stranu, max {maxFiles} strán.
+          {t('attachmentUpload.formatsHint', {
+            maxMb: Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024)),
+            maxFiles,
+          })}
         </Typography>
       )}
     </Stack>

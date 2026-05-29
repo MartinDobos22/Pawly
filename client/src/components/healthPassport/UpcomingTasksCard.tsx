@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Card, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
@@ -38,18 +39,18 @@ interface UpcomingTasksCardProps {
 
 type Bucket = 'overdue' | 'thisWeek' | 'thisMonth' | 'later';
 
-const BUCKET_META: Record<Bucket, { label: string; tone: 'error' | 'warning' | 'info' | 'success' }> = {
-  overdue: { label: 'Po termíne', tone: 'error' },
-  thisWeek: { label: 'Tento týždeň', tone: 'warning' },
-  thisMonth: { label: 'Tento mesiac', tone: 'info' },
-  later: { label: 'Neskôr', tone: 'success' },
-};
-
 const bucketOf = (diff: number): Bucket => {
   if (diff < 0) return 'overdue';
   if (diff <= 7) return 'thisWeek';
   if (diff <= 31) return 'thisMonth';
   return 'later';
+};
+
+const BUCKET_TONE: Record<Bucket, 'error' | 'warning' | 'info' | 'success'> = {
+  overdue: 'error',
+  thisWeek: 'warning',
+  thisMonth: 'info',
+  later: 'success',
 };
 
 export default function UpcomingTasksCard({
@@ -60,6 +61,7 @@ export default function UpcomingTasksCard({
   doseLogs,
   onToggleDose,
 }: UpcomingTasksCardProps) {
+  const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const todayStr = today();
 
@@ -73,7 +75,9 @@ export default function UpcomingTasksCard({
         items.push({
           id: `visit-${v.id}`,
           icon: <VetIcon fontSize="small" />,
-          label: `Kontrola${v.clinicName ? ` – ${v.clinicName}` : ''}`,
+          label: v.clinicName
+            ? t('upcoming.checkupClinic', { clinic: v.clinicName })
+            : t('upcoming.checkup'),
           date: v.nextCheckDate!,
           diff: rel.diffDays,
         });
@@ -88,7 +92,7 @@ export default function UpcomingTasksCard({
         items.push({
           id: `dew-${d.id}`,
           icon: <DewormIcon fontSize="small" />,
-          label: `Odčervenie – ${d.productName}`,
+          label: t('upcoming.deworming', { product: d.productName }),
           date: d.nextDueDate,
           diff: rel.diffDays,
         });
@@ -103,21 +107,21 @@ export default function UpcomingTasksCard({
         items.push({
           id: `ecto-${e.id}`,
           icon: <EctoIcon fontSize="small" />,
-          label: `Antiparazitikum – ${e.productName}`,
+          label: t('upcoming.antiparasitic', { product: e.productName }),
           date: e.nextDueDate,
           diff: rel.diffDays,
         });
       });
     return items.sort((a, b) => a.diff - b.diff);
-  }, [vetVisits, dewormings, ectos]);
+  }, [vetVisits, dewormings, ectos, t]);
 
   const grouped = useMemo(() => {
     const map = new Map<Bucket, TaskItem[]>();
-    for (const t of tasks) {
-      const b = bucketOf(t.diff);
+    for (const task of tasks) {
+      const b = bucketOf(task.diff);
       const arr = map.get(b);
-      if (arr) arr.push(t);
-      else map.set(b, [t]);
+      if (arr) arr.push(task);
+      else map.set(b, [task]);
     }
     return (['overdue', 'thisWeek', 'thisMonth', 'later'] as Bucket[])
       .filter((b) => map.has(b))
@@ -134,14 +138,14 @@ export default function UpcomingTasksCard({
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-            Najbližšie úlohy
+            {t('upcoming.title')}
           </Typography>
         </Stack>
         <Stack alignItems="center" spacing={1} sx={{ py: 2, color: 'text.secondary' }}>
           <DoneIcon sx={{ fontSize: 36, color: 'success.main' }} />
-          <Typography variant="body2">Všetko v poriadku</Typography>
+          <Typography variant="body2">{t('upcoming.allGood')}</Typography>
           <Typography variant="caption" sx={{ textTransform: 'none', letterSpacing: 0 }}>
-            Žiadne plánované úlohy.
+            {t('upcoming.noTasks')}
           </Typography>
         </Stack>
       </Card>
@@ -153,21 +157,21 @@ export default function UpcomingTasksCard({
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.75 }}>
         <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-          Najbližšie úlohy
+          {t('upcoming.title')}
         </Typography>
       </Stack>
 
       <Stack spacing={2}>
         {grouped.map(({ bucket, items }) => {
-          const meta = BUCKET_META[bucket];
-          const c = toneColor(meta.tone);
+          const tone = BUCKET_TONE[bucket];
+          const c = toneColor(tone);
           return (
             <Box key={bucket}>
               <Typography
                 variant="caption"
                 sx={{ color: c, display: 'block', mb: 0.75, fontWeight: 700 }}
               >
-                {meta.label} · {items.length}
+                {t(`upcoming.${bucket}` as never)} · {items.length}
               </Typography>
               <Stack spacing={0.75}>
                 {items.map((task) => {
@@ -238,8 +242,11 @@ export default function UpcomingTasksCard({
 
         {todayDoseLogs.length > 0 && (
           <Box>
-            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.75 }}>
-              Dnešné dávky
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', display: 'block', mb: 0.75 }}
+            >
+              {t('upcoming.todayDoses')}
             </Typography>
             <Stack spacing={0.75}>
               {todayDoseLogs.map((log) => {
@@ -258,7 +265,7 @@ export default function UpcomingTasksCard({
                       opacity: log.taken ? 0.7 : 1,
                     }}
                   >
-                    {med?.name ?? 'Liek'}
+                    {med?.name ?? t('upcoming.medicationFallback')}
                     {med?.frequency ? ` · ${med.frequency}` : ''}
                   </Button>
                 );

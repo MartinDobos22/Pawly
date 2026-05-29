@@ -1,19 +1,13 @@
 import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
-const PET_TYPES = [
-  { emoji: '🐕', label: 'Psy' },
-  { emoji: '🐈', label: 'Mačky' },
-  { emoji: '🐇', label: 'Králiky' },
-  { emoji: '🐹', label: 'Hlodavce' },
-  { emoji: '🦜', label: 'Vtáci' },
-  { emoji: '🐢', label: 'Plazy' },
-  { emoji: '🐠', label: 'Ryby' },
-  { emoji: '🐎', label: 'Kone' },
-];
+const PET_EMOJIS = ['🐕', '🐈', '🐇', '🐹', '🦜', '🐢', '🐠', '🐎'];
 
 export default function PetTypesStrip() {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation('landing');
+  const petItems = t('petTypes.items', { returnObjects: true }) as Array<{ label: string }>;
 
   return (
     <Box sx={{ py: { xs: 6, md: 8 }, textAlign: 'center' }}>
@@ -29,7 +23,7 @@ export default function PetTypesStrip() {
             mb: 3,
           }}
         >
-          PAWPORT PRE VŠETKY DOMÁCE ZVIERATÁ
+          {t('petTypes.heading')}
         </Typography>
         <Stack
           direction="row"
@@ -38,9 +32,9 @@ export default function PetTypesStrip() {
           justifyContent="center"
           alignItems="center"
         >
-          {PET_TYPES.map((pet) => (
+          {petItems.map((pet, idx) => (
             <Stack
-              key={pet.label}
+              key={idx}
               alignItems="center"
               spacing={0.5}
               sx={{
@@ -56,7 +50,7 @@ export default function PetTypesStrip() {
                   filter: isDark ? 'none' : 'drop-shadow(0 2px 6px rgba(0,0,0,0.12))',
                 }}
               >
-                {pet.emoji}
+                {PET_EMOJIS[idx]}
               </Box>
               <Typography
                 variant="caption"

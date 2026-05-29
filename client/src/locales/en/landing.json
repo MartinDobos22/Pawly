@@ -1,0 +1,418 @@
+{
+  "about": {
+    "title": "About",
+    "subtitle": "A small helper for the big love you have for your pets.",
+    "appName": "Pawport",
+    "appTagline": "Everything about your pet's health in one place.",
+    "appDescription": "Pawport combines a digital health passport and intelligent food analysis for dogs, cats and other pets. It helps you keep track of vaccinations, medications and vet visits — and make food decisions with confidence. So you can focus on what matters most: your pet.",
+    "featuresTitle": "What Pawport can do",
+    "privacyTitle": "Your data is safe",
+    "privacyDescription": "Access is protected by sign-in and all your pet records are private — only you can see them.",
+    "madeWithLove": "Made with love for pets",
+    "features": {
+      "aiAnalysis": {
+        "title": "AI food analysis",
+        "description": "Type or photograph the ingredients and in seconds you'll know what your pet is getting."
+      },
+      "healthPassport": {
+        "title": "Digital health passport",
+        "description": "Vaccinations, deworming, medications and vet visits — all clearly in one place."
+      },
+      "diary": {
+        "title": "Health diary",
+        "description": "Record health incidents and track what works and what doesn't."
+      },
+      "vetCard": {
+        "title": "Vet card",
+        "description": "A neat summary you can show or print at the vet."
+      },
+      "profiles": {
+        "title": "Pet profiles",
+        "description": "Dogs, cats and other pets — each with their own profile and allergy list."
+      }
+    }
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Quick answers about how Pawport works and what happens to your data.",
+    "sections": {
+      "dataPrivacy": {
+        "title": "Data & privacy",
+        "items": [
+          {
+            "q": "Where is my data stored?",
+            "a": "Your pet profiles and health records are stored in a secure cloud database (Supabase) via our server. They are tied to your account — they are not stored only in the browser."
+          },
+          {
+            "q": "Who can see my records?",
+            "a": "Only you. Every request is bound to your signed-in account and the database is configured so that no one can access your data without your login."
+          },
+          {
+            "q": "Can I access my data from multiple devices?",
+            "a": "Yes. Since the data is in the cloud, after signing in you'll see it on your phone, tablet and computer — always up to date."
+          },
+          {
+            "q": "Is my data secure?",
+            "a": "Communication uses encrypted HTTPS, access is only possible after sign-in, and database secret keys are exclusively on the server, never in the browser."
+          }
+        ]
+      },
+      "photosAi": {
+        "title": "Photos & AI",
+        "items": [
+          {
+            "q": "Are scans and photos I upload for recognition stored?",
+            "a": "No. When you upload a photo of a passport or food packaging for AI recognition, it is only used to read the text — you get the result back, but the image itself is not stored on the server."
+          },
+          {
+            "q": "What about photos I attach directly to a record or episode?",
+            "a": "Those yes — attachments you deliberately add to a record are saved as part of it, so you can see them later."
+          },
+          {
+            "q": "How does AI analysis work?",
+            "a": "Text or photos are processed by AI services (OpenAI and Google Vision), which recognize the content and return the result. We only send what is needed for the evaluation."
+          },
+          {
+            "q": "Is the analysis result medical advice?",
+            "a": "No. Results are informational and serve as a guide. For health decisions, always consult a veterinarian."
+          }
+        ]
+      },
+      "account": {
+        "title": "Account & usage",
+        "items": [
+          {
+            "q": "How do I sign in?",
+            "a": "With email and password, or with a single click via your Google account."
+          },
+          {
+            "q": "I forgot my password, what now?",
+            "a": "On the login page click \"Forgot password?\" and we'll send you an email to set a new one."
+          },
+          {
+            "q": "Can I have multiple pets?",
+            "a": "Yes. Create a profile for each pet — dogs, cats and other animals, each with their own allergies and records."
+          },
+          {
+            "q": "What happens when I delete a pet?",
+            "a": "Along with the profile, all related records are deleted too (vaccinations, medications, episodes, expenses…). This action cannot be undone."
+          },
+          {
+            "q": "How do I delete my account and all my data?",
+            "a": "In the side menu click \"Delete account\". Your account and all saved data will be permanently removed. This action is irreversible."
+          },
+          {
+            "q": "Does it work on mobile?",
+            "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app."
+          },
+          { "q": "How much does it cost?", "a": "Pawport is currently free." }
+        ]
+      }
+    }
+  },
+  "hero": {
+    "chip": "For dogs, cats and other pets",
+    "title1": "Your pet's health,",
+    "title2": "always at hand",
+    "description": "A digital health passport for dogs, cats and other pets. AI food analysis and a vet card all in one place. Never miss a vaccination, deworming or check-up.",
+    "ctaStart": "Get started for free",
+    "ctaHowItWorks": "How it works",
+    "statFree": "Free",
+    "statAiScan": "Passport scan",
+    "statOffline": "Offline-ready",
+    "dogPhotoAlt": "Golden retriever looking at the camera",
+    "floatingVaccination": "Vaccination",
+    "floatingValidUntil": "Valid until 23 Jun 2026",
+    "navEnter": "Open app",
+    "navLogin": "Sign in",
+    "navRegister": "Sign up"
+  },
+  "howItWorks": {
+    "title": "3 steps and your health passport is on your phone",
+    "subtitle": "No complicated forms, no monthly fees. Get started in a few minutes.",
+    "steps": [
+      {
+        "title": "Create a pet profile",
+        "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds."
+      },
+      {
+        "title": "Scan the health passport",
+        "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF."
+      },
+      {
+        "title": "Vet card",
+        "text": "Before every vet visit, export a clear PDF card with everything that matters."
+      }
+    ]
+  },
+  "features": {
+    "title1": "Everything for your pet's health",
+    "title2": "in one place",
+    "subtitle": "Six features that together cover the entire health life of your pet.",
+    "items": [
+      {
+        "title": "Health passport",
+        "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline."
+      },
+      {
+        "title": "AI food analysis",
+        "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet."
+      },
+      {
+        "title": "Reminders",
+        "text": "The card always shows what's needed: overdue deworming, upcoming vaccination, check-up."
+      },
+      {
+        "title": "Vet card",
+        "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history."
+      },
+      {
+        "title": "Can my pet eat…?",
+        "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer."
+      },
+      {
+        "title": "Health diary",
+        "text": "Record health episodes and based on history see what worked and what didn't."
+      }
+    ]
+  },
+  "comparison": {
+    "title": "Paper passport vs Pawport",
+    "subtitle": "Why switch from a worn paper passport to a digital health passport.",
+    "paperTitle": "Paper passport",
+    "pawportTitle": "Pawport",
+    "recommended": "Recommended",
+    "paperPoints": [
+      "Easily lost or damaged",
+      "No deadline reminders",
+      "You have to carry it everywhere",
+      "Unreadable vet handwriting",
+      "No food analysis"
+    ],
+    "pawportPoints": [
+      "Always on your phone, never lost",
+      "Automatic vaccination and deworming reminders",
+      "AI passport scanning and food analysis",
+      "Clear vet card with one click",
+      "Works offline and completely free"
+    ]
+  },
+  "cta": {
+    "title": "Start caring for your pet's health today",
+    "subtitle": "No registration, no fees. Just add a pet profile and you're ready to use the digital health passport.",
+    "btnStart": "Open app",
+    "btnProfile": "Create profile",
+    "vetPhotoAlt": "Veterinary check-up of a pet"
+  },
+  "footer": {
+    "about": "About",
+    "profiles": "Profiles",
+    "start": "Get started"
+  },
+  "stats": {
+    "items": [
+      { "label": "health passport records" },
+      { "label": "vaccinations recorded" },
+      { "label": "animal species" },
+      { "label": "free, no registration" }
+    ]
+  },
+  "appPreview": {
+    "title": "This is what your digital passport looks like",
+    "subtitle": "Works on desktop and mobile — all records synced, always with you.",
+    "overdueBadge": "Overdue",
+    "overdueDetail": "Antiparasitic · 26 days",
+    "syncBadge": "Synced",
+    "stats": [
+      { "label": "Main sections" },
+      { "label": "PDF export for vet" },
+      { "label": "Document scanning" },
+      { "label": "Works offline" }
+    ],
+    "vetCardLabel": "Vet card",
+    "clinicalHistory": "Clinical history",
+    "historyItems": [
+      { "date": "May 21", "label": "Antiparasitic", "tone": "warning" },
+      { "date": "May 21", "label": "Vet · Veterina terasa", "tone": "primary" },
+      { "date": "Mar 27", "label": "Vet · cassovet", "tone": "primary" },
+      { "date": "Mar 26", "label": "Deworming · xyz", "tone": "success" }
+    ],
+    "mockCard": {
+      "vaccination": "Vaccination",
+      "deworming": "Deworming",
+      "ticks": "Ticks",
+      "diet": "Diet",
+      "vaccShort": "Vacc.",
+      "dewormShort": "Dew.",
+      "ticksShort": "Tck.",
+      "dietShort": "Diet",
+      "valid": "Valid",
+      "inWeeks": "In 5 wk.",
+      "expiresSoon": "Expires",
+      "suitable": "Suitable"
+    }
+  },
+  "photoWall": {
+    "title1": "For every furry friend",
+    "title2": "and every scaly one",
+    "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawport handles a health card for every pet.",
+    "pets": [
+      { "label": "Dog" },
+      { "label": "Cat" },
+      { "label": "Rabbit" },
+      { "label": "Parrot" },
+      { "label": "Hamster" },
+      { "label": "Horse" },
+      { "label": "Turtle" },
+      { "label": "Dog" }
+    ]
+  },
+  "demo": {
+    "badge": "No registration, try it now",
+    "title": "Ask AI what your pet can eat",
+    "subtitle": "Type a food or ingredient — instantly see if it's safe for your dog, cat or other pet.",
+    "placeholder": "e.g. chocolate, carrot, apple, grapes…",
+    "askBtn": "Ask",
+    "askingBtn": "Asking…",
+    "tryLabel": "Try:",
+    "continueBtn": "Continue with real AI in the app",
+    "quickFills": ["chocolate", "carrot", "grapes", "chicken bones"],
+    "resultLabels": {
+      "question": "Question:",
+      "warnings": "Watch out for:",
+      "alternatives": "Alternatives:"
+    },
+    "fallback": {
+      "verdict": "CAUTION",
+      "short": "Without full AI I can't give a reliable answer.",
+      "explanation": "This is just a demo with a limited list of foods. For accurate evaluation, use the real AI in the app.",
+      "warnings": ["Consult your vet before giving any new food"]
+    },
+    "responses": {
+      "chocolate": {
+        "verdict": "UNSAFE",
+        "short": "No, chocolate is toxic to dogs.",
+        "explanation": "It contains theobromine, which is toxic to dogs and can cause vomiting, tremors, seizures or heart failure.",
+        "alternatives": ["dog treats", "a piece of apple", "carrot"]
+      },
+      "grapes": {
+        "verdict": "UNSAFE",
+        "short": "No, grapes can cause kidney failure.",
+        "explanation": "Even a small amount of grapes or raisins can cause acute kidney failure in dogs.",
+        "alternatives": ["blueberries", "apple without seeds", "banana"]
+      },
+      "onion": {
+        "verdict": "UNSAFE",
+        "short": "No, onions damage red blood cells.",
+        "explanation": "Onions, garlic and chives contain thiosulfates that break down red blood cells and can cause anaemia.",
+        "alternatives": ["plain cooked meat"]
+      },
+      "xylitol": {
+        "verdict": "UNSAFE",
+        "short": "No, xylitol is extremely dangerous.",
+        "explanation": "The sweetener xylitol rapidly lowers blood sugar and can cause liver failure even in small doses.",
+        "alternatives": ["dog treats without sweeteners"]
+      },
+      "carrot": {
+        "verdict": "SAFE",
+        "short": "Yes, carrots are an excellent snack.",
+        "explanation": "Carrots are low in calories, contain fibre and beta-carotene. Raw carrots also help clean teeth."
+      },
+      "apple": {
+        "verdict": "CAUTION",
+        "short": "Yes, but remove the seeds and stem.",
+        "explanation": "Apples are healthy and tasty, but the seeds contain traces of cyanide. Only give the fleshy pieces.",
+        "warnings": ["Remove seeds and stem", "In moderate amounts"]
+      },
+      "banana": {
+        "verdict": "SAFE",
+        "short": "Yes, bananas are fine.",
+        "explanation": "Rich in potassium and vitamins. Give only in moderate amounts due to high sugar content."
+      },
+      "chicken bones": {
+        "verdict": "CAUTION",
+        "short": "Depends on preparation — never give cooked.",
+        "explanation": "Cooked bones splinter and can injure the digestive tract. Raw large bones are acceptable under supervision.",
+        "warnings": [
+          "Cooked bones can injure the digestive tract",
+          "Only raw and larger bones under supervision"
+        ]
+      },
+      "milk": {
+        "verdict": "CAUTION",
+        "short": "Many dogs are lactose intolerant.",
+        "explanation": "Some dogs digest milk fine, others get diarrhoea. Try a small amount and monitor the reaction.",
+        "warnings": ["Watch for digestive issues", "Lactose-free versions are better"]
+      },
+      "cheese": {
+        "verdict": "CAUTION",
+        "short": "In small amounts, yes.",
+        "explanation": "Hard cheeses low in lactose are OK as treats. Watch out for salt content.",
+        "warnings": ["Watch out for salt", "Not for dogs with dairy allergies"]
+      },
+      "avocado": {
+        "verdict": "UNSAFE",
+        "short": "No, avocado contains persin.",
+        "explanation": "Persin in avocado can cause digestive problems and vomiting. The pit is also a choking hazard.",
+        "alternatives": ["banana", "carrot", "apple without seeds"]
+      },
+      "salmon": {
+        "verdict": "SAFE",
+        "short": "Yes, but only cooked and boneless.",
+        "explanation": "Salmon is an excellent source of omega-3 fatty acids. Raw salmon may contain parasites."
+      }
+    }
+  },
+  "petTypes": {
+    "heading": "PAWPORT FOR ALL PETS",
+    "items": [
+      { "label": "Dogs" },
+      { "label": "Cats" },
+      { "label": "Rabbits" },
+      { "label": "Rodents" },
+      { "label": "Birds" },
+      { "label": "Reptiles" },
+      { "label": "Fish" },
+      { "label": "Horses" }
+    ]
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "We'll remind you when vaccinations, deworming, antiparasitic treatments, vet check-ups, or medication end dates are approaching.",
+    "emailSection": "Email",
+    "emailEnabled": "Send reminders by email",
+    "emailSentTo": "Reminders are sent to {{email}}",
+    "emailNoEmail": "Your account has no email — add one by signing in with email.",
+    "leadDaysTitle": "How many days in advance",
+    "leadDaysNote": "We'll also remind you on the due date and the day after.",
+    "leadDayChip_one": "{{count}} day",
+    "leadDayChip_other": "{{count}} days",
+    "typesTitle": "Record types",
+    "upcomingTitle": "Upcoming deadlines",
+    "loadError": "Failed to load settings.",
+    "minLeadDaysError": "Keep at least one reminder interval.",
+    "pushComing": "Push notifications to your phone are coming soon.",
+    "types": {
+      "notifyVaccinations": "Vaccinations",
+      "notifyDewormings": "Deworming",
+      "notifyEctoparasites": "Ectoparasites (ticks/fleas)",
+      "notifyVetChecks": "Vet check-ups",
+      "notifyMedications": "End of medications"
+    },
+    "status": {
+      "OVERDUE": "overdue",
+      "DUE_SOON": "soon",
+      "OK": "ok"
+    },
+    "dueText": {
+      "overdue_one": "overdue by {{count}} day",
+      "overdue_other": "overdue by {{count}} days",
+      "today": "today",
+      "upcoming_one": "in {{count}} day",
+      "upcoming_other": "in {{count}} days"
+    },
+    "noUpcoming": "No upcoming deadlines.",
+    "saveSuccess": "Settings saved",
+    "saveFailed": "Failed to save settings"
+  }
+}

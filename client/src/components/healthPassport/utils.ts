@@ -20,7 +20,8 @@ function diseaseMatches(disease: string | undefined, existing: VaccinationRecord
   if (!disease) return false;
   const d = disease.toLowerCase();
   if (existing.type === 'RABIES' && /(rabies|besnot)/i.test(d)) return true;
-  if (existing.type === 'COMBINED' && /(combined|kombin|dhppi|parvo|distemper)/i.test(d)) return true;
+  if (existing.type === 'COMBINED' && /(combined|kombin|dhppi|parvo|distemper)/i.test(d))
+    return true;
   return false;
 }
 
@@ -122,8 +123,8 @@ export const statusLabel = (status: ValidityStatus) => {
   return 'Expirované';
 };
 
-export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('sk-SK', {
+export const formatDate = (iso: string, locale = 'sk-SK') =>
+  new Date(iso).toLocaleDateString(locale, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

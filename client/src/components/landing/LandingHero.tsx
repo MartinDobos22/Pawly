@@ -15,6 +15,7 @@ import {
   PlayCircleOutline as PlayIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const HERO_PHOTO =
   'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=900&q=80';
@@ -22,6 +23,7 @@ const HERO_PHOTO =
 export default function LandingHero() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation('landing');
   const isDark = theme.palette.mode === 'dark';
   const supportsHover = useMediaQuery('(hover: hover) and (pointer: fine)');
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -133,7 +135,7 @@ export default function LandingHero() {
           <Stack spacing={3}>
             <Chip
               icon={<SparkleIcon sx={{ fontSize: 16 }} />}
-              label="Pre psy, mačky a ďalšie domáce zvieratá"
+              label={t('hero.chip')}
               size="small"
               sx={{
                 alignSelf: 'flex-start',
@@ -153,7 +155,7 @@ export default function LandingHero() {
                 letterSpacing: '-0.025em',
               }}
             >
-              Zdravie tvojho miláčika,{' '}
+              {t('hero.title1')}{' '}
               <Box
                 component="span"
                 sx={{
@@ -163,7 +165,7 @@ export default function LandingHero() {
                   backgroundClip: 'text',
                 }}
               >
-                vždy po ruke
+                {t('hero.title2')}
               </Box>
             </Typography>
             <Typography
@@ -174,9 +176,7 @@ export default function LandingHero() {
                 maxWidth: 540,
               }}
             >
-              Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva a
-              karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani
-              kontrolu.
+              {t('hero.description')}
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
               <Button
@@ -191,7 +191,7 @@ export default function LandingHero() {
                   boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.35)}`,
                 }}
               >
-                Začať zadarmo
+                {t('hero.ctaStart')}
               </Button>
               <Button
                 variant="text"
@@ -200,7 +200,7 @@ export default function LandingHero() {
                 onClick={() => scrollTo('how-it-works')}
                 sx={{ px: 2 }}
               >
-                Ako to funguje
+                {t('hero.ctaHowItWorks')}
               </Button>
             </Stack>
             <Stack direction="row" gap={3} sx={{ pt: 1, flexWrap: 'wrap' }}>
@@ -212,7 +212,7 @@ export default function LandingHero() {
                   variant="caption"
                   sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
                 >
-                  Zadarmo
+                  {t('hero.statFree')}
                 </Typography>
               </Stack>
               <Stack>
@@ -223,7 +223,7 @@ export default function LandingHero() {
                   variant="caption"
                   sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
                 >
-                  Skenovanie pasu
+                  {t('hero.statAiScan')}
                 </Typography>
               </Stack>
               <Stack>
@@ -234,7 +234,7 @@ export default function LandingHero() {
                   variant="caption"
                   sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
                 >
-                  Offline-ready
+                  {t('hero.statOffline')}
                 </Typography>
               </Stack>
             </Stack>
@@ -254,7 +254,7 @@ export default function LandingHero() {
             <Box
               component="img"
               src={HERO_PHOTO}
-              alt="Zlatý retriever sa pozerá do kamery"
+              alt={t('hero.dogPhotoAlt')}
               loading="eager"
               sx={{
                 position: 'relative',
@@ -302,10 +302,10 @@ export default function LandingHero() {
               </Box>
               <Stack>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Očkovanie
+                  {t('hero.floatingVaccination')}
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                  Platné do 23. 6. 2026
+                  {t('hero.floatingValidUntil')}
                 </Typography>
               </Stack>
             </Box>

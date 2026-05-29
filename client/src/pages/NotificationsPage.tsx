@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -19,12 +20,12 @@ import type { NotificationPreferences } from '../services/notificationsApi';
 
 const LEAD_DAY_OPTIONS = [30, 14, 7, 1];
 
-const TYPE_TOGGLES: { key: keyof NotificationPreferences; label: string }[] = [
-  { key: 'notifyVaccinations', label: 'Očkovania' },
-  { key: 'notifyDewormings', label: 'Odčervenie' },
-  { key: 'notifyEctoparasites', label: 'Ektoparazity (kliešte/blchy)' },
-  { key: 'notifyVetChecks', label: 'Kontroly u veterinára' },
-  { key: 'notifyMedications', label: 'Koniec liekov' },
+const TYPE_TOGGLE_KEYS: Array<keyof NotificationPreferences> = [
+  'notifyVaccinations',
+  'notifyDewormings',
+  'notifyEctoparasites',
+  'notifyVetChecks',
+  'notifyMedications',
 ];
 
 function statusColor(status: string): 'error' | 'warning' | 'success' {
@@ -33,24 +34,17 @@ function statusColor(status: string): 'error' | 'warning' | 'success' {
   return 'success';
 }
 
-/** 1 deň · 2-4 dni · 5+ dní */
-function dayWord(n: number): string {
-  const abs = Math.abs(n);
-  if (abs === 1) return 'deň';
-  if (abs >= 2 && abs <= 4) return 'dni';
-  return 'dní';
-}
-
-function dueText(days: number): string {
-  if (days < 0) return `po termíne o ${-days} ${dayWord(days)}`;
-  if (days === 0) return 'dnes';
-  return `o ${days} ${dayWord(days)}`;
-}
-
 export default function NotificationsPage() {
   const { user } = useAuth();
   const { prefs, upcoming, loading, saving, error, save } = useNotificationPreferences();
   const [localError, setLocalError] = useState<string | null>(null);
+  const { t } = useTranslation('landing');
+
+  const dueText = (days: number): string => {
+    if (days < 0) return t('notifications.dueText.overdue', { count: -days });
+    if (days === 0) return t('notifications.dueText.today');
+    return t('notifications.dueText.upcoming', { count: days });
+  };
 
   if (loading) {
     return (
@@ -61,14 +55,14 @@ export default function NotificationsPage() {
   }
 
   if (!prefs) {
-    return <Alert severity="error">{error ?? 'Nastavenia sa nepodarilo načítať.'}</Alert>;
+    return <Alert severity="error">{error ?? t('notifications.loadError')}</Alert>;
   }
 
   const toggleLeadDay = (day: number) => {
     const has = prefs.leadDays.includes(day);
     const next = has ? prefs.leadDays.filter((d) => d !== day) : [...prefs.leadDays, day];
     if (next.length === 0) {
-      setLocalError('Nechaj aspoň jeden interval pripomienky.');
+      setLocalError(t('notifications.minLeadDaysError'));
       return;
     }
     setLocalError(null);
@@ -80,12 +74,11 @@ export default function NotificationsPage() {
       <Stack direction="row" alignItems="center" spacing={1}>
         <NotifyIcon color="primary" />
         <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          Notifikácie
+          {t('notifications.title')}
         </Typography>
       </Stack>
       <Typography variant="body2" color="text.secondary">
-        Upozorníme ťa, keď sa blíži termín očkovaní, odčervenia, antiparazitík, kontroly u
-        veterinára alebo koniec liečby liekom.
+        {t('notifications.description')}
       </Typography>
 
       {(error || localError) && <Alert severity="warning">{localError ?? error}</Alert>}
@@ -93,7 +86,7 @@ export default function NotificationsPage() {
       <Card sx={{ p: 2 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            E-mail
+            {t('notifications.emailSection')}
           </Typography>
           <FormControlLabel
             control={
@@ -103,12 +96,12 @@ export default function NotificationsPage() {
                 onChange={(e) => save({ emailEnabled: e.target.checked })}
               />
             }
-            label="Posielať pripomienky e-mailom"
+            label={t('notifications.emailEnabled')}
           />
           <Typography variant="caption" color="text.secondary">
             {user?.email
-              ? `Pripomienky chodia na ${user.email}`
-              : 'Tvoj účet nemá e-mail — pridaj ho cez prihlásenie e-mailom.'}
+              ? t('notifications.emailSentTo', { email: user.email })
+              : t('notifications.emailNoEmail')}
           </Typography>
         </Stack>
       </Card>
@@ -116,13 +109,13 @@ export default function NotificationsPage() {
       <Card sx={{ p: 2 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            Koľko dní vopred
+            {t('notifications.leadDaysTitle')}
           </Typography>
           <Stack direction="row" gap={1} flexWrap="wrap">
             {LEAD_DAY_OPTIONS.map((day) => (
               <Chip
                 key={day}
-                label={`${day} ${dayWord(day)}`}
+                label={t('notifications.leadDayChip', { count: day })}
                 color={prefs.leadDays.includes(day) ? 'primary' : 'default'}
                 variant={prefs.leadDays.includes(day) ? 'filled' : 'outlined'}
                 onClick={() => toggleLeadDay(day)}
@@ -131,7 +124,7 @@ export default function NotificationsPage() {
             ))}
           </Stack>
           <Typography variant="caption" color="text.secondary">
-            Pripomenieme aj v deň termínu a hneď po ňom.
+            {t('notifications.leadDaysNote')}
           </Typography>
         </Stack>
       </Card>
@@ -139,9 +132,9 @@ export default function NotificationsPage() {
       <Card sx={{ p: 2 }}>
         <Stack spacing={0.5}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-            Typy záznamov
+            {t('notifications.typesTitle')}
           </Typography>
-          {TYPE_TOGGLES.map(({ key, label }) => (
+          {TYPE_TOGGLE_KEYS.map((key) => (
             <FormControlLabel
               key={key}
               control={
@@ -151,7 +144,7 @@ export default function NotificationsPage() {
                   onChange={(e) => save({ [key]: e.target.checked })}
                 />
               }
-              label={label}
+              label={t(`notifications.types.${key}` as never)}
             />
           ))}
         </Stack>
@@ -159,11 +152,11 @@ export default function NotificationsPage() {
 
       <Card sx={{ p: 2 }}>
         <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-          Najbližšie termíny
+          {t('notifications.upcomingTitle')}
         </Typography>
         {upcoming.length === 0 ? (
           <Typography variant="body2" color="text.secondary">
-            Žiadne termíny v najbližšom období.
+            {t('notifications.noUpcoming')}
           </Typography>
         ) : (
           <Stack divider={<Divider />} spacing={0}>
@@ -195,7 +188,7 @@ export default function NotificationsPage() {
       </Card>
 
       <Typography variant="caption" color="text.secondary">
-        Push notifikácie do telefónu pripravujeme.
+        {t('notifications.pushComing')}
       </Typography>
     </Stack>
   );

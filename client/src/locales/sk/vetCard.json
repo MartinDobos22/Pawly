@@ -1,0 +1,118 @@
+{
+  "page": {
+    "title": "Karta pre veterinára",
+    "description": "Súhrn zdravotného stavu zvieraťa pre veterinára.",
+    "noPet": "Vyber zviera v ľavom menu.",
+    "exportPdf": "Exportovať PDF",
+    "print": "Vytlačiť"
+  },
+  "sections": {
+    "identity": "Identita",
+    "diagnoses": "Diagnózy",
+    "vaccinations": "Vakcinácie",
+    "medications": "Lieky",
+    "activeMedications": "Aktívne lieky",
+    "preventiveCare": "Preventívna starostlivosť",
+    "recentVisits": "Posledné návštevy",
+    "allergies": "Alergie",
+    "chronicConditions": "Chronické stavy",
+    "notes": "Poznámky"
+  },
+  "fields": {
+    "name": "Meno",
+    "species": "Druh",
+    "breed": "Plemeno",
+    "age": "Vek",
+    "weight": "Hmotnosť",
+    "sex": "Pohlavie",
+    "microchip": "Mikročip",
+    "passport": "Číslo pasu",
+    "owner": "Majiteľ"
+  },
+  "empty": {
+    "noData": "Žiadne dáta",
+    "noVaccinations": "Žiadne vakcinácie",
+    "noMedications": "Žiadne lieky",
+    "noVisits": "Žiadne návštevy"
+  },
+  "identity": {
+    "sexMale": "samec",
+    "sexFemale": "samica",
+    "ageYears": "{{age}} r.",
+    "cardCaption": "Karta pre veterinára",
+    "switchTo": "Prepnúť na {{name}}",
+    "dateOfBirth": "Dátum narodenia"
+  },
+  "healthProfile": {
+    "title": "Zdravotný profil",
+    "empty": "Žiadne špeciálne zdravotné záznamy",
+    "chronic": "Chronické diagnózy",
+    "allergies": "Alergie",
+    "intolerances": "Intolerancie",
+    "notes": "Poznámky"
+  },
+  "actionBar": {
+    "sectionCount": "{{enabled}}/{{total}} sekcií",
+    "selectSections": "Vybrať sekcie pre export",
+    "sectionsAria": "Sekcie pre export",
+    "printPreview": "Náhľad tlače",
+    "exportPdf": "Export PDF",
+    "note": "Vybrané sekcie sa zahrnú do PDF aj tlače.",
+    "sections": {
+      "identity": "Identita",
+      "conditions": "Diagnózy",
+      "medications": "Lieky",
+      "prevention": "Preventíva",
+      "visits": "Klinické záznamy",
+      "history": "Klinická história"
+    }
+  },
+  "vetStatus": {
+    "unknown": "Nezadané",
+    "expired": "Expirované",
+    "willExpire": "Vyprší {{date}}",
+    "validUntil": "Platné do {{date}}"
+  },
+  "statusOverview": {
+    "preventiveStatus": "Aktuálny preventívny stav",
+    "rabies": "Besnota",
+    "combined": "Kombinovaná",
+    "deworming": "Odčervenie",
+    "antiparasitic": "Antiparazitikum",
+    "statusValid": "Platné",
+    "statusExpiringSoon": "Vyprší čoskoro",
+    "statusExpired": "Po termíne",
+    "statusUnknown": "Nezadané"
+  },
+  "preventiveCare": {
+    "title": "Preventívna starostlivosť",
+    "empty": "Žiadne záznamy o očkovaniach",
+    "applied": "Podané {{date}}",
+    "batch": "šarža {{batch}}"
+  },
+  "recentVisits": {
+    "title": "Posledné klinické záznamy",
+    "diagnosis": "Diagnóza",
+    "findings": "Nález",
+    "recommendations": "Odporúčania",
+    "rangeOf": "{{start}}–{{end}} z {{total}} návštev",
+    "perPage": "Na stránku"
+  },
+  "activeMeds": {
+    "title": "Aktívne lieky a doplnky",
+    "empty": "Bez aktívnych liekov"
+  },
+  "clinicalHistory": {
+    "title": "Klinická história",
+    "subtitle": "Vakcíny, návštevy, lieky a preventívne ošetrenia v jednom prehľade.",
+    "searchPlaceholder": "Hľadať…",
+    "clearAria": "Vyčistiť",
+    "noRecords": "Zatiaľ žiadne klinické záznamy.",
+    "noRecordsFilter": "Pre zvolený filter sa nenašli žiadne záznamy.",
+    "rangeOf": "{{start}}–{{end}} z {{total}} záznamov",
+    "perPage": "Na stránku"
+  },
+  "exportToolbar": {
+    "label": "Sekcie pre export:"
+  }
+}

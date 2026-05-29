@@ -1,5 +1,6 @@
 import { useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Box,
@@ -31,6 +32,7 @@ const initialsOf = (name: string) =>
     .join('');
 
 export default function PetSwitcher({ variant = 'sidebar' }: Props) {
+  const { t } = useTranslation('common');
   const theme = useTheme();
   const navigate = useNavigate();
   const { activePet, selectPet, dogProfiles } = useActivePet();
@@ -58,13 +60,13 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
     ? [activePet.breed, activePet.weightKg ? `${activePet.weightKg} kg` : null]
         .filter(Boolean)
         .join(' · ')
-    : 'Žiadny profil';
+    : t('petSwitcher.noProfile');
 
   return (
     <>
       <ButtonBase
         onClick={handleOpen}
-        aria-label="Prepnúť aktívne zviera"
+        aria-label={t('petSwitcher.aria')}
         sx={{
           width: '100%',
           borderRadius: 2,
@@ -110,7 +112,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
               color: empty ? 'text.secondary' : 'text.primary',
             }}
           >
-            {activePet?.name ?? 'Pridajte zviera'}
+            {activePet?.name ?? t('petSwitcher.addPet')}
           </Typography>
           {!isCompact && (
             <Typography
@@ -144,7 +146,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
         {dogProfiles.length === 0 && (
           <Box sx={{ px: 2, py: 1.5 }}>
             <Typography variant="body2" color="text.secondary">
-              Žiadne profily zvierat
+              {t('petSwitcher.noProfiles')}
             </Typography>
           </Box>
         )}
@@ -178,7 +180,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
                 sx={{ textTransform: 'none', letterSpacing: 0 }}
                 noWrap
               >
-                {dog.breed || 'Pes'}
+                {dog.breed || t('petSwitcher.defaultBreed')}
               </Typography>
             </Stack>
           </MenuItem>
@@ -200,7 +202,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
             <AddIcon fontSize="small" />
           </Box>
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-            Spravovať profily
+            {t('petSwitcher.manage')}
           </Typography>
         </MenuItem>
       </Menu>

@@ -20,6 +20,7 @@ import {
   MedicalServices as VetIcon,
 } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { VetVisitRecord } from '../../types/dogHealth';
 import AiFormattedText from '../AiFormattedText';
 
@@ -42,11 +43,24 @@ interface VisitDetailDialogProps {
   onDelete: () => void;
 }
 
-export default function VisitDetailDialog({ visit, open, onClose, onSave, onDelete }: VisitDetailDialogProps) {
+export default function VisitDetailDialog({
+  visit,
+  open,
+  onClose,
+  onSave,
+  onDelete,
+}: VisitDetailDialogProps) {
+  const { t } = useTranslation('healthPassport');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<VisitDraft>({
-    date: '', clinicName: '', vetName: '', reason: '',
-    findings: '', diagnosis: '', recommendations: '', nextCheckDate: '',
+    date: '',
+    clinicName: '',
+    vetName: '',
+    reason: '',
+    findings: '',
+    diagnosis: '',
+    recommendations: '',
+    nextCheckDate: '',
   });
 
   useEffect(() => {
@@ -147,44 +161,99 @@ export default function VisitDetailDialog({ visit, open, onClose, onSave, onDele
             // Edit mode
             <>
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
-                <TextField label="Dátum" type="date" InputLabelProps={{ shrink: true }} value={draft.date}
-                  onChange={(e) => setDraft((p) => ({ ...p, date: e.target.value }))} size="small" />
-                <TextField label="Klinika" value={draft.clinicName}
-                  onChange={(e) => setDraft((p) => ({ ...p, clinicName: e.target.value }))} size="small" />
-                <TextField label="Veterinár" value={draft.vetName}
-                  onChange={(e) => setDraft((p) => ({ ...p, vetName: e.target.value }))} size="small" />
-                <TextField label="Ďalšia kontrola" type="date" InputLabelProps={{ shrink: true }} value={draft.nextCheckDate}
-                  onChange={(e) => setDraft((p) => ({ ...p, nextCheckDate: e.target.value }))} size="small" />
+                <TextField
+                  label={t('detail.date')}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={draft.date}
+                  onChange={(e) => setDraft((p) => ({ ...p, date: e.target.value }))}
+                  size="small"
+                />
+                <TextField
+                  label={t('detail.clinic')}
+                  value={draft.clinicName}
+                  onChange={(e) => setDraft((p) => ({ ...p, clinicName: e.target.value }))}
+                  size="small"
+                />
+                <TextField
+                  label={t('detail.vetName')}
+                  value={draft.vetName}
+                  onChange={(e) => setDraft((p) => ({ ...p, vetName: e.target.value }))}
+                  size="small"
+                />
+                <TextField
+                  label={t('detail.nextCheck')}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                  value={draft.nextCheckDate}
+                  onChange={(e) => setDraft((p) => ({ ...p, nextCheckDate: e.target.value }))}
+                  size="small"
+                />
               </Box>
-              <TextField label="Dôvod návštevy" value={draft.reason}
-                onChange={(e) => setDraft((p) => ({ ...p, reason: e.target.value }))} size="small" />
-              <TextField label="Nález" multiline minRows={2} value={draft.findings}
-                onChange={(e) => setDraft((p) => ({ ...p, findings: e.target.value }))} size="small" />
-              <TextField label="Diagnóza" value={draft.diagnosis}
-                onChange={(e) => setDraft((p) => ({ ...p, diagnosis: e.target.value }))} size="small" />
-              <TextField label="Odporúčania" multiline minRows={2} value={draft.recommendations}
-                onChange={(e) => setDraft((p) => ({ ...p, recommendations: e.target.value }))} size="small" />
+              <TextField
+                label={t('detail.visitReason')}
+                value={draft.reason}
+                onChange={(e) => setDraft((p) => ({ ...p, reason: e.target.value }))}
+                size="small"
+              />
+              <TextField
+                label={t('detail.findings')}
+                multiline
+                minRows={2}
+                value={draft.findings}
+                onChange={(e) => setDraft((p) => ({ ...p, findings: e.target.value }))}
+                size="small"
+              />
+              <TextField
+                label={t('detail.diagnosis')}
+                value={draft.diagnosis}
+                onChange={(e) => setDraft((p) => ({ ...p, diagnosis: e.target.value }))}
+                size="small"
+              />
+              <TextField
+                label={t('detail.recommendations')}
+                multiline
+                minRows={2}
+                value={draft.recommendations}
+                onChange={(e) => setDraft((p) => ({ ...p, recommendations: e.target.value }))}
+                size="small"
+              />
             </>
           ) : (
             // View mode
             <>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                  gap: 1.5,
+                }}
+              >
                 {[
-                  { label: 'Dátum', value: draft.date },
-                  { label: 'Klinika', value: draft.clinicName },
-                  draft.vetName ? { label: 'Veterinár', value: draft.vetName } : null,
-                  draft.nextCheckDate ? { label: 'Ďalšia kontrola', value: draft.nextCheckDate } : null,
-                ].filter(Boolean).map((field) => field && (
-                  <Box key={field.label}>
-                    <SectionLabel>{field.label}</SectionLabel>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{field.value || '–'}</Typography>
-                  </Box>
-                ))}
+                  { label: t('detail.date'), value: draft.date },
+                  { label: t('detail.clinic'), value: draft.clinicName },
+                  draft.vetName ? { label: t('detail.vetName'), value: draft.vetName } : null,
+                  draft.nextCheckDate
+                    ? { label: t('detail.nextCheck'), value: draft.nextCheckDate }
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .map(
+                    (field) =>
+                      field && (
+                        <Box key={field.label}>
+                          <SectionLabel>{field.label}</SectionLabel>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {field.value || '–'}
+                          </Typography>
+                        </Box>
+                      )
+                  )}
               </Box>
 
               {draft.reason && (
                 <Box>
-                  <SectionLabel>Dôvod návštevy</SectionLabel>
+                  <SectionLabel>{t('detail.visitReason')}</SectionLabel>
                   <Typography variant="body2">{draft.reason}</Typography>
                 </Box>
               )}
@@ -199,14 +268,14 @@ export default function VisitDetailDialog({ visit, open, onClose, onSave, onDele
                     borderColor: alpha('#3b82f6', 0.15),
                   }}
                 >
-                  <SectionLabel>Diagnóza</SectionLabel>
+                  <SectionLabel>{t('detail.diagnosis')}</SectionLabel>
                   <AiFormattedText text={draft.diagnosis} />
                 </Box>
               )}
 
               {draft.findings && (
                 <Box>
-                  <SectionLabel>Nález</SectionLabel>
+                  <SectionLabel>{t('detail.findings')}</SectionLabel>
                   <AiFormattedText text={draft.findings} />
                 </Box>
               )}
@@ -221,21 +290,21 @@ export default function VisitDetailDialog({ visit, open, onClose, onSave, onDele
                     borderColor: alpha('#22c55e', 0.15),
                   }}
                 >
-                  <SectionLabel>Odporúčania</SectionLabel>
+                  <SectionLabel>{t('detail.recommendations')}</SectionLabel>
                   <AiFormattedText text={draft.recommendations} />
                 </Box>
               )}
 
               {visit.aiExamType && (
                 <Alert severity="info" sx={{ borderRadius: 2 }}>
-                  Zdroj AI záznamu: <strong>{visit.aiExamType}</strong>
+                  {t('detail.aiSource')}: <strong>{visit.aiExamType}</strong>
                 </Alert>
               )}
 
               {visit.attachments?.length ? (
                 <Card variant="outlined" sx={{ borderRadius: 2 }}>
                   <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                    <SectionLabel>Prílohy</SectionLabel>
+                    <SectionLabel>{t('detail.attachments')}</SectionLabel>
                     {visit.attachments.map((a) => (
                       <Typography key={a.id} variant="body2" sx={{ color: 'text.secondary' }}>
                         • {a.label} {a.fileName ? `(${a.fileName})` : ''}
@@ -257,10 +326,10 @@ export default function VisitDetailDialog({ visit, open, onClose, onSave, onDele
           size="small"
           sx={{ borderRadius: 2, mr: 'auto' }}
         >
-          Zmazať
+          {t('detail.delete')}
         </Button>
         <Button onClick={onClose} size="small" sx={{ borderRadius: 2 }}>
-          Zavrieť
+          {t('detail.close')}
         </Button>
         {!editing ? (
           <Button
@@ -270,11 +339,11 @@ export default function VisitDetailDialog({ visit, open, onClose, onSave, onDele
             onClick={() => setEditing(true)}
             sx={{ borderRadius: 2 }}
           >
-            Editovať
+            {t('detail.edit')}
           </Button>
         ) : (
           <Button variant="contained" size="small" onClick={handleSave} sx={{ borderRadius: 2 }}>
-            Uložiť zmeny
+            {t('detail.save')}
           </Button>
         )}
       </DialogActions>

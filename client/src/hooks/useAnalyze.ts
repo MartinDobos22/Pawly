@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { analyzeAttachment, analyzeComposition, extractTextFromImage } from '../services/api';
 import { AnalysisRequest, AnalysisResult, FileExtractionResult, PetProfile } from '../types';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 export function useAnalyze() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -29,7 +30,7 @@ export function useAnalyze() {
       logger.info('Hook useAnalyze prijal výsledok textovej analýzy', { score: data.score });
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Neočakávaná chyba pri analýze';
+        err instanceof Error ? err.message : i18n.t('errors.unexpectedAnalysis', { ns: 'analyze' });
       setError(message);
       logger.error('Hook useAnalyze zachytil chybu textovej analýzy', { message });
     } finally {
@@ -37,66 +38,77 @@ export function useAnalyze() {
     }
   }, []);
 
-  const analyzeFile = useCallback(async (attachment: NonNullable<AnalysisRequest['attachment']>, examAlias?: string) => {
-    setLoadingFile(true);
-    setError(null);
-    setResult(null);
-    setFileResult(null);
+  const analyzeFile = useCallback(
+    async (attachment: NonNullable<AnalysisRequest['attachment']>, examAlias?: string) => {
+      setLoadingFile(true);
+      setError(null);
+      setResult(null);
+      setFileResult(null);
 
-    logger.info('Používateľ spustil analýzu súboru', {
-      fileName: attachment.fileName,
-      mimeType: attachment.mimeType,
-    });
-
-    try {
-      const data = await analyzeAttachment(attachment, examAlias);
-      setFileResult(data);
-      logger.info('Hook useAnalyze prijal výsledok súborovej analýzy z backendu', {
-        source: data.source,
-        contextDocumentType: data.contextAnalysis?.documentType ?? null,
-        examAlias: data.examAnalysis?.examAlias ?? examAlias ?? null,
-        examType: data.examAnalysis?.examType ?? null,
-        hasFeedAnalysis: Boolean(data.feedAnalysis),
-        hasHealthPassportInterpretation: Boolean(data.healthPassportInterpretation),
+      logger.info('Používateľ spustil analýzu súboru', {
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
       });
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Neočakávaná chyba pri analýze súboru';
-      setError(message);
-      logger.error('Hook useAnalyze zachytil chybu súborovej analýzy', { message });
-    } finally {
-      setLoadingFile(false);
-    }
-  }, []);
 
-  const extractTextOnly = useCallback(async (attachment: {
-    fileName: string;
-    mimeType: string;
-    base64Data: string;
-  }): Promise<string | null> => {
-    setExtractingText(true);
-    setExtractError(null);
+      try {
+        const data = await analyzeAttachment(attachment, examAlias);
+        setFileResult(data);
+        logger.info('Hook useAnalyze prijal výsledok súborovej analýzy z backendu', {
+          source: data.source,
+          contextDocumentType: data.contextAnalysis?.documentType ?? null,
+          examAlias: data.examAnalysis?.examAlias ?? examAlias ?? null,
+          examType: data.examAnalysis?.examType ?? null,
+          hasFeedAnalysis: Boolean(data.feedAnalysis),
+          hasHealthPassportInterpretation: Boolean(data.healthPassportInterpretation),
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : i18n.t('errors.unexpectedFileAnalysis', { ns: 'analyze' });
+        setError(message);
+        logger.error('Hook useAnalyze zachytil chybu súborovej analýzy', { message });
+      } finally {
+        setLoadingFile(false);
+      }
+    },
+    []
+  );
 
-    logger.info('Používateľ spustil OCR extrakciu zo súboru', {
-      fileName: attachment.fileName,
-      mimeType: attachment.mimeType,
-    });
+  const extractTextOnly = useCallback(
+    async (attachment: {
+      fileName: string;
+      mimeType: string;
+      base64Data: string;
+    }): Promise<string | null> => {
+      setExtractingText(true);
+      setExtractError(null);
 
-    try {
-      const { extractedText } = await extractTextFromImage(attachment);
-      logger.info('Hook useAnalyze prijal výsledok OCR', {
-        extractedTextLength: extractedText.length,
+      logger.info('Používateľ spustil OCR extrakciu zo súboru', {
+        fileName: attachment.fileName,
+        mimeType: attachment.mimeType,
       });
-      return extractedText;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Nepodarilo sa extrahovať text';
-      setExtractError(message);
-      logger.error('Hook useAnalyze zachytil chybu OCR extrakcie', { message });
-      return null;
-    } finally {
-      setExtractingText(false);
-    }
-  }, []);
+
+      try {
+        const { extractedText } = await extractTextFromImage(attachment);
+        logger.info('Hook useAnalyze prijal výsledok OCR', {
+          extractedTextLength: extractedText.length,
+        });
+        return extractedText;
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : (i18n.t('errors.extractTextFailed' as never, { ns: 'analyze' }) as string);
+        setExtractError(message);
+        logger.error('Hook useAnalyze zachytil chybu OCR extrakcie', { message });
+        return null;
+      } finally {
+        setExtractingText(false);
+      }
+    },
+    []
+  );
 
   const reset = useCallback(() => {
     logger.info('Resetujem stav analýzy v useAnalyze');

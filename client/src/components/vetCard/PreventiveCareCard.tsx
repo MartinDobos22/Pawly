@@ -6,6 +6,7 @@ import {
   HelpOutline as UnknownIcon,
   VaccinesOutlined as VaccinesIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { ValidityStatus } from '../../types/dogHealth';
 import { statusColor } from '../healthPassport/utils.ts';
 
@@ -29,26 +30,29 @@ function statusIconFor(status: ValidityStatus) {
   return <ExpiredIcon />;
 }
 
-function formatDateShort(value?: string): string {
-  if (!value) return '–';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
 export default function PreventiveCareCard({ items }: Props) {
+  const { t, i18n } = useTranslation('vetCard');
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
+
+  const formatDateShort = (value?: string): string => {
+    if (!value) return '–';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
   return (
     <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <VaccinesIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Preventívna starostlivosť
+          {t('preventiveCare.title')}
         </Typography>
       </Stack>
 
       {items.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
-          Žiadne záznamy o očkovaniach
+          {t('preventiveCare.empty')}
         </Typography>
       ) : (
         <Stack spacing={1}>
@@ -71,8 +75,8 @@ export default function PreventiveCareCard({ items }: Props) {
                   {item.name}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Podané {formatDateShort(item.dateGiven)}
-                  {item.batch ? ` · šarža ${item.batch}` : ''}
+                  {t('preventiveCare.applied', { date: formatDateShort(item.dateGiven) })}
+                  {item.batch ? ` · ${t('preventiveCare.batch', { batch: item.batch })}` : ''}
                 </Typography>
               </Box>
               <Chip

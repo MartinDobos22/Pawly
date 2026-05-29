@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { Box, Button, Chip, Stack, Tooltip, Typography, alpha, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   Biotech as DewormIcon,
   Medication as MedIcon,
@@ -55,12 +56,12 @@ const DEFAULTS = {
   diet: { foodName: '', reactionNotes: '', suitabilityStatus: 'SUITABLE' } as DietFieldsValues,
 };
 
-const KIND_META: Record<LinkedKind, { label: string; icon: typeof VaccinesIcon }> = {
-  vaccination: { label: 'Očkovanie', icon: VaccinesIcon },
-  deworming: { label: 'Odčervenie', icon: DewormIcon },
-  ecto: { label: 'Kliešte / blchy', icon: EctoIcon },
-  medication: { label: 'Liek', icon: MedIcon },
-  diet: { label: 'Diéta', icon: DietIcon },
+const KIND_META: Record<LinkedKind, { labelKey: string; icon: typeof VaccinesIcon }> = {
+  vaccination: { labelKey: 'addRecord.kindVaccination', icon: VaccinesIcon },
+  deworming: { labelKey: 'addRecord.kindDeworming', icon: DewormIcon },
+  ecto: { labelKey: 'addRecord.kindEcto', icon: EctoIcon },
+  medication: { labelKey: 'addRecord.kindMedication', icon: MedIcon },
+  diet: { labelKey: 'addRecord.kindDiet', icon: DietIcon },
 };
 
 const KIND_ORDER: LinkedKind[] = ['vaccination', 'deworming', 'ecto', 'medication', 'diet'];
@@ -124,6 +125,7 @@ export default function QuickEntryProvider({
   onCancel,
   children,
 }: ProviderProps) {
+  const { t } = useTranslation('healthPassport');
   const [date, setDate] = useState(today());
   const [kind, setKind] = useState<LinkedKind>('vaccination');
   const [showErrors, setShowErrors] = useState(false);
@@ -172,8 +174,8 @@ export default function QuickEntryProvider({
 
     const draft: WizardVisitDraft = {
       date,
-      clinicName: 'Vlastný záznam',
-      reason: KIND_META[kind].label,
+      clinicName: t('addRecord.ownRecord'),
+      reason: t(KIND_META[kind].labelKey as never),
       findings: '',
       diagnosis: '',
       recommendations: '',
@@ -272,6 +274,7 @@ export default function QuickEntryProvider({
 
 export function QuickEntryBody() {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
   const {
     date,
     setDate,
@@ -298,7 +301,9 @@ export function QuickEntryBody() {
           <VaccinationFields
             values={vaccination}
             onChange={setVaccination}
-            errorName={showErrors && !primaryFieldFilled ? 'Zadaj názov vakcíny' : undefined}
+            errorName={
+              showErrors && !primaryFieldFilled ? t('addRecord.errorVaccineName') : undefined
+            }
           />
         );
       case 'deworming':
@@ -307,7 +312,9 @@ export function QuickEntryBody() {
             values={deworming}
             baseDate={date}
             onChange={setDeworming}
-            errorProduct={showErrors && !primaryFieldFilled ? 'Zadaj názov prípravku' : undefined}
+            errorProduct={
+              showErrors && !primaryFieldFilled ? t('addRecord.errorProduct') : undefined
+            }
           />
         );
       case 'ecto':
@@ -316,7 +323,9 @@ export function QuickEntryBody() {
             values={ecto}
             baseDate={date}
             onChange={setEcto}
-            errorProduct={showErrors && !primaryFieldFilled ? 'Zadaj názov prípravku' : undefined}
+            errorProduct={
+              showErrors && !primaryFieldFilled ? t('addRecord.errorProduct') : undefined
+            }
           />
         );
       case 'medication':
@@ -324,7 +333,7 @@ export function QuickEntryBody() {
           <MedicationFields
             values={medication}
             onChange={setMedication}
-            errorName={showErrors && !primaryFieldFilled ? 'Zadaj názov lieku' : undefined}
+            errorName={showErrors && !primaryFieldFilled ? t('addRecord.errorDrugName') : undefined}
           />
         );
       case 'diet':
@@ -332,7 +341,9 @@ export function QuickEntryBody() {
           <DietFields
             values={diet}
             onChange={setDiet}
-            errorFoodName={showErrors && !primaryFieldFilled ? 'Zadaj názov krmiva' : undefined}
+            errorFoodName={
+              showErrors && !primaryFieldFilled ? t('addRecord.errorFoodName') : undefined
+            }
           />
         );
     }
@@ -351,18 +362,19 @@ export function QuickEntryBody() {
             letterSpacing: '0.08em',
           }}
         >
-          Typ záznamu
+          {t('addRecord.kindLabel')}
         </Typography>
         <Stack direction="row" gap={1} flexWrap="wrap">
           {KIND_ORDER.map((k) => {
             const meta = KIND_META[k];
+            const label = t(meta.labelKey as never);
             const active = k === kind;
             const Icon = meta.icon;
             return (
-              <Tooltip key={k} title={meta.label}>
+              <Tooltip key={k} title={label}>
                 <Chip
                   icon={<Icon sx={{ fontSize: 16 }} />}
-                  label={meta.label}
+                  label={label}
                   onClick={() => setKind(k)}
                   clickable
                   variant={active ? 'filled' : 'outlined'}
@@ -382,7 +394,7 @@ export function QuickEntryBody() {
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="flex-start">
         <DateField
-          label="Dátum"
+          label={t('addRecord.basics.date')}
           value={date}
           onChange={setDate}
           sx={{ width: { xs: '100%', sm: 220 } }}
@@ -400,8 +412,7 @@ export function QuickEntryBody() {
           fontSize: '0.75rem',
         }}
       >
-        Rýchly záznam sa uloží bez detailov o návšteve a kliniky. Pre kompletnú návštevu prepni na
-        „Manuálna návšteva".
+        {t('addRecord.quickHint')}
       </Typography>
     </Stack>
   );
@@ -409,6 +420,7 @@ export function QuickEntryBody() {
 
 export function QuickEntryFooter() {
   const { submit, cancel } = useQuickEntry();
+  const { t } = useTranslation('healthPassport');
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform);
   const modKey = isMac ? '⌘' : 'Ctrl';
 
@@ -419,13 +431,13 @@ export function QuickEntryFooter() {
           variant="caption"
           sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}
         >
-          Tip: {modKey} + Enter pre uloženie
+          {t('addRecord.tipShortcut', { modKey })}
         </Typography>
       </Box>
-      <Button onClick={cancel}>Zrušiť</Button>
+      <Button onClick={cancel}>{t('addRecord.cancel')}</Button>
       <Tooltip title={`${modKey} + Enter`} placement="top">
         <Button variant="contained" onClick={submit}>
-          Uložiť
+          {t('addRecord.save')}
         </Button>
       </Tooltip>
     </>

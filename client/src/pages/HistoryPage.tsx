@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionDetails,
@@ -22,6 +23,7 @@ import RecommendationChip from '../components/RecommendationChip';
 import EmptyState from '../components/EmptyState';
 
 export default function HistoryPage() {
+  const { t } = useTranslation('analyze');
   const { savedAnalyses, removeSavedAnalysis, clearSavedAnalyses } = useHealthData();
   const [expanded, setExpanded] = useState<string | false>(false);
   const theme = useTheme();
@@ -37,8 +39,9 @@ export default function HistoryPage() {
     setExpanded(false);
   };
 
+  const { i18n } = useTranslation();
   const formatDate = (iso: string) => {
-    return new Date(iso).toLocaleDateString('sk-SK', {
+    return new Date(iso).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'sk-SK', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -52,9 +55,9 @@ export default function HistoryPage() {
       <Box sx={{ pt: 4 }}>
         <EmptyState
           icon={<EmptyIcon />}
-          title="Žiadna história"
-          description="Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem."
-          primaryAction={{ label: 'Spustiť analýzu', onClick: () => navigate('/analyza') }}
+          title={t('history.emptyTitle')}
+          description={t('history.emptyDescription')}
+          primaryAction={{ label: t('history.runAnalysis'), onClick: () => navigate('/analyza') }}
         />
       </Box>
     );
@@ -64,10 +67,10 @@ export default function HistoryPage() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          História hodnotení
+          {t('history.title')}
         </Typography>
         <Button size="small" color="error" onClick={handleClearAll}>
-          Vymazať všetko
+          {t('actions.clearAll', { ns: 'common' })}
         </Button>
       </Box>
 

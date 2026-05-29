@@ -1,4 +1,5 @@
 import { useCallback, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
@@ -147,12 +148,12 @@ const readFileAsBase64 = (file: File) =>
       const raw = typeof reader.result === 'string' ? reader.result : '';
       const base64 = raw.split(',')[1] ?? '';
       if (!base64) {
-        reject(new Error('Nepodarilo sa načítať súbor.'));
+        reject(new Error('FILE_LOAD_FAILED'));
         return;
       }
       resolve({ previewUrl: raw, base64 });
     };
-    reader.onerror = () => reject(new Error('Nepodarilo sa načítať súbor.'));
+    reader.onerror = () => reject(new Error('FILE_LOAD_FAILED'));
     reader.readAsDataURL(file);
   });
 
@@ -164,6 +165,7 @@ interface BuildContext {
 export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
   const { vaccinations: existingVaccinations } = useHealthData();
+  const { t } = useTranslation('healthPassport');
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
@@ -173,7 +175,7 @@ export function useAiImport(dogId: string) {
     if (currentCount >= MAX_ATTACHMENTS) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximálne ${MAX_ATTACHMENTS} strán dokumentu.`,
+        message: t('addRecord.aiImport.maxPages', { count: MAX_ATTACHMENTS }),
       });
       return;
     }
@@ -185,11 +187,11 @@ export function useAiImport(dogId: string) {
 
     for (const file of toProcess) {
       if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-        lastError = `Nepodporovaný typ súboru: ${file.name}`;
+        lastError = t('addRecord.aiImport.unsupportedFile', { fileName: file.name });
         continue;
       }
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        lastError = `Súbor je príliš veľký (max 5 MB): ${file.name}`;
+        lastError = t('addRecord.aiImport.fileTooLarge', { fileName: file.name });
         continue;
       }
       try {
@@ -201,7 +203,9 @@ export function useAiImport(dogId: string) {
           pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
         });
       } catch (err) {
-        lastError = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
+        const msg = err instanceof Error ? err.message : '';
+        lastError =
+          msg === 'FILE_LOAD_FAILED' || !msg ? t('addRecord.aiImport.fileLoadFailed') : msg;
       }
     }
 
@@ -214,7 +218,7 @@ export function useAiImport(dogId: string) {
     if (files.length > available) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximum ${MAX_ATTACHMENTS} strán dokumentu — nadbytočné súbory boli ignorované.`,
+        message: t('addRecord.aiImport.maxPagesExceeded', { count: MAX_ATTACHMENTS }),
       });
     }
   }, []);
@@ -275,7 +279,7 @@ export function useAiImport(dogId: string) {
       if (texts.length === 0) {
         dispatch({
           type: 'SET_ANALYZE_ERROR',
-          message: 'Z dokumentov sa nepodarilo extrahovať žiadny text.',
+          message: t('addRecord.aiImport.noTextExtracted'),
         });
         return;
       }
@@ -330,7 +334,7 @@ export function useAiImport(dogId: string) {
           : inferAiTargetType(disease, item.name);
         const date = normalizeDateInput(item.date);
         const fallback = recordType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
-        const productName = item.name || disease || 'Neznámy záznam';
+        const productName = item.name || disease || t('addRecord.unknownRecord');
         const isDuplicate =
           recordType === 'VACCINATION' &&
           dogId !== '' &&
@@ -359,7 +363,7 @@ export function useAiImport(dogId: string) {
       dispatch({ type: 'SET_ANALYZE_PROGRESS', progress: null });
       dispatch({ type: 'SET_STEP', step: 1 });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Analýza pasu zlyhala.';
+      const message = err instanceof Error ? err.message : t('addRecord.aiImport.analyzeFailed');
       dispatch({ type: 'SET_ANALYZE_ERROR', message });
     }
   }, [state.attachments, dogId, existingVaccinations]);
@@ -379,16 +383,14 @@ export function useAiImport(dogId: string) {
         }));
 
       const importNote = state.attachments.length
-        ? `AI import zo ${state.attachments.length} ${
-            state.attachments.length === 1 ? 'strany' : 'strán'
-          } dokumentu`
+        ? t('addRecord.aiImport.importNote', { count: state.attachments.length })
         : '';
       const aiSummary = [state.documentSummary.trim(), importNote].filter(Boolean).join('\n\n');
 
       const attachmentDrafts = state.attachments.map((entry, idx) => ({
         attachmentLabel:
           state.attachments.length > 1
-            ? `${state.attachmentLabel || 'Dokument'} — strana ${idx + 1}`
+            ? `${state.attachmentLabel || t('attachmentUpload.documentFallback')} — ${t('attachmentUpload.pageLabel', { n: idx + 1 })}`
             : state.attachmentLabel || entry.pending.fileName,
         attachmentUrl: '',
         attachmentPreviewUrl: entry.previewUrl,

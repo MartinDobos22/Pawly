@@ -1,0 +1,100 @@
+{
+  "nav": {
+    "sectionMain": "Hlavné",
+    "sectionOther": "Ostatné",
+    "sectionSettings": "Nastavenia",
+    "healthPassport": "Zdravotný pas",
+    "vetCard": "Karta veterinára",
+    "diary": "Denník",
+    "analyze": "Analýza",
+    "history": "História",
+    "profiles": "Profily",
+    "notifications": "Notifikácie",
+    "faq": "Časté otázky",
+    "about": "O aplikácii",
+    "more": "Viac",
+    "home": "Domov — Pawport"
+  },
+  "actions": {
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "delete": "Zmazať",
+    "edit": "Upraviť",
+    "add": "Pridať",
+    "close": "Zatvoriť",
+    "confirm": "Potvrdiť",
+    "back": "Späť",
+    "continue": "Pokračovať",
+    "create": "Vytvoriť",
+    "update": "Aktualizovať",
+    "export": "Exportovať",
+    "print": "Vytlačiť",
+    "search": "Hľadať",
+    "clear": "Vymazať",
+    "clearAll": "Vymazať všetko",
+    "deleteAll": "Zmazať všetko"
+  },
+  "theme": {
+    "light": "Svetlý režim",
+    "dark": "Tmavý režim",
+    "toggleLight": "Prepnúť na svetlý režim",
+    "toggleDark": "Prepnúť na tmavý režim"
+  },
+  "auth": {
+    "logout": "Odhlásiť sa",
+    "deleteAccount": "Zmazať účet",
+    "confirmDeleteTitle": "Naozaj zmazať účet?",
+    "confirmDeleteMessage": "Naozaj zmazať účet? Vymažú sa všetky tvoje zvieratá a zdravotné záznamy. Túto akciu nie je možné vrátiť.",
+    "deleteAccountFailed": "Mazanie účtu zlyhalo. Skús to znova."
+  },
+  "language": {
+    "label": "Jazyk",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "skipToContent": "Preskočiť na obsah",
+  "openMenu": "Otvoriť menu",
+  "labels": {
+    "optional": "voliteľné",
+    "required": "povinné",
+    "notSet": "Nezadané",
+    "unknown": "Neznáme",
+    "all": "Všetko",
+    "none": "Žiadne"
+  },
+  "loading": "Načítavam…",
+  "saving": "Ukladám…",
+  "deleting": "Mažem…",
+  "petSwitcher": {
+    "noProfile": "Žiadny profil",
+    "aria": "Prepnúť aktívne zviera",
+    "addPet": "Pridajte zviera",
+    "noProfiles": "Žiadne profily zvierat",
+    "defaultBreed": "Pes",
+    "manage": "Spravovať profily"
+  },
+  "errors": {
+    "loadProfilesFailed": "Načítanie profilov zlyhalo.",
+    "loadHealthDataFailed": "Načítanie zdravotných dát zlyhalo."
+  },
+  "relativeDate": {
+    "today": "Dnes",
+    "todayShort": "dnes",
+    "past": "Pred {{count}} {{unit}}",
+    "future": "O {{count}} {{unit}}",
+    "pastShort": "−{{count}} {{unit}}",
+    "futureShort": "+{{count}} {{unit}}",
+    "day_one": "deň",
+    "day_few": "dni",
+    "day_many": "dní",
+    "week_one": "týždeň",
+    "week_few": "týždne",
+    "week_many": "týždňov",
+    "month_one": "mesiac",
+    "month_few": "mesiace",
+    "month_many": "mesiacov",
+    "year_one": "rok",
+    "year_few": "roky",
+    "year_many": "rokov"
+  }
+}

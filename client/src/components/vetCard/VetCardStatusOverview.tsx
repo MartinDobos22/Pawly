@@ -6,6 +6,7 @@ import {
   PestControl as EctoIcon,
   ShieldOutlined as ShieldIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { ValidityStatus } from '../../types/dogHealth';
 import VetCardStatusCell from './VetCardStatusCell';
 
@@ -17,12 +18,13 @@ interface Props {
 }
 
 export default function VetCardStatusOverview({ rabies, combined, deworming, ecto }: Props) {
+  const { t } = useTranslation('vetCard');
   return (
     <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <ShieldIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Aktuálny preventívny stav
+          {t('statusOverview.preventiveStatus')}
         </Typography>
       </Stack>
       <Box
@@ -38,25 +40,25 @@ export default function VetCardStatusOverview({ rabies, combined, deworming, ect
       >
         <VetCardStatusCell
           icon={<RabiesIcon />}
-          label="Besnota"
+          label={t('statusOverview.rabies')}
           status={rabies.status}
           detail={rabies.detail}
         />
         <VetCardStatusCell
           icon={<VaccinesIcon />}
-          label="Kombinovaná"
+          label={t('statusOverview.combined')}
           status={combined.status}
           detail={combined.detail}
         />
         <VetCardStatusCell
           icon={<DewormIcon />}
-          label="Odčervenie"
+          label={t('statusOverview.deworming')}
           status={deworming.status}
           detail={deworming.detail}
         />
         <VetCardStatusCell
           icon={<EctoIcon />}
-          label="Antiparazitikum"
+          label={t('statusOverview.antiparasitic')}
           status={ecto.status}
           detail={ecto.detail}
         />

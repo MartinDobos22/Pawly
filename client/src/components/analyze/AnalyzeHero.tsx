@@ -1,5 +1,6 @@
 import { Avatar, Box, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { Pets as PetsIcon, Science as ScienceIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../../hooks/useActivePet';
 
 const initialsOf = (name: string) =>
@@ -12,6 +13,7 @@ const initialsOf = (name: string) =>
 
 export default function AnalyzeHero() {
   const theme = useTheme();
+  const { t } = useTranslation('analyze');
   const { activePet } = useActivePet();
 
   return (
@@ -57,11 +59,10 @@ export default function AnalyzeHero() {
               letterSpacing: '-0.02em',
             }}
           >
-            Analýza krmiva
+            {t('hero.title')}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 600 }}>
-            Vlož zloženie krmiva alebo vyfoť obal — AI vyhodnotí kvalitu, riziká alergénov a
-            odporúčanie pre psa. Alebo sa rýchlo opýtaj „Môže pes jesť…?"
+            {t('hero.description')}
           </Typography>
         </Box>
         {activePet && (
@@ -71,7 +72,7 @@ export default function AnalyzeHero() {
                 {initialsOf(activePet.name) || <PetsIcon fontSize="small" />}
               </Avatar>
             }
-            label={`Pre ${activePet.name}`}
+            label={t('hero.forPet', { petName: activePet.name })}
             variant="outlined"
             sx={{
               fontWeight: 600,

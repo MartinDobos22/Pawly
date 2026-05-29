@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Stack, TextField } from '@mui/material';
 
 import type { MedicationFieldsValues } from '../../formTypes';
@@ -13,12 +14,13 @@ interface MedicationFieldsProps {
 }
 
 export default function MedicationFields({ values, errorName, onChange }: MedicationFieldsProps) {
+  const { t } = useTranslation('healthPassport');
   return (
     <Stack spacing={1.5}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <TextField
           size="small"
-          label="Názov lieku"
+          label={t('medication.name')}
           value={values.name}
           onChange={(e) => onChange('name', e.target.value)}
           error={Boolean(errorName)}
@@ -27,8 +29,8 @@ export default function MedicationFields({ values, errorName, onChange }: Medica
         />
         <TextField
           size="small"
-          label="Dávkovanie"
-          placeholder="napr. 1 tableta"
+          label={t('medication.dose')}
+          placeholder={t('medication.dosePlaceholder')}
           value={values.dose}
           onChange={(e) => onChange('dose', e.target.value)}
           fullWidth
@@ -37,14 +39,14 @@ export default function MedicationFields({ values, errorName, onChange }: Medica
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <TextField
           size="small"
-          label="Frekvencia"
-          placeholder="napr. 2x denne"
+          label={t('medication.frequency')}
+          placeholder={t('medication.frequencyPlaceholder')}
           value={values.frequency}
           onChange={(e) => onChange('frequency', e.target.value)}
           fullWidth
         />
         <DateField
-          label="Koniec liečby"
+          label={t('medication.endDate')}
           value={values.endDate}
           onChange={(v) => onChange('endDate', v)}
           fullWidth
@@ -52,7 +54,7 @@ export default function MedicationFields({ values, errorName, onChange }: Medica
       </Stack>
       <TextField
         size="small"
-        label="Dôvod / indikácia (voliteľné)"
+        label={t('medication.reason')}
         value={values.reason}
         onChange={(e) => onChange('reason', e.target.value)}
         fullWidth

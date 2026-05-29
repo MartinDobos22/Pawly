@@ -1,0 +1,108 @@
+{
+  "page": {
+    "title": "Denník epizód",
+    "description": "Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš overené riešenie.",
+    "noPetsTitle": "Najprv vytvorte profil psa",
+    "noPetsDescription": "Denník epizód potrebuje aspoň jeden profil zvieraťa.",
+    "createProfile": "Vytvoriť profil",
+    "newEpisode": "Nová epizóda",
+    "dogSelect": "Pes",
+    "storageUsage": "Úložisko: {{used}} MB / {{limit}} MB",
+    "storageWarning": "Úložisko prílohov sa blíži k limitu ({{used}} MB / {{limit}} MB). Zvážte zmazanie starších epizód alebo uloženie bez prílohy."
+  },
+  "empty": {
+    "noEpisodesTitle": "Zatiaľ žiadne epizódy",
+    "noEpisodesDescription": "Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte overené riešenie.",
+    "addFirst": "Pridať prvú epizódu",
+    "noFilterResultsTitle": "Žiadne epizódy v aktuálnom filtri",
+    "noFilterResultsDescription": "Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
+  },
+  "category": {
+    "digestive": "Tráviace",
+    "skin": "Kožné",
+    "musculoskeletal": "Pohybové",
+    "respiratory": "Dýchacie",
+    "behavioral": "Správanie",
+    "other": "Iné"
+  },
+  "outcome": {
+    "resolved": "Vyriešené",
+    "ongoing": "Pretrváva",
+    "recurring": "Opakujúce sa"
+  },
+  "severity": {
+    "mild": "Mierna",
+    "moderate": "Stredná",
+    "severe": "Závažná"
+  },
+  "form": {
+    "titleNew": "Nová epizóda",
+    "titleEdit": "Upraviť epizódu",
+    "symptomTitle": "Názov symptómu",
+    "symptomTitlePlaceholder": "napr. Reflux, Hnačka, Krívanie",
+    "symptomDescription": "Popis",
+    "symptomContext": "Symptóm a kontext",
+    "category": "Kategória",
+    "severity": "Závažnosť",
+    "outcome": "Stav",
+    "startedAt": "Začiatok",
+    "endedAt": "Koniec (voliteľné)",
+    "location": "Miesto",
+    "locationPlaceholder": "napr. na výlete v Tatrách",
+    "triggers": "Spúšťače (voliteľné)",
+    "triggersPlaceholder": "Stres, nové krmivo, kliešť...",
+    "diagnosisTreatment": "Diagnóza a liečba",
+    "diagnosis": "Diagnóza (od veterinára alebo predpoklad)",
+    "vetVisitLabel": "Súvisiaca návšteva veterinára",
+    "noVetVisit": "Žiadna",
+    "vetVisit": "Návšteva veterinára",
+    "medications": "Použité lieky",
+    "noMedications": "Žiadne lieky v zdravotnom pase",
+    "treatmentNotes": "Poznámky k liečbe",
+    "outcomeSection": "Výsledok",
+    "whatWorked": "Čo zabralo",
+    "whatWorkedPlaceholder": "napr. lieky XY, diéta, pokoj",
+    "whatDidntWork": "Čo nezabralo",
+    "whatDidntWorkPlaceholder": "napr. liek YZ, neúčinné opatrenie",
+    "lessonsSection": "Poučenie pre budúcnosť",
+    "lessonsFieldLabel": "Čo si nabudúce zapamätať",
+    "lessonsPlaceholder": "napr. pri reflukse hneď podať Y, vyhnúť sa Z",
+    "lessonsLearned": "Ponaučenia",
+    "attachments": "Prílohy"
+  },
+  "filter": {
+    "all": "Všetky",
+    "searchPlaceholder": "Hľadať v symptómoch, liečbe, poznámkach…"
+  },
+  "delete": {
+    "confirm": "Naozaj zmazať epizódu \"{{title}}\"?"
+  },
+  "similar": {
+    "title": "Podobné epizódy",
+    "findSimilar": "Nájsť podobné z minulosti",
+    "loading": "Hľadám podobné epizódy a sumarizujem...",
+    "noSelected": "Žiadna epizóda nie je vybraná.",
+    "pastList": "Podobné epizódy v minulosti",
+    "summary": "Zhrnutie",
+    "recommendation": "Odporúčanie",
+    "noSimilar": "Zatiaľ neexistujú žiadne podobné epizódy v histórii. Pri závažnejšom stave konzultujte veterinára.",
+    "aiError": "AI sumarizáciu sa nepodarilo načítať: {{error}}. Zobrazujem aspoň lokálne podobné epizódy podľa kategórie.",
+    "noLocalSimilar": "V histórii nie sú žiadne epizódy v rovnakej kategórii.",
+    "workedLabel": "Zabralo:"
+  },
+  "item": {
+    "deletedMed": "Liek bol vymazaný",
+    "medsUsed": "Použité lieky",
+    "lessonsTitle": "Poučenie pre budúcnosť",
+    "attachment": "Príloha"
+  },
+  "attachments": {
+    "title": "Foto prílohy",
+    "errorImageOnly": "Podporované sú len obrázky (JPG, PNG, WEBP).",
+    "errorTooLarge": "Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skúste menšie rozlíšenie.",
+    "empty": "Žiadne prílohy.",
+    "captionAlt": "Príloha",
+    "captionPlaceholder": "Popis (voliteľné)",
+    "deleteAria": "Zmazať prílohu"
+  }
+}

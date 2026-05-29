@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Dialog,
@@ -17,8 +18,6 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import type { VetVisitRecord } from '../../types/dogHealth';
 import { today, uid } from './utils';
 
-const QUICK_VISIT_REASON = 'Kontrola u veterinára';
-const QUICK_VISIT_DIAGNOSIS = 'Zdravý, bez problémov';
 const SNACK_DURATION_MS = 6000;
 
 interface QuickVisitButtonProps {
@@ -39,6 +38,7 @@ export default function QuickVisitButton({
   onCreate,
   onUndo,
 }: QuickVisitButtonProps) {
+  const { t } = useTranslation('healthPassport');
   const [lastClinicByDog, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
     'granule-check-last-clinic-by-dog',
     {}
@@ -57,8 +57,8 @@ export default function QuickVisitButton({
       dogId,
       date: today(),
       clinicName: trimmed,
-      reason: QUICK_VISIT_REASON,
-      diagnosis: QUICK_VISIT_DIAGNOSIS,
+      reason: t('quickVisit.reason'),
+      diagnosis: t('quickVisit.diagnosis'),
       medicationIds: [],
     };
     const created = await onCreate(visit);
@@ -104,21 +104,20 @@ export default function QuickVisitButton({
         onClick={handleClick}
         disabled={disabled || !dogId}
       >
-        Rýchla návšteva
+        {t('quickVisit.button')}
       </Button>
 
       <Dialog open={promptOpen} onClose={() => setPromptOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Zadaj meno kliniky</DialogTitle>
+        <DialogTitle>{t('quickVisit.dialogTitle')}</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5}>
             <Typography variant="body2" color="text.secondary">
-              Klinika sa zapamätá pre ďalšie rýchle návštevy. Návšteva sa uloží s dnešným dátumom a
-              poznámkou „Zdravý, bez problémov".
+              {t('quickVisit.description')}
             </Typography>
             <TextField
               autoFocus
               size="small"
-              label="Klinika / veterinár"
+              label={t('quickVisit.clinicLabel')}
               value={promptClinic}
               onChange={(e) => setPromptClinic(e.target.value)}
               onKeyDown={(e) => {
@@ -129,9 +128,9 @@ export default function QuickVisitButton({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPromptOpen(false)}>Zrušiť</Button>
+          <Button onClick={() => setPromptOpen(false)}>{t('quickVisit.cancel')}</Button>
           <Button variant="contained" onClick={handlePromptSave} disabled={!promptClinic.trim()}>
-            Uložiť návštevu
+            {t('quickVisit.save')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -141,17 +140,17 @@ export default function QuickVisitButton({
         autoHideDuration={SNACK_DURATION_MS}
         onClose={handleSnackClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        message={lastCreated ? `Návšteva zaznamenaná u ${lastCreated.clinic}` : ''}
+        message={lastCreated ? t('quickVisit.snackbar', { clinic: lastCreated.clinic }) : ''}
         action={
           <>
             <Button color="inherit" size="small" startIcon={<UndoIcon />} onClick={handleUndo}>
-              Späť
+              {t('actions.back', { ns: 'common' })}
             </Button>
             <IconButton
               size="small"
               color="inherit"
               onClick={() => setLastCreated(null)}
-              aria-label="Zavrieť"
+              aria-label={t('quickVisit.closeAria')}
             >
               <CloseIcon fontSize="small" />
             </IconButton>

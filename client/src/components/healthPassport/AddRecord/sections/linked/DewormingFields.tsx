@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Stack, TextField } from '@mui/material';
 
 import type { DewormingFieldsValues } from '../../formTypes';
@@ -19,16 +20,18 @@ export default function DewormingFields({
   errorProduct,
   onChange,
 }: DewormingFieldsProps) {
+  const { t, i18n } = useTranslation('healthPassport');
+  const locale = i18n.language === 'en' ? 'en-GB' : 'sk-SK';
   const nextDue =
     baseDate && values.intervalDays > 0
-      ? formatDate(plusDays(baseDate, values.intervalDays))
+      ? formatDate(plusDays(baseDate, values.intervalDays), locale)
       : '—';
 
   return (
     <Stack spacing={1.5}>
       <TextField
         size="small"
-        label="Názov prípravku"
+        label={t('deworming.product')}
         value={values.product}
         onChange={(e) => onChange('product', e.target.value)}
         error={Boolean(errorProduct)}
@@ -38,11 +41,11 @@ export default function DewormingFields({
       <TextField
         size="small"
         type="number"
-        label="Interval (dni)"
+        label={t('deworming.intervalDays')}
         value={values.intervalDays}
         onChange={(e) => onChange('intervalDays', Number(e.target.value) || 0)}
         inputProps={{ min: 1, step: 1 }}
-        helperText={`Ďalší termín: ${nextDue}`}
+        helperText={t('deworming.nextDue', { date: nextDue })}
         fullWidth
       />
     </Stack>

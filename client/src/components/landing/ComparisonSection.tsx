@@ -5,26 +5,14 @@ import {
   DescriptionOutlined as PaperIcon,
   Pets as PawIcon,
 } from '@mui/icons-material';
-
-const PAPER_POINTS = [
-  'Ľahko sa stratí alebo zničí',
-  'Žiadne pripomienky termínov',
-  'Musíš ho stále nosiť so sebou',
-  'Nečitateľný rukopis veterinára',
-  'Žiadna analýza krmiva',
-];
-
-const PAWPORT_POINTS = [
-  'Vždy v mobile, nikdy sa nestratí',
-  'Automatické pripomienky očkovania a odčervenia',
-  'AI skenovanie pasu aj analýza krmiva',
-  'Prehľadná karta pre veterinára na 1 klik',
-  'Funguje offline a úplne zadarmo',
-];
+import { useTranslation } from 'react-i18next';
 
 export default function ComparisonSection() {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation('landing');
+  const paperPoints = t('comparison.paperPoints', { returnObjects: true }) as string[];
+  const pawportPoints = t('comparison.pawportPoints', { returnObjects: true }) as string[];
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>
@@ -39,13 +27,13 @@ export default function ComparisonSection() {
               lineHeight: 1.1,
             }}
           >
-            Papierový pas verzus Pawport
+            {t('comparison.title')}
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: 'text.secondary', maxWidth: 520, fontSize: { xs: '1rem', md: '1.1rem' } }}
           >
-            Prečo prejsť z otrhaného papiera na digitálny zdravotný pas.
+            {t('comparison.subtitle')}
           </Typography>
         </Stack>
 
@@ -86,11 +74,11 @@ export default function ComparisonSection() {
                 variant="h3"
                 sx={{ fontSize: '1.3rem', fontWeight: 700, color: 'text.secondary' }}
               >
-                Papierový pas
+                {t('comparison.paperTitle')}
               </Typography>
             </Stack>
             <Stack spacing={1.5}>
-              {PAPER_POINTS.map((p) => (
+              {paperPoints.map((p) => (
                 <Stack key={p} direction="row" alignItems="flex-start" gap={1.25}>
                   <CrossIcon sx={{ fontSize: 20, color: 'error.main', flexShrink: 0, mt: '1px' }} />
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -113,7 +101,7 @@ export default function ComparisonSection() {
             }}
           >
             <Chip
-              label="Odporúčané"
+              label={t('comparison.recommended')}
               size="small"
               sx={{
                 position: 'absolute',
@@ -143,11 +131,11 @@ export default function ComparisonSection() {
                 <PawIcon />
               </Box>
               <Typography variant="h3" sx={{ fontSize: '1.3rem', fontWeight: 700 }}>
-                Pawport
+                {t('comparison.pawportTitle')}
               </Typography>
             </Stack>
             <Stack spacing={1.5}>
-              {PAWPORT_POINTS.map((p) => (
+              {pawportPoints.map((p) => (
                 <Stack key={p} direction="row" alignItems="flex-start" gap={1.25}>
                   <CheckIcon
                     sx={{ fontSize: 20, color: 'success.main', flexShrink: 0, mt: '1px' }}

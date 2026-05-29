@@ -1,15 +1,18 @@
 import { Box, Stack, Typography, useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import AnimatedCounter from './AnimatedCounter';
 
-const STATS = [
-  { target: 3200, suffix: '+', label: 'záznamov v zdrav. pasoch' },
-  { target: 850, suffix: '+', label: 'aplikovaných vakcinácií' },
-  { target: 120, suffix: '+', label: 'druhov zvierat' },
-  { target: 100, suffix: ' %', label: 'zadarmo, bez registrácie' },
+const STAT_NUMBERS = [
+  { target: 3200, suffix: '+' },
+  { target: 850, suffix: '+' },
+  { target: 120, suffix: '+' },
+  { target: 100, suffix: ' %' },
 ];
 
 export default function StatsBand() {
   const theme = useTheme();
+  const { t } = useTranslation('landing');
+  const statItems = t('stats.items', { returnObjects: true }) as Array<{ label: string }>;
 
   return (
     <Box sx={{ py: { xs: 5, md: 7 } }}>
@@ -22,8 +25,8 @@ export default function StatsBand() {
             textAlign: 'center',
           }}
         >
-          {STATS.map((s) => (
-            <Stack key={s.label} alignItems="center" spacing={0.5}>
+          {STAT_NUMBERS.map((s, idx) => (
+            <Stack key={idx} alignItems="center" spacing={0.5}>
               <AnimatedCounter
                 target={s.target}
                 suffix={s.suffix}
@@ -49,7 +52,7 @@ export default function StatsBand() {
                   maxWidth: 180,
                 }}
               >
-                {s.label}
+                {statItems[idx]?.label}
               </Typography>
             </Stack>
           ))}

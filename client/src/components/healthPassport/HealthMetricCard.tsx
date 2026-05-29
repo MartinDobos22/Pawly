@@ -1,4 +1,5 @@
 import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -33,16 +34,16 @@ interface Props {
   onOpen?: () => void;
 }
 
-const statusMeta = (status: ValidityStatus) => {
+const statusIcon = (status: ValidityStatus) => {
   switch (status) {
     case 'VALID':
-      return { tone: 'success' as const, label: 'Platné', Icon: CheckIcon };
+      return { tone: 'success' as const, Icon: CheckIcon };
     case 'EXPIRING_SOON':
-      return { tone: 'warning' as const, label: 'Vyprší čoskoro', Icon: WarningIcon };
+      return { tone: 'warning' as const, Icon: WarningIcon };
     case 'EXPIRED':
-      return { tone: 'error' as const, label: 'Po termíne', Icon: ErrorIcon };
+      return { tone: 'error' as const, Icon: ErrorIcon };
     default:
-      return { tone: 'neutral' as const, label: 'Nezadané', Icon: PlusIcon };
+      return { tone: 'neutral' as const, Icon: PlusIcon };
   }
 };
 
@@ -59,7 +60,16 @@ export default function HealthMetricCard({
   onOpen,
 }: Props) {
   const theme = useTheme();
-  const meta = statusMeta(status);
+  const { t } = useTranslation('healthPassport');
+  const meta = statusIcon(status);
+  const statusLabel =
+    status === 'VALID'
+      ? t('status.valid')
+      : status === 'EXPIRING_SOON'
+        ? t('status.expiringSoon')
+        : status === 'EXPIRED'
+          ? t('status.overdue')
+          : t('status.notSet');
   const rel = nextDate ? relativeDate(nextDate) : null;
 
   const toneColor =
@@ -88,12 +98,12 @@ export default function HealthMetricCard({
 
   const overdueDays = isOverdue && rel ? Math.abs(rel.diffDays) : 0;
   const headline = isEmpty
-    ? 'Ešte nezadané'
+    ? t('status.notSetHeadline')
     : isOverdue
-      ? `Po termíne ${overdueDays} ${overdueDays === 1 ? 'deň' : overdueDays >= 2 && overdueDays <= 4 ? 'dni' : 'dní'}`
+      ? t('status.overdueHeadline', { count: overdueDays })
       : rel
         ? rel.text
-        : detail || meta.label;
+        : detail || statusLabel;
 
   if (isEmpty) {
     return (
@@ -142,7 +152,7 @@ export default function HealthMetricCard({
               sx={{ color: 'text.secondary', fontStyle: 'italic', opacity: 0.85 }}
               noWrap
             >
-              Ešte nezadané
+              {t('status.notSetHeadline')}
             </Typography>
           </Stack>
           {(onPrimaryAction || onOpen) && (
@@ -156,7 +166,7 @@ export default function HealthMetricCard({
               }}
               sx={{ minHeight: 32, py: 0.5, px: 1.25, fontSize: '0.78rem', flexShrink: 0 }}
             >
-              {primaryActionLabel ?? 'Pridať'}
+              {primaryActionLabel ?? t('actions.add', { ns: 'common' })}
             </Button>
           )}
         </Stack>
@@ -204,7 +214,7 @@ export default function HealthMetricCard({
               {label}
             </Typography>
           </Stack>
-          <Tooltip title={meta.label}>
+          <Tooltip title={statusLabel}>
             <meta.Icon sx={{ fontSize: 18, color: toneColor }} />
           </Tooltip>
         </Stack>
@@ -221,7 +231,7 @@ export default function HealthMetricCard({
           </Stack>
           {(lastDate || detail) && (
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
-              {lastDate ? `Posledné ${formatDateShort(lastDate)}` : detail}
+              {lastDate ? t('detail.last', { date: formatDateShort(lastDate) }) : detail}
               {lastDate && detail ? ` · ${detail}` : ''}
             </Typography>
           )}
@@ -261,7 +271,7 @@ export default function HealthMetricCard({
                   fontWeight: 600,
                 }}
               >
-                {primaryActionLabel ?? 'Naplánovať'}
+                {primaryActionLabel ?? t('status.schedule')}
               </Button>
             ) : (
               <Box />

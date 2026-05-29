@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
 import type { VaccinationRecord } from '../../../../../types/dogHealth';
@@ -14,12 +15,13 @@ interface VaccinationFieldsProps {
 }
 
 export default function VaccinationFields({ values, errorName, onChange }: VaccinationFieldsProps) {
+  const { t } = useTranslation('healthPassport');
   return (
     <Stack spacing={1.5}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <TextField
           size="small"
-          label="Názov vakcíny"
+          label={t('vaccination.name')}
           value={values.name}
           onChange={(e) => onChange('name', e.target.value)}
           error={Boolean(errorName)}
@@ -27,28 +29,28 @@ export default function VaccinationFields({ values, errorName, onChange }: Vacci
           fullWidth
         />
         <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel>Typ</InputLabel>
+          <InputLabel>{t('vaccination.type')}</InputLabel>
           <Select
-            label="Typ"
+            label={t('vaccination.type')}
             value={values.type}
             onChange={(e) => onChange('type', e.target.value as VaccinationRecord['type'])}
           >
-            <MenuItem value="RABIES">Besnota</MenuItem>
-            <MenuItem value="COMBINED">Kombinovaná</MenuItem>
-            <MenuItem value="OTHER">Iná</MenuItem>
+            <MenuItem value="RABIES">{t('vaccination.typeRabies')}</MenuItem>
+            <MenuItem value="COMBINED">{t('vaccination.typeCombined')}</MenuItem>
+            <MenuItem value="OTHER">{t('vaccination.typeOther')}</MenuItem>
           </Select>
         </FormControl>
       </Stack>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <DateField
-          label="Platnosť do"
+          label={t('vaccination.validUntil')}
           value={values.validUntil}
           onChange={(v) => onChange('validUntil', v)}
           fullWidth
         />
         <TextField
           size="small"
-          label="Šarža (voliteľné)"
+          label={t('vaccination.batchNumber')}
           value={values.batchNumber}
           onChange={(e) => onChange('batchNumber', e.target.value)}
           fullWidth

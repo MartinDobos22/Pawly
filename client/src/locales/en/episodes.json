@@ -1,0 +1,108 @@
+{
+  "page": {
+    "title": "Health Diary",
+    "description": "Record your dog's health episodes, what worked and what didn't — next time you'll see proven solutions.",
+    "noPetsTitle": "Create a pet profile first",
+    "noPetsDescription": "The health diary requires at least one pet profile.",
+    "createProfile": "Create profile",
+    "newEpisode": "New episode",
+    "dogSelect": "Dog",
+    "storageUsage": "Storage: {{used}} MB / {{limit}} MB",
+    "storageWarning": "Attachment storage is approaching the limit ({{used}} MB / {{limit}} MB). Consider deleting older episodes or saving without attachments."
+  },
+  "empty": {
+    "noEpisodesTitle": "No episodes yet",
+    "noEpisodesDescription": "Record your dog's health conditions, what worked and what didn't — next time you'll see proven solutions.",
+    "addFirst": "Add first episode",
+    "noFilterResultsTitle": "No episodes match the current filter",
+    "noFilterResultsDescription": "Try removing a category filter or clearing the search."
+  },
+  "category": {
+    "digestive": "Digestive",
+    "skin": "Skin",
+    "musculoskeletal": "Musculoskeletal",
+    "respiratory": "Respiratory",
+    "behavioral": "Behavioral",
+    "other": "Other"
+  },
+  "outcome": {
+    "resolved": "Resolved",
+    "ongoing": "Ongoing",
+    "recurring": "Recurring"
+  },
+  "severity": {
+    "mild": "Mild",
+    "moderate": "Moderate",
+    "severe": "Severe"
+  },
+  "form": {
+    "titleNew": "New episode",
+    "titleEdit": "Edit episode",
+    "symptomTitle": "Symptom name",
+    "symptomTitlePlaceholder": "e.g. Reflux, Diarrhoea, Limping",
+    "symptomDescription": "Description",
+    "symptomContext": "Symptom & context",
+    "category": "Category",
+    "severity": "Severity",
+    "outcome": "Status",
+    "startedAt": "Start",
+    "endedAt": "End (optional)",
+    "location": "Location",
+    "locationPlaceholder": "e.g. hiking trip in the mountains",
+    "triggers": "Triggers (optional)",
+    "triggersPlaceholder": "Stress, new food, tick...",
+    "diagnosisTreatment": "Diagnosis & treatment",
+    "diagnosis": "Diagnosis (from vet or suspected)",
+    "vetVisitLabel": "Related vet visit",
+    "noVetVisit": "None",
+    "vetVisit": "Vet visit",
+    "medications": "Medications used",
+    "noMedications": "No medications in health passport",
+    "treatmentNotes": "Treatment notes",
+    "outcomeSection": "Outcome",
+    "whatWorked": "What worked",
+    "whatWorkedPlaceholder": "e.g. medication XY, diet, rest",
+    "whatDidntWork": "What didn't work",
+    "whatDidntWorkPlaceholder": "e.g. medication YZ, ineffective measure",
+    "lessonsSection": "Lessons for the future",
+    "lessonsFieldLabel": "What to remember next time",
+    "lessonsPlaceholder": "e.g. for reflux give Y immediately, avoid Z",
+    "lessonsLearned": "Lessons learned",
+    "attachments": "Attachments"
+  },
+  "filter": {
+    "all": "All",
+    "searchPlaceholder": "Search symptoms, treatment, notes…"
+  },
+  "delete": {
+    "confirm": "Really delete episode \"{{title}}\"?"
+  },
+  "similar": {
+    "title": "Similar episodes",
+    "findSimilar": "Find similar from history",
+    "loading": "Searching for similar episodes and summarising...",
+    "noSelected": "No episode is selected.",
+    "pastList": "Similar past episodes",
+    "summary": "Summary",
+    "recommendation": "Recommendation",
+    "noSimilar": "No similar episodes found in history yet. For serious conditions please consult a veterinarian.",
+    "aiError": "Failed to load AI summary: {{error}}. Showing local similar episodes by category.",
+    "noLocalSimilar": "No episodes in the same category in history.",
+    "workedLabel": "Worked:"
+  },
+  "item": {
+    "deletedMed": "Medication was deleted",
+    "medsUsed": "Medications used",
+    "lessonsTitle": "Lessons for the future",
+    "attachment": "Attachment"
+  },
+  "attachments": {
+    "title": "Photo attachments",
+    "errorImageOnly": "Only images are supported (JPG, PNG, WEBP).",
+    "errorTooLarge": "Image is too large and could not be resized. Try a lower resolution.",
+    "empty": "No attachments.",
+    "captionAlt": "Attachment",
+    "captionPlaceholder": "Description (optional)",
+    "deleteAria": "Delete attachment"
+  }
+}

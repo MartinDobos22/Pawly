@@ -1,9 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import {
   EPISODE_CATEGORIES,
-  EPISODE_CATEGORY_LABEL,
   EPISODE_OUTCOMES,
-  EPISODE_OUTCOME_LABEL,
   type EpisodeCategory,
   type EpisodeOutcome,
 } from '../../types/healthEpisode';
@@ -25,37 +24,39 @@ export default function EpisodeFiltersBar({
   onOutcomeChange,
   onQueryChange,
 }: EpisodeFiltersBarProps) {
+  const { t } = useTranslation('episodes');
+
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
       <FormControl size="small" sx={{ minWidth: 160 }}>
-        <InputLabel id="episode-category-filter">Kategória</InputLabel>
+        <InputLabel id="episode-category-filter">{t('form.category')}</InputLabel>
         <Select
           labelId="episode-category-filter"
-          label="Kategória"
+          label={t('form.category')}
           value={category}
           onChange={(e) => onCategoryChange(e.target.value as EpisodeCategory | 'all')}
         >
-          <MenuItem value="all">Všetky</MenuItem>
+          <MenuItem value="all">{t('filter.all')}</MenuItem>
           {EPISODE_CATEGORIES.map((c) => (
             <MenuItem key={c} value={c}>
-              {EPISODE_CATEGORY_LABEL[c]}
+              {t(`category.${c}` as never)}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
       <FormControl size="small" sx={{ minWidth: 160 }}>
-        <InputLabel id="episode-outcome-filter">Stav</InputLabel>
+        <InputLabel id="episode-outcome-filter">{t('form.outcome')}</InputLabel>
         <Select
           labelId="episode-outcome-filter"
-          label="Stav"
+          label={t('form.outcome')}
           value={outcome}
           onChange={(e) => onOutcomeChange(e.target.value as EpisodeOutcome | 'all')}
         >
-          <MenuItem value="all">Všetky</MenuItem>
+          <MenuItem value="all">{t('filter.all')}</MenuItem>
           {EPISODE_OUTCOMES.map((o) => (
             <MenuItem key={o} value={o}>
-              {EPISODE_OUTCOME_LABEL[o]}
+              {t(`outcome.${o}` as never)}
             </MenuItem>
           ))}
         </Select>
@@ -65,7 +66,7 @@ export default function EpisodeFiltersBar({
         <TextField
           fullWidth
           size="small"
-          placeholder="Hľadať v symptómoch, lekárstve, poznámkach..."
+          placeholder={t('filter.searchPlaceholder')}
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
         />

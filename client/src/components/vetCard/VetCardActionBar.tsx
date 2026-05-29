@@ -1,4 +1,5 @@
 import { useState, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -14,15 +15,6 @@ import {
 } from '@mui/material';
 import { Print as PrintIcon, Tune as TuneIcon, PictureAsPdf as PdfIcon } from '@mui/icons-material';
 import type { ExportSectionId, ExportSectionsState } from './ExportSectionsToolbar';
-
-const SECTION_LABELS: Record<ExportSectionId, string> = {
-  identity: 'Identita',
-  conditions: 'Diagnózy',
-  medications: 'Lieky',
-  prevention: 'Preventíva',
-  visits: 'Klinické záznamy',
-  history: 'Klinická história',
-};
 
 const ORDER: ExportSectionId[] = [
   'identity',
@@ -46,6 +38,7 @@ export default function VetCardActionBar({
   onExportPdf,
   onPrintPreview,
 }: Props) {
+  const { t } = useTranslation('vetCard');
   const theme = useTheme();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const open = Boolean(anchor);
@@ -94,22 +87,22 @@ export default function VetCardActionBar({
             fontSize: '0.78rem',
           }}
         >
-          {enabledCount}/{ORDER.length} sekcií
+          {t('actionBar.sectionCount', { enabled: enabledCount, total: ORDER.length })}
         </Typography>
-        <Tooltip title="Vybrať sekcie pre export">
+        <Tooltip title={t('actionBar.selectSections')}>
           <IconButton
             onClick={handleOpen}
-            aria-label="Sekcie pre export"
+            aria-label={t('actionBar.sectionsAria')}
             size="small"
             sx={{ color: open ? 'primary.main' : 'text.secondary' }}
           >
             <TuneIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Náhľad tlače">
+        <Tooltip title={t('actionBar.printPreview')}>
           <IconButton
             onClick={onPrintPreview}
-            aria-label="Náhľad tlače"
+            aria-label={t('actionBar.printPreview')}
             size="small"
             sx={{ color: 'text.secondary' }}
           >
@@ -124,7 +117,7 @@ export default function VetCardActionBar({
           disabled={!canExport}
           sx={{ minHeight: 32, py: 0.5, px: 1.5 }}
         >
-          Export PDF
+          {t('actionBar.exportPdf')}
         </Button>
       </Stack>
 
@@ -146,7 +139,7 @@ export default function VetCardActionBar({
       >
         <Box sx={{ px: 2, py: 1.5 }}>
           <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
-            Sekcie pre export
+            {t('actionBar.sectionsAria')}
           </Typography>
           <Stack spacing={0.25}>
             {ORDER.map((id) => (
@@ -155,7 +148,7 @@ export default function VetCardActionBar({
                 control={
                   <Checkbox checked={exportSections[id]} onChange={() => toggle(id)} size="small" />
                 }
-                label={SECTION_LABELS[id]}
+                label={t(`actionBar.sections.${id}` as never)}
                 sx={{
                   m: 0,
                   '& .MuiFormControlLabel-label': {
@@ -179,7 +172,7 @@ export default function VetCardActionBar({
               fontSize: '0.72rem',
             }}
           >
-            Vybrané sekcie sa zahrnú do PDF aj tlače.
+            {t('actionBar.note')}
           </Typography>
         </Box>
       </Menu>

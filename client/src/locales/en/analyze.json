@@ -1,0 +1,87 @@
+{
+  "hero": {
+    "title": "Food Analysis",
+    "description": "Enter the food ingredients or take a photo of the packaging — AI will evaluate quality, allergen risks and recommendations for your dog. Or quickly ask \"Can my dog eat…?\"",
+    "forPet": "For {{petName}}"
+  },
+  "form": {
+    "analyzeComposition": "Analyze composition",
+    "placeholder": "Enter food ingredients or scan the packaging…",
+    "scanLabel": "Scan packaging",
+    "scanning": "Loading text…",
+    "analyze": "Analyze",
+    "analyzing": "Analyzing…",
+    "saveRating": "Save rating",
+    "addProfileHint": "Add a pet profile in the",
+    "addProfileHintProfiles": "Profiles",
+    "addProfileHintSuffix": "section for personalized allergen analysis.",
+    "sourceManual": "Manually entered ingredients",
+    "sourcePhoto": "Photo of packaging: {{fileName}}",
+    "textPrefilled": "Text has been pre-filled. Check it and click Analyze."
+  },
+  "errors": {
+    "unsupportedFileType": "Unsupported file type. Use JPG, PNG, WebP or PDF.",
+    "fileTooLarge": "File is too large (max 5 MB).",
+    "fileLoadFailed": "Failed to load file.",
+    "noAnswer": "Failed to get an answer.",
+    "unexpectedAnalysis": "Unexpected error during analysis.",
+    "unexpectedFileAnalysis": "Unexpected error during file analysis.",
+    "extractTextFailed": "Failed to extract text."
+  },
+  "score": {
+    "poor": "Poor",
+    "average": "Average",
+    "good": "Good",
+    "excellent": "Excellent",
+    "totalQuality": "Overall quality score",
+    "outOf": "out of 100"
+  },
+  "allergenWarning": {
+    "dangerTitle": "DANGER – ALLERGENS DETECTED!",
+    "healthWarningTitle": "HEALTH WARNING",
+    "petAtRisk": "This food may seriously harm your pet's health!"
+  },
+  "foodSafety": {
+    "title": "Can my dog eat…?",
+    "placeholder": "e.g. chocolate, chicken bones, apple…",
+    "ask": "Ask",
+    "recentQuestions": "Recent questions",
+    "watchOut": "Watch out for:",
+    "alternatives": "Alternatives:",
+    "clearAnswer": "Clear answer",
+    "offlineAnswer": "Offline answer (no AI). Configure OpenAI key for more accurate results.",
+    "verdicts": {
+      "SAFE": "Safe",
+      "CAUTION": "Caution",
+      "UNSAFE": "Avoid"
+    }
+  },
+  "history": {
+    "title": "Rating history",
+    "emptyTitle": "No history",
+    "emptyDescription": "You haven't saved any ratings yet. Analyze pet food in the Analysis section and save the result here.",
+    "runAnalysis": "Run analysis"
+  },
+  "snack": {
+    "saved": "Rating saved",
+    "savedWithPet": "Rating saved and added to Health Passport for {{petName}}"
+  },
+  "foodFromAnalysis": "Food from analysis",
+  "suitabilityReasonNoAllergens": "No allergens or health risks detected",
+  "recentAnalyses": {
+    "title": "Recent analyses",
+    "noAnalyses": "Run your first analysis"
+  },
+  "defaultLabel": "Analysis",
+  "proscons": {
+    "pros": "Pros",
+    "cons": "Cons"
+  },
+  "recommendation": {
+    "suitableFor": "Suitable for:",
+    "notRecommendedFor": "Not recommended for:"
+  },
+  "personalizedVerdict": {
+    "title": "Rating for {{name}}"
+  }
+}

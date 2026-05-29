@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Stack, TextField } from '@mui/material';
 import { NotesOutlined as NotesIcon } from '@mui/icons-material';
 
@@ -17,9 +18,10 @@ export default function ClinicalNotes({
   onExpand,
   onChange,
 }: ClinicalNotesProps) {
+  const { t } = useTranslation('healthPassport');
   return (
     <SectionCard
-      title="Klinický záznam"
+      title={t('addRecord.clinical.title')}
       icon={<NotesIcon />}
       collapsible
       expanded={expanded}
@@ -28,8 +30,8 @@ export default function ClinicalNotes({
       <Stack spacing={1.5}>
         <TextField
           size="small"
-          label="Nález"
-          placeholder="Klinický nález pri vyšetrení…"
+          label={t('addRecord.clinical.findings')}
+          placeholder={t('addRecord.clinical.findingsPlaceholder')}
           value={values.findings}
           onChange={(e) => onChange('findings', e.target.value)}
           multiline
@@ -39,8 +41,8 @@ export default function ClinicalNotes({
         />
         <TextField
           size="small"
-          label="Diagnóza"
-          placeholder="Stanovená diagnóza alebo predbežné podozrenie…"
+          label={t('addRecord.clinical.diagnosis')}
+          placeholder={t('addRecord.clinical.diagnosisPlaceholder')}
           value={values.diagnosis}
           onChange={(e) => onChange('diagnosis', e.target.value)}
           multiline
@@ -50,8 +52,8 @@ export default function ClinicalNotes({
         />
         <TextField
           size="small"
-          label="Odporúčania"
-          placeholder="Postup liečby, kontrola, životospráva…"
+          label={t('addRecord.clinical.recommendations')}
+          placeholder={t('addRecord.clinical.recommendationsPlaceholder')}
           value={values.recommendations}
           onChange={(e) => onChange('recommendations', e.target.value)}
           multiline

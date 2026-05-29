@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Card, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   HealthAndSafety as HealthIcon,
@@ -75,6 +76,7 @@ function Subsection({ label, icon, items, tone }: SubsectionProps) {
 }
 
 export default function HealthProfileChips({ dog }: Props) {
+  const { t } = useTranslation('vetCard');
   const theme = useTheme();
   const chronic = dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions;
   const hasContent =
@@ -94,7 +96,7 @@ export default function HealthProfileChips({ dog }: Props) {
           <Stack direction="row" alignItems="center" gap={1}>
             <HealthIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Zdravotný profil
+              {t('healthProfile.title')}
             </Typography>
           </Stack>
           <Box sx={{ flex: 1, display: { xs: 'none', sm: 'block' } }} />
@@ -107,7 +109,7 @@ export default function HealthProfileChips({ dog }: Props) {
               letterSpacing: 0,
             }}
           >
-            Žiadne špeciálne zdravotné záznamy
+            {t('healthProfile.empty')}
           </Typography>
         </Stack>
       </Card>
@@ -119,19 +121,24 @@ export default function HealthProfileChips({ dog }: Props) {
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <HealthIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Zdravotný profil
+          {t('healthProfile.title')}
         </Typography>
       </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2} flexWrap="wrap">
         <Subsection
-          label="Chronické diagnózy"
+          label={t('healthProfile.chronic')}
           icon={<ChronicIcon />}
           items={chronic}
           tone="primary"
         />
-        <Subsection label="Alergie" icon={<AllergyIcon />} items={dog.allergies} tone="error" />
         <Subsection
-          label="Intolerancie"
+          label={t('healthProfile.allergies')}
+          icon={<AllergyIcon />}
+          items={dog.allergies}
+          tone="error"
+        />
+        <Subsection
+          label={t('healthProfile.intolerances')}
           icon={<IntoleranceIcon />}
           items={dog.intolerances}
           tone="warning"
@@ -140,7 +147,7 @@ export default function HealthProfileChips({ dog }: Props) {
       {dog.notes && (
         <Box sx={{ mt: 1.5, pt: 1.25, borderTop: `1px solid ${theme.palette.divider}` }}>
           <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            Poznámky
+            {t('healthProfile.notes')}
           </Typography>
           <Typography
             variant="body2"

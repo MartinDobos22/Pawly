@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -27,21 +28,19 @@ interface Props {
   onSkip: () => void;
 }
 
-const SEX_LABEL: Record<'MALE' | 'FEMALE' | 'UNKNOWN', string> = {
-  MALE: 'samec',
-  FEMALE: 'samica',
-  UNKNOWN: 'neuvedené',
-};
+const SEX_KEYS = {
+  MALE: 'aiProfileMerge.sexMale',
+  FEMALE: 'aiProfileMerge.sexFemale',
+  UNKNOWN: 'aiProfileMerge.sexUnknown',
+} as const;
 
-function describeValue(key: IdentifierKey, value: string | undefined): string {
+function describeValue(_key: IdentifierKey, value: string | undefined): string {
   if (!value) return '';
-  if (key === 'sex' && (value === 'MALE' || value === 'FEMALE' || value === 'UNKNOWN')) {
-    return SEX_LABEL[value];
-  }
   return value;
 }
 
 export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: Props) {
+  const { t } = useTranslation('healthPassport');
   const { profiles, updateProfile } = usePetProfiles();
   const profile = useMemo(() => profiles.find((p) => p.id === dogId) ?? null, [profiles, dogId]);
 
@@ -98,12 +97,7 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
   const [chronicAccept, setChronicAccept] = useState<string[]>(chronicEntries);
 
   if (!profile) {
-    return (
-      <Alert severity="info">
-        AI navrhla doplniť profil zvieraťa, ale aktívny profil nebol nájdený. Doplň údaje ručne v
-        sekcii Profily.
-      </Alert>
-    );
+    return <Alert severity="info">{t('aiProfileMerge.noPet')}</Alert>;
   }
 
   const hasAnything =
@@ -146,26 +140,29 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
         <Stack direction="row" spacing={1} alignItems="center">
           <PersonIcon color="primary" fontSize="small" />
           <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            Doplniť do profilu „{profile.name}"
+            {t('aiProfileMerge.addToProfile', { name: profile.name })}
           </Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary">
-          AI z dokumentu navrhla nové údaje o zvierati. Vyber, čo má pridať do profilu. Existujúce
-          neprázdne polia nikdy nepretkávame bez tvojho súhlasu.
+          {t('aiProfileMerge.description')}
         </Typography>
 
         {identifierEntries.length > 0 && (
           <Box>
             <Typography variant="overline" color="text.secondary">
-              Základné údaje
+              {t('aiProfileMerge.identifiers')}
             </Typography>
             <Stack>
               {identifierEntries.map((entry) => {
                 const label = IDENTIFIER_LABELS[entry.key];
-                const incomingLabel = describeValue(entry.key, entry.incoming);
+                const resolveSex = (v: string) =>
+                  entry.key === 'sex' && v in SEX_KEYS
+                    ? t(SEX_KEYS[v as keyof typeof SEX_KEYS])
+                    : v;
+                const incomingLabel = resolveSex(describeValue(entry.key, entry.incoming));
                 const existingLabel = entry.isEmptyExisting
-                  ? '(prázdne)'
-                  : describeValue(entry.key, entry.existingStr);
+                  ? t('aiProfileMerge.empty')
+                  : resolveSex(describeValue(entry.key, entry.existingStr));
                 return (
                   <FormControlLabel
                     key={entry.key}
@@ -191,8 +188,8 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
                             fontWeight: 400,
                           }}
                         >
-                          aktuálne: {existingLabel}
-                          {!entry.isEmptyExisting && ' (zachované, ak nezatrhneš)'}
+                          {t('aiProfileMerge.currentValue', { value: existingLabel })}
+                          {!entry.isEmptyExisting && ` ${t('aiProfileMerge.preserved')}`}
                         </Typography>
                       </Box>
                     }
@@ -206,7 +203,7 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
         {allergyEntries.length > 0 && (
           <Box>
             <Typography variant="overline" color="text.secondary">
-              Nové alergie
+              {t('aiProfileMerge.allergies')}
             </Typography>
             <Stack>
               {allergyEntries.map((a) => (
@@ -229,7 +226,7 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
         {chronicEntries.length > 0 && (
           <Box>
             <Typography variant="overline" color="text.secondary">
-              Nové chronické stavy
+              {t('aiProfileMerge.chronic')}
             </Typography>
             <Stack>
               {chronicEntries.map((c) => (
@@ -251,10 +248,10 @@ export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: P
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button onClick={onSkip} size="small">
-            Preskočiť
+            {t('aiProfileMerge.skip')}
           </Button>
           <Button variant="contained" onClick={handleApply} size="small" disabled={!canApply}>
-            Pridať do profilu
+            {t('aiProfileMerge.apply')}
           </Button>
         </Stack>
       </Stack>

@@ -1,4 +1,8 @@
 import { useCallback, useMemo, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import i18n from '../../../i18n';
+import { VISIT_CATEGORY_OPTIONS } from '../constants';
 
 import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
 import {
@@ -195,36 +199,37 @@ const isPositiveNumeric = (raw: string): boolean => {
 };
 
 export function validateManualForm(state: ManualFormState): ErrorMap {
+  const t = (k: string) => i18n.t(k as never, { ns: 'healthPassport' }) as string;
   const errors: ErrorMap = {};
   if (!state.basics.date.trim() || Number.isNaN(new Date(state.basics.date).getTime())) {
-    errors['basics.date'] = 'Zadajte platný dátum.';
+    errors['basics.date'] = t('validation.invalidDate');
   }
   if (!state.basics.clinicName.trim()) {
-    errors['basics.clinicName'] = 'Zadajte meno kliniky alebo veterinára.';
+    errors['basics.clinicName'] = t('validation.clinicRequired');
   }
   if (state.linked.vaccination && !state.linked.vaccination.name.trim()) {
-    errors['linked.vaccination.name'] = 'Zadajte názov vakcíny.';
+    errors['linked.vaccination.name'] = t('validation.vaccinationNameRequired');
   }
   if (state.linked.deworming && !state.linked.deworming.product.trim()) {
-    errors['linked.deworming.product'] = 'Zadajte názov prípravku.';
+    errors['linked.deworming.product'] = t('validation.productRequired');
   }
   if (state.linked.ecto && !state.linked.ecto.product.trim()) {
-    errors['linked.ecto.product'] = 'Zadajte názov prípravku.';
+    errors['linked.ecto.product'] = t('validation.productRequired');
   }
   if (state.linked.medication && !state.linked.medication.name.trim()) {
-    errors['linked.medication.name'] = 'Zadajte názov lieku.';
+    errors['linked.medication.name'] = t('validation.medicationNameRequired');
   }
   if (state.linked.diet && !state.linked.diet.foodName.trim()) {
-    errors['linked.diet.foodName'] = 'Zadajte názov krmiva.';
+    errors['linked.diet.foodName'] = t('validation.foodNameRequired');
   }
   if (!isPositiveNumeric(state.expenses.totalExpense)) {
-    errors['expenses.totalExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.totalExpense'] = t('validation.nonNegativeRequired');
   }
   if (!isPositiveNumeric(state.expenses.extraMedicationExpense)) {
-    errors['expenses.extraMedicationExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.extraMedicationExpense'] = t('validation.nonNegativeRequired');
   }
   if (!isPositiveNumeric(state.expenses.extraFoodExpense)) {
-    errors['expenses.extraFoodExpense'] = 'Zadajte nezáporné číslo.';
+    errors['expenses.extraFoodExpense'] = t('validation.nonNegativeRequired');
   }
   return errors;
 }
@@ -296,6 +301,7 @@ function toWizardDraft(state: ManualFormState): WizardVisitDraft {
 
 export function useAddRecordForm() {
   const [state, dispatch] = useReducer(reducer, INITIAL_MANUAL_STATE);
+  const { t } = useTranslation('healthPassport');
 
   const errors = useMemo<ErrorMap>(
     () => (state.submitAttempted ? validateManualForm(state) : {}),
@@ -303,12 +309,24 @@ export function useAddRecordForm() {
   );
 
   const buildBundle = useCallback(
-    (ctx: BuildContext): VisitBundle =>
-      VetVisitHelper.createWizardVisitBundle({
+    (ctx: BuildContext): VisitBundle => {
+      const mainCatKey = state.basics.mainCategory;
+      const subCatKey = state.basics.subcategory;
+      const mainLabel = mainCatKey
+        ? t(`visitCategory.${mainCatKey}`, { defaultValue: mainCatKey })
+        : '';
+      const subLabel = subCatKey
+        ? (() => {
+            const cat = VISIT_CATEGORY_OPTIONS.find((o) => o.key === mainCatKey);
+            const sub = cat?.sub.find((s) => s.key === subCatKey);
+            return sub ? t(`visitCategory.${sub.key}`, { defaultValue: sub.key }) : subCatKey;
+          })()
+        : '';
+      return VetVisitHelper.createWizardVisitBundle({
         dogId: ctx.dogId,
         draft: toWizardDraft(state),
-        mainCategory: state.basics.mainCategory,
-        subcategory: state.basics.subcategory,
+        mainCategory: mainLabel,
+        subcategory: subLabel,
         attachmentDraft: {
           attachmentLabel: '',
           attachmentUrl: '',
@@ -317,8 +335,9 @@ export function useAddRecordForm() {
         currentDietEntryId: ctx.currentDietEntryId,
         plusDays,
         uid,
-      }),
-    [state]
+      });
+    },
+    [state, t]
   );
 
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);

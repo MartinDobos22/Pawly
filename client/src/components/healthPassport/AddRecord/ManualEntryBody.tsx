@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Alert, Stack } from '@mui/material';
 
 import { useManualEntry } from './ManualEntry';
@@ -7,6 +8,7 @@ import LinkedRecords from './sections/LinkedRecords';
 import Expenses from './sections/Expenses';
 
 export default function ManualEntryBody() {
+  const { t } = useTranslation('healthPassport');
   const {
     state,
     dispatch,
@@ -23,9 +25,7 @@ export default function ManualEntryBody() {
   return (
     <Stack spacing={1.25}>
       {state.submitAttempted && errorCount > 0 && (
-        <Alert severity="error">
-          Doplňte {errorCount} {errorCount === 1 ? 'povinné pole' : 'povinné polia'}.
-        </Alert>
+        <Alert severity="error">{t('addRecord.required', { count: errorCount })}</Alert>
       )}
 
       <VisitBasics

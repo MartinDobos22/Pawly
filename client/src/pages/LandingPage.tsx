@@ -16,6 +16,7 @@ import {
   ArrowForward as ArrowIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
@@ -40,6 +41,8 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { t } = useTranslation('common');
+  const { t: tLanding } = useTranslation('landing');
 
   return (
     <Box
@@ -112,7 +115,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           <IconButton
             onClick={onToggleTheme}
             color="inherit"
-            aria-label={darkMode ? 'Prepnúť na svetlý režim' : 'Prepnúť na tmavý režim'}
+            aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
           >
             {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
@@ -125,7 +128,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                 onClick={() => navigate('/zdravotny-pas')}
                 sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
               >
-                Vstúpiť
+                {tLanding('hero.navEnter')}
               </Button>
             ) : (
               <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} sx={{ flexShrink: 0 }}>
@@ -135,7 +138,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                   onClick={() => navigate('/login')}
                   sx={{ whiteSpace: 'nowrap', flexShrink: 0, px: { xs: 1, sm: 1.5 } }}
                 >
-                  Prihlásiť sa
+                  {tLanding('hero.navLogin')}
                 </Button>
                 <Button
                   variant="contained"
@@ -143,7 +146,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                   onClick={() => navigate('/register')}
                   sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
-                  Registrácia
+                  {tLanding('hero.navRegister')}
                 </Button>
               </Stack>
             ))}
