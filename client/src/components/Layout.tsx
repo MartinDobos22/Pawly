@@ -225,7 +225,22 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         <PetSwitcher />
       </Box>
 
-      <Box sx={{ px: 1.25, pt: 1, flex: 1, overflowY: 'auto' }}>
+      <Box
+        sx={{
+          px: 1.25,
+          pt: 1,
+          flex: 1,
+          overflowY: 'auto',
+          scrollbarWidth: 'thin',
+          scrollbarColor: `${theme.palette.divider} transparent`,
+          '&::-webkit-scrollbar': { width: 4 },
+          '&::-webkit-scrollbar-track': { background: 'transparent' },
+          '&::-webkit-scrollbar-thumb': {
+            background: theme.palette.divider,
+            borderRadius: 2,
+          },
+        }}
+      >
         {NAV_SECTIONS.map((section) => (
           <Box key={section.id} sx={{ mb: 1.5 }}>
             <Typography

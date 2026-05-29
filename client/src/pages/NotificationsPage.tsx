@@ -36,7 +36,7 @@ function statusColor(status: string): 'error' | 'warning' | 'success' {
 
 export default function NotificationsPage() {
   const { user } = useAuth();
-  const { prefs, upcoming, loading, saving, error, save } = useNotificationPreferences();
+  const { prefs, upcoming, loading, error, save } = useNotificationPreferences();
   const [localError, setLocalError] = useState<string | null>(null);
   const { t } = useTranslation('landing');
 
@@ -92,7 +92,6 @@ export default function NotificationsPage() {
             control={
               <Switch
                 checked={prefs.emailEnabled}
-                disabled={saving}
                 onChange={(e) => save({ emailEnabled: e.target.checked })}
               />
             }
@@ -119,7 +118,6 @@ export default function NotificationsPage() {
                 color={prefs.leadDays.includes(day) ? 'primary' : 'default'}
                 variant={prefs.leadDays.includes(day) ? 'filled' : 'outlined'}
                 onClick={() => toggleLeadDay(day)}
-                disabled={saving}
               />
             ))}
           </Stack>
@@ -140,7 +138,6 @@ export default function NotificationsPage() {
               control={
                 <Switch
                   checked={prefs[key] as boolean}
-                  disabled={saving}
                   onChange={(e) => save({ [key]: e.target.checked })}
                 />
               }

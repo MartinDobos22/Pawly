@@ -36,7 +36,7 @@ export default function EpisodeDiaryPage() {
   const { t } = useTranslation('episodes');
   const navigate = useNavigate();
 
-  const { profiles } = usePetProfiles();
+  const { profiles, loading: petsLoading } = usePetProfiles();
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
@@ -66,6 +66,7 @@ export default function EpisodeDiaryPage() {
     [dogEpisodes, categoryFilter, outcomeFilter, query]
   );
 
+  if (petsLoading) return null;
   if (dogProfiles.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -125,9 +126,7 @@ export default function EpisodeDiaryPage() {
           overflow: 'hidden',
           borderRadius: 4,
           bgcolor: (theme) =>
-            theme.palette.mode === 'light'
-              ? 'rgba(15, 76, 92, 0.05)'
-              : 'rgba(111, 190, 209, 0.10)',
+            theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
           border: (theme) =>
             `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
           p: { xs: 2, md: 2.5 },
@@ -214,7 +213,10 @@ export default function EpisodeDiaryPage() {
               <Chip
                 size="small"
                 color={storage.isCritical ? 'error' : 'warning'}
-                label={t('page.storageUsage', { used: storage.megabytes.toFixed(1), limit: storage.limitMb })}
+                label={t('page.storageUsage', {
+                  used: storage.megabytes.toFixed(1),
+                  limit: storage.limitMb,
+                })}
               />
             )}
           </Stack>
