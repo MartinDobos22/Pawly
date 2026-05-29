@@ -40,7 +40,12 @@ export default function HealthPassportPage() {
   const { t: tCommon } = useTranslation('common');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
-  const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
+  const {
+    dogProfiles,
+    activePetId: selectedDogId,
+    selectPet: setSelectedDogId,
+    loading: petsLoading,
+  } = useActivePet();
 
   // ── Health records (Supabase cez useHealthData) ─────────────────────────────
   const {
@@ -452,6 +457,7 @@ export default function HealthPassportPage() {
   }, [timeline, dogProfiles, selectedDogId, t, lang]);
 
   // ── Early return if no dogs ─────────────────────────────────────────────────
+  if (petsLoading) return null;
   if (!dogProfiles.length) {
     return (
       <Card

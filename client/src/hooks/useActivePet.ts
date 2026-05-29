@@ -5,7 +5,7 @@ import { usePetProfiles } from './usePetProfiles';
 const ACTIVE_PET_KEY = 'granule-check-active-pet-id';
 
 export function useActivePet() {
-  const { profiles } = usePetProfiles();
+  const { profiles, loading } = usePetProfiles();
   const [activePetId, setActivePetId] = useLocalStorage<string>(ACTIVE_PET_KEY, '');
 
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
@@ -36,5 +36,6 @@ export function useActivePet() {
     selectPet,
     dogProfiles,
     allProfiles: profiles,
+    loading,
   };
 }

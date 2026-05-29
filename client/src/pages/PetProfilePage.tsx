@@ -70,7 +70,13 @@ export default function PetProfilePage() {
     returnObjects: true,
   }) as string[];
   const HEALTH_SUGGESTIONS = t('profiles.healthSuggestions', { returnObjects: true }) as string[];
-  const { profiles, createProfile, updateProfile, deleteProfile } = usePetProfiles();
+  const {
+    profiles,
+    loading: petsLoading,
+    createProfile,
+    updateProfile,
+    deleteProfile,
+  } = usePetProfiles();
   const {
     vaccinations,
     dewormings,
@@ -286,7 +292,7 @@ export default function PetProfilePage() {
         </Stack>
       </Box>
 
-      {dogProfiles.length === 0 && (
+      {!petsLoading && dogProfiles.length === 0 && (
         <Card
           sx={{
             p: 4,
@@ -734,12 +740,8 @@ export default function PetProfilePage() {
           >
             {t('actions.cancel', { ns: 'common' })}
           </Button>
-          <Button variant="contained" onClick={() => void handleSave()} disabled={isSaving}>
-            {isSaving
-              ? tCommon('saving')
-              : editingId
-                ? t('profiles.saveUpdate')
-                : t('profiles.saveCreate')}
+          <Button variant="contained" onClick={handleSave}>
+            {editingId ? t('profiles.saveUpdate') : t('profiles.saveCreate')}
           </Button>
         </DialogActions>
       </Dialog>

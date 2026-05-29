@@ -39,7 +39,7 @@ export default function EpisodeDiaryPage() {
   const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
-  const { profiles } = usePetProfiles();
+  const { profiles, loading: petsLoading } = usePetProfiles();
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
@@ -76,6 +76,7 @@ export default function EpisodeDiaryPage() {
     [dogEpisodes, categoryFilter, outcomeFilter, query]
   );
 
+  if (petsLoading) return null;
   if (dogProfiles.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
