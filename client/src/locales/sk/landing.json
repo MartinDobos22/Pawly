@@ -231,6 +231,12 @@
     ],
     "vetCardLabel": "Karta pre veterinára",
     "clinicalHistory": "Klinická história",
+    "historyItems": [
+      { "date": "21. máj", "label": "Antiparazitiká", "tone": "warning" },
+      { "date": "21. máj", "label": "Veterinár · Veterina terasa", "tone": "primary" },
+      { "date": "27. mar", "label": "Veterinár · cassovet", "tone": "primary" },
+      { "date": "26. mar", "label": "Odčervenie · xyz", "tone": "success" }
+    ],
     "mockCard": {
       "vaccination": "Očkovanie",
       "deworming": "Odčervenie",

@@ -261,6 +261,7 @@
     "file": "PDF / file",
     "pageCount": "{{count}} / {{max}} pages",
     "pageLabel": "Page {{n}}",
+    "documentFallback": "Document",
     "removePage": "Remove page",
     "formatsHint": "Supported formats: PDF, JPEG, PNG, WebP. Max {{maxMb}} MB per page, max {{maxFiles}} pages."
   },

@@ -148,12 +148,12 @@ const readFileAsBase64 = (file: File) =>
       const raw = typeof reader.result === 'string' ? reader.result : '';
       const base64 = raw.split(',')[1] ?? '';
       if (!base64) {
-        reject(new Error('Nepodarilo sa načítať súbor.'));
+        reject(new Error('FILE_LOAD_FAILED'));
         return;
       }
       resolve({ previewUrl: raw, base64 });
     };
-    reader.onerror = () => reject(new Error('Nepodarilo sa načítať súbor.'));
+    reader.onerror = () => reject(new Error('FILE_LOAD_FAILED'));
     reader.readAsDataURL(file);
   });
 
@@ -203,7 +203,9 @@ export function useAiImport(dogId: string) {
           pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
         });
       } catch (err) {
-        lastError = err instanceof Error ? err.message : t('addRecord.aiImport.fileLoadFailed');
+        const msg = err instanceof Error ? err.message : '';
+        lastError =
+          msg === 'FILE_LOAD_FAILED' || !msg ? t('addRecord.aiImport.fileLoadFailed') : msg;
       }
     }
 
@@ -388,7 +390,7 @@ export function useAiImport(dogId: string) {
       const attachmentDrafts = state.attachments.map((entry, idx) => ({
         attachmentLabel:
           state.attachments.length > 1
-            ? `${state.attachmentLabel || 'Dokument'} — strana ${idx + 1}`
+            ? `${state.attachmentLabel || t('attachmentUpload.documentFallback')} — ${t('attachmentUpload.pageLabel', { n: idx + 1 })}`
             : state.attachmentLabel || entry.pending.fileName,
         attachmentUrl: '',
         attachmentPreviewUrl: entry.previewUrl,

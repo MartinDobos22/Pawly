@@ -231,6 +231,12 @@
     ],
     "vetCardLabel": "Vet card",
     "clinicalHistory": "Clinical history",
+    "historyItems": [
+      { "date": "May 21", "label": "Antiparasitic", "tone": "warning" },
+      { "date": "May 21", "label": "Vet · Veterina terasa", "tone": "primary" },
+      { "date": "Mar 27", "label": "Vet · cassovet", "tone": "primary" },
+      { "date": "Mar 26", "label": "Deworming · xyz", "tone": "success" }
+    ],
     "mockCard": {
       "vaccination": "Vaccination",
       "deworming": "Deworming",

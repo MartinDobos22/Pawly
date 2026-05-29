@@ -17,10 +17,30 @@ function DesktopPreview() {
   const { t } = useTranslation('landing');
 
   const cells = [
-    { icon: VaccinesIcon, label: t('appPreview.mockCard.vaccination'), tone: 'success' as const, value: t('appPreview.mockCard.valid') },
-    { icon: DewormIcon, label: t('appPreview.mockCard.deworming'), tone: 'success' as const, value: t('appPreview.mockCard.inWeeks') },
-    { icon: EctoIcon, label: t('appPreview.mockCard.ticks'), tone: 'warning' as const, value: t('appPreview.mockCard.expiresSoon') },
-    { icon: DietIcon, label: t('appPreview.mockCard.diet'), tone: 'success' as const, value: t('appPreview.mockCard.suitable') },
+    {
+      icon: VaccinesIcon,
+      label: t('appPreview.mockCard.vaccination'),
+      tone: 'success' as const,
+      value: t('appPreview.mockCard.valid'),
+    },
+    {
+      icon: DewormIcon,
+      label: t('appPreview.mockCard.deworming'),
+      tone: 'success' as const,
+      value: t('appPreview.mockCard.inWeeks'),
+    },
+    {
+      icon: EctoIcon,
+      label: t('appPreview.mockCard.ticks'),
+      tone: 'warning' as const,
+      value: t('appPreview.mockCard.expiresSoon'),
+    },
+    {
+      icon: DietIcon,
+      label: t('appPreview.mockCard.diet'),
+      tone: 'success' as const,
+      value: t('appPreview.mockCard.suitable'),
+    },
   ];
 
   return (
@@ -67,10 +87,26 @@ function DesktopPreview() {
             score={82}
             size={72}
             breakdown={[
-              { label: t('appPreview.mockCard.vaccination'), shortLabel: t('appPreview.mockCard.vaccShort'), status: 'good' },
-              { label: t('appPreview.mockCard.deworming'), shortLabel: t('appPreview.mockCard.dewormShort'), status: 'good' },
-              { label: t('appPreview.mockCard.ticks'), shortLabel: t('appPreview.mockCard.ticksShort'), status: 'soon' },
-              { label: t('appPreview.mockCard.diet'), shortLabel: t('appPreview.mockCard.dietShort'), status: 'good' },
+              {
+                label: t('appPreview.mockCard.vaccination'),
+                shortLabel: t('appPreview.mockCard.vaccShort'),
+                status: 'good',
+              },
+              {
+                label: t('appPreview.mockCard.deworming'),
+                shortLabel: t('appPreview.mockCard.dewormShort'),
+                status: 'good',
+              },
+              {
+                label: t('appPreview.mockCard.ticks'),
+                shortLabel: t('appPreview.mockCard.ticksShort'),
+                status: 'soon',
+              },
+              {
+                label: t('appPreview.mockCard.diet'),
+                shortLabel: t('appPreview.mockCard.dietShort'),
+                status: 'good',
+              },
             ]}
           />
         </Stack>
@@ -135,12 +171,11 @@ function MobilePreview() {
   const theme = useTheme();
   const { t } = useTranslation('landing');
 
-  const items = [
-    { date: '21. máj', label: 'Antiparazitiká', tone: 'warning' as const },
-    { date: '21. máj', label: 'Veterinár · Veterina terasa', tone: 'primary' as const },
-    { date: '27. mar', label: 'Veterinár · cassovet', tone: 'primary' as const },
-    { date: '26. mar', label: 'Odčervenie · xyz', tone: 'success' as const },
-  ];
+  const items = t('appPreview.historyItems', { returnObjects: true }) as Array<{
+    date: string;
+    label: string;
+    tone: 'warning' | 'primary' | 'success';
+  }>;
 
   return (
     <Stack spacing={1.5} sx={{ pt: 1 }}>
