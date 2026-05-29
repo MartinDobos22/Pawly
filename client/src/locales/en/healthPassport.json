@@ -204,7 +204,16 @@
       "required_other": "Fill in {{count}} required fields",
       "analyzing": "Analysing…",
       "analyze": "Analyse",
-      "saveRecords": "Save records"
+      "saveRecords": "Save records",
+      "maxPages": "Maximum {{count}} pages allowed.",
+      "maxPagesExceeded": "Maximum {{count}} pages — extra files were ignored.",
+      "unsupportedFile": "Unsupported file type: {{fileName}}",
+      "fileTooLarge": "File too large (max 5 MB): {{fileName}}",
+      "fileLoadFailed": "Failed to load file.",
+      "noTextExtracted": "Could not extract any text from the documents.",
+      "analyzeFailed": "Passport analysis failed.",
+      "importNote_one": "AI import from {{count}} page",
+      "importNote_other": "AI import from {{count}} pages"
     },
     "modeQuick": "Quick",
     "modeManual": "Manual visit",
@@ -599,5 +608,14 @@
     "metaFemale": "Female",
     "metaChip": "Chip: {{chip}}",
     "metaPassport": "Passport: {{passport}}"
+  },
+  "validation": {
+    "invalidDate": "Enter a valid date.",
+    "clinicRequired": "Enter the clinic or vet name.",
+    "vaccinationNameRequired": "Enter the vaccine name.",
+    "productRequired": "Enter the product name.",
+    "medicationNameRequired": "Enter the medication name.",
+    "foodNameRequired": "Enter the food name.",
+    "nonNegativeRequired": "Enter a non-negative number."
   }
 }

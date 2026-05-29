@@ -1,4 +1,5 @@
 import { useCallback, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
@@ -164,6 +165,7 @@ interface BuildContext {
 export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
   const { vaccinations: existingVaccinations } = useHealthData();
+  const { t } = useTranslation('healthPassport');
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
@@ -173,7 +175,7 @@ export function useAiImport(dogId: string) {
     if (currentCount >= MAX_ATTACHMENTS) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximálne ${MAX_ATTACHMENTS} strán dokumentu.`,
+        message: t('addRecord.aiImport.maxPages', { count: MAX_ATTACHMENTS }),
       });
       return;
     }
@@ -185,11 +187,11 @@ export function useAiImport(dogId: string) {
 
     for (const file of toProcess) {
       if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-        lastError = `Nepodporovaný typ súboru: ${file.name}`;
+        lastError = t('addRecord.aiImport.unsupportedFile', { fileName: file.name });
         continue;
       }
       if (file.size > MAX_FILE_SIZE_BYTES) {
-        lastError = `Súbor je príliš veľký (max 5 MB): ${file.name}`;
+        lastError = t('addRecord.aiImport.fileTooLarge', { fileName: file.name });
         continue;
       }
       try {
@@ -201,7 +203,7 @@ export function useAiImport(dogId: string) {
           pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
         });
       } catch (err) {
-        lastError = err instanceof Error ? err.message : 'Nepodarilo sa načítať súbor.';
+        lastError = err instanceof Error ? err.message : t('addRecord.aiImport.fileLoadFailed');
       }
     }
 
@@ -214,7 +216,7 @@ export function useAiImport(dogId: string) {
     if (files.length > available) {
       dispatch({
         type: 'SET_ATTACHMENT_ERROR',
-        message: `Maximum ${MAX_ATTACHMENTS} strán dokumentu — nadbytočné súbory boli ignorované.`,
+        message: t('addRecord.aiImport.maxPagesExceeded', { count: MAX_ATTACHMENTS }),
       });
     }
   }, []);
@@ -275,7 +277,7 @@ export function useAiImport(dogId: string) {
       if (texts.length === 0) {
         dispatch({
           type: 'SET_ANALYZE_ERROR',
-          message: 'Z dokumentov sa nepodarilo extrahovať žiadny text.',
+          message: t('addRecord.aiImport.noTextExtracted'),
         });
         return;
       }
@@ -359,7 +361,7 @@ export function useAiImport(dogId: string) {
       dispatch({ type: 'SET_ANALYZE_PROGRESS', progress: null });
       dispatch({ type: 'SET_STEP', step: 1 });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Analýza pasu zlyhala.';
+      const message = err instanceof Error ? err.message : t('addRecord.aiImport.analyzeFailed');
       dispatch({ type: 'SET_ANALYZE_ERROR', message });
     }
   }, [state.attachments, dogId, existingVaccinations]);
@@ -379,9 +381,7 @@ export function useAiImport(dogId: string) {
         }));
 
       const importNote = state.attachments.length
-        ? `AI import zo ${state.attachments.length} ${
-            state.attachments.length === 1 ? 'strany' : 'strán'
-          } dokumentu`
+        ? t('addRecord.aiImport.importNote', { count: state.attachments.length })
         : '';
       const aiSummary = [state.documentSummary.trim(), importNote].filter(Boolean).join('\n\n');
 

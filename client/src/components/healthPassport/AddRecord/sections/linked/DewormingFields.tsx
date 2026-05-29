@@ -20,9 +20,12 @@ export default function DewormingFields({
   errorProduct,
   onChange,
 }: DewormingFieldsProps) {
-  const { t } = useTranslation('healthPassport');
+  const { t, i18n } = useTranslation('healthPassport');
+  const locale = i18n.language === 'en' ? 'en-GB' : 'sk-SK';
   const nextDue =
-    baseDate && values.intervalDays > 0 ? formatDate(plusDays(baseDate, values.intervalDays)) : '—';
+    baseDate && values.intervalDays > 0
+      ? formatDate(plusDays(baseDate, values.intervalDays), locale)
+      : '—';
 
   return (
     <Stack spacing={1.5}>

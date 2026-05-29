@@ -207,7 +207,16 @@
       "required_other": "Doplňte {{count}} povinných polí",
       "analyzing": "Analyzujem…",
       "analyze": "Analyzovať",
-      "saveRecords": "Uložiť záznamy"
+      "saveRecords": "Uložiť záznamy",
+      "maxPages": "Maximálne {{count}} strán dokumentu.",
+      "maxPagesExceeded": "Maximum {{count}} strán dokumentu — nadbytočné súbory boli ignorované.",
+      "unsupportedFile": "Nepodporovaný typ súboru: {{fileName}}",
+      "fileTooLarge": "Súbor je príliš veľký (max 5 MB): {{fileName}}",
+      "fileLoadFailed": "Nepodarilo sa načítať súbor.",
+      "noTextExtracted": "Z dokumentov sa nepodarilo extrahovať žiadny text.",
+      "analyzeFailed": "Analýza pasu zlyhala.",
+      "importNote_one": "AI import z {{count}} strany dokumentu",
+      "importNote_other": "AI import z {{count}} strán dokumentu"
     },
     "modeQuick": "Rýchly",
     "modeManual": "Manuálna návšteva",
@@ -616,5 +625,14 @@
     "metaFemale": "Samica",
     "metaChip": "Čip: {{chip}}",
     "metaPassport": "Pas: {{passport}}"
+  },
+  "validation": {
+    "invalidDate": "Zadajte platný dátum.",
+    "clinicRequired": "Zadajte meno kliniky alebo veterinára.",
+    "vaccinationNameRequired": "Zadajte názov vakcíny.",
+    "productRequired": "Zadajte názov prípravku.",
+    "medicationNameRequired": "Zadajte názov lieku.",
+    "foodNameRequired": "Zadajte názov krmiva.",
+    "nonNegativeRequired": "Zadajte nezáporné číslo."
   }
 }
