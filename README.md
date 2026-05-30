@@ -4,11 +4,11 @@ Inteligentná PWA aplikácia na analýzu zloženia psích granúl a zdravotných
 
 ## Technológie
 
-| Vrstva | Technológie |
-|--------|-------------|
+| Vrstva       | Technológie                                          |
+| ------------ | ---------------------------------------------------- |
 | **Frontend** | React 18, TypeScript, Material UI 5 (MD3 štýl), Vite |
-| **Backend** | Node.js, Express, TypeScript |
-| **PWA** | Service Worker, Web App Manifest, Offline podpora |
+| **Backend**  | Node.js, Express, TypeScript                         |
+| **PWA**      | Service Worker, Web App Manifest, Offline podpora    |
 
 ## Štruktúra projektu
 
@@ -100,7 +100,7 @@ Aplikácia bude dostupná na **http://localhost:5173**
 2. Uistite sa, že mobil je na rovnakej Wi-Fi sieti
 3. Vo `vite.config.ts` pridajte do `server` bloku:
    ```ts
-   host: '0.0.0.0'
+   host: '0.0.0.0';
    ```
 4. Na mobile otvorte `http://192.168.1.100:5173`
 5. V Chrome: menu → "Pridať na plochu" pre PWA zážitok
@@ -141,3 +141,5 @@ GOOGLE_VISION_API_KEY=...
 ## Produktový návrh rozšírení
 
 Detailný návrh dátového modelu, API vrstvy, UX flow a notifikačných pravidiel pre „zdravotný pas psa“ nájdete v dokumente `docs/dog-health-modules-design.md`.
+
+Nastavenie denného notifikačného cronu (cron-job.org + Render env premenné) a riešenie `503` chýb nájdete v `docs/cron-notifications-setup.md`.
