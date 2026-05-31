@@ -30,7 +30,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     },
   });
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string };
     } | null;

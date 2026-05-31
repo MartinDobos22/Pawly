@@ -32,9 +32,24 @@ export async function getAuthHeader(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function handleUnauthorized(status: number): Promise<void> {
+export async function handleUnauthorized(status: number, res?: Response): Promise<void> {
   if (status === 401) {
     logger.warn('handleUnauthorized: 401 → odhlasujem používateľa (auth.signOut)');
     await auth.signOut();
+    return;
+  }
+  if (status === 403 && res) {
+    try {
+      const body = (await res.clone().json()) as { error?: { code?: string } } | null;
+      const code = body?.error?.code;
+      if (code === 'EMAIL_NOT_VERIFIED' && window.location.pathname !== '/overenie-emailu') {
+        logger.warn(
+          'handleUnauthorized: 403 EMAIL_NOT_VERIFIED → presmerovanie na /overenie-emailu'
+        );
+        window.location.assign('/overenie-emailu');
+      }
+    } catch {
+      /* ignore parse failure */
+    }
   }
 }

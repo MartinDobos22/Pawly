@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
+import { isGoogleUser } from '../utils/isGoogleUser';
 import { isInAppBrowser } from '../utils/isInAppBrowser';
 import AuthLayout from '../components/auth/AuthLayout';
 import GoogleIcon from '../components/auth/GoogleIcon';
@@ -25,7 +26,12 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
   const inAppBrowser = isInAppBrowser();
 
   useEffect(() => {
-    if (user) navigate('/zdravotny-pas', { replace: true });
+    if (!user) return;
+    if (!user.emailVerified && !isGoogleUser(user)) {
+      navigate('/overenie-emailu', { replace: true });
+    } else {
+      navigate('/zdravotny-pas', { replace: true });
+    }
   }, [user, navigate]);
 
   const handleRegister = async (event: React.FormEvent) => {
@@ -44,7 +50,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     setSubmitting(true);
     try {
       await register(email, password);
-      navigate('/zdravotny-pas', { replace: true });
+      navigate('/overenie-emailu', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('register.registrationFailed'));
     } finally {
@@ -111,11 +117,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
 
           <Divider sx={{ my: 0.5 }}>{t('register.or')}</Divider>
 
-          {inAppBrowser && (
-            <Alert severity="info">
-              {t('register.inAppBrowserWarning')}
-            </Alert>
-          )}
+          {inAppBrowser && <Alert severity="info">{t('register.inAppBrowserWarning')}</Alert>}
 
           <Button
             variant="outlined"

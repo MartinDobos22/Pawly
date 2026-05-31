@@ -30,7 +30,16 @@ export async function firebaseAuth(
     }
 
     const decoded = await getAuth().verifyIdToken(idToken);
-    req.user = { uid: decoded.uid, email: decoded.email };
+    const provider = (decoded.firebase as { sign_in_provider?: string } | undefined)
+      ?.sign_in_provider;
+    if (provider === 'password' && decoded.email_verified === false) {
+      throw new AuthError('E-mail nie je overený.', 'EMAIL_NOT_VERIFIED', 403);
+    }
+    req.user = {
+      uid: decoded.uid,
+      email: decoded.email,
+      emailVerified: decoded.email_verified === true,
+    };
     next();
   } catch (err) {
     if (err instanceof AuthError) {

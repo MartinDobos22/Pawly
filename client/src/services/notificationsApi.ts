@@ -42,7 +42,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     },
   });
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     logger.error('Notifications API zlyhalo', { url, status: res.status });
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
