@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -23,6 +24,7 @@ interface AuthContextValue {
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -93,7 +95,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      try {
+        await sendEmailVerification(cred.user);
+      } catch (sendErr) {
+        const fe = sendErr as { code?: string; message?: string };
+        logger.warn('sendEmailVerification po registrácii zlyhalo', {
+          code: fe.code,
+          message: fe.message,
+        });
+      }
+    } catch (err) {
+      throw mapFirebaseAuthError(err);
+    }
+  }, []);
+
+  const sendVerificationEmail = useCallback(async () => {
+    if (!auth.currentUser) {
+      throw new Error(i18n.t('verify.notSignedIn', { ns: 'auth' }) as string);
+    }
+    try {
+      await sendEmailVerification(auth.currentUser);
     } catch (err) {
       throw mapFirebaseAuthError(err);
     }
@@ -156,8 +178,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, register, login, loginWithGoogle, logout, resetPassword }),
-    [user, loading, register, login, loginWithGoogle, logout, resetPassword]
+    () => ({
+      user,
+      loading,
+      register,
+      login,
+      loginWithGoogle,
+      logout,
+      resetPassword,
+      sendVerificationEmail,
+    }),
+    [user, loading, register, login, loginWithGoogle, logout, resetPassword, sendVerificationEmail]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

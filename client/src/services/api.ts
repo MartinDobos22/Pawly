@@ -62,7 +62,7 @@ export async function analyzeComposition(
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     logger.error('Textová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -107,7 +107,7 @@ export async function analyzeAttachment(
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     logger.error('Súborová analýza zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string } | string;
@@ -149,7 +149,7 @@ export async function extractTextFromImage(attachment: {
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     logger.error('OCR extrakcia zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
@@ -220,7 +220,7 @@ export async function interpretPassportText(text: string): Promise<PassportInter
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     logger.error('Interpretácia pasu zlyhala', { status: res.status });
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
@@ -276,7 +276,7 @@ export async function fetchSimilarEpisodeSummary(
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string } | string;
     } | null;
@@ -307,7 +307,7 @@ export async function askFoodSafety(
   });
 
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     const body = (await res.json().catch(() => null)) as {
       error?: { message?: string; code?: string } | string;
     } | null;

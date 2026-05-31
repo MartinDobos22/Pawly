@@ -23,7 +23,7 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
   });
   if (!response.ok) {
-    await handleUnauthorized(response.status);
+    await handleUnauthorized(response.status, response);
     throw new Error(`API request failed: ${response.status}`);
   }
   return response.json() as Promise<T>;

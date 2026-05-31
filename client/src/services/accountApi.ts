@@ -8,7 +8,7 @@ export async function deleteAccount(): Promise<void> {
     headers: { ...(await getAuthHeader()) },
   });
   if (!res.ok) {
-    await handleUnauthorized(res.status);
+    await handleUnauthorized(res.status, res);
     const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
     throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
   }
