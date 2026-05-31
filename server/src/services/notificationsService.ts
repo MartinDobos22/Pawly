@@ -263,7 +263,7 @@ function buildEmailHtml(items: SweepCandidate[]): string {
     : '';
 
   return `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;max-width:560px;margin:0 auto;">
-    <h2 style="color:#0f4c5c;">Pripomienka z Pawportu</h2>
+    <h2 style="color:#0f4c5c;">Pripomienka z Pawlyu</h2>
     <p>Pár termínov tvojich zvierat sa blíži alebo už ušlo. Tu je rýchly prehľad:</p>
     <table style="border-collapse:collapse;width:100%;font-size:14px;">${rows}</table>
     ${cta}
@@ -383,7 +383,7 @@ export async function runSweep(): Promise<SweepSummary> {
 
   for (const [, list] of byUser) {
     const email = list[0].email;
-    const subject = `Pawport: ${list.length} ${plural(list.length, 'termín', 'termíny', 'termínov')} čoskoro`;
+    const subject = `Pawly: ${list.length} ${plural(list.length, 'termín', 'termíny', 'termínov')} čoskoro`;
     try {
       await sendEmail(email, subject, buildEmailHtml(list));
       usersNotified += 1;

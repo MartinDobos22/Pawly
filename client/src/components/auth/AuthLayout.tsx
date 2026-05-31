@@ -77,7 +77,7 @@ export default function AuthLayout({
               <PetsIcon sx={{ fontSize: 22 }} />
             </Box>
             <Typography sx={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.015em' }}>
-              Pawport
+              Pawly
             </Typography>
           </Stack>
 

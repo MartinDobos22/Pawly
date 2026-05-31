@@ -8,7 +8,7 @@ interface Props {
   sx?: SxProps<Theme>;
 }
 
-export default function BrowserFrame({ url = 'pawport.app/zdravotny-pas', children, sx }: Props) {
+export default function BrowserFrame({ url = 'pawly.app/zdravotny-pas', children, sx }: Props) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 

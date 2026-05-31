@@ -2,10 +2,10 @@
   "about": {
     "title": "O aplikácii",
     "subtitle": "Malý pomocník pre veľkú lásku k tvojim zvieratkám.",
-    "appName": "Pawport",
+    "appName": "Pawly",
     "appTagline": "Všetko o zdraví tvojho zvieraťa na jednom mieste.",
-    "appDescription": "Pawport spája digitálny zdravotný pas a inteligentnú analýzu krmiva pre psy, mačky a ďalšie domáce zvieratá. Pomáha ti mať poriadok v očkovaniach, liekoch aj návštevách veterinára — a rozhodovať sa o krmive s istotou. Aby si sa mohol naplno venovať tomu najdôležitejšiemu: svojmu zvieratku.",
-    "featuresTitle": "Čo Pawport vie",
+    "appDescription": "Pawly spája digitálny zdravotný pas a inteligentnú analýzu krmiva pre psy, mačky a ďalšie domáce zvieratá. Pomáha ti mať poriadok v očkovaniach, liekoch aj návštevách veterinára — a rozhodovať sa o krmive s istotou. Aby si sa mohol naplno venovať tomu najdôležitejšiemu: svojmu zvieratku.",
+    "featuresTitle": "Čo Pawly vie",
     "privacyTitle": "Tvoje dáta sú v bezpečí",
     "privacyDescription": "Prístup je chránený prihlásením a všetky záznamy o tvojich zvieratách sú súkromné — vidíš ich len ty.",
     "madeWithLove": "Vytvorené s láskou pre zvieratá",
@@ -34,7 +34,7 @@
   },
   "faq": {
     "title": "Časté otázky",
-    "subtitle": "Stručné odpovede na to, ako Pawport funguje a čo sa deje s tvojimi dátami.",
+    "subtitle": "Stručné odpovede na to, ako Pawly funguje a čo sa deje s tvojimi dátami.",
     "sections": {
       "dataPrivacy": {
         "title": "Dáta a súkromie",
@@ -105,7 +105,7 @@
             "q": "Funguje to na mobile?",
             "a": "Áno, aplikácia je plne responzívna a v prehliadači si ju vieš pridať na domovskú obrazovku ako appku."
           },
-          { "q": "Koľko to stojí?", "a": "Pawport je momentálne zadarmo." }
+          { "q": "Koľko to stojí?", "a": "Pawly je momentálne zadarmo." }
         ]
       }
     }
@@ -177,10 +177,10 @@
     ]
   },
   "comparison": {
-    "title": "Papierový pas verzus Pawport",
+    "title": "Papierový pas verzus Pawly",
     "subtitle": "Prečo prejsť z otrhaného papiera na digitálny zdravotný pas.",
     "paperTitle": "Papierový pas",
-    "pawportTitle": "Pawport",
+    "pawlyTitle": "Pawly",
     "recommended": "Odporúčané",
     "paperPoints": [
       "Ľahko sa stratí alebo zničí",
@@ -189,7 +189,7 @@
       "Nečitateľný rukopis veterinára",
       "Žiadna analýza krmiva"
     ],
-    "pawportPoints": [
+    "pawlyPoints": [
       "Vždy v mobile, nikdy sa nestratí",
       "Automatické pripomienky očkovania a odčervenia",
       "AI skenovanie pasu aj analýza krmiva",
@@ -255,7 +255,7 @@
   "photoWall": {
     "title1": "Pre každého chlpáča",
     "title2": "aj nechlpáča",
-    "subtitle": "Psy, mačky, králiky, vtáky, plazy aj kone — Pawport zvládne zdravotnú kartu pre každé domáce zviera.",
+    "subtitle": "Psy, mačky, králiky, vtáky, plazy aj kone — Pawly zvládne zdravotnú kartu pre každé domáce zviera.",
     "pets": [
       { "label": "Pes" },
       { "label": "Mačka" },

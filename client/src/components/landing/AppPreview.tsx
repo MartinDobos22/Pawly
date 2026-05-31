@@ -296,7 +296,7 @@ export default function AppPreview() {
         >
           {/* Browser frame */}
           <Box sx={{ position: 'relative', display: { xs: 'none', md: 'block' } }}>
-            <BrowserFrame url="pawport.app/karta-pre-veterinara">
+            <BrowserFrame url="pawly.app/karta-pre-veterinara">
               <DesktopPreview />
             </BrowserFrame>
             {/* Floating "Po termíne" badge */}

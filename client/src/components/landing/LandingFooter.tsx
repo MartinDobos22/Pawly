@@ -36,7 +36,7 @@ export default function LandingFooter() {
             >
               <PetsIcon sx={{ fontSize: 18 }} />
             </Box>
-            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>Pawport</Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>Pawly</Typography>
             <Typography
               variant="caption"
               sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}

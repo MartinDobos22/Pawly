@@ -12,7 +12,7 @@ export default function ComparisonSection() {
   const isDark = theme.palette.mode === 'dark';
   const { t } = useTranslation('landing');
   const paperPoints = t('comparison.paperPoints', { returnObjects: true }) as string[];
-  const pawportPoints = t('comparison.pawportPoints', { returnObjects: true }) as string[];
+  const pawlyPoints = t('comparison.pawlyPoints', { returnObjects: true }) as string[];
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>
@@ -89,7 +89,7 @@ export default function ComparisonSection() {
             </Stack>
           </Box>
 
-          {/* Pawport card */}
+          {/* Pawly card */}
           <Box
             sx={{
               position: 'relative',
@@ -131,11 +131,11 @@ export default function ComparisonSection() {
                 <PawIcon />
               </Box>
               <Typography variant="h3" sx={{ fontSize: '1.3rem', fontWeight: 700 }}>
-                {t('comparison.pawportTitle')}
+                {t('comparison.pawlyTitle')}
               </Typography>
             </Stack>
             <Stack spacing={1.5}>
-              {pawportPoints.map((p) => (
+              {pawlyPoints.map((p) => (
                 <Stack key={p} direction="row" alignItems="flex-start" gap={1.25}>
                   <CheckIcon
                     sx={{ fontSize: 20, color: 'success.main', flexShrink: 0, mt: '1px' }}

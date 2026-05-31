@@ -1,5 +1,5 @@
 {
-  "name": "granule-check-server",
+  "name": "pawly-server",
   "version": "1.0.0",
   "description": "GranuleCheck API server – analýza zloženia psích granúl",
   "main": "src/index.ts",

@@ -2,10 +2,10 @@
   "about": {
     "title": "About",
     "subtitle": "A small helper for the big love you have for your pets.",
-    "appName": "Pawport",
+    "appName": "Pawly",
     "appTagline": "Everything about your pet's health in one place.",
-    "appDescription": "Pawport combines a digital health passport and intelligent food analysis for dogs, cats and other pets. It helps you keep track of vaccinations, medications and vet visits — and make food decisions with confidence. So you can focus on what matters most: your pet.",
-    "featuresTitle": "What Pawport can do",
+    "appDescription": "Pawly combines a digital health passport and intelligent food analysis for dogs, cats and other pets. It helps you keep track of vaccinations, medications and vet visits — and make food decisions with confidence. So you can focus on what matters most: your pet.",
+    "featuresTitle": "What Pawly can do",
     "privacyTitle": "Your data is safe",
     "privacyDescription": "Access is protected by sign-in and all your pet records are private — only you can see them.",
     "madeWithLove": "Made with love for pets",
@@ -34,7 +34,7 @@
   },
   "faq": {
     "title": "FAQ",
-    "subtitle": "Quick answers about how Pawport works and what happens to your data.",
+    "subtitle": "Quick answers about how Pawly works and what happens to your data.",
     "sections": {
       "dataPrivacy": {
         "title": "Data & privacy",
@@ -105,7 +105,7 @@
             "q": "Does it work on mobile?",
             "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app."
           },
-          { "q": "How much does it cost?", "a": "Pawport is currently free." }
+          { "q": "How much does it cost?", "a": "Pawly is currently free." }
         ]
       }
     }
@@ -177,10 +177,10 @@
     ]
   },
   "comparison": {
-    "title": "Paper passport vs Pawport",
+    "title": "Paper passport vs Pawly",
     "subtitle": "Why switch from a worn paper passport to a digital health passport.",
     "paperTitle": "Paper passport",
-    "pawportTitle": "Pawport",
+    "pawlyTitle": "Pawly",
     "recommended": "Recommended",
     "paperPoints": [
       "Easily lost or damaged",
@@ -189,7 +189,7 @@
       "Unreadable vet handwriting",
       "No food analysis"
     ],
-    "pawportPoints": [
+    "pawlyPoints": [
       "Always on your phone, never lost",
       "Automatic vaccination and deworming reminders",
       "AI passport scanning and food analysis",
@@ -255,7 +255,7 @@
   "photoWall": {
     "title1": "For every furry friend",
     "title2": "and every scaly one",
-    "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawport handles a health card for every pet.",
+    "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawly handles a health card for every pet.",
     "pets": [
       { "label": "Dog" },
       { "label": "Cat" },

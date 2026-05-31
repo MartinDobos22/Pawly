@@ -76,8 +76,8 @@ export default function LandingHero() {
             ? `translate3d(${mouse.x / 28}px, ${mouse.y / 28}px, 0)`
             : undefined,
           transition: supportsHover ? 'transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1)' : undefined,
-          animation: supportsHover ? undefined : 'pawport-float 7s ease-in-out infinite',
-          '@keyframes pawport-float': {
+          animation: supportsHover ? undefined : 'pawly-float 7s ease-in-out infinite',
+          '@keyframes pawly-float': {
             '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
             '50%': { transform: 'translateY(-12px) rotate(-3deg)' },
           },
@@ -107,8 +107,8 @@ export default function LandingHero() {
             ? `translate3d(${-mouse.x / 22}px, ${-mouse.y / 22}px, 0) rotate(-12deg)`
             : undefined,
           transition: supportsHover ? 'transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1)' : undefined,
-          animation: supportsHover ? undefined : 'pawport-float-alt 9s ease-in-out infinite',
-          '@keyframes pawport-float-alt': {
+          animation: supportsHover ? undefined : 'pawly-float-alt 9s ease-in-out infinite',
+          '@keyframes pawly-float-alt': {
             '0%, 100%': { transform: 'translateY(0) rotate(-12deg)' },
             '50%': { transform: 'translateY(10px) rotate(-18deg)' },
           },
