@@ -607,7 +607,7 @@
     "visitDiagnosis": "Diagnosis",
     "visitFindings": "Finding",
     "visitRecommendations": "Recommendations",
-    "footer": "Pawport · Card generated {{date}}",
+    "footer": "Pawly · Card generated {{date}}",
     "allergies_one": "{{count}} allergy",
     "allergies_other": "{{count}} allergies",
     "chronic_one": "{{count}} chronic diagnosis",

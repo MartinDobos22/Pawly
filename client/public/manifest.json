@@ -1,6 +1,6 @@
 {
-  "name": "Pawport – Digitálny zdravotný pas pre tvojho miláčika",
-  "short_name": "Pawport",
+  "name": "Pawly – Digitálny zdravotný pas pre tvojho miláčika",
+  "short_name": "Pawly",
   "description": "Zdravotný pas, AI analýza krmiva a karta pre veterinára pre psy, mačky a ďalšie domáce zvieratá.",
   "start_url": "/",
   "display": "standalone",

@@ -20,7 +20,7 @@ function getClient(): Resend | null {
  */
 export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
   const client = getClient();
-  const from = process.env.NOTIFY_FROM_EMAIL ?? 'Pawport <onboarding@resend.dev>';
+  const from = process.env.NOTIFY_FROM_EMAIL ?? 'Pawly <onboarding@resend.dev>';
 
   if (!client) {
     logger.info('[email] dry-run — RESEND_API_KEY nie je nastavený, e-mail sa neodoslal', {

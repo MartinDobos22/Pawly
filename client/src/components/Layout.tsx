@@ -219,7 +219,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
               color: isDark ? 'primary.light' : 'text.primary',
             }}
           >
-            Pawport
+            Pawly
           </Typography>
         </Stack>
         <PetSwitcher />

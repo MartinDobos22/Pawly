@@ -621,7 +621,7 @@
     "visitDiagnosis": "Diagnóza",
     "visitFindings": "Nález",
     "visitRecommendations": "Odporúčania",
-    "footer": "Pawport · Karta vygenerovaná {{date}}",
+    "footer": "Pawly · Karta vygenerovaná {{date}}",
     "allergies_one": "{{count}} alergia",
     "allergies_few": "{{count}} alergie",
     "allergies_many": "{{count}} alergií",
