@@ -29,6 +29,7 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   sendVerificationEmail: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -123,6 +124,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await requestVerificationEmail(currentEmailLocale());
   }, []);
 
+  // Reload user state z Firebase backendu a sync React state.
+  // Pre prípad keď reload() updatne IndexedDB ale onAuthStateChanged nefajruje.
+  const refreshUser = useCallback(async () => {
+    if (!auth.currentUser) return;
+    await auth.currentUser.reload();
+    await auth.currentUser.getIdToken(true);
+    setUser(auth.currentUser);
+  }, []);
+
   const login = useCallback(async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -189,8 +199,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       resetPassword,
       sendVerificationEmail,
+      refreshUser,
     }),
-    [user, loading, register, login, loginWithGoogle, logout, resetPassword, sendVerificationEmail]
+    [
+      user,
+      loading,
+      register,
+      login,
+      loginWithGoogle,
+      logout,
+      resetPassword,
+      sendVerificationEmail,
+      refreshUser,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
