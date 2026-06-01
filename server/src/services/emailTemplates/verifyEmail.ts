@@ -18,7 +18,9 @@ interface Copy {
   heading: string;
   intro: string;
   cta: string;
-  fallbackLead: string;
+  fallbackPrefix: string;
+  fallbackLinkText: string;
+  fallbackSuffix: string;
   expires: string;
   footerTagline: string;
   footerReason: string;
@@ -34,7 +36,9 @@ const COPIES: Record<EmailLocale, Copy> = {
     intro:
       'Vitaj v Pawly! Aby sme mohli pokračovať, potvrď prosím svoju e-mailovú adresu kliknutím na tlačidlo nižšie.',
     cta: 'Overiť e-mail',
-    fallbackLead: 'Ak tlačidlo nefunguje, skopíruj a vlož tento odkaz do prehliadača:',
+    fallbackPrefix: 'Ak tlačidlo nefunguje, ',
+    fallbackLinkText: 'klikni sem',
+    fallbackSuffix: '.',
     expires: 'Odkaz je platný 24 hodín od odoslania.',
     footerTagline: 'Pawly — digitálny zdravotný pas pre tvoje zviera.',
     footerReason: 'Tento e-mail si dostal/a, lebo si si vytvoril/a účet na pawly.sk.',
@@ -47,7 +51,9 @@ const COPIES: Record<EmailLocale, Copy> = {
     intro:
       'Welcome to Pawly! To get started, please confirm your email address by clicking the button below.',
     cta: 'Verify email',
-    fallbackLead: "If the button doesn't work, copy and paste this link into your browser:",
+    fallbackPrefix: "If the button doesn't work, ",
+    fallbackLinkText: 'click here',
+    fallbackSuffix: ' instead.',
     expires: 'The link is valid for 24 hours.',
     footerTagline: 'Pawly — a digital health passport for your pet.',
     footerReason: 'You received this email because an account was created at pawly.sk.',
@@ -117,11 +123,8 @@ export function buildVerificationHtml(link: string, locale: EmailLocale): string
                 </tr>
               </table>
 
-              <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${TEXT_SECONDARY};">
-                ${escapeHtml(c.fallbackLead)}
-              </p>
-              <p style="margin:0 0 20px; font-size:13px; line-height:1.5; word-break:break-all;">
-                <a href="${safeLink}" style="color:${BRAND_PRIMARY}; text-decoration:underline;">${safeLink}</a>
+              <p style="margin:0 0 16px; font-size:13px; line-height:1.5; color:${TEXT_SECONDARY};">
+                ${escapeHtml(c.fallbackPrefix)}<a href="${safeLink}" style="color:${BRAND_PRIMARY}; text-decoration:underline; font-weight:600;">${escapeHtml(c.fallbackLinkText)}</a>${escapeHtml(c.fallbackSuffix)}
               </p>
               <p style="margin:0; font-size:12px; line-height:1.5; color:${TEXT_SECONDARY};">
                 ${escapeHtml(c.expires)}
