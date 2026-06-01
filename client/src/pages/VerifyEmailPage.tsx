@@ -7,6 +7,7 @@ import { auth } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { isGoogleUser } from '../utils/isGoogleUser';
 import AuthLayout from '../components/auth/AuthLayout';
+import { listPets } from '../services/petsApi';
 import { logger } from '../utils/logger';
 
 interface Props {
@@ -61,11 +62,34 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
 
     (async () => {
       try {
+        // 1. Firebase backend marks email_verified=true
         await applyActionCode(auth, oobCode);
         if (cancelled) return;
+
+        // 2. Refresh local user + force-refresh ID token (so subsequent
+        //    API calls send token with email_verified=true claim).
         if (auth.currentUser) {
           await refreshUser();
         }
+        if (cancelled) return;
+
+        // 3. Explicitne triggerneme ensureUser na backende cez listPets().
+        //    Toto garantuje vytvorenie Supabase users row aj keby React
+        //    reactivity nezachytila state change a Providers by sa
+        //    nenamontovali (nepoužije sa následný auto-fetch).
+        if (auth.currentUser?.emailVerified) {
+          try {
+            await listPets();
+          } catch (warmupErr) {
+            // Non-fatal — verification je v poriadku, len ensureUser
+            // sa nepodaril (môže sa opraviť pri ďalšom API requeste).
+            logger.warn('post-verify listPets warmup zlyhal', {
+              reason: warmupErr instanceof Error ? warmupErr.message : String(warmupErr),
+            });
+          }
+        }
+        if (cancelled) return;
+
         setVerifiedSuccess(true);
         setError(null);
       } catch (err) {
@@ -83,16 +107,19 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
     };
   }, [hasActionCode, oobCode, refreshUser, t]);
 
-  // Po úspechu + signed-in user → krátka success message a navigate na dashboard.
+  // Po úspechu navigujeme na dashboard po krátkej delay.
+  // Závisíme len na verifiedSuccess, nie na user?.emailVerified — Firebase User
+  // mutuje in-place, React reactivity môže byť nespolahlivá.
   useEffect(() => {
     if (!verifiedSuccess) return;
-    if (!user?.emailVerified) return;
+    if (verifiedButNoSession) return; // user musí najprv kliknúť "Prihlásiť sa"
     const id = window.setTimeout(
       () => navigate('/zdravotny-pas', { replace: true }),
       SUCCESS_REDIRECT_DELAY_MS
     );
     return () => window.clearTimeout(id);
-  }, [verifiedSuccess, user?.emailVerified, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifiedSuccess, navigate]);
 
   const verifiedButNoSession = verifiedSuccess && !auth.currentUser;
   const subtitle = useMemo(() => {
