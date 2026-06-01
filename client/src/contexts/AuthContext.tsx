@@ -89,14 +89,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       });
 
-    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       logger.info('Auth state zmena', {
         signedIn: Boolean(nextUser),
         uid: nextUser?.uid,
         email: nextUser?.email ?? undefined,
         provider: nextUser?.providerData?.[0]?.providerId,
+        emailVerified: nextUser?.emailVerified,
       });
+
+      // Sync s Firebase backend + force-refresh ID token. Toto rieši najmä prípad
+      // keď user prešiel cez Firebase action page (default flow) — server označil
+      // email_verified=true, ale klientský cached token má v claime stále false.
+      // Bez tohto refresh-u by všetky /api/* calls vracali 403 EMAIL_NOT_VERIFIED.
+      if (nextUser) {
+        try {
+          await nextUser.reload();
+          await nextUser.getIdToken(true);
+        } catch (e) {
+          logger.warn('post-auth sync zlyhal', {
+            reason: e instanceof Error ? e.message : String(e),
+          });
+        }
+      }
+
       setUser(nextUser);
+      setUserVersion((v) => v + 1);
       setLoading(false);
     });
     return unsubscribe;
