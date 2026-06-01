@@ -2,6 +2,7 @@ import { getAuth } from '../config/firebase';
 import { isEmailEnabled, sendEmail } from '../config/email';
 import { logger } from '../utils/logger';
 import { httpError } from '../utils/httpError';
+import { buildAppActionUrl } from './actionLinkBuilder';
 import { buildVerificationHtml, subjectFor, type EmailLocale } from './emailTemplates/verifyEmail';
 
 const ACTION_REDIRECT_URL = 'https://pawly.sk/overenie-emailu';
@@ -31,23 +32,21 @@ export async function sendVerificationEmailFor(
   email: string,
   locale: EmailLocale
 ): Promise<void> {
-  // V produkcii bez RESEND_API_KEY by sa endpoint javil ako úspech, hoci mail nedoručíme.
-  // Verification mail je core registračný flow — radšej fail-fast než tichý dry-run.
   if (!isEmailEnabled() && process.env.NODE_ENV === 'production') {
     throw httpError(503, 'Odosielanie e-mailov nie je nakonfigurované.', 'EMAIL_NOT_CONFIGURED');
   }
 
-  const link = await withTimeout(
+  const firebaseLink = await withTimeout(
     getAuth().generateEmailVerificationLink(email, {
       url: ACTION_REDIRECT_URL,
-      // handleCodeInApp:true → link smeruje priamo na našu /overenie-emailu stránku
-      // s ?mode=verifyEmail&oobCode=... namiesto Firebase default action handlera
-      // na firebaseapp.com. Naša stránka spracuje verifikáciu sama cez applyActionCode().
       handleCodeInApp: true,
     }),
     FIREBASE_LINK_TIMEOUT_MS,
     'Firebase generateEmailVerificationLink'
   );
+
+  // Re-build URL na pawly.sk doménu — firebaseapp.com URL nahradíme našou.
+  const link = buildAppActionUrl(firebaseLink, 'verifyEmail');
 
   const subject = subjectFor(locale);
   const html = buildVerificationHtml(link, locale);

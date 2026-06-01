@@ -3,7 +3,6 @@ import {
   createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
-  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
@@ -14,7 +13,11 @@ import { FirebaseError } from 'firebase/app';
 import { auth, googleProvider } from '../config/firebase';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
-import { requestVerificationEmail, type EmailLocale } from '../services/authEmailsApi';
+import {
+  requestPasswordReset,
+  requestVerificationEmail,
+  type EmailLocale,
+} from '../services/authEmailsApi';
 
 function currentEmailLocale(): EmailLocale {
   return i18n.language?.toLowerCase().startsWith('en') ? 'en' : 'sk';
@@ -206,11 +209,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
-    } catch (err) {
-      throw mapFirebaseAuthError(err);
-    }
+    // Backend route je anti-enumeration: pre neexistujúci email vráti rovnaký
+    // 200 OK. Klient teda nedostane spätnú väzbu či účet existuje — to je žiaduce.
+    await requestPasswordReset(email, currentEmailLocale());
   }, []);
 
   const value = useMemo<AuthContextValue>(

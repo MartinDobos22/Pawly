@@ -109,31 +109,10 @@ app.get('/api/health', (_req, res) => {
 // Preto musí byť PRED firebaseAuth.
 app.use('/api/cron', cronRouter);
 
-// /api/auth/* — vlastný middleware reťaz: token verify bez email_verified gate
-// (inak by neoverený user nemohol resendovať verification mail) + per-user rate limit.
-const verifyEmailLimiter60s = rateLimit({
-  windowMs: 60 * 1000,
-  limit: 1,
-  keyGenerator: (req) => req.user?.uid ?? req.ip ?? 'anon',
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  message: rateLimitedError('Počkaj chvíľu pred ďalším pokusom.'),
-});
-const verifyEmailLimiterHour = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  limit: 5,
-  keyGenerator: (req) => req.user?.uid ?? req.ip ?? 'anon',
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  message: rateLimitedError('Prekročený hodinový limit, skús neskôr.'),
-});
-app.use(
-  '/api/auth',
-  firebaseAuth({ allowUnverified: true }),
-  verifyEmailLimiter60s,
-  verifyEmailLimiterHour,
-  authEmailsRouter
-);
+// /api/auth/* — auth-related endpointy. Per-route middleware (verifikácia
+// vyžaduje token+gate-skip, password reset je úplne unauth). Definované v
+// samotnom routeri kvôli prehľadu a flexibilite per endpoint.
+app.use('/api/auth', authEmailsRouter);
 
 // Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token + email verified gate
 app.use('/api/', firebaseAuth());

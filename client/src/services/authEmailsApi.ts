@@ -29,3 +29,24 @@ export async function requestVerificationEmail(locale: EmailLocale): Promise<voi
     throw new Error(message);
   }
 }
+
+export async function requestPasswordReset(email: string, locale: EmailLocale): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/auth/send-password-reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, locale }),
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as {
+      error?: { message?: string; code?: string } | string;
+    } | null;
+    const message =
+      typeof body?.error === 'string'
+        ? body.error
+        : (body?.error?.message ?? `Chyba servera (${res.status})`);
+    const code = typeof body?.error === 'object' ? body?.error?.code : undefined;
+    logger.warn('requestPasswordReset zlyhalo', { status: res.status, code });
+    throw new Error(message);
+  }
+}
