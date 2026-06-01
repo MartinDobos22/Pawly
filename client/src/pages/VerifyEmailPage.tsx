@@ -7,8 +7,26 @@ import { auth } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { isGoogleUser } from '../utils/isGoogleUser';
 import AuthLayout from '../components/auth/AuthLayout';
-import { listPets } from '../services/petsApi';
+import { getAuthHeader } from '../services/authToken';
 import { logger } from '../utils/logger';
+
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+
+// Direct fetch warmup ktorý triggerne ensureUser na backende cez /api/pets,
+// ALE bez handleUnauthorized chainu — žiadny signOut, žiadny redirect.
+// Verifikačný flow tak nemôže rozbiť cascade error handling.
+async function warmupEnsureUser(): Promise<void> {
+  try {
+    const headers = await getAuthHeader();
+    if (!headers.Authorization) return;
+    const res = await fetch(`${BASE_URL}/api/pets`, { method: 'GET', headers });
+    logger.info('warmupEnsureUser response', { status: res.status });
+  } catch (err) {
+    logger.warn('warmupEnsureUser network error', {
+      reason: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
 
 interface Props {
   darkMode: boolean;
@@ -73,20 +91,11 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
         }
         if (cancelled) return;
 
-        // 3. Explicitne triggerneme ensureUser na backende cez listPets().
-        //    Toto garantuje vytvorenie Supabase users row aj keby React
-        //    reactivity nezachytila state change a Providers by sa
-        //    nenamontovali (nepoužije sa následný auto-fetch).
+        // 3. Explicitne triggerneme ensureUser na backende — direct fetch
+        //    bez petsApi handleUnauthorized chainu (žiadny signOut/redirect
+        //    cascade ktorý by mohol rozbiť verifikačný flow).
         if (auth.currentUser?.emailVerified) {
-          try {
-            await listPets();
-          } catch (warmupErr) {
-            // Non-fatal — verification je v poriadku, len ensureUser
-            // sa nepodaril (môže sa opraviť pri ďalšom API requeste).
-            logger.warn('post-verify listPets warmup zlyhal', {
-              reason: warmupErr instanceof Error ? warmupErr.message : String(warmupErr),
-            });
-          }
+          await warmupEnsureUser();
         }
         if (cancelled) return;
 

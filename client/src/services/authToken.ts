@@ -32,24 +32,22 @@ export async function getAuthHeader(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function handleUnauthorized(status: number, res?: Response): Promise<void> {
+// 401 = bad/missing token → signOut.
+// 403 EMAIL_NOT_VERIFIED a iné kódy NEROBÍME hard navigation (window.location.assign)
+// — to spôsobovalo bounce loop: full page reload → Firebase SDK načíta cached starý token
+// z IndexedDB → backend opäť 403 → reload → loop.
+// ProtectedRoute sám redirectuje cez React Router neverifikovaných userov na /overenie-emailu
+// na základe user.emailVerified state. Stačí to.
+export async function handleUnauthorized(status: number, _res?: Response): Promise<void> {
   if (status === 401) {
     logger.warn('handleUnauthorized: 401 → odhlasujem používateľa (auth.signOut)');
     await auth.signOut();
     return;
   }
-  if (status === 403 && res) {
-    try {
-      const body = (await res.clone().json()) as { error?: { code?: string } } | null;
-      const code = body?.error?.code;
-      if (code === 'EMAIL_NOT_VERIFIED' && window.location.pathname !== '/overenie-emailu') {
-        logger.warn(
-          'handleUnauthorized: 403 EMAIL_NOT_VERIFIED → presmerovanie na /overenie-emailu'
-        );
-        window.location.assign('/overenie-emailu');
-      }
-    } catch {
-      /* ignore parse failure */
-    }
+  if (status === 403) {
+    logger.warn(
+      'handleUnauthorized: 403 — backend zamietol request (napr. EMAIL_NOT_VERIFIED). ' +
+        'Redirect ponecháme na ProtectedRoute aby sme predišli reload loop.'
+    );
   }
 }
