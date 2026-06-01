@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Link, Stack, Typography } from '@mui/material';
 import { auth } from '../config/firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -15,8 +15,9 @@ interface Props {
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
-  const { user, sendVerificationEmail, logout } = useAuth();
+  const { user, sendVerificationEmail, refreshUser, logout } = useAuth();
   const { t } = useTranslation('auth');
+  const navigate = useNavigate();
 
   const [cooldown, setCooldown] = useState(0);
   const [info, setInfo] = useState<string | null>(null);
@@ -56,13 +57,15 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
     setInfo(null);
     setSubmitting(true);
     try {
-      await auth.currentUser?.reload();
-      await auth.currentUser?.getIdToken(true);
-      if (auth.currentUser?.emailVerified) {
-        window.location.assign('/zdravotny-pas');
+      // refreshUser() reload-uje Firebase backend state, refreshne ID token
+      // a synchronizuje React user state. Bez page reloadu — predtým
+      // window.location.assign vyrábal race condition s Firebase SDK hydratáciou.
+      await refreshUser();
+      if (!auth.currentUser?.emailVerified) {
+        setError(t('verify.stillNotVerified'));
         return;
       }
-      setError(t('verify.stillNotVerified'));
+      navigate('/zdravotny-pas', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('verify.stillNotVerified'));
     } finally {
