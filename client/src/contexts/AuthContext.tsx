@@ -65,6 +65,10 @@ function mapFirebaseAuthError(err: unknown): Error {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  // Bump pri každom refreshUser — Firebase User.reload() mutuje user in-place,
+  // takže setUser(auth.currentUser) by bol no-op (rovnaká referencia → React bail-out).
+  // Zmenou tejto verzie vynútime nový context value → consumers re-renderujú.
+  const [userVersion, setUserVersion] = useState(0);
 
   useEffect(() => {
     // Po návrate z Google redirectu zachyť prípadnú chybu (žiadna tichá biela obrazovka).
@@ -125,12 +129,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Reload user state z Firebase backendu a sync React state.
-  // Pre prípad keď reload() updatne IndexedDB ale onAuthStateChanged nefajruje.
+  // Firebase User.reload() mutuje user in-place — setUser(sameRef) by React odignoroval.
+  // Preto bumpujeme userVersion na vynútenie re-renderu consumerov.
   const refreshUser = useCallback(async () => {
     if (!auth.currentUser) return;
     await auth.currentUser.reload();
     await auth.currentUser.getIdToken(true);
     setUser(auth.currentUser);
+    setUserVersion((v) => v + 1);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -201,8 +207,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sendVerificationEmail,
       refreshUser,
     }),
+    // userVersion v deps — Firebase User je mutovaný in-place, takže potrebujeme
+    // explicit signál aby React re-renderol consumerov keď sa user.emailVerified zmení.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       user,
+      userVersion,
       loading,
       register,
       login,
