@@ -16,6 +16,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AnalyzePage from './pages/AnalyzePage';
 import PetProfilePage from './pages/PetProfilePage';
 import HistoryPage from './pages/HistoryPage';
@@ -56,6 +57,10 @@ export default function App() {
               <Route
                 path="/overenie-emailu"
                 element={<VerifyEmailPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/reset-hesla"
+                element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
               />
               <Route
                 path="/*"
