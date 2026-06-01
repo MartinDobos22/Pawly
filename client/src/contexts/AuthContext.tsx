@@ -3,7 +3,6 @@ import {
   createUserWithEmailAndPassword,
   getRedirectResult,
   onAuthStateChanged,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -15,6 +14,11 @@ import { FirebaseError } from 'firebase/app';
 import { auth, googleProvider } from '../config/firebase';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
+import { requestVerificationEmail, type EmailLocale } from '../services/authEmailsApi';
+
+function currentEmailLocale(): EmailLocale {
+  return i18n.language?.toLowerCase().startsWith('en') ? 'en' : 'sk';
+}
 
 interface AuthContextValue {
   user: User | null;
@@ -96,13 +100,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(async (email: string, password: string) => {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
+      // Vnorený try/catch: zlyhanie poslania verification mailu nesmie zlomiť registráciu.
+      // User sa dostane na /overenie-emailu kde môže Resend skúsiť znova.
       try {
-        await sendEmailVerification(cred.user);
+        await cred.user.getIdToken(true);
+        await requestVerificationEmail(currentEmailLocale());
       } catch (sendErr) {
-        const fe = sendErr as { code?: string; message?: string };
-        logger.warn('sendEmailVerification po registrácii zlyhalo', {
-          code: fe.code,
-          message: fe.message,
+        logger.warn('verification email po registrácii zlyhal', {
+          reason: sendErr instanceof Error ? sendErr.message : String(sendErr),
         });
       }
     } catch (err) {
@@ -114,11 +119,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!auth.currentUser) {
       throw new Error(i18n.t('verify.notSignedIn', { ns: 'auth' }) as string);
     }
-    try {
-      await sendEmailVerification(auth.currentUser);
-    } catch (err) {
-      throw mapFirebaseAuthError(err);
-    }
+    await auth.currentUser.getIdToken(true);
+    await requestVerificationEmail(currentEmailLocale());
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {

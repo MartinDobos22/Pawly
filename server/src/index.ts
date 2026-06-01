@@ -12,6 +12,7 @@ import healthRouter from './routes/health';
 import accountRouter from './routes/account';
 import notificationsRouter from './routes/notifications';
 import cronRouter from './routes/cron';
+import authEmailsRouter from './routes/authEmails';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -32,25 +33,26 @@ const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // povol aj requests bez Origin (curl, health checks)
-      if (!origin) return callback(null, true);
+const corsMiddleware = cors({
+  origin: (origin, callback) => {
+    // povol aj requests bez Origin (curl, health checks)
+    if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+});
 
-// explicitne obslúž preflight pre všetky route
-app.options('*', cors()); // Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
+app.use(corsMiddleware);
+// Preflight pre všetky route používa rovnakú restrictive cors instanciu —
+// bez tohto by `app.options('*', cors())` defaultne odpovedalo s wildcard origin.
+app.options('*', corsMiddleware);
+// Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
 
@@ -107,8 +109,34 @@ app.get('/api/health', (_req, res) => {
 // Preto musí byť PRED firebaseAuth.
 app.use('/api/cron', cronRouter);
 
-// Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token
-app.use('/api/', firebaseAuth);
+// /api/auth/* — vlastný middleware reťaz: token verify bez email_verified gate
+// (inak by neoverený user nemohol resendovať verification mail) + per-user rate limit.
+const verifyEmailLimiter60s = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 1,
+  keyGenerator: (req) => req.user?.uid ?? req.ip ?? 'anon',
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: rateLimitedError('Počkaj chvíľu pred ďalším pokusom.'),
+});
+const verifyEmailLimiterHour = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  keyGenerator: (req) => req.user?.uid ?? req.ip ?? 'anon',
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: rateLimitedError('Prekročený hodinový limit, skús neskôr.'),
+});
+app.use(
+  '/api/auth',
+  firebaseAuth({ allowUnverified: true }),
+  verifyEmailLimiter60s,
+  verifyEmailLimiterHour,
+  authEmailsRouter
+);
+
+// Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token + email verified gate
+app.use('/api/', firebaseAuth());
 
 // Routes
 app.use('/api/pets', ensureUser, petsRouter);
@@ -125,5 +153,5 @@ app.use('/api/interpret-passport', aiHeavyLimiter, interpretPassportRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  logger.info('GranuleCheck server spustený', { port: PORT });
+  logger.info('Pawly server spustený', { port: PORT });
 });
