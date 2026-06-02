@@ -1,6 +1,6 @@
 // Pawly Service Worker
 // Verzia cache – zmeňte pri každom deployi aby sa cache invalidoval
-const CACHE_VERSION = 'pawly-v12';
+const CACHE_VERSION = 'pawly-v13';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
@@ -49,6 +49,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+
+  // Preskoč non-http(s) schémy — Cache API nepodporuje chrome-extension://,
+  // moz-extension://, data: a ďalšie. Browser extensions inak generujú warnings.
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
 
   // API volania – Network first, fallback na cache
   if (url.pathname.startsWith('/api/')) {
