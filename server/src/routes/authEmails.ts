@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { sendVerificationEmailFor } from '../services/emailVerificationService';
 import { sendPasswordResetEmailFor } from '../services/passwordResetService';
 import type { EmailLocale } from '../services/emailTemplates/verifyEmail';
@@ -27,10 +27,16 @@ const rateLimitedError = (message: string) => ({
 
 // ─── /send-verification (AUTHENTICATED) ───────────────────────────
 // Per-user rate limit by uid (firebaseAuth middleware sa stará o auth).
+// Pre IP fallback (pred auth) treba ipKeyGenerator helper aby IPv6 useri
+// neobehli limit (express-rate-limit v8+ enforced).
+function uidOrIpKey(req: Request): string {
+  return req.user?.uid ?? ipKeyGenerator(req.ip ?? '');
+}
+
 const verifyLimiter60s = rateLimit({
   windowMs: 60 * 1000,
   limit: 1,
-  keyGenerator: (req: Request) => req.user?.uid ?? req.ip ?? 'anon',
+  keyGenerator: uidOrIpKey,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: rateLimitedError('Počkaj chvíľu pred ďalším pokusom.'),
@@ -38,7 +44,7 @@ const verifyLimiter60s = rateLimit({
 const verifyLimiterHour = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 5,
-  keyGenerator: (req: Request) => req.user?.uid ?? req.ip ?? 'anon',
+  keyGenerator: uidOrIpKey,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: rateLimitedError('Prekročený hodinový limit, skús neskôr.'),
