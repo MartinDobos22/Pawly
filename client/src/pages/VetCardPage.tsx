@@ -17,6 +17,9 @@ import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/P
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
 import type { TimelineEvent } from '../types/dogHealth';
+import { dedupList, subtractList } from '../utils/healthProfileDedup';
+
+type PdfLang = 'sk' | 'en';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -296,6 +299,31 @@ const PRINT_STYLES = `
   .visit-md table.md-table tr:last-child td { border-bottom: none; }
   .visit-md strong { color: var(--ink); font-weight: 600; }
 
+  .b-ai {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #075985;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+
+  .ai-disclaimer {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-left: 2px solid #075985;
+    background: #f0f9ff;
+    color: var(--ink-2);
+    font-size: 10px;
+    line-height: 1.4;
+    font-style: italic;
+  }
+
   /* ── FOOTER ─────────────────────────────── */
   .doc-foot {
     margin-top: 24px;
@@ -313,38 +341,21 @@ const PRINT_STYLES = `
   }
 `;
 
-
 export default function VetCardPage() {
   const { t, i18n } = useTranslation('healthPassport');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
-  const fmtDate = (value?: string) => {
-    if (!value) return '–';
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
-  };
   const fmtDateShort = (value?: string) => {
     if (!value) return '–';
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return value;
     return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
   };
-  const statusBadge = (date: string | undefined, soonDays = 30): { cls: string; label: string } => {
-    if (!date) return { cls: 'badge-unknown', label: t('vetPage.statusUnknown') };
-    const now = new Date();
-    const target = new Date(date);
-    const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    if (diff < 0) return { cls: 'badge-expired', label: t('vetPage.statusExpired') };
-    const formatted = fmtDateShort(date);
-    if (diff <= soonDays)
-      return { cls: 'badge-warning', label: t('vetPage.statusWillExpire', { date: formatted }) };
-    return { cls: 'badge-valid', label: t('vetPage.statusValidUntil', { date: formatted }) };
-  };
   const { profiles } = usePetProfiles();
   const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
+  const [pdfLang, setPdfLang] = useState<PdfLang>('sk');
 
   const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
   const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
@@ -388,7 +399,9 @@ export default function VetCardPage() {
         dogId,
         type: 'VACCINATION' as const,
         title: t('timeline.titleVaccination', { name: x.name }),
-        subtitle: x.validUntil ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) }) : undefined,
+        subtitle: x.validUntil
+          ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) })
+          : undefined,
         date: x.dateApplied,
       })),
       ...dogDeworm.map((x) => ({
@@ -396,7 +409,9 @@ export default function VetCardPage() {
         dogId,
         type: 'DEWORMING' as const,
         title: t('timeline.titleDeworming', { product: x.productName }),
-        subtitle: x.nextDueDate ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) }) : undefined,
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
         date: x.dateGiven,
       })),
       ...dogEctos.map((x) => ({
@@ -404,7 +419,9 @@ export default function VetCardPage() {
         dogId,
         type: 'ECTOPARASITE' as const,
         title: t('timeline.titleEcto', { product: x.productName }),
-        subtitle: x.nextDueDate ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) }) : undefined,
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
         date: x.dateGiven,
       })),
       ...dogVisits.map((x) => ({
@@ -428,7 +445,11 @@ export default function VetCardPage() {
         dogId,
         type: 'DIET' as const,
         title: t('timeline.titleDiet', { food: x.foodName }),
-        subtitle: x.suitabilityStatus,
+        subtitle: x.suitabilityStatus
+          ? (t(`vetPage.dietSuitability${x.suitabilityStatus}` as never, {
+              defaultValue: x.suitabilityStatus,
+            }) as string)
+          : undefined,
         date: x.startedAt,
       })),
     ].sort((a, b) => b.date.localeCompare(a.date));
@@ -448,6 +469,44 @@ export default function VetCardPage() {
 
   const handlePrint = () => {
     if (!dog || !data) return;
+
+    // Lokalizácia exportu — nezávislá od UI jazyka
+    const t = i18n.getFixedT(pdfLang, 'healthPassport');
+    const lang = pdfLang === 'en' ? 'en-US' : 'sk-SK';
+    const fmtDate = (value?: string) => {
+      if (!value) return '–';
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    };
+    const fmtDateShort = (value?: string) => {
+      if (!value) return '–';
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+    const statusBadge = (
+      validUntil: string | undefined,
+      appliedAt: string | undefined,
+      soonDays = 30
+    ): { cls: string; label: string } => {
+      if (!validUntil) return { cls: 'badge-unknown', label: t('vetPage.statusUnknown') };
+      const target = new Date(validUntil);
+      if (Number.isNaN(target.getTime()))
+        return { cls: 'badge-unknown', label: t('vetPage.statusUnknown') };
+      if (appliedAt) {
+        const applied = new Date(appliedAt);
+        if (!Number.isNaN(applied.getTime()) && target.getTime() < applied.getTime()) {
+          return { cls: 'badge-expired', label: t('vetPage.statusInvalidDates') };
+        }
+      }
+      const diff = Math.ceil((target.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      if (diff < 0) return { cls: 'badge-expired', label: t('vetPage.statusExpired') };
+      const formatted = fmtDateShort(validUntil);
+      if (diff <= soonDays)
+        return { cls: 'badge-warning', label: t('vetPage.statusWillExpire', { date: formatted }) };
+      return { cls: 'badge-valid', label: t('vetPage.statusValidUntil', { date: formatted }) };
+    };
 
     // ── Markdown → HTML for PDF ──────────────────────────────
     const mdToHtml = (raw: string): string => {
@@ -578,13 +637,76 @@ export default function VetCardPage() {
         )
       : dog.ageYears;
 
-    const besnota = statusBadge(data.rabies?.validUntil);
-    const kombinov = statusBadge(data.combined?.validUntil);
-    const dew = statusBadge(data.lastDeworming?.nextDueDate, 7);
-    const ecto = statusBadge(data.lastEcto?.nextDueDate, 7);
+    const besnota = statusBadge(data.rabies?.validUntil, data.rabies?.dateApplied);
+    const kombinov = statusBadge(data.combined?.validUntil, data.combined?.dateApplied);
+    const dew = statusBadge(data.lastDeworming?.nextDueDate, data.lastDeworming?.dateGiven, 7);
+    const ecto = statusBadge(data.lastEcto?.nextDueDate, data.lastEcto?.dateGiven, 7);
 
+    const esc = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const tagHtml = (items: string[], cls: string) =>
-      items.map((x) => `<span class="tag ${cls}">${x}</span>`).join('');
+      items.map((x) => `<span class="tag ${cls}">${esc(x)}</span>`).join('');
+    const allergyList = dedupList(dog.allergies);
+    const intoleranceList = subtractList(allergyList, dog.intolerances);
+    const chronicList = dedupList(
+      dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions
+    );
+
+    const dogVaccinesAll = vaccinations.filter((x) => x.dogId === dogId);
+    const dogDewormAll = dewormings.filter((x) => x.dogId === dogId);
+    const dogEctosAll = ectos.filter((x) => x.dogId === dogId);
+    const dogVisitsAll = visits.filter((x) => x.dogId === dogId);
+    const dogDietAll = dietEntries.filter((x) => x.dogId === dogId);
+
+    const pdfTimeline = [
+      ...dogVaccinesAll.map((x) => ({
+        type: 'VACCINATION' as const,
+        title: t('timeline.titleVaccination', { name: x.name }),
+        subtitle: x.validUntil
+          ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) })
+          : undefined,
+        date: x.dateApplied,
+      })),
+      ...dogDewormAll.map((x) => ({
+        type: 'DEWORMING' as const,
+        title: t('timeline.titleDeworming', { product: x.productName }),
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
+        date: x.dateGiven,
+      })),
+      ...dogEctosAll.map((x) => ({
+        type: 'ECTOPARASITE' as const,
+        title: t('timeline.titleEcto', { product: x.productName }),
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
+        date: x.dateGiven,
+      })),
+      ...dogVisitsAll.map((x) => ({
+        type: 'VET_VISIT' as const,
+        title: t('timeline.titleVisit', { clinic: x.clinicName }),
+        subtitle: x.reason,
+        date: x.date,
+        isAi: Boolean(x.aiExtractedText),
+      })),
+      ...data.activeMeds.map((x) => ({
+        type: 'MEDICATION' as const,
+        title: t('timeline.titleMedication', { name: x.name }),
+        subtitle: `${x.dose} · ${x.frequency}`,
+        date: x.startDate,
+      })),
+      ...dogDietAll.map((x) => ({
+        type: 'DIET' as const,
+        title: t('timeline.titleDiet', { food: x.foodName }),
+        subtitle: x.suitabilityStatus
+          ? (t(`vetPage.dietSuitability${x.suitabilityStatus}` as never, {
+              defaultValue: x.suitabilityStatus,
+            }) as string)
+          : undefined,
+        date: x.startedAt,
+      })),
+    ].sort((a, b) => b.date.localeCompare(a.date));
 
     const statusColorVar = (cls: string) =>
       cls === 'badge-valid'
@@ -642,7 +764,7 @@ export default function VetCardPage() {
           v.batchNumber,
           v.dateApplied,
           v.validUntil,
-          statusBadge(v.validUntil)
+          statusBadge(v.validUntil, v.dateApplied)
         )
       ),
       data.lastDeworming
@@ -680,13 +802,15 @@ export default function VetCardPage() {
       )
       .join('');
 
+    const aiBadgeHtml = `<span class="b-ai">${esc(t('vetPage.aiImportBadge'))}</span>`;
+    const hasAiVisits = data.significantVisits.some((v) => Boolean(v.aiExtractedText));
     const visitCards = data.significantVisits
       .map(
         (v) => `
         <div class="visit">
           <div class="visit-head">
             <span class="visit-date">${fmtDate(v.date)}</span>
-            <span class="visit-clinic">${v.clinicName ?? t('vetPage.noClinic')}${v.aiExamType ? ` · ${v.aiExamType}` : ''}</span>
+            <span class="visit-clinic">${v.clinicName ?? t('vetPage.noClinic')}${v.aiExamType ? ` · ${v.aiExamType}` : ''}${v.aiExtractedText ? ` ${aiBadgeHtml}` : ''}</span>
           </div>
           <div class="visit-reason">${v.reason ?? ''}</div>
           ${v.diagnosis ? `<div class="visit-section-label">${t('vetPage.visitDiagnosis')}</div><div class="visit-md">${mdToHtml(v.diagnosis)}</div>` : ''}
@@ -696,13 +820,13 @@ export default function VetCardPage() {
       )
       .join('');
 
-    const timelineItems = data.timeline
+    const timelineItems = pdfTimeline
       .map(
         (item) => `<tr>
           <td class="muted nowrap" style="width:90px">${fmtDateShort(item.date)}</td>
           <td class="bold nowrap" style="width:130px">${t(`timeline.${item.type}` as never)}</td>
           <td>
-            ${item.title}
+            ${item.title}${'isAi' in item && item.isAi ? ` ${aiBadgeHtml}` : ''}
             ${item.subtitle ? `<div class="muted" style="font-size:10px">${item.subtitle}</div>` : ''}
           </td>
         </tr>`
@@ -710,8 +834,8 @@ export default function VetCardPage() {
       .join('');
 
     const sections = exportSections;
-    const allergyCount = dog.allergies.length;
-    const chronicCount = dog.chronicConditions?.length ?? dog.healthConditions.length;
+    const allergyCount = allergyList.length;
+    const chronicCount = chronicList.length;
     const heroBadges = sections.identity
       ? [
           allergyCount
@@ -773,24 +897,24 @@ export default function VetCardPage() {
   <section class="block">
     <h2 class="block-title">${t('vetPage.sectionHealth')}</h2>
     ${
-      dog.chronicConditions?.length || dog.healthConditions.length
+      chronicList.length
         ? `
     <div class="sub-label">${t('vetPage.labelChronicDiagnoses')}</div>
-    <div class="tags">${tagHtml(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions, 'tag-blue')}</div>`
+    <div class="tags">${tagHtml(chronicList, 'tag-blue')}</div>`
         : ''
     }
     ${
-      dog.allergies.length
+      allergyList.length
         ? `
     <div class="sub-label warn">${t('vetPage.labelAllergies')}</div>
-    <div class="tags">${tagHtml(dog.allergies, 'tag-red')}</div>`
+    <div class="tags">${tagHtml(allergyList, 'tag-red')}</div>`
         : ''
     }
     ${
-      dog.intolerances.length
+      intoleranceList.length
         ? `
     <div class="sub-label">${t('vetPage.labelIntolerances')}</div>
-    <div class="tags">${tagHtml(dog.intolerances, 'tag-amber')}</div>`
+    <div class="tags">${tagHtml(intoleranceList, 'tag-amber')}</div>`
         : ''
     }
     ${
@@ -812,10 +936,9 @@ export default function VetCardPage() {
     }
     ${
       !(
-        dog.chronicConditions?.length ||
-        dog.healthConditions.length ||
-        dog.allergies.length ||
-        dog.intolerances.length ||
+        chronicList.length ||
+        allergyList.length ||
+        intoleranceList.length ||
         dog.procedures?.length ||
         dog.notes
       )
@@ -883,6 +1006,7 @@ export default function VetCardPage() {
   <section class="block">
     <h2 class="block-title">${t('vetPage.sectionVisits')}</h2>
     ${visitCards}
+    ${hasAiVisits ? `<div class="ai-disclaimer">${esc(t('vetPage.aiImportDisclaimer'))}</div>` : ''}
   </section>`
       : ''
   }
@@ -907,7 +1031,7 @@ export default function VetCardPage() {
   }
 
   <footer class="doc-foot">
-    ${t('vetPage.footer', { date: new Date().toLocaleDateString(lang) })}
+    ${t('vetPage.footer', { petName: dog.name, date: new Date().toLocaleDateString(lang) })}
   </footer>
 
 </div>
@@ -1008,6 +1132,8 @@ export default function VetCardPage() {
         onChangeSections={setExportSections}
         onExportPdf={handlePrint}
         onPrintPreview={() => window.print()}
+        pdfLang={pdfLang}
+        onChangePdfLang={setPdfLang}
       />
 
       <Stack spacing={1.5}>
@@ -1050,7 +1176,10 @@ export default function VetCardPage() {
           color="text.secondary"
           sx={{ textAlign: 'center', display: 'block', py: 2 }}
         >
-          {t('vetPage.footer', { date: new Date().toLocaleDateString(lang) })}
+          {t('vetPage.footer', {
+            petName: dog.name,
+            date: new Date().toLocaleDateString(lang),
+          })}
         </Typography>
       </Stack>
     </Box>

@@ -44,6 +44,14 @@ async function insertMany(table: string, rows: Row[]): Promise<Row[]> {
 
 // Pozn.: sekvenčné inserty (nie plne atomické). Pri zlyhaní v strede vráti 5xx;
 // budúce vylepšenie je obaliť do plpgsql RPC transakcie.
+function isInvalidRange(start: string | undefined, end: string | undefined): boolean {
+  if (!start?.trim() || !end?.trim()) return false;
+  const s = new Date(start).getTime();
+  const e = new Date(end).getTime();
+  if (Number.isNaN(s) || Number.isNaN(e)) return false;
+  return e < s;
+}
+
 export async function createVisitBundle(
   appUserId: string,
   bundle: VisitBundle
@@ -51,6 +59,34 @@ export async function createVisitBundle(
   const petId = bundle.visit?.dogId;
   if (!petId) throw httpError(400, 'Chýba dogId v návšteve.', 'INVALID_INPUT');
   await assertPetOwned(appUserId, petId);
+
+  for (const v of bundle.vaccinations ?? []) {
+    if (isInvalidRange(v.dateApplied, v.validUntil)) {
+      throw httpError(
+        400,
+        'Dátum platnosti vakcinácie musí byť rovnaký alebo neskôr ako dátum aplikácie.',
+        'INVALID_DATE_RANGE'
+      );
+    }
+  }
+  for (const d of bundle.dewormings ?? []) {
+    if (isInvalidRange(d.dateGiven, d.nextDueDate)) {
+      throw httpError(
+        400,
+        'Ďalšia dávka odčervenia musí byť rovnaká alebo neskôr ako dátum podania.',
+        'INVALID_DATE_RANGE'
+      );
+    }
+  }
+  for (const e of bundle.ectos ?? []) {
+    if (isInvalidRange(e.dateGiven, e.nextDueDate)) {
+      throw httpError(
+        400,
+        'Ďalšia dávka antiparazitika musí byť rovnaká alebo neskôr ako dátum podania.',
+        'INVALID_DATE_RANGE'
+      );
+    }
+  }
 
   // 1. Návšteva (bez medication_ids — doplníme po vytvorení liekov).
   const [visitRow] = await insertMany('vet_visits', [
