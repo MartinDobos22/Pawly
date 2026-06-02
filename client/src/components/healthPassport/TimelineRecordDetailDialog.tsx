@@ -227,10 +227,24 @@ export default function TimelineRecordDetailDialog({
       ? null
       : TIMELINE_TYPE_META[state.type];
 
+  const isInvalidRange = (start: string, end: string): boolean => {
+    if (!start?.trim() || !end?.trim()) return false;
+    const s = new Date(start).getTime();
+    const e = new Date(end).getTime();
+    if (Number.isNaN(s) || Number.isNaN(e)) return false;
+    return e < s;
+  };
+  const vacDateError =
+    state?.type === 'VACCINATION' && isInvalidRange(vacDraft.dateApplied, vacDraft.validUntil)
+      ? t('validation.vaccinationValidUntilBeforeApplied')
+      : '';
+
   const handleSave = () => {
     if (!state) return;
-    if (state.type === 'VACCINATION') onSaveVaccination(state.id, vacDraft);
-    else if (state.type === 'DEWORMING') onSaveDeworming(state.id, dewDraft);
+    if (state.type === 'VACCINATION') {
+      if (vacDateError) return;
+      onSaveVaccination(state.id, vacDraft);
+    } else if (state.type === 'DEWORMING') onSaveDeworming(state.id, dewDraft);
     else if (state.type === 'ECTOPARASITE') onSaveEcto(state.id, ectoDraft);
     else if (state.type === 'MEDICATION') onSaveMedication(state.id, medDraft);
     else if (state.type === 'DIET') onSaveDiet(state.id, dietDraft);
@@ -298,6 +312,8 @@ export default function TimelineRecordDetailDialog({
               value={vacDraft.validUntil}
               onChange={(e) => setVacDraft((p) => ({ ...p, validUntil: e.target.value }))}
               size="small"
+              error={Boolean(vacDateError)}
+              helperText={vacDateError || undefined}
             />
           </Box>
           <TextField

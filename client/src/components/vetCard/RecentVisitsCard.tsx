@@ -36,6 +36,7 @@ function FieldBlock({ label, text }: { label: string; text: string }) {
 export default function RecentVisitsCard({ visits }: Props) {
   const theme = useTheme();
   const { t, i18n } = useTranslation('vetCard');
+  const { t: tHp } = useTranslation('healthPassport');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   const formatDate = (value: string): string => {
     const parsed = new Date(value);
@@ -82,6 +83,14 @@ export default function RecentVisitsCard({ visits }: Props) {
               <Chip label={v.clinicName} size="small" variant="outlined" />
               {v.aiExamType && (
                 <Chip label={v.aiExamType} size="small" color="primary" variant="outlined" />
+              )}
+              {v.aiExtractedText && (
+                <Chip
+                  label={tHp('vetPage.aiImportBadge')}
+                  size="small"
+                  color="info"
+                  variant="outlined"
+                />
               )}
             </Stack>
 

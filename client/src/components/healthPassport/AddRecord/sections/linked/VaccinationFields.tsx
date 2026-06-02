@@ -8,13 +8,19 @@ import DateField from '../../../../DateField';
 interface VaccinationFieldsProps {
   values: VaccinationFieldsValues;
   errorName?: string;
+  errorValidUntil?: string;
   onChange: <K extends keyof VaccinationFieldsValues>(
     field: K,
     value: VaccinationFieldsValues[K]
   ) => void;
 }
 
-export default function VaccinationFields({ values, errorName, onChange }: VaccinationFieldsProps) {
+export default function VaccinationFields({
+  values,
+  errorName,
+  errorValidUntil,
+  onChange,
+}: VaccinationFieldsProps) {
   const { t } = useTranslation('healthPassport');
   return (
     <Stack spacing={1.5}>
@@ -46,6 +52,8 @@ export default function VaccinationFields({ values, errorName, onChange }: Vacci
           label={t('vaccination.validUntil')}
           value={values.validUntil}
           onChange={(v) => onChange('validUntil', v)}
+          error={Boolean(errorValidUntil)}
+          helperText={errorValidUntil}
           fullWidth
         />
         <TextField

@@ -7,6 +7,7 @@ import {
   WarningAmber as ChronicIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
+import { dedupList, subtractList } from '../../utils/healthProfileDedup';
 
 interface Props {
   dog: PetProfile;
@@ -78,12 +79,11 @@ function Subsection({ label, icon, items, tone }: SubsectionProps) {
 export default function HealthProfileChips({ dog }: Props) {
   const { t } = useTranslation('vetCard');
   const theme = useTheme();
-  const chronic = dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions;
+  const chronic = dedupList(dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions);
+  const allergies = dedupList(dog.allergies);
+  const intolerances = subtractList(allergies, dog.intolerances);
   const hasContent =
-    chronic.length > 0 ||
-    dog.allergies.length > 0 ||
-    dog.intolerances.length > 0 ||
-    Boolean(dog.notes);
+    chronic.length > 0 || allergies.length > 0 || intolerances.length > 0 || Boolean(dog.notes);
 
   if (!hasContent) {
     return (
@@ -134,13 +134,13 @@ export default function HealthProfileChips({ dog }: Props) {
         <Subsection
           label={t('healthProfile.allergies')}
           icon={<AllergyIcon />}
-          items={dog.allergies}
+          items={allergies}
           tone="error"
         />
         <Subsection
           label={t('healthProfile.intolerances')}
           icon={<IntoleranceIcon />}
-          items={dog.intolerances}
+          items={intolerances}
           tone="warning"
         />
       </Stack>

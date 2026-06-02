@@ -8,6 +8,8 @@ import {
   IconButton,
   Menu,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
   alpha,
@@ -15,6 +17,8 @@ import {
 } from '@mui/material';
 import { Print as PrintIcon, Tune as TuneIcon, PictureAsPdf as PdfIcon } from '@mui/icons-material';
 import type { ExportSectionId, ExportSectionsState } from './ExportSectionsToolbar';
+
+export type PdfLang = 'sk' | 'en';
 
 const ORDER: ExportSectionId[] = [
   'identity',
@@ -30,6 +34,8 @@ interface Props {
   onChangeSections: (next: ExportSectionsState) => void;
   onExportPdf: () => void;
   onPrintPreview: () => void;
+  pdfLang: PdfLang;
+  onChangePdfLang: (next: PdfLang) => void;
 }
 
 export default function VetCardActionBar({
@@ -37,8 +43,11 @@ export default function VetCardActionBar({
   onChangeSections,
   onExportPdf,
   onPrintPreview,
+  pdfLang,
+  onChangePdfLang,
 }: Props) {
   const { t } = useTranslation('vetCard');
+  const { t: tHp } = useTranslation('healthPassport');
   const theme = useTheme();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const open = Boolean(anchor);
@@ -89,6 +98,19 @@ export default function VetCardActionBar({
         >
           {t('actionBar.sectionCount', { enabled: enabledCount, total: ORDER.length })}
         </Typography>
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          value={pdfLang}
+          onChange={(_, next: PdfLang | null) => {
+            if (next) onChangePdfLang(next);
+          }}
+          aria-label={tHp('vetPage.pdfLanguageAria')}
+          sx={{ '& .MuiToggleButton-root': { py: 0.25, px: 1, fontSize: '0.72rem' } }}
+        >
+          <ToggleButton value="sk">SK</ToggleButton>
+          <ToggleButton value="en">EN</ToggleButton>
+        </ToggleButtonGroup>
         <Tooltip title={t('actionBar.selectSections')}>
           <IconButton
             onClick={handleOpen}
