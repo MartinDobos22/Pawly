@@ -125,6 +125,7 @@ export default function LinkedRecords({
             <VaccinationFields
               values={values.vaccination}
               errorName={errors['linked.vaccination.name']}
+              errorValidUntil={errors['linked.vaccination.validUntil']}
               onChange={setVaccinationField}
             />
           )}

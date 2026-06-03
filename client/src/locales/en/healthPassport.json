@@ -591,6 +591,14 @@
     "statusExpired": "Expired",
     "statusWillExpire": "Expires {{date}}",
     "statusValidUntil": "Valid until {{date}}",
+    "statusInvalidDates": "Invalid date range",
+    "aiImportBadge": "AI import",
+    "aiImportDisclaimer": "Records marked \"AI import\" were automatically extracted from photos or documents. Please verify before use.",
+    "pdfLanguage": "PDF language",
+    "pdfLanguageAria": "Select exported PDF language",
+    "dietSuitabilitySUITABLE": "Suitable",
+    "dietSuitabilityRISKY": "Risky",
+    "dietSuitabilityUNSUITABLE": "Unsuitable",
     "vaccineRabiesType": "Rabies",
     "vaccineRabiesName": "Rabies",
     "vaccineCombinedType": "Combined",
@@ -607,7 +615,8 @@
     "visitDiagnosis": "Diagnosis",
     "visitFindings": "Finding",
     "visitRecommendations": "Recommendations",
-    "footer": "Pawly · Card generated {{date}}",
+    "footer": "Pawly · {{petName}}'s card generated {{date}}",
+    "footerNoPet": "Pawly · Card generated {{date}}",
     "allergies_one": "{{count}} allergy",
     "allergies_other": "{{count}} allergies",
     "chronic_one": "{{count}} chronic diagnosis",
@@ -644,5 +653,9 @@
       "ectoparasite": "Ectoparasite",
       "medication": "Medication"
     }
+    "nonNegativeRequired": "Enter a non-negative number.",
+    "vaccinationValidUntilBeforeApplied": "Valid-until date must be on or after the application date.",
+    "dewormingNextDueBeforeGiven": "Next-due date must be on or after the application date.",
+    "ectoNextDueBeforeGiven": "Next-due date must be on or after the application date."
   }
 }

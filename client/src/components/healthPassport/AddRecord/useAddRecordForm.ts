@@ -198,6 +198,14 @@ const isPositiveNumeric = (raw: string): boolean => {
   return Number.isFinite(parsed) && parsed >= 0;
 };
 
+const isInvalidDateRange = (startIso: string, endIso: string): boolean => {
+  if (!startIso?.trim() || !endIso?.trim()) return false;
+  const start = new Date(startIso).getTime();
+  const end = new Date(endIso).getTime();
+  if (Number.isNaN(start) || Number.isNaN(end)) return false;
+  return end < start;
+};
+
 export function validateManualForm(state: ManualFormState): ErrorMap {
   const t = (k: string) => i18n.t(k as never, { ns: 'healthPassport' }) as string;
   const errors: ErrorMap = {};
@@ -210,11 +218,26 @@ export function validateManualForm(state: ManualFormState): ErrorMap {
   if (state.linked.vaccination && !state.linked.vaccination.name.trim()) {
     errors['linked.vaccination.name'] = t('validation.vaccinationNameRequired');
   }
+  if (
+    state.linked.vaccination &&
+    isInvalidDateRange(state.basics.date, state.linked.vaccination.validUntil)
+  ) {
+    errors['linked.vaccination.validUntil'] = t('validation.vaccinationValidUntilBeforeApplied');
+  }
   if (state.linked.deworming && !state.linked.deworming.product.trim()) {
     errors['linked.deworming.product'] = t('validation.productRequired');
   }
+  if (
+    state.linked.deworming &&
+    isInvalidDateRange(state.basics.date, state.linked.deworming.validUntil)
+  ) {
+    errors['linked.deworming.validUntil'] = t('validation.dewormingNextDueBeforeGiven');
+  }
   if (state.linked.ecto && !state.linked.ecto.product.trim()) {
     errors['linked.ecto.product'] = t('validation.productRequired');
+  }
+  if (state.linked.ecto && isInvalidDateRange(state.basics.date, state.linked.ecto.validUntil)) {
+    errors['linked.ecto.validUntil'] = t('validation.ectoNextDueBeforeGiven');
   }
   if (state.linked.medication && !state.linked.medication.name.trim()) {
     errors['linked.medication.name'] = t('validation.medicationNameRequired');
@@ -238,8 +261,11 @@ export const sectionsWithErrors = (errors: ErrorMap) => ({
   basics: Boolean(errors['basics.date'] || errors['basics.clinicName']),
   linked: Boolean(
     errors['linked.vaccination.name'] ||
+    errors['linked.vaccination.validUntil'] ||
     errors['linked.deworming.product'] ||
+    errors['linked.deworming.validUntil'] ||
     errors['linked.ecto.product'] ||
+    errors['linked.ecto.validUntil'] ||
     errors['linked.medication.name'] ||
     errors['linked.diet.foodName']
   ),

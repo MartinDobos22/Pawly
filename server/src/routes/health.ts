@@ -30,6 +30,23 @@ function requireUserId(req: Request): string {
   return id;
 }
 
+function isInvalidDateRange(startIso: unknown, endIso: unknown): boolean {
+  if (typeof startIso !== 'string' || typeof endIso !== 'string') return false;
+  if (!startIso.trim() || !endIso.trim()) return false;
+  const start = new Date(startIso).getTime();
+  const end = new Date(endIso).getTime();
+  if (Number.isNaN(start) || Number.isNaN(end)) return false;
+  return end < start;
+}
+
+function assertDateRange(body: unknown, startField: string, endField: string, message: string): void {
+  if (!body || typeof body !== 'object') return;
+  const record = body as Record<string, unknown>;
+  if (isInvalidDateRange(record[startField], record[endField])) {
+    throw httpError(400, message, 'INVALID_DATE_RANGE');
+  }
+}
+
 function registerCrud<Dto extends { id: string; dogId: string }>(
   path: string,
   crud: Crud<Dto>,
@@ -70,6 +87,47 @@ function registerCrud<Dto extends { id: string; dogId: string }>(
     });
   }
 }
+
+function dateRangeGuard(
+  startField: string,
+  endField: string,
+  message: string
+): (req: Request, _res: Response, next: NextFunction) => void {
+  return (req, _res, next) => {
+    if (req.method !== 'POST' && req.method !== 'PATCH') return next();
+    try {
+      assertDateRange(req.body, startField, endField, message);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+router.use(
+  '/vaccinations',
+  dateRangeGuard(
+    'dateApplied',
+    'validUntil',
+    'Dátum platnosti vakcinácie musí byť rovnaký alebo neskôr ako dátum aplikácie.'
+  )
+);
+router.use(
+  '/dewormings',
+  dateRangeGuard(
+    'dateGiven',
+    'nextDueDate',
+    'Ďalšia dávka odčervenia musí byť rovnaká alebo neskôr ako dátum podania.'
+  )
+);
+router.use(
+  '/ectoparasites',
+  dateRangeGuard(
+    'dateGiven',
+    'nextDueDate',
+    'Ďalšia dávka antiparazitika musí byť rovnaká alebo neskôr ako dátum podania.'
+  )
+);
 
 registerCrud('vaccinations', makeCrud(vaccinationMapper));
 registerCrud('dewormings', makeCrud(dewormingMapper));
