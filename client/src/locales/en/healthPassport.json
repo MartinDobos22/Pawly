@@ -629,5 +629,20 @@
     "medicationNameRequired": "Enter the medication name.",
     "foodNameRequired": "Enter the food name.",
     "nonNegativeRequired": "Enter a non-negative number."
+  },
+  "duplicateDialog": {
+    "title": "Possible duplicate record",
+    "description_one": "You already have {{count}} similar record. Save another one anyway?",
+    "description_other": "You already have {{count}} similar records. Save more anyway?",
+    "description": "You already have {{count}} similar record. Save another one anyway?",
+    "dateLabel": "Date: {{date}}",
+    "cancel": "Back to form",
+    "confirm": "Save anyway",
+    "types": {
+      "vaccination": "Vaccination",
+      "deworming": "Deworming",
+      "ectoparasite": "Ectoparasite",
+      "medication": "Medication"
+    }
   }
 }

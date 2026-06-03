@@ -646,5 +646,21 @@
     "medicationNameRequired": "Zadajte názov lieku.",
     "foodNameRequired": "Zadajte názov krmiva.",
     "nonNegativeRequired": "Zadajte nezáporné číslo."
+  },
+  "duplicateDialog": {
+    "title": "Možný duplicitný záznam",
+    "description_one": "V evidencii už máš {{count}} podobný záznam. Naozaj chceš uložiť ďalší rovnaký?",
+    "description_few": "V evidencii už máš {{count}} podobné záznamy. Naozaj chceš uložiť ďalšie rovnaké?",
+    "description_other": "V evidencii už máš {{count}} podobných záznamov. Naozaj chceš uložiť ďalšie rovnaké?",
+    "description": "V evidencii už máš {{count}} podobný záznam. Naozaj chceš uložiť ďalší rovnaký?",
+    "dateLabel": "Dátum: {{date}}",
+    "cancel": "Späť do formulára",
+    "confirm": "Uložiť napriek tomu",
+    "types": {
+      "vaccination": "Vakcinácia",
+      "deworming": "Odčervenie",
+      "ectoparasite": "Ektoparazity",
+      "medication": "Liek"
+    }
   }
 }
