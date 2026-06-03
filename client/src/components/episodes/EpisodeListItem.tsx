@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Accordion,
@@ -27,6 +28,8 @@ import {
   type HealthEpisodeRecord,
 } from '../../types/healthEpisode';
 import type { MedicationRecord, VetVisitRecord } from '../../types/dogHealth';
+import { getHealthAttachmentSignedUrls } from '../../services/healthApi';
+import { logger } from '../../utils/logger';
 
 interface EpisodeListItemProps {
   episode: HealthEpisodeRecord;
@@ -83,6 +86,30 @@ export default function EpisodeListItem({
   const linkedVisit = episode.vetVisitId
     ? vetVisits.find((v) => v.id === episode.vetVisitId)
     : undefined;
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const objectPaths = episode.attachments?.map((a) => a.objectPath).filter(Boolean) ?? [];
+    if (objectPaths.length === 0) {
+      setSignedUrls({});
+      return;
+    }
+
+    let cancelled = false;
+    getHealthAttachmentSignedUrls(episode.dogId, objectPaths)
+      .then((urls) => {
+        if (!cancelled) setSignedUrls(urls);
+      })
+      .catch((err) => {
+        logger.warn('Nepodarilo sa vytvoriť signed URL pre prílohy epizódy', {
+          error: err instanceof Error ? err.message : 'unknown',
+        });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [episode.attachments, episode.dogId]);
 
   return (
     <Accordion
@@ -250,7 +277,7 @@ export default function EpisodeListItem({
             >
               {episode.attachments.map((a) => (
                 <Box
-                  key={a.id}
+                  key={a.objectPath}
                   sx={{
                     border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 1.5,
@@ -259,7 +286,7 @@ export default function EpisodeListItem({
                 >
                   <Box
                     component="img"
-                    src={a.dataUrl}
+                    src={signedUrls[a.objectPath] ?? ''}
                     alt={a.caption ?? t('item.attachment')}
                     sx={{ width: '100%', height: 100, objectFit: 'cover', display: 'block' }}
                   />

@@ -637,7 +637,10 @@
     "productRequired": "Enter the product name.",
     "medicationNameRequired": "Enter the medication name.",
     "foodNameRequired": "Enter the food name.",
-    "nonNegativeRequired": "Enter a non-negative number."
+    "nonNegativeRequired": "Enter a non-negative number.",
+    "vaccinationValidUntilBeforeApplied": "Valid-until date must be on or after the application date.",
+    "dewormingNextDueBeforeGiven": "Next-due date must be on or after the application date.",
+    "ectoNextDueBeforeGiven": "Next-due date must be on or after the application date."
   },
   "duplicateDialog": {
     "title": "Possible duplicate record",
@@ -653,9 +656,5 @@
       "ectoparasite": "Ectoparasite",
       "medication": "Medication"
     }
-    "nonNegativeRequired": "Enter a non-negative number.",
-    "vaccinationValidUntilBeforeApplied": "Valid-until date must be on or after the application date.",
-    "dewormingNextDueBeforeGiven": "Next-due date must be on or after the application date.",
-    "ectoNextDueBeforeGiven": "Next-due date must be on or after the application date."
   }
 }

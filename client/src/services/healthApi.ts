@@ -1,4 +1,5 @@
 import type {
+  AttachmentRef,
   DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
@@ -87,3 +88,36 @@ export const savedAnalysesApi = {
   remove: (id: string) => request<void>(`/saved-analyses/${id}`, { method: 'DELETE' }),
   clear: () => request<void>('/saved-analyses', { method: 'DELETE' }),
 };
+
+
+export interface UploadHealthAttachmentPayload {
+  petId: string;
+  fileName: string;
+  mimeType: string;
+  base64Data: string;
+  caption?: string;
+}
+
+export function uploadHealthAttachment(payload: UploadHealthAttachmentPayload): Promise<AttachmentRef> {
+  return request<AttachmentRef>('/attachments/upload', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getHealthAttachmentSignedUrls(
+  petId: string,
+  objectPaths: string[]
+): Promise<Record<string, string>> {
+  return request<Record<string, string>>('/attachments/signed-urls', {
+    method: 'POST',
+    body: JSON.stringify({ petId, objectPaths }),
+  });
+}
+
+export function deleteHealthAttachment(petId: string, objectPath: string): Promise<void> {
+  return request<void>('/attachments', {
+    method: 'DELETE',
+    body: JSON.stringify({ petId, objectPath }),
+  });
+}

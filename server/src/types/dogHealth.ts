@@ -14,10 +14,10 @@ export type TimelineType =
   | 'NOTE';
 
 export interface AttachmentRef {
-  id: string;
-  label: string;
-  imageUrl?: string;
-  fileName?: string;
+  objectPath: string;
+  mimeType: string;
+  size: number;
+  caption?: string;
   createdAt: string;
 }
 

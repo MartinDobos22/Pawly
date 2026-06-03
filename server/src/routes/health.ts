@@ -21,6 +21,11 @@ import {
   removeSavedAnalysis,
 } from '../services/savedAnalysesService';
 import { httpError } from '../utils/httpError';
+import {
+  createHealthAttachmentSignedUrls,
+  deleteHealthAttachment,
+  uploadHealthAttachment,
+} from '../services/healthAttachmentsService';
 
 const router = Router();
 
@@ -128,6 +133,40 @@ router.use(
     'Ďalšia dávka antiparazitika musí byť rovnaká alebo neskôr ako dátum podania.'
   )
 );
+
+
+router.post('/attachments/upload', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.status(201).json(await uploadHealthAttachment(requireUserId(req), req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/attachments/signed-urls', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await createHealthAttachmentSignedUrls(requireUserId(req), req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/attachments/download', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await createHealthAttachmentSignedUrls(requireUserId(req), req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/attachments', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await deleteHealthAttachment(requireUserId(req), req.body);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
 
 registerCrud('vaccinations', makeCrud(vaccinationMapper));
 registerCrud('dewormings', makeCrud(dewormingMapper));

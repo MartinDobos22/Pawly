@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
+import { uploadHealthAttachment } from '../../../services/healthApi';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
 import type { AiDetectedDraftRecord, AiDetectedRecordType } from '../hpTypes';
@@ -196,11 +197,18 @@ export function useAiImport(dogId: string) {
       }
       try {
         const { previewUrl, base64 } = await readFileAsBase64(file);
+        const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
+        const attachment = await uploadHealthAttachment({
+          petId: dogId,
+          ...pending,
+          caption: file.name,
+        });
         accepted.push({
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           file,
           previewUrl,
-          pending: { fileName: file.name, mimeType: file.type, base64Data: base64 },
+          pending,
+          attachment,
         });
       } catch (err) {
         const msg = err instanceof Error ? err.message : '';
@@ -221,7 +229,7 @@ export function useAiImport(dogId: string) {
         message: t('addRecord.aiImport.maxPagesExceeded', { count: MAX_ATTACHMENTS }),
       });
     }
-  }, []);
+  }, [dogId, t]);
 
   const addAttachments = useCallback(
     (files: File[]) => addAttachmentFiles(files, state.attachments.length),
@@ -392,9 +400,7 @@ export function useAiImport(dogId: string) {
           state.attachments.length > 1
             ? `${state.attachmentLabel || t('attachmentUpload.documentFallback')} — ${t('attachmentUpload.pageLabel', { n: idx + 1 })}`
             : state.attachmentLabel || entry.pending.fileName,
-        attachmentUrl: '',
-        attachmentPreviewUrl: entry.previewUrl,
-        attachmentFileName: entry.pending.fileName,
+        attachment: entry.attachment,
       }));
 
       return VetVisitHelper.createAiVisitBundle({

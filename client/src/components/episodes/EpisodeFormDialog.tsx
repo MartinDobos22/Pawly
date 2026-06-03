@@ -415,6 +415,7 @@ export default function EpisodeFormDialog({
           <Divider />
 
           <AttachmentGallery
+            dogId={dogId}
             attachments={state.attachments}
             onChange={(v) => update('attachments', v)}
           />

@@ -10,10 +10,11 @@ export type EpisodeOutcome = 'resolved' | 'ongoing' | 'recurring';
 export type EpisodeSeverity = 'mild' | 'moderate' | 'severe';
 
 export interface EpisodeAttachment {
-  id: string;
-  dataUrl: string;
-  caption?: string;
+  objectPath: string;
   mimeType: string;
+  size: number;
+  caption?: string;
+  createdAt: string;
 }
 
 export interface HealthEpisodeRecord {

@@ -114,6 +114,7 @@ export const vetVisitMapper: EntityMapper<VetVisitRecord> = {
       ['ai_extracted_text', d.aiExtractedText],
       ['ai_exam_type', d.aiExamType],
       ['medication_ids', d.medicationIds],
+      ['attachments', d.attachments],
     ]),
   toDto: (r) => ({
     id: String(r.id),

@@ -13,9 +13,7 @@ import i18n from '../i18n';
 
 interface VisitAttachmentDraft {
   attachmentLabel: string;
-  attachmentUrl: string;
-  attachmentPreviewUrl: string;
-  attachmentFileName?: string;
+  attachment?: AttachmentRef;
 }
 
 export interface WizardVisitDraft {
@@ -127,19 +125,17 @@ export class VetVisitHelper {
   static buildAttachment(
     draft: VisitAttachmentDraft,
     fallbackLabel: string,
-    createdAt: string,
-    uid: () => string
+    createdAt: string
   ): AttachmentRef[] | undefined {
-    const attachmentUrl = draft.attachmentPreviewUrl || draft.attachmentUrl;
-    if (!draft.attachmentLabel && !attachmentUrl && !draft.attachmentFileName) return undefined;
+    if (!draft.attachment?.objectPath) return undefined;
 
     return [
       {
-        id: uid(),
-        label: draft.attachmentLabel || draft.attachmentFileName || fallbackLabel,
-        imageUrl: attachmentUrl || undefined,
-        fileName: draft.attachmentFileName || undefined,
-        createdAt,
+        objectPath: draft.attachment.objectPath,
+        mimeType: draft.attachment.mimeType,
+        size: draft.attachment.size,
+        caption: draft.attachmentLabel || draft.attachment.caption || fallbackLabel,
+        createdAt: draft.attachment.createdAt || createdAt,
       },
     ];
   }
@@ -147,11 +143,10 @@ export class VetVisitHelper {
   static buildAttachments(
     drafts: VisitAttachmentDraft[],
     fallbackLabel: string,
-    createdAt: string,
-    uid: () => string
+    createdAt: string
   ): AttachmentRef[] | undefined {
     const refs = drafts.flatMap(
-      (draft) => VetVisitHelper.buildAttachment(draft, fallbackLabel, createdAt, uid) ?? []
+      (draft) => VetVisitHelper.buildAttachment(draft, fallbackLabel, createdAt) ?? []
     );
     return refs.length > 0 ? refs : undefined;
   }
@@ -173,8 +168,7 @@ export class VetVisitHelper {
     const attachments = VetVisitHelper.buildAttachment(
       attachmentDraft,
       i18n.t('attachmentUpload.receiptFallback', { ns: 'healthPassport' }) as string,
-      createdAt,
-      uid
+      createdAt
     );
 
     const medications: MedicationRecord[] = [];
@@ -362,8 +356,7 @@ export class VetVisitHelper {
         ? VetVisitHelper.buildAttachments(
             drafts,
             i18n.t('addRecord.aiImport.defaultAttachmentLabel', { ns: 'healthPassport' }) as string,
-            createdAt,
-            uid
+            createdAt
           )
         : undefined;
 

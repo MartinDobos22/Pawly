@@ -1,22 +1,27 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, IconButton, TextField, Typography, useTheme } from '@mui/material';
 import { AddPhotoAlternate as AddPhotoIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { downscaleImage, fileToDataUrl } from '../../utils/imageDownscale';
 import type { EpisodeAttachment } from '../../types/healthEpisode';
 import { logger } from '../../utils/logger';
+import {
+  deleteHealthAttachment,
+  getHealthAttachmentSignedUrls,
+  uploadHealthAttachment,
+} from '../../services/healthApi';
 
 const MAX_ORIGINAL_FALLBACK_BYTES = 500 * 1024;
 
 interface AttachmentGalleryProps {
+  dogId: string;
   attachments: EpisodeAttachment[];
   onChange: (next: EpisodeAttachment[]) => void;
   disabled?: boolean;
 }
 
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-
 export default function AttachmentGallery({
+  dogId,
   attachments,
   onChange,
   disabled = false,
@@ -26,6 +31,30 @@ export default function AttachmentGallery({
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const objectPaths = attachments.map((a) => a.objectPath).filter(Boolean);
+    if (objectPaths.length === 0) {
+      setSignedUrls({});
+      return;
+    }
+
+    let cancelled = false;
+    getHealthAttachmentSignedUrls(dogId, objectPaths)
+      .then((urls) => {
+        if (!cancelled) setSignedUrls(urls);
+      })
+      .catch((err) => {
+        logger.warn('Nepodarilo sa vytvoriť signed URL pre prílohy epizódy', {
+          error: err instanceof Error ? err.message : 'unknown',
+        });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dogId, attachments]);
 
   const handleAdd = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -42,27 +71,31 @@ export default function AttachmentGallery({
 
         try {
           const downscaled = await downscaleImage(file);
-          next.push({
-            id: uid(),
-            dataUrl: downscaled.dataUrl,
+          const uploaded = await uploadHealthAttachment({
+            petId: dogId,
+            fileName: file.name,
             mimeType: downscaled.mimeType,
+            base64Data: downscaled.dataUrl.split(',')[1] ?? downscaled.dataUrl,
           });
-          logger.info('Príloha downscalnutá', {
+          next.push(uploaded);
+          logger.info('Príloha downscalnutá a uložená do privátneho storage', {
             originalBytes: file.size,
             resultBytes: downscaled.bytes,
             mimeType: downscaled.mimeType,
           });
         } catch (err) {
-          logger.warn('Image downscale zlyhal, skúšam fallback', {
+          logger.warn('Image downscale/upload zlyhal, skúšam fallback', {
             error: err instanceof Error ? err.message : 'unknown',
           });
           if (file.size <= MAX_ORIGINAL_FALLBACK_BYTES) {
             const dataUrl = await fileToDataUrl(file);
-            next.push({
-              id: uid(),
-              dataUrl,
+            const uploaded = await uploadHealthAttachment({
+              petId: dogId,
+              fileName: file.name,
               mimeType: file.type,
+              base64Data: dataUrl.split(',')[1] ?? dataUrl,
             });
+            next.push(uploaded);
           } else {
             setError(t('attachments.errorTooLarge'));
           }
@@ -75,12 +108,18 @@ export default function AttachmentGallery({
     }
   };
 
-  const handleCaptionChange = (id: string, caption: string) => {
-    onChange(attachments.map((a) => (a.id === id ? { ...a, caption } : a)));
+  const handleCaptionChange = (objectPath: string, caption: string) => {
+    onChange(attachments.map((a) => (a.objectPath === objectPath ? { ...a, caption } : a)));
   };
 
-  const handleDelete = (id: string) => {
-    onChange(attachments.filter((a) => a.id !== id));
+  const handleDelete = (objectPath: string) => {
+    onChange(attachments.filter((a) => a.objectPath !== objectPath));
+    void deleteHealthAttachment(dogId, objectPath).catch((err) => {
+      logger.warn('Nepodarilo sa zmazať objekt prílohy', {
+        error: err instanceof Error ? err.message : 'unknown',
+        objectPath,
+      });
+    });
   };
 
   const onFileInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +164,7 @@ export default function AttachmentGallery({
         >
           {attachments.map((attachment) => (
             <Box
-              key={attachment.id}
+              key={attachment.objectPath}
               sx={{
                 border: `1px solid ${theme.palette.divider}`,
                 borderRadius: 2,
@@ -136,9 +175,9 @@ export default function AttachmentGallery({
             >
               <Box
                 component="img"
-                src={attachment.dataUrl}
+                src={signedUrls[attachment.objectPath] ?? ''}
                 alt={attachment.caption ?? t('attachments.captionAlt')}
-                sx={{ width: '100%', height: 120, objectFit: 'cover' }}
+                sx={{ width: '100%', height: 120, objectFit: 'cover', bgcolor: 'action.hover' }}
               />
               <Box sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <TextField
@@ -147,12 +186,12 @@ export default function AttachmentGallery({
                   variant="standard"
                   placeholder={t('attachments.captionPlaceholder')}
                   value={attachment.caption ?? ''}
-                  onChange={(e) => handleCaptionChange(attachment.id, e.target.value)}
+                  onChange={(e) => handleCaptionChange(attachment.objectPath, e.target.value)}
                   disabled={disabled}
                 />
                 <IconButton
                   size="small"
-                  onClick={() => handleDelete(attachment.id)}
+                  onClick={() => handleDelete(attachment.objectPath)}
                   disabled={disabled}
                   aria-label={t('attachments.deleteAria')}
                 >

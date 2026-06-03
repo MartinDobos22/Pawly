@@ -1,4 +1,4 @@
-import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
+import type { AttachmentRef, DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
 import type { AiDetectedDraftRecord } from '../hpTypes';
 
 export interface VisitBasicsValues {
@@ -104,6 +104,7 @@ export interface AiAttachmentEntry {
   file: File;
   previewUrl: string;
   pending: AiAttachmentDraft;
+  attachment: AttachmentRef;
 }
 
 export type AnalyzeStage = 'ocr' | 'interpret';
