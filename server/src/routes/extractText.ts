@@ -7,6 +7,7 @@ const router = Router();
 const MAX_BASE64_LENGTH = Math.ceil((5 * 1024 * 1024 * 4) / 3);
 
 interface ExtractTextBody {
+  aiProcessingConsent?: unknown;
   attachment?: {
     fileName?: unknown;
     mimeType?: unknown;
@@ -44,7 +45,14 @@ router.post(
         base64Length: base64Data.length,
       });
 
-      const result = await extractRawTextFromAttachment({ fileName, mimeType, base64Data });
+      const result = await extractRawTextFromAttachment(
+        { fileName, mimeType, base64Data },
+        {
+          userId: req.appUserId ?? req.user?.uid,
+          aiProcessingConsent: req.body?.aiProcessingConsent === true,
+          processesHealthData: true,
+        }
+      );
 
       logger.info('Extrakcia textu dokončená', {
         source: result.source,

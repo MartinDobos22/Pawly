@@ -225,7 +225,9 @@
       "defaultFrequency": "Podľa odporúčania veterinára",
       "suitabilityNoAllergens": "Bez konfliktu s alergiami a diagnózami",
       "suitabilityCheckAllergens": "Skontrolovať zloženie voči alergénom",
-      "importRecordCount": "AI import záznamov: {{count}}"
+      "importRecordCount": "AI import záznamov: {{count}}",
+      "privacyNotice": "AI import spracúva zdravotné údaje z dokumentu. Pred odoslaním do OCR/AI služieb minimalizujeme payload a auditujeme len metadáta (používateľ, operácia, provider, veľkosť, čas), nie obsah dokumentu.",
+      "aiProcessingConsent": "Súhlasím s AI/OCR spracovaním zdravotných údajov z dokumentu pre účely importu záznamov."
     },
     "modeQuick": "Rýchly",
     "modeManual": "Manuálna návšteva",
@@ -461,7 +463,13 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
+    "intoleranceSuggestions": [
+      "Lepok",
+      "Laktóza",
+      "Kukurica",
+      "Sója",
+      "Obilniny"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",

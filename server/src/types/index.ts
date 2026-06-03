@@ -40,7 +40,9 @@ export interface AnalysisRequest {
     base64Data: string;
   };
   petProfile?: PetProfile;
+  aiProcessingConsent?: boolean;
 }
+
 
 export interface Ingredient {
   name: string;

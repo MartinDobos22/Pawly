@@ -8,7 +8,7 @@ export default function AiImportFooter() {
   const { state, setStep, restartUpload, analyze, submit, cancel } = useAiImportContext();
 
   const analyzing = state.analyzeProgress !== null;
-  const canAnalyze = state.attachments.length > 0 && !analyzing;
+  const canAnalyze = state.attachments.length > 0 && state.aiProcessingConsent && !analyzing;
   const canAdvanceFromReview =
     state.aiDetectedRecords.some((r) => r.targetType !== 'SKIP') || state.detectedProfileAvailable;
 

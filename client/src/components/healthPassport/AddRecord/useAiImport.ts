@@ -41,6 +41,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   attachmentLabel: '',
   analyzeError: '',
   analyzeProgress: null,
+  aiProcessingConsent: false,
   selectedMainCategory: '',
   selectedSubcategory: '',
   aiDetectedRecords: [],
@@ -62,6 +63,7 @@ type AiAction =
   | { type: 'SET_ATTACHMENT_LABEL'; label: string }
   | { type: 'SET_ANALYZE_PROGRESS'; progress: AnalyzeProgress | null }
   | { type: 'SET_ANALYZE_ERROR'; message: string }
+  | { type: 'SET_AI_PROCESSING_CONSENT'; value: boolean }
   | { type: 'SET_MAIN_CATEGORY'; value: string }
   | { type: 'SET_SUBCATEGORY'; value: string }
   | { type: 'SET_AI_RECORDS'; records: AiDetectedDraftRecord[] }
@@ -100,6 +102,8 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
         detectedProfileAvailable: false,
         documentSummary: '',
       };
+    case 'SET_AI_PROCESSING_CONSENT':
+      return { ...state, aiProcessingConsent: action.value };
     case 'SET_ATTACHMENT_ERROR':
       return { ...state, attachmentError: action.message };
     case 'SET_ATTACHMENT_LABEL':
@@ -262,6 +266,11 @@ export function useAiImport(dogId: string) {
       dispatch({ type: 'UPDATE_AI_RECORD', id, patch }),
     []
   );
+  const setAiProcessingConsent = useCallback(
+    (value: boolean) => dispatch({ type: 'SET_AI_PROCESSING_CONSENT', value }),
+    []
+  );
+
   const setVisitDraftField = useCallback(
     (field: keyof AiVisitDraftValues, value: string) =>
       dispatch({ type: 'SET_VISIT_DRAFT_FIELD', field, value }),
@@ -280,7 +289,10 @@ export function useAiImport(dogId: string) {
           type: 'SET_ANALYZE_PROGRESS',
           progress: { done: i, total: state.attachments.length, stage: 'ocr' },
         });
-        const { extractedText } = await extractTextFromImage(state.attachments[i].pending);
+        const { extractedText } = await extractTextFromImage(
+          state.attachments[i].pending,
+          state.aiProcessingConsent
+        );
         if (extractedText.trim()) texts.push(extractedText.trim());
       }
 
@@ -302,7 +314,7 @@ export function useAiImport(dogId: string) {
       });
 
       const combined = texts.join('\n\n---\n\n');
-      const interpretation = await interpretPassportText(combined);
+      const interpretation = await interpretPassportText(combined, state.aiProcessingConsent);
       const { records, petIdentifiers, healthFlags, summary } = interpretation;
 
       dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary: summary ?? '' });
@@ -446,6 +458,7 @@ export function useAiImport(dogId: string) {
     setMainCategory,
     setSubcategory,
     updateAiRecord,
+    setAiProcessingConsent,
     setVisitDraftField,
     analyze,
     buildBundle,

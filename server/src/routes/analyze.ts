@@ -72,7 +72,11 @@ router.post(
           requestedExamAlias: typeof examAlias === 'string' ? examAlias : null,
           validatedExamAlias: validatedExamAlias ?? null,
         });
-        const extractionResult = await extractTextFromAttachment(attachment, validatedExamAlias);
+        const extractionResult = await extractTextFromAttachment(attachment, validatedExamAlias, {
+          userId: req.appUserId ?? req.user?.uid,
+          aiProcessingConsent: req.body?.aiProcessingConsent === true,
+          processesHealthData: Boolean(validatedExamAlias),
+        });
         logger.info('Analýza súboru dokončená, odosielam odpoveď na frontend', {
           source: extractionResult.source,
           extractedTextLength: extractionResult.extractedText.length,
@@ -98,7 +102,11 @@ router.post(
       }
 
       const validatedProfile = validatePetProfile(petProfile);
-      const result = await callAiModel(normalizedComposition, validatedProfile);
+      const result = await callAiModel(normalizedComposition, validatedProfile, {
+        userId: req.appUserId ?? req.user?.uid,
+        aiProcessingConsent: req.body?.aiProcessingConsent === true,
+        processesHealthData: false,
+      });
       logger.info('Textová analýza dokončená', {
         score: result.score,
         ingredientsCount: result.ingredients.length,

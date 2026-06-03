@@ -9,6 +9,7 @@ const MAX_TEXT_LENGTH = 50000;
 
 interface InterpretBody {
   text?: unknown;
+  aiProcessingConsent?: unknown;
 }
 
 router.post(
@@ -33,7 +34,11 @@ router.post(
 
       logger.info('Backend prijal interpret-passport požiadavku', { textLength: text.length });
 
-      const result = await interpretHealthPassportWithOpenAI(text);
+      const result = await interpretHealthPassportWithOpenAI(text, {
+        userId: req.appUserId ?? req.user?.uid,
+        aiProcessingConsent: req.body?.aiProcessingConsent === true,
+        processesHealthData: true,
+      });
 
       if (!result) {
         res.status(502).json({

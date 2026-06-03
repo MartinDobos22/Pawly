@@ -17,6 +17,7 @@ interface AiImportContextValue {
   setAttachmentLabel: (value: string) => void;
   setMainCategory: (value: string) => void;
   setSubcategory: (value: string) => void;
+  setAiProcessingConsent: (value: boolean) => void;
   updateAiRecord: (id: string, patch: Partial<AiDetectedDraftRecord>) => void;
   setVisitDraftField: (field: keyof AiVisitDraftValues, value: string) => void;
   analyze: () => Promise<void>;
@@ -58,6 +59,7 @@ export default function AiImportProvider({
     setMainCategory,
     setSubcategory,
     updateAiRecord,
+    setAiProcessingConsent,
     setVisitDraftField,
     analyze,
     buildBundle,
@@ -84,6 +86,7 @@ export default function AiImportProvider({
     setMainCategory,
     setSubcategory,
     updateAiRecord,
+    setAiProcessingConsent,
     setVisitDraftField,
     analyze,
     clearProfilePatch,

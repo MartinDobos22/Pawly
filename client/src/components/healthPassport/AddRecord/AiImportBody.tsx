@@ -2,7 +2,9 @@ import {
   Alert,
   Box,
   Card,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -35,6 +37,7 @@ export default function AiImportBody() {
     setAttachmentLabel,
     setMainCategory,
     setSubcategory,
+    setAiProcessingConsent,
     updateAiRecord,
     setVisitDraftField,
     clearProfilePatch,
@@ -115,6 +118,18 @@ export default function AiImportBody() {
                 </Select>
               </FormControl>
             </Box>
+
+            <Alert severity="info">{t('addRecord.aiImport.privacyNotice')}</Alert>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.aiProcessingConsent}
+                  onChange={(event) => setAiProcessingConsent(event.target.checked)}
+                />
+              }
+              label={t('addRecord.aiImport.aiProcessingConsent')}
+            />
 
             <AttachmentUpload
               attachments={state.attachments}
