@@ -7,8 +7,22 @@ import {
   type Dispatch,
   type ReactNode,
 } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
+import { findBundleDuplicates, type DuplicateMatch } from '../../../utils/duplicateDetection';
+import { useHealthData } from '../../../hooks/useHealthData';
 import type { ErrorMap, ManualFormState } from './formTypes';
 import {
   sectionsWithErrors,
@@ -59,6 +73,14 @@ export default function ManualEntryProvider({
   const [clinicalOpen, setClinicalOpen] = useState(true);
   const [linkedOpen, setLinkedOpen] = useState(false);
   const [expensesOpen, setExpensesOpen] = useState(false);
+  const { vaccinations, dewormings, ectos, medications } = useHealthData();
+  const { t } = useTranslation('healthPassport');
+
+  const [duplicateDialog, setDuplicateDialog] = useState<{
+    open: boolean;
+    items: DuplicateMatch[];
+    pendingBundle: VisitBundle | null;
+  }>({ open: false, items: [], pendingBundle: null });
 
   const sectionErrors = useMemo(() => sectionsWithErrors(errors), [errors]);
   const errorCount = useMemo(() => Object.keys(errors).length, [errors]);
@@ -69,13 +91,29 @@ export default function ManualEntryProvider({
     if (sectionErrors.expenses) setExpensesOpen(true);
   }, [state.submitAttempted, sectionErrors.linked, sectionErrors.expenses]);
 
+  const finalize = (bundle: VisitBundle): void => {
+    onSave(bundle);
+    reset();
+  };
+
   const submit = () => {
     markSubmitAttempted();
     const validationErrors = validateManualForm(state);
     if (Object.keys(validationErrors).length > 0) return;
     const bundle = buildBundle({ dogId, currentDietEntryId });
-    onSave(bundle);
-    reset();
+
+    const duplicates = findBundleDuplicates(bundle, {
+      vaccinations,
+      dewormings,
+      ectos,
+      medications,
+    });
+    if (duplicates.length > 0) {
+      setDuplicateDialog({ open: true, items: duplicates, pendingBundle: bundle });
+      return;
+    }
+
+    finalize(bundle);
   };
 
   useEffect(() => {
@@ -89,6 +127,16 @@ export default function ManualEntryProvider({
     return () => window.removeEventListener('keydown', onKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+
+  const handleConfirmDuplicate = () => {
+    const bundle = duplicateDialog.pendingBundle;
+    setDuplicateDialog({ open: false, items: [], pendingBundle: null });
+    if (bundle) finalize(bundle);
+  };
+
+  const handleCancelDuplicate = () => {
+    setDuplicateDialog({ open: false, items: [], pendingBundle: null });
+  };
 
   const value: ManualEntryContextValue = {
     state,
@@ -105,5 +153,33 @@ export default function ManualEntryProvider({
     cancel: onCancel,
   };
 
-  return <ManualEntryContext.Provider value={value}>{children}</ManualEntryContext.Provider>;
+  return (
+    <ManualEntryContext.Provider value={value}>
+      {children}
+      <Dialog open={duplicateDialog.open} onClose={handleCancelDuplicate} maxWidth="sm" fullWidth>
+        <DialogTitle>{t('duplicateDialog.title')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            {t('duplicateDialog.description', { count: duplicateDialog.items.length })}
+          </DialogContentText>
+          <List dense>
+            {duplicateDialog.items.map((item, idx) => (
+              <ListItem key={`${item.type}-${item.existingId}-${idx}`} disableGutters>
+                <ListItemText
+                  primary={`${t(`duplicateDialog.types.${item.type}`)}: ${item.label}`}
+                  secondary={t('duplicateDialog.dateLabel', { date: item.date })}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDuplicate}>{t('duplicateDialog.cancel')}</Button>
+          <Button onClick={handleConfirmDuplicate} variant="contained" color="warning">
+            {t('duplicateDialog.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ManualEntryContext.Provider>
+  );
 }
