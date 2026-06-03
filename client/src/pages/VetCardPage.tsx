@@ -80,6 +80,13 @@ const PRINT_STYLES = `
     color: var(--accent);
   }
 
+  .brand-logo {
+    display: block;
+    height: 36px;
+    width: auto;
+    margin-bottom: 12px;
+  }
+
   .dog-name {
     font-size: 22px;
     font-weight: 700;
@@ -874,6 +881,7 @@ export default function VetCardPage() {
 <div class="doc">
 
   <header class="doc-head">
+    <img class="brand-logo" src="/branding/pawly-logo-light.png" alt="Pawly" />
     <div class="head-strip">
       <span class="label">${t('vetPage.docLabel')}</span>
       <span>${new Date().toLocaleDateString(lang)}</span>

@@ -12,7 +12,6 @@ import {
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
-  Pets as PetsIcon,
   ArrowForward as ArrowIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -92,26 +91,25 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         >
           <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
             <Box
+              component="img"
+              src={
+                theme.palette.mode === 'dark'
+                  ? '/branding/pawly-logo-dark.png'
+                  : '/branding/pawly-logo-light.png'
+              }
+              alt="Pawly"
+              onClick={() => navigate('/')}
               sx={{
-                width: 32,
-                height: 32,
-                borderRadius: 1.5,
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow:
+                height: 36,
+                width: 'auto',
+                display: 'block',
+                cursor: 'pointer',
+                filter:
                   theme.palette.mode === 'dark'
-                    ? `0 0 12px ${theme.palette.primary.main}66`
-                    : '0 2px 6px rgba(15,76,92,0.18)',
+                    ? `drop-shadow(0 0 10px ${alpha(theme.palette.primary.main, 0.4)})`
+                    : 'none',
               }}
-            >
-              <PetsIcon sx={{ fontSize: 20 }} />
-            </Box>
-            <Typography sx={{ fontWeight: 800, fontSize: '1.05rem', letterSpacing: '-0.015em' }}>
-              Pawly
-            </Typography>
+            />
           </Stack>
           <LanguageSwitcher variant="compact" />
           <IconButton
