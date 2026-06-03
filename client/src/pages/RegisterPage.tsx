@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import {
   CheckCircle as CheckCircleIcon,
   RadioButtonUnchecked as RadioButtonUncheckedIcon,
@@ -29,6 +40,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const inAppBrowser = isInAppBrowser();
 
   const passwordValidation = useMemo(() => validatePassword(password), [password]);
@@ -56,6 +68,10 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
       setError(t('register.passwordMismatch'));
       return;
     }
+    if (!consentAccepted) {
+      setError(t('register.consentRequired'));
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -70,6 +86,10 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
 
   const handleGoogleRegister = async () => {
     setError(null);
+    if (!consentAccepted) {
+      setError(t('register.consentRequired'));
+      return;
+    }
     setSubmitting(true);
     try {
       await loginWithGoogle();
@@ -148,7 +168,33 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             fullWidth
           />
 
-          <Button type="submit" variant="contained" size="large" disabled={submitting} fullWidth>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={consentAccepted}
+                onChange={(e) => setConsentAccepted(e.target.checked)}
+                size="small"
+              />
+            }
+            label={
+              <Typography variant="body2" color="text.secondary">
+                {t('register.consentLabel')}{' '}
+                <Link component={RouterLink} to="/ochrana-sukromia" target="_blank">
+                  {t('register.consentLink')}
+                </Link>
+                .
+              </Typography>
+            }
+            sx={{ alignItems: 'flex-start', mx: 0 }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={submitting || !consentAccepted}
+            fullWidth
+          >
             {t('register.submit')}
           </Button>
 
@@ -161,7 +207,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             size="large"
             startIcon={<GoogleIcon />}
             onClick={handleGoogleRegister}
-            disabled={submitting || inAppBrowser}
+            disabled={submitting || inAppBrowser || !consentAccepted}
             fullWidth
           >
             {t('register.googleRegister')}

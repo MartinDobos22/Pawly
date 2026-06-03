@@ -12,6 +12,7 @@
     "notifications": "Notifikácie",
     "faq": "Časté otázky",
     "about": "O aplikácii",
+    "privacy": "Ochrana súkromia",
     "more": "Viac",
     "home": "Domov — Pawly",
     "support": "Kontakt"
@@ -48,7 +49,9 @@
     "deleteAccount": "Zmazať účet",
     "confirmDeleteTitle": "Naozaj zmazať účet?",
     "confirmDeleteMessage": "Naozaj zmazať účet? Vymažú sa všetky tvoje zvieratá a zdravotné záznamy. Túto akciu nie je možné vrátiť.",
-    "deleteAccountFailed": "Mazanie účtu zlyhalo. Skús to znova."
+    "deleteAccountFailed": "Mazanie účtu zlyhalo. Skús to znova.",
+    "exportData": "Stiahnuť moje dáta",
+    "exportDataFailed": "Stiahnutie dát zlyhalo. Skús to znova."
   },
   "language": {
     "label": "Jazyk",

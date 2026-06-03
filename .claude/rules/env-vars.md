@@ -49,3 +49,15 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 2. Zdokumentuj v tejto tabuľke.
 3. Validuj prítomnosť pri starte servera ak je povinná (fail-fast).
 4. Klient: prefix `VITE_`, inak Vite ju nezachytí.
+
+## Dev vs Prod (Supabase)
+
+`SUPABASE_SERVICE_ROLE_KEY` obchádza RLS. Mať ho lokálne pre **produkčný** projekt je najčastejší zdroj leakov (commit do gitu, screen share, ukradnutý laptop). Preto:
+
+1. Vytvor druhý Supabase projekt `animalpassport-dev` (Free tier stačí na dev).
+2. Spusti všetky migrácie z `supabase/migrations/` na dev projekte v poradí 0001 → 0008+ cez Supabase SQL editor.
+3. V lokálnom `server/.env` použi **dev** `SUPABASE_URL` a `SUPABASE_SERVICE_ROLE_KEY`.
+4. Produkčný `SUPABASE_SERVICE_ROLE_KEY` drž **výhradne** v Render env premenných. Nikdy nie v lokálnom `.env`, v žiadnom CI logu, v PR komentári.
+5. Pri rotácii prod kľúča (po incidente alebo plánovanej rotácii): Supabase Dashboard → Settings → API → Reset service_role → updatni Render → redeploy.
+
+Backup checklist a postup pri leaku: `docs/security-checklist.md`.
