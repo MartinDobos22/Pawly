@@ -1,6 +1,5 @@
 import { getSupabase } from '../config/supabase';
 import { httpError } from '../utils/httpError';
-import { assertPetOwned, getUserPetIds } from './petOwnership';
 import type { EntityMapper } from './healthMappers';
 
 type Row = Record<string, unknown>;
@@ -19,51 +18,45 @@ export function makeCrud<Dto extends { id: string; dogId: string }>(
 
   return {
     async list(appUserId) {
-      const petIds = await getUserPetIds(appUserId);
-      if (petIds.length === 0) return [];
-      const { data, error } = await supabase()
-        .from(mapper.table)
-        .select('*')
-        .in('pet_id', petIds)
-        .order('created_at', { ascending: true });
+      const { data, error } = await supabase().rpc('app_list_health_rows', {
+        p_app_user_id: appUserId,
+        p_table: mapper.table,
+      });
       if (error) throw error;
-      return (data as Row[]).map(mapper.toDto);
+      return ((data as Row[] | null) ?? []).map(mapper.toDto);
     },
 
     async create(appUserId, dto) {
       if (!dto.dogId) throw httpError(400, 'Chýba dogId.', 'INVALID_INPUT');
-      await assertPetOwned(appUserId, dto.dogId);
       const row = { ...mapper.toRow(dto), pet_id: dto.dogId };
-      const { data, error } = await supabase().from(mapper.table).insert(row).select('*').single();
+      const { data, error } = await supabase().rpc('app_create_health_row', {
+        p_app_user_id: appUserId,
+        p_table: mapper.table,
+        p_payload: row,
+      });
       if (error) throw error;
       return mapper.toDto(data as Row);
     },
 
     async update(appUserId, id, dto) {
-      const petIds = await getUserPetIds(appUserId);
-      if (petIds.length === 0) throw httpError(404, 'Záznam sa nenašiel.', 'NOT_FOUND');
-      const { data, error } = await supabase()
-        .from(mapper.table)
-        .update(mapper.toRow(dto))
-        .eq('id', id)
-        .in('pet_id', petIds)
-        .select('*')
-        .maybeSingle();
+      const payload = mapper.toRow(dto);
+      const { data, error } = await supabase().rpc('app_update_health_row', {
+        p_app_user_id: appUserId,
+        p_table: mapper.table,
+        p_record_id: id,
+        p_payload: payload,
+      });
       if (error) throw error;
       if (!data) throw httpError(404, 'Záznam sa nenašiel.', 'NOT_FOUND');
       return mapper.toDto(data as Row);
     },
 
     async remove(appUserId, id) {
-      const petIds = await getUserPetIds(appUserId);
-      if (petIds.length === 0) throw httpError(404, 'Záznam sa nenašiel.', 'NOT_FOUND');
-      const { data, error } = await supabase()
-        .from(mapper.table)
-        .delete()
-        .eq('id', id)
-        .in('pet_id', petIds)
-        .select('id')
-        .maybeSingle();
+      const { data, error } = await supabase().rpc('app_delete_health_row', {
+        p_app_user_id: appUserId,
+        p_table: mapper.table,
+        p_record_id: id,
+      });
       if (error) throw error;
       if (!data) throw httpError(404, 'Záznam sa nenašiel.', 'NOT_FOUND');
     },

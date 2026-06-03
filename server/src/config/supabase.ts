@@ -13,6 +13,9 @@ function requireEnv(name: string): string {
 }
 
 // Akceptuj oba názvy (SUPABASE_SERVICE_ROLE_KEY je preferovaný, SUPABASE_SERVICE_KEY ako alias).
+// Tento kľúč má zostať vyhradený pre cron/admin úlohy alebo pre RPC funkcie,
+// ktoré databázovo kontrolujú p_app_user_id. Bežné user CRUD operácie nemajú
+// robiť priame service_role dotazy na tabuľky, pretože service_role obchádza RLS.
 function requireServiceKey(): string {
   const value = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_KEY;
   if (!value || value.trim().length === 0) {
@@ -45,3 +48,5 @@ export function getSupabase(): SupabaseClient {
   }
   return cachedClient;
 }
+
+export const getSupabaseAdmin = getSupabase;
