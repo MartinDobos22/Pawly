@@ -133,6 +133,19 @@ export default function LandingHero() {
         >
           {/* Left: text + CTAs */}
           <Stack spacing={3}>
+            <Box
+              component="img"
+              src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
+              alt="Pawly"
+              sx={{
+                alignSelf: 'flex-start',
+                height: { xs: 48, md: 64 },
+                width: 'auto',
+                maxWidth: '100%',
+                display: 'block',
+                mb: -1,
+              }}
+            />
             <Chip
               icon={<SparkleIcon sx={{ fontSize: 16 }} />}
               label={t('hero.chip')}

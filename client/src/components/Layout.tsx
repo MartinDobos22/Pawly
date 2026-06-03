@@ -215,32 +215,18 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           }}
         >
           <Box
+            component="img"
+            src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
+            alt="Pawly"
             sx={{
-              width: 30,
-              height: 30,
-              borderRadius: 1.5,
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: isDark
-                ? `0 0 12px ${alpha(theme.palette.primary.main, 0.35)}`
-                : '0 2px 6px rgba(15,76,92,0.18)',
+              height: 32,
+              width: 'auto',
+              display: 'block',
+              filter: isDark
+                ? `drop-shadow(0 0 8px ${alpha(theme.palette.primary.main, 0.35)})`
+                : 'none',
             }}
-          >
-            <PetsIcon sx={{ fontSize: 18 }} />
-          </Box>
-          <Typography
-            sx={{
-              fontWeight: 800,
-              fontSize: '1rem',
-              letterSpacing: '-0.015em',
-              color: isDark ? 'primary.light' : 'text.primary',
-            }}
-          >
-            Pawly
-          </Typography>
+          />
         </Stack>
         <PetSwitcher />
       </Box>

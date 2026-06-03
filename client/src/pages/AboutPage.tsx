@@ -16,15 +16,48 @@ export default function AboutPage() {
   const isDark = theme.palette.mode === 'dark';
 
   const FEATURES = [
-    { icon: ScienceIcon, title: t('about.features.aiAnalysis.title'), description: t('about.features.aiAnalysis.description') },
-    { icon: HealthAndSafetyIcon, title: t('about.features.healthPassport.title'), description: t('about.features.healthPassport.description') },
-    { icon: MenuBookIcon, title: t('about.features.diary.title'), description: t('about.features.diary.description') },
-    { icon: DescriptionIcon, title: t('about.features.vetCard.title'), description: t('about.features.vetCard.description') },
-    { icon: PetsIcon, title: t('about.features.profiles.title'), description: t('about.features.profiles.description') },
+    {
+      icon: ScienceIcon,
+      title: t('about.features.aiAnalysis.title'),
+      description: t('about.features.aiAnalysis.description'),
+    },
+    {
+      icon: HealthAndSafetyIcon,
+      title: t('about.features.healthPassport.title'),
+      description: t('about.features.healthPassport.description'),
+    },
+    {
+      icon: MenuBookIcon,
+      title: t('about.features.diary.title'),
+      description: t('about.features.diary.description'),
+    },
+    {
+      icon: DescriptionIcon,
+      title: t('about.features.vetCard.title'),
+      description: t('about.features.vetCard.description'),
+    },
+    {
+      icon: PetsIcon,
+      title: t('about.features.profiles.title'),
+      description: t('about.features.profiles.description'),
+    },
   ];
 
   return (
     <Box sx={{ maxWidth: 760, mx: 'auto' }}>
+      <Box
+        component="img"
+        src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
+        alt="Pawly"
+        sx={{
+          display: 'block',
+          height: { xs: 64, md: 88 },
+          width: 'auto',
+          maxWidth: '100%',
+          mx: 'auto',
+          mb: 2,
+        }}
+      />
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
         {t('about.title')}
       </Typography>
