@@ -102,22 +102,16 @@ function profileToRow(payload: Partial<PetProfile>): Record<string, unknown> {
 }
 
 export async function listPets(appUserId: string): Promise<PetProfile[]> {
-  const { data, error } = await getSupabase()
-    .from('pets')
-    .select('*')
-    .eq('user_id', appUserId)
-    .order('created_at', { ascending: true });
+  const { data, error } = await getSupabase().rpc('app_list_pets', { p_app_user_id: appUserId });
   if (error) throw error;
-  return (data as PetRow[]).map(rowToProfile);
+  return ((data as PetRow[] | null) ?? []).map(rowToProfile);
 }
 
 export async function getPet(appUserId: string, petId: string): Promise<PetProfile> {
-  const { data, error } = await getSupabase()
-    .from('pets')
-    .select('*')
-    .eq('user_id', appUserId)
-    .eq('id', petId)
-    .maybeSingle();
+  const { data, error } = await getSupabase().rpc('app_get_pet', {
+    p_app_user_id: appUserId,
+    p_pet_id: petId,
+  });
   if (error) throw error;
   if (!data) throw notFound();
   return rowToProfile(data as PetRow);
@@ -127,8 +121,11 @@ export async function createPet(
   appUserId: string,
   payload: Partial<PetProfile>
 ): Promise<PetProfile> {
-  const row = { ...profileToRow(payload), user_id: appUserId };
-  const { data, error } = await getSupabase().from('pets').insert(row).select('*').single();
+  const row = profileToRow(payload);
+  const { data, error } = await getSupabase().rpc('app_create_pet', {
+    p_app_user_id: appUserId,
+    p_payload: row,
+  });
   if (error) throw error;
   return rowToProfile(data as PetRow);
 }
@@ -138,26 +135,21 @@ export async function updatePet(
   petId: string,
   payload: Partial<PetProfile>
 ): Promise<PetProfile> {
-  const { data, error } = await getSupabase()
-    .from('pets')
-    .update(profileToRow(payload))
-    .eq('user_id', appUserId)
-    .eq('id', petId)
-    .select('*')
-    .maybeSingle();
+  const { data, error } = await getSupabase().rpc('app_update_pet', {
+    p_app_user_id: appUserId,
+    p_pet_id: petId,
+    p_payload: profileToRow(payload),
+  });
   if (error) throw error;
   if (!data) throw notFound();
   return rowToProfile(data as PetRow);
 }
 
 export async function deletePet(appUserId: string, petId: string): Promise<void> {
-  const { data, error } = await getSupabase()
-    .from('pets')
-    .delete()
-    .eq('user_id', appUserId)
-    .eq('id', petId)
-    .select('id')
-    .maybeSingle();
+  const { data, error } = await getSupabase().rpc('app_delete_pet', {
+    p_app_user_id: appUserId,
+    p_pet_id: petId,
+  });
   if (error) throw error;
   if (!data) throw notFound();
 }
