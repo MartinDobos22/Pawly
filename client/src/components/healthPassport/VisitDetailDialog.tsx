@@ -306,8 +306,8 @@ export default function VisitDetailDialog({
                   <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
                     <SectionLabel>{t('detail.attachments')}</SectionLabel>
                     {visit.attachments.map((a) => (
-                      <Typography key={a.id} variant="body2" sx={{ color: 'text.secondary' }}>
-                        • {a.label} {a.fileName ? `(${a.fileName})` : ''}
+                      <Typography key={a.objectPath} variant="body2" sx={{ color: 'text.secondary' }}>
+                        • {a.caption ?? a.objectPath.split('/').pop()}
                       </Typography>
                     ))}
                   </CardContent>

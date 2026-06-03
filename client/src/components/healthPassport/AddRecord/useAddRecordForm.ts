@@ -353,11 +353,7 @@ export function useAddRecordForm() {
         draft: toWizardDraft(state),
         mainCategory: mainLabel,
         subcategory: subLabel,
-        attachmentDraft: {
-          attachmentLabel: '',
-          attachmentUrl: '',
-          attachmentPreviewUrl: '',
-        },
+        attachmentDraft: { attachmentLabel: '' },
         currentDietEntryId: ctx.currentDietEntryId,
         plusDays,
         uid,

@@ -213,7 +213,7 @@ export default function QuickEntryProvider({
       draft,
       mainCategory: '',
       subcategory: '',
-      attachmentDraft: { attachmentLabel: '', attachmentUrl: '', attachmentPreviewUrl: '' },
+      attachmentDraft: { attachmentLabel: '' },
       currentDietEntryId,
       plusDays,
       uid,

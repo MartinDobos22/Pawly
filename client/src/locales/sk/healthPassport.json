@@ -654,7 +654,10 @@
     "productRequired": "Zadajte názov prípravku.",
     "medicationNameRequired": "Zadajte názov lieku.",
     "foodNameRequired": "Zadajte názov krmiva.",
-    "nonNegativeRequired": "Zadajte nezáporné číslo."
+    "nonNegativeRequired": "Zadajte nezáporné číslo.",
+    "vaccinationValidUntilBeforeApplied": "Dátum platnosti musí byť rovnaký alebo neskôr ako dátum aplikácie.",
+    "dewormingNextDueBeforeGiven": "Ďalšia dávka musí byť rovnaká alebo neskôr ako dátum podania.",
+    "ectoNextDueBeforeGiven": "Ďalšia dávka musí byť rovnaká alebo neskôr ako dátum aplikácie."
   },
   "duplicateDialog": {
     "title": "Možný duplicitný záznam",
@@ -671,9 +674,5 @@
       "ectoparasite": "Ektoparazity",
       "medication": "Liek"
     }
-    "nonNegativeRequired": "Zadajte nezáporné číslo.",
-    "vaccinationValidUntilBeforeApplied": "Dátum platnosti musí byť rovnaký alebo neskôr ako dátum aplikácie.",
-    "dewormingNextDueBeforeGiven": "Ďalšia dávka musí byť rovnaká alebo neskôr ako dátum podania.",
-    "ectoNextDueBeforeGiven": "Ďalšia dávka musí byť rovnaká alebo neskôr ako dátum aplikácie."
   }
 }

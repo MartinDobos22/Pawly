@@ -22,10 +22,11 @@ export const EPISODE_OUTCOMES: EpisodeOutcome[] = ['resolved', 'ongoing', 'recur
 export const EPISODE_SEVERITIES: EpisodeSeverity[] = ['mild', 'moderate', 'severe'];
 
 export interface EpisodeAttachment {
-  id: string;
-  dataUrl: string;
-  caption?: string;
+  objectPath: string;
   mimeType: string;
+  size: number;
+  caption?: string;
+  createdAt: string;
 }
 
 export interface HealthEpisodeRecord {
