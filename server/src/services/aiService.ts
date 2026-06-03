@@ -5,11 +5,35 @@ import { EXAM_ALIAS_TO_TYPE } from './examAlias';
 import { EXAM_ALIAS_PROMPTS } from './examAliasPrompts';
 import { logger } from '../utils/logger';
 import { wrapOcrForPrompt } from '../utils/sanitizeOcrText';
+import {
+  auditAiProcessing,
+  assertPrivacyGuard,
+  buildPrivacyContext,
+  estimatePayloadSizeBytes,
+  minimizePayloadForAi,
+  type PrivacyGuardContext,
+} from './privacyGuard';
 
 interface AttachmentInput {
   fileName: string;
   mimeType: string;
   base64Data: string;
+}
+
+type AttachmentProviderInput = Omit<AttachmentInput, 'fileName'>;
+
+function makeProviderAttachment(attachment: AttachmentInput): AttachmentProviderInput {
+  return minimizePayloadForAi({
+    mimeType: attachment.mimeType,
+    base64Data: attachment.base64Data.replace(/^data:.*;base64,/, ''),
+  });
+}
+
+function withHealthPrivacy(context?: PrivacyGuardContext): PrivacyGuardContext {
+  return buildPrivacyContext({
+    ...context,
+    processesHealthData: context?.processesHealthData ?? true,
+  });
 }
 
 const SYSTEM_PROMPT = `Si odborný veterinárny výživový poradca a analytik zloženia krmív pre zvieratá. Tvoja úloha je analyzovať zloženie krmiva a poskytnúť detailné hodnotenie.
@@ -161,9 +185,14 @@ function extractTextFromPdfBuffer(buffer: Buffer): string {
   return text;
 }
 
-async function extractTextFromImageWithGoogleVision(attachment: AttachmentInput): Promise<string> {
+async function extractTextFromImageWithGoogleVision(
+  attachment: AttachmentInput,
+  privacy?: PrivacyGuardContext
+): Promise<string> {
   const apiKey = process.env.GOOGLE_VISION_API_KEY;
   if (!apiKey) return '';
+  const providerAttachment = makeProviderAttachment(attachment);
+  assertPrivacyGuard(withHealthPrivacy(privacy), providerAttachment);
 
   try {
     const response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`, {
@@ -172,7 +201,7 @@ async function extractTextFromImageWithGoogleVision(attachment: AttachmentInput)
       body: JSON.stringify({
         requests: [
           {
-            image: { content: attachment.base64Data },
+            image: { content: providerAttachment.base64Data },
             features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
           },
         ],
@@ -188,6 +217,13 @@ async function extractTextFromImageWithGoogleVision(attachment: AttachmentInput)
       responses?: Array<{ fullTextAnnotation?: { text?: string } }>;
     };
 
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'ocr.extract_text',
+      provider: 'google-vision',
+      payloadSizeBytes: estimatePayloadSizeBytes(providerAttachment),
+    });
+
     const text = payload.responses?.[0]?.fullTextAnnotation?.text ?? '';
     return text.trim();
   } catch (error) {
@@ -196,11 +232,16 @@ async function extractTextFromImageWithGoogleVision(attachment: AttachmentInput)
   }
 }
 
-async function normalizeExtractedTextWithOpenAI(text: string): Promise<string> {
+async function normalizeExtractedTextWithOpenAI(
+  text: string,
+  privacy?: PrivacyGuardContext
+): Promise<string> {
   const client = getOpenAIClient();
   if (!client || !text.trim()) {
     return text.trim();
   }
+  const minimizedText = minimizePayloadForAi(text.trim());
+  assertPrivacyGuard(withHealthPrivacy(privacy), minimizedText);
 
   try {
     const response = await client.chat.completions.create({
@@ -214,9 +255,16 @@ async function normalizeExtractedTextWithOpenAI(text: string): Promise<string> {
         },
         {
           role: 'user',
-          content: text,
+          content: minimizedText,
         },
       ],
+    });
+
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'ocr.normalize_text',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(minimizedText),
     });
 
     return response.choices[0]?.message?.content?.trim() ?? text.trim();
@@ -226,12 +274,17 @@ async function normalizeExtractedTextWithOpenAI(text: string): Promise<string> {
   }
 }
 
-async function extractTextFromImageWithOpenAI(attachment: AttachmentInput): Promise<string> {
+async function extractTextFromImageWithOpenAI(
+  attachment: AttachmentInput,
+  privacy?: PrivacyGuardContext
+): Promise<string> {
   const client = getOpenAIClient();
   if (!client) return '';
+  const providerAttachment = makeProviderAttachment(attachment);
+  assertPrivacyGuard(withHealthPrivacy(privacy), providerAttachment);
 
   try {
-    const dataUrl = `data:${attachment.mimeType};base64,${attachment.base64Data}`;
+    const dataUrl = `data:${providerAttachment.mimeType};base64,${providerAttachment.base64Data}`;
     const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       temperature: 0,
@@ -247,6 +300,13 @@ async function extractTextFromImageWithOpenAI(attachment: AttachmentInput): Prom
           ],
         },
       ],
+    });
+
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'ocr.extract_text',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(providerAttachment),
     });
 
     return response.choices[0]?.message?.content?.trim() ?? '';
@@ -324,10 +384,13 @@ function looksLikeFeedComposition(text: string): boolean {
 }
 
 async function analyzeDocumentContextWithOpenAI(
-  text: string
+  text: string,
+  privacy?: PrivacyGuardContext
 ): Promise<DocumentContextAnalysis | null> {
   const client = getOpenAIClient();
   if (!client) return null;
+  const minimizedText = minimizePayloadForAi(text.slice(0, 12000));
+  assertPrivacyGuard(withHealthPrivacy(privacy), minimizedText);
 
   try {
     const response = await client.chat.completions.create({
@@ -349,7 +412,7 @@ Formát:
         },
         {
           role: 'user',
-          content: text.slice(0, 12000),
+          content: minimizedText,
         },
       ],
     });
@@ -378,6 +441,13 @@ Formát:
         : [],
     };
 
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'document.context',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(minimizedText),
+    });
+
     logger.info('OpenAI určilo kontext dokumentu', {
       documentType: analysis.documentType,
       confidence: analysis.confidence,
@@ -391,7 +461,11 @@ Formát:
   }
 }
 
-async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias): Promise<string> {
+async function analyzeExamDocumentWithOpenAI(
+  text: string,
+  examAlias: ExamAlias,
+  privacy?: PrivacyGuardContext
+): Promise<string> {
   const client = getOpenAIClient();
   if (!client) {
     return [
@@ -400,6 +474,9 @@ async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias)
       'Skontrolujte prosím serverové nastavenia a skúste analýzu znova.',
     ].join(' ');
   }
+
+  const minimizedText = minimizePayloadForAi(text.slice(0, 15000));
+  assertPrivacyGuard(withHealthPrivacy(privacy), minimizedText);
 
   const examPrompt = EXAM_ALIAS_PROMPTS[examAlias];
   logger.info('Vyberám prompt pre analýzu vyšetrenia', {
@@ -414,8 +491,15 @@ async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias)
     temperature: 0.2,
     messages: [
       { role: 'system', content: examPrompt },
-      { role: 'user', content: `Analyzuj tento dokument:\n\n${text.slice(0, 15000)}` },
+      { role: 'user', content: `Analyzuj tento dokument:\n\n${minimizedText}` },
     ],
+  });
+
+  auditAiProcessing({
+    userId: privacy?.userId,
+    operation: 'document.exam_analysis',
+    provider: 'openai',
+    payloadSizeBytes: estimatePayloadSizeBytes(minimizedText),
   });
 
   return (
@@ -426,22 +510,28 @@ async function analyzeExamDocumentWithOpenAI(text: string, examAlias: ExamAlias)
 export async function analyzeVetFile(
   alias: ExamAlias,
   imageUrls: string[],
-  extraNote?: string
+  extraNote?: string,
+  privacy?: PrivacyGuardContext
 ): Promise<string | null> {
   const client = getOpenAIClient();
   if (!client) {
     throw new Error('OpenAI API kľúč nie je dostupný.');
   }
 
+  const minimizedImageUrls = minimizePayloadForAi(imageUrls);
+  const minimizedNote = minimizePayloadForAi(
+    extraNote ??
+      'Tu sú fotky stránok z veterinárneho pasu môjho zvieraťa. Prosím prečítaj ich a zhrň záznamy.'
+  );
+  assertPrivacyGuard(withHealthPrivacy(privacy), { imageUrls: minimizedImageUrls, note: minimizedNote });
+
   const systemPrompt = EXAM_ALIAS_PROMPTS[alias];
-  const imageContents = imageUrls.map((url) => ({
+  const imageContents = minimizedImageUrls.map((url) => ({
     type: 'image_url' as const,
     image_url: { url },
   }));
 
-  const userText =
-    extraNote ??
-    'Tu sú fotky stránok z veterinárneho pasu môjho zvieraťa. Prosím prečítaj ich a zhrň záznamy.';
+  const userText = minimizedNote;
 
   const completion = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
@@ -452,6 +542,13 @@ export async function analyzeVetFile(
         content: [{ type: 'text', text: userText }, ...imageContents],
       },
     ],
+  });
+
+  auditAiProcessing({
+    userId: privacy?.userId,
+    operation: 'document.vet_file_analysis',
+    provider: 'openai',
+    payloadSizeBytes: estimatePayloadSizeBytes({ imageUrls: minimizedImageUrls, note: minimizedNote }),
   });
 
   return completion.choices[0]?.message?.content ?? null;
@@ -474,12 +571,14 @@ function looksLikeHealthPassport(text: string): boolean {
 const MAX_PASSPORT_TEXT_CHARS = 24000;
 
 export async function interpretHealthPassportWithOpenAI(
-  text: string
+  text: string,
+  privacy?: PrivacyGuardContext
 ): Promise<HealthPassportInterpretation | null> {
   const client = getOpenAIClient();
   if (!client) return null;
 
-  const trimmedText = text.slice(0, MAX_PASSPORT_TEXT_CHARS);
+  const trimmedText = minimizePayloadForAi(text.slice(0, MAX_PASSPORT_TEXT_CHARS));
+  assertPrivacyGuard(withHealthPrivacy(privacy), trimmedText);
   if (text.length > MAX_PASSPORT_TEXT_CHARS) {
     logger.warn('Text pasu prekročil limit, orezávam', {
       originalLength: text.length,
@@ -555,6 +654,13 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
           content: wrapOcrForPrompt(trimmedText),
         },
       ],
+    });
+
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'health_passport.interpret',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(trimmedText),
     });
 
     const content = response.choices[0]?.message?.content;
@@ -680,7 +786,8 @@ function parseHealthFlags(value: unknown): HealthPassportInterpretation['healthF
 }
 
 export async function extractRawTextFromAttachment(
-  attachment: AttachmentInput
+  attachment: AttachmentInput,
+  privacy?: PrivacyGuardContext
 ): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
   const supportedMimeTypes = [
     'application/pdf',
@@ -693,18 +800,26 @@ export async function extractRawTextFromAttachment(
     throw new Error('Podporované sú len PDF, JPG, PNG a WEBP súbory.');
   }
 
+  assertPrivacyGuard(withHealthPrivacy(privacy), makeProviderAttachment(attachment));
+
   if (attachment.mimeType === 'application/pdf') {
     const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'ocr.extract_text',
+      provider: 'local-pdf-parser',
+      payloadSizeBytes: estimatePayloadSizeBytes(makeProviderAttachment(attachment)),
+    });
     return { extractedText: pdfText.trim(), source: pdfText ? 'pdf-parser' : 'none' };
   }
 
-  const visionText = await extractTextFromImageWithGoogleVision(attachment);
+  const visionText = await extractTextFromImageWithGoogleVision(attachment, privacy);
   if (visionText) {
-    const normalized = await normalizeExtractedTextWithOpenAI(visionText);
+    const normalized = await normalizeExtractedTextWithOpenAI(visionText, privacy);
     return { extractedText: normalized || visionText, source: 'google-vision' };
   }
 
-  const openaiText = await extractTextFromImageWithOpenAI(attachment);
+  const openaiText = await extractTextFromImageWithOpenAI(attachment, privacy);
   if (openaiText) {
     return { extractedText: openaiText, source: 'openai' };
   }
@@ -714,7 +829,8 @@ export async function extractRawTextFromAttachment(
 
 export async function extractTextFromAttachment(
   attachment: AttachmentInput,
-  examAlias?: ExamAlias
+  examAlias?: ExamAlias,
+  privacy?: PrivacyGuardContext
 ): Promise<FileExtractionResult> {
   const supportedMimeTypes = [
     'application/pdf',
@@ -731,6 +847,8 @@ export async function extractTextFromAttachment(
     throw new Error('Súbor je príliš veľký (max 5 MB).');
   }
 
+  assertPrivacyGuard(withHealthPrivacy(privacy), makeProviderAttachment(attachment));
+
   if (attachment.mimeType === 'application/pdf') {
     const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
     if (!pdfText) {
@@ -739,23 +857,30 @@ export async function extractTextFromAttachment(
       );
     }
 
-    const normalizedPdfText = await normalizeExtractedTextWithOpenAI(pdfText);
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'document.extract_text',
+      provider: 'local-pdf-parser',
+      payloadSizeBytes: estimatePayloadSizeBytes(makeProviderAttachment(attachment)),
+    });
 
-    const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedPdfText);
+    const normalizedPdfText = await normalizeExtractedTextWithOpenAI(pdfText, privacy);
+
+    const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedPdfText, privacy);
     const shouldRunFeedAnalysis =
       contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedPdfText);
     const shouldInterpretPassport =
       contextAnalysis?.documentType === 'veterinarna-sprava' ||
       looksLikeHealthPassport(normalizedPdfText);
     const healthPassportInterpretation = shouldInterpretPassport
-      ? await interpretHealthPassportWithOpenAI(normalizedPdfText)
+      ? await interpretHealthPassportWithOpenAI(normalizedPdfText, privacy)
       : null;
 
     const examAnalysis = examAlias
       ? {
           examAlias,
           examType: EXAM_ALIAS_TO_TYPE[examAlias],
-          analysis: await analyzeExamDocumentWithOpenAI(normalizedPdfText, examAlias),
+          analysis: await analyzeExamDocumentWithOpenAI(normalizedPdfText, examAlias, privacy),
         }
       : undefined;
 
@@ -773,13 +898,13 @@ export async function extractTextFromAttachment(
       source: normalizedPdfText !== pdfText.trim() ? 'openai' : 'pdf-parser',
       contextAnalysis: contextAnalysis ?? undefined,
       healthPassportInterpretation: healthPassportInterpretation ?? undefined,
-      feedAnalysis: shouldRunFeedAnalysis ? await callAiModel(normalizedPdfText) : undefined,
+      feedAnalysis: shouldRunFeedAnalysis ? await callAiModel(normalizedPdfText, undefined, privacy) : undefined,
       examAnalysis,
     };
   }
 
-  const textFromVision = await extractTextFromImageWithGoogleVision(attachment);
-  const textFromOpenAIImage = await extractTextFromImageWithOpenAI(attachment);
+  const textFromVision = await extractTextFromImageWithGoogleVision(attachment, privacy);
+  const textFromOpenAIImage = await extractTextFromImageWithOpenAI(attachment, privacy);
   const bestText =
     textFromVision.length >= textFromOpenAIImage.length ? textFromVision : textFromOpenAIImage;
 
@@ -787,23 +912,23 @@ export async function extractTextFromAttachment(
     throw new Error('Z obrázka sa nepodarilo prečítať text. Nahrajte ostrejšiu fotku.');
   }
 
-  const normalizedText = await normalizeExtractedTextWithOpenAI(bestText);
+  const normalizedText = await normalizeExtractedTextWithOpenAI(bestText, privacy);
 
-  const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedText);
+  const contextAnalysis = await analyzeDocumentContextWithOpenAI(normalizedText, privacy);
   const shouldRunFeedAnalysis =
     contextAnalysis?.documentType === 'krmivo' || looksLikeFeedComposition(normalizedText);
   const shouldInterpretPassport =
     contextAnalysis?.documentType === 'veterinarna-sprava' ||
     looksLikeHealthPassport(normalizedText);
   const healthPassportInterpretation = shouldInterpretPassport
-    ? await interpretHealthPassportWithOpenAI(normalizedText)
+    ? await interpretHealthPassportWithOpenAI(normalizedText, privacy)
     : null;
 
   const examAnalysis = examAlias
     ? {
         examAlias,
         examType: EXAM_ALIAS_TO_TYPE[examAlias],
-        analysis: await analyzeExamDocumentWithOpenAI(normalizedText, examAlias),
+        analysis: await analyzeExamDocumentWithOpenAI(normalizedText, examAlias, privacy),
       }
     : undefined;
 
@@ -831,7 +956,7 @@ export async function extractTextFromAttachment(
           : 'openai',
     contextAnalysis: contextAnalysis ?? undefined,
     healthPassportInterpretation: healthPassportInterpretation ?? undefined,
-    feedAnalysis: shouldRunFeedAnalysis ? await callAiModel(normalizedText) : undefined,
+    feedAnalysis: shouldRunFeedAnalysis ? await callAiModel(normalizedText, undefined, privacy) : undefined,
     examAnalysis,
   };
 }
@@ -1369,9 +1494,16 @@ function validateAndSanitize(raw: unknown): AnalysisResult {
   };
 }
 
-async function callOpenAI(composition: string, petProfile?: PetProfile): Promise<AnalysisResult> {
+async function callOpenAI(
+  composition: string,
+  petProfile?: PetProfile,
+  privacy?: PrivacyGuardContext
+): Promise<AnalysisResult> {
   const client = getOpenAIClient()!;
-  const userMessage = buildUserMessage(composition, petProfile);
+  const userMessage = minimizePayloadForAi(
+    buildUserMessage(composition, minimizePayloadForAi(petProfile))
+  );
+  assertPrivacyGuard(privacy ?? { processesHealthData: false }, userMessage);
 
   const response = await client.chat.completions.create({
     model: 'gpt-4o',
@@ -1381,6 +1513,13 @@ async function callOpenAI(composition: string, petProfile?: PetProfile): Promise
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: userMessage },
     ],
+  });
+
+  auditAiProcessing({
+    userId: privacy?.userId,
+    operation: 'feed.analyze',
+    provider: 'openai',
+    payloadSizeBytes: estimatePayloadSizeBytes(userMessage),
   });
 
   const content = response.choices[0]?.message?.content;
@@ -1396,7 +1535,8 @@ let modeLogged = false;
 
 export async function callAiModel(
   composition: string,
-  petProfile?: PetProfile
+  petProfile?: PetProfile,
+  privacy?: PrivacyGuardContext
 ): Promise<AnalysisResult> {
   if (composition.length > 5000) {
     throw new Error('Zloženie je príliš dlhé (max 5000 znakov).');
@@ -1415,11 +1555,11 @@ export async function callAiModel(
 
   // Try with 1 retry
   try {
-    return await callOpenAI(composition, petProfile);
+    return await callOpenAI(composition, petProfile, privacy);
   } catch (err) {
     console.error('[AI Service] First attempt failed:', err);
     try {
-      return await callOpenAI(composition, petProfile);
+      return await callOpenAI(composition, petProfile, privacy);
     } catch (retryErr) {
       console.error('[AI Service] Retry failed:', retryErr);
       throw new Error('Nepodarilo sa analyzovať zloženie. Skúste to znova neskôr.');

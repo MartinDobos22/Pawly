@@ -31,7 +31,11 @@ router.post('/similar-summary', async (req: Request, res: Response, next: NextFu
     });
 
     try {
-      const result = await summarizeSimilarEpisodes(current, past);
+      const result = await summarizeSimilarEpisodes(current, past, {
+        userId: req.appUserId ?? req.user?.uid,
+        aiProcessingConsent: body?.aiProcessingConsent === true,
+        processesHealthData: false,
+      });
       logger.info('similar-summary dokončené', {
         matchedCount: result.similarEpisodeIds.length,
         hasSummary: result.summary.length > 0,

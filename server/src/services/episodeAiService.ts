@@ -1,6 +1,13 @@
 import OpenAI from 'openai';
 import { logger } from '../utils/logger';
 import {
+  auditAiProcessing,
+  assertPrivacyGuard,
+  estimatePayloadSizeBytes,
+  minimizePayloadForAi,
+  type PrivacyGuardContext,
+} from './privacyGuard';
+import {
   EPISODE_CATEGORIES,
   EPISODE_OUTCOMES,
   EPISODE_SEVERITIES,
@@ -171,7 +178,8 @@ function buildFallbackResult(
 
 export async function summarizeSimilarEpisodes(
   current: CurrentEpisodeInput,
-  past: PastEpisodeInput[]
+  past: PastEpisodeInput[],
+  privacy?: PrivacyGuardContext
 ): Promise<SimilarEpisodeSummary> {
   const candidates = preFilterEpisodes(current, past);
 
@@ -190,14 +198,17 @@ export async function summarizeSimilarEpisodes(
     return buildFallbackResult(candidates, 'AI sumarizácia nie je dostupná.');
   }
 
-  const userMessage = JSON.stringify({
-    currentEpisode: {
-      symptomTitle: current.symptomTitle,
-      symptomDescription: truncate(current.symptomDescription, MAX_DESCRIPTION_LEN),
-      category: current.category,
-    },
-    pastEpisodes: candidates.map(shrinkEpisode),
-  });
+  const userMessage = JSON.stringify(
+    minimizePayloadForAi({
+      currentEpisode: {
+        symptomTitle: current.symptomTitle,
+        symptomDescription: truncate(current.symptomDescription, MAX_DESCRIPTION_LEN),
+        category: current.category,
+      },
+      pastEpisodes: candidates.map(shrinkEpisode),
+    })
+  );
+  assertPrivacyGuard(privacy ?? { processesHealthData: false }, userMessage);
 
   try {
     const response = await client.chat.completions.create(
@@ -212,6 +223,13 @@ export async function summarizeSimilarEpisodes(
       },
       { timeout: OPENAI_TIMEOUT_MS }
     );
+
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'episodes.similar_summary',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(userMessage),
+    });
 
     const content = response.choices[0]?.message?.content;
     if (!content) {

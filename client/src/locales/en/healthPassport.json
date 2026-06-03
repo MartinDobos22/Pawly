@@ -222,7 +222,9 @@
       "defaultFrequency": "As recommended by vet",
       "suitabilityNoAllergens": "No conflict with allergies or diagnoses",
       "suitabilityCheckAllergens": "Check ingredients against allergens",
-      "importRecordCount": "AI records imported: {{count}}"
+      "importRecordCount": "AI records imported: {{count}}",
+      "privacyNotice": "AI import processes health data from the document. Before sending it to OCR/AI providers, we minimise the payload and audit only metadata (user, operation, provider, size, time), not document content.",
+      "aiProcessingConsent": "I consent to AI/OCR processing of health data from this document for importing records."
     },
     "modeQuick": "Quick",
     "modeManual": "Manual visit",
@@ -447,8 +449,23 @@
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
     "saveUpdate": "Save",
-    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
-    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
+    "allergySuggestions": [
+      "Chicken",
+      "Beef",
+      "Lamb",
+      "Fish",
+      "Eggs",
+      "Wheat",
+      "Corn",
+      "Soy"
+    ],
+    "intoleranceSuggestions": [
+      "Gluten",
+      "Lactose",
+      "Corn",
+      "Soy",
+      "Grains"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Kidney problems",

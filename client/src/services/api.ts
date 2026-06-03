@@ -131,11 +131,14 @@ export async function analyzeAttachment(
   return responsePayload;
 }
 
-export async function extractTextFromImage(attachment: {
-  fileName: string;
-  mimeType: string;
-  base64Data: string;
-}): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
+export async function extractTextFromImage(
+  attachment: {
+    fileName: string;
+    mimeType: string;
+    base64Data: string;
+  },
+  aiProcessingConsent = false
+): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
   logger.info('Odosielam súbor na OCR extrakciu', {
     fileName: attachment.fileName,
     mimeType: attachment.mimeType,
@@ -145,7 +148,7 @@ export async function extractTextFromImage(attachment: {
   const res = await fetch(`${BASE_URL}/api/extract-text`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
-    body: JSON.stringify({ attachment }),
+    body: JSON.stringify({ attachment, aiProcessingConsent }),
   });
 
   if (!res.ok) {
@@ -210,13 +213,16 @@ export interface PassportInterpretation {
   healthFlags?: PassportHealthFlags;
 }
 
-export async function interpretPassportText(text: string): Promise<PassportInterpretation> {
+export async function interpretPassportText(
+  text: string,
+  aiProcessingConsent = false
+): Promise<PassportInterpretation> {
   logger.info('Odosielam text pasu na AI interpretáciu', { textLength: text.length });
 
   const res = await fetch(`${BASE_URL}/api/interpret-passport`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, aiProcessingConsent }),
   });
 
   if (!res.ok) {
