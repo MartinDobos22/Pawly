@@ -383,12 +383,28 @@ export async function runSweep(): Promise<SweepSummary> {
 
   for (const [, list] of byUser) {
     const email = list[0].email;
-    const subject = `Pawly: ${list.length} ${plural(list.length, 'termín', 'termíny', 'termínov')} čoskoro`;
+
+    // Dedup pre email view: ak má user viac records s tým istým (petName, type,
+    // label, dueDate) — typicky duplicitné záznamy v DB — ukáž len jeden riadok.
+    // Všetky duplikáty však zalogujeme nižšie aby sa nezahrnuli pri ďalšom sweep-e
+    // ako "nové" candidates.
+    const seenDisplayKeys = new Set<string>();
+    const displayList: SweepCandidate[] = [];
+    for (const c of list) {
+      const displayKey = `${c.item.petName}|${c.item.type}|${c.item.label}|${c.item.dueDate}`;
+      if (seenDisplayKeys.has(displayKey)) continue;
+      seenDisplayKeys.add(displayKey);
+      displayList.push(c);
+    }
+
+    const subject = `Pawly: ${displayList.length} ${plural(displayList.length, 'termín', 'termíny', 'termínov')} čoskoro`;
     try {
-      await sendEmail(email, subject, buildEmailHtml(list));
+      await sendEmail(email, subject, buildEmailHtml(displayList));
       usersNotified += 1;
-      itemsIncluded += list.length;
+      itemsIncluded += displayList.length;
       if (emailEnabled) {
+        // Logujeme VŠETKY candidates (vrátane duplikátov skrytých v zobrazení)
+        // aby sa žiadny duplikát nezahrnul znova pri ďalšom sweep-e.
         const { error: insErr } = await supabase.from('notification_log').upsert(
           list.map((c) => ({
             user_id: c.userId,
