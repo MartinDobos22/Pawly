@@ -231,6 +231,7 @@ export default function PassportHero({
                     onChange={(e) => onSelectDog(e.target.value)}
                     variant="standard"
                     disableUnderline
+                    renderValue={() => t('hero.switchPet')}
                     sx={{
                       fontSize: '0.85rem',
                       color: 'text.secondary',
@@ -239,7 +240,7 @@ export default function PassportHero({
                   >
                     {dogProfiles.map((p) => (
                       <MenuItem key={p.id} value={p.id}>
-                        {t('hero.switchTo', { name: p.name })}
+                        {p.name}
                       </MenuItem>
                     ))}
                   </Select>

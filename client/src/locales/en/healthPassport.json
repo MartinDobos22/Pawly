@@ -449,23 +449,8 @@
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
     "saveUpdate": "Save",
-    "allergySuggestions": [
-      "Chicken",
-      "Beef",
-      "Lamb",
-      "Fish",
-      "Eggs",
-      "Wheat",
-      "Corn",
-      "Soy"
-    ],
-    "intoleranceSuggestions": [
-      "Gluten",
-      "Lactose",
-      "Corn",
-      "Soy",
-      "Grains"
-    ],
+    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
+    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
     "healthSuggestions": [
       "Diabetes",
       "Kidney problems",
@@ -488,6 +473,7 @@
     "addRecord": "Add record",
     "vetCard": "Vet card",
     "switchTo": "Switch to {{name}}",
+    "switchPet": "Switch pet",
     "ageUnderMonth": "< 1 mo.",
     "ageMonths": "{{count}} mo.",
     "ageYears": "{{count}} yr.",
@@ -645,7 +631,13 @@
     "metaMale": "Male",
     "metaFemale": "Female",
     "metaChip": "Chip: {{chip}}",
-    "metaPassport": "Passport: {{passport}}"
+    "metaPassport": "Passport: {{passport}}",
+    "vetStatus": {
+      "unknown": "Not set",
+      "expired": "Expired",
+      "willExpire": "Expires {{date}}",
+      "validUntil": "Valid until {{date}}"
+    }
   },
   "validation": {
     "invalidDate": "Enter a valid date.",

@@ -463,13 +463,7 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": [
-      "Lepok",
-      "Laktóza",
-      "Kukurica",
-      "Sója",
-      "Obilniny"
-    ],
+    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
@@ -492,6 +486,7 @@
     "addRecord": "Pridať záznam",
     "vetCard": "Karta pre veterinára",
     "switchTo": "Prepnúť na {{name}}",
+    "switchPet": "Prepnúť zviera",
     "ageUnderMonth": "< 1 mes.",
     "ageMonths": "{{count}} mes.",
     "ageYears": "{{count}} r.",
@@ -653,7 +648,13 @@
     "metaMale": "Samec",
     "metaFemale": "Samica",
     "metaChip": "Čip: {{chip}}",
-    "metaPassport": "Pas: {{passport}}"
+    "metaPassport": "Pas: {{passport}}",
+    "vetStatus": {
+      "unknown": "Nezadané",
+      "expired": "Expirované",
+      "willExpire": "Vyprší {{date}}",
+      "validUntil": "Platné do {{date}}"
+    }
   },
   "validation": {
     "invalidDate": "Zadajte platný dátum.",
