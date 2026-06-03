@@ -1,5 +1,6 @@
 import { getSupabase } from '../config/supabase';
 import { httpError } from '../utils/httpError';
+import { assertPetOwned } from './petOwnership';
 import type { AnalysisResult, SavedAnalysis } from '../types';
 
 type Row = Record<string, unknown>;
@@ -31,6 +32,8 @@ export async function createSavedAnalysis(
   dto: Partial<SavedAnalysis>
 ): Promise<SavedAnalysis> {
   if (!dto.result) throw httpError(400, 'Chýba výsledok analýzy.', 'INVALID_INPUT');
+  if (dto.petProfileId) await assertPetOwned(appUserId, dto.petProfileId);
+
   const row = {
     user_id: appUserId,
     pet_id: dto.petProfileId ?? null,
