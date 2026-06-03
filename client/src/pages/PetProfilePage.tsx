@@ -29,10 +29,10 @@ import {
   Edit as EditIcon,
   Pets as PetsIcon,
 } from '@mui/icons-material';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
+import { forgetQuickVisitClinicSuggestion } from '../utils/quickVisitClinicMemory';
 
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   name: '',
@@ -89,11 +89,6 @@ export default function PetProfilePage() {
     episodes,
     savedAnalyses,
   } = useHealthData();
-  const [, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
-    'granule-check-last-clinic-by-dog',
-    {}
-  );
-
   const [pendingDelete, setPendingDelete] = useState<{
     id: string;
     name: string;
@@ -138,11 +133,7 @@ export default function PetProfilePage() {
     if (!pendingDelete) return;
     const id = pendingDelete.id;
     await deleteProfile(id);
-    setLastClinicByDog((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
+    forgetQuickVisitClinicSuggestion(id);
     setPendingDelete(null);
   };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -14,8 +14,11 @@ import {
 } from '@mui/material';
 import { Bolt as BoltIcon, Close as CloseIcon, Undo as UndoIcon } from '@mui/icons-material';
 
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import type { VetVisitRecord } from '../../types/dogHealth';
+import {
+  getQuickVisitClinicSuggestion,
+  rememberQuickVisitClinicSuggestion,
+} from '../../utils/quickVisitClinicMemory';
 import { today, uid } from './utils';
 
 const SNACK_DURATION_MS = 6000;
@@ -39,15 +42,19 @@ export default function QuickVisitButton({
   onUndo,
 }: QuickVisitButtonProps) {
   const { t } = useTranslation('healthPassport');
-  const [lastClinicByDog, setLastClinicByDog] = useLocalStorage<Record<string, string>>(
-    'granule-check-last-clinic-by-dog',
-    {}
+  // Server-side user preference would be the durable home for this value. Until that
+  // exists, keep only a short tab-session hint in memory so clinic names are not
+  // persisted in localStorage or shared between browser accounts.
+  const [lastClinic, setLastClinic] = useState(() =>
+    dogId ? getQuickVisitClinicSuggestion(dogId) : ''
   );
   const [lastCreated, setLastCreated] = useState<LastCreatedRef | null>(null);
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptClinic, setPromptClinic] = useState('');
 
-  const lastClinic = dogId ? (lastClinicByDog[dogId] ?? '') : '';
+  useEffect(() => {
+    setLastClinic(dogId ? getQuickVisitClinicSuggestion(dogId) : '');
+  }, [dogId]);
 
   const buildAndSave = async (clinic: string) => {
     if (!dogId || !clinic.trim()) return;
@@ -64,7 +71,8 @@ export default function QuickVisitButton({
     const created = await onCreate(visit);
     setLastCreated({ id: created.id, clinic: created.clinicName });
     if (trimmed !== lastClinic) {
-      setLastClinicByDog((prev) => ({ ...prev, [dogId]: trimmed }));
+      rememberQuickVisitClinicSuggestion(dogId, trimmed);
+      setLastClinic(getQuickVisitClinicSuggestion(dogId));
     }
   };
 
