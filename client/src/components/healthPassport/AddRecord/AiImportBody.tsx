@@ -22,6 +22,7 @@ import { useAiImportContext } from './AiImport';
 import AttachmentUpload from './AttachmentUpload';
 import AiRecordsReview from './AiRecordsReview';
 import AiProfileMergeReview from './AiProfileMergeReview';
+import AiDisclaimer from '../../AiDisclaimer';
 
 export default function AiImportBody() {
   const { t } = useTranslation('healthPassport');
@@ -151,6 +152,7 @@ export default function AiImportBody() {
 
       {state.step === 1 && (
         <>
+          <AiDisclaimer />
           {state.detectedProfilePatch && dogId !== '' && (
             <AiProfileMergeReview
               dogId={dogId}

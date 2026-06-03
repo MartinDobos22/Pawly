@@ -36,6 +36,7 @@ import {
   NotificationsActive as NotificationsActiveIcon,
   Logout as LogoutIcon,
   DeleteForever as DeleteForeverIcon,
+  MailOutline as MailOutlineIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -294,6 +295,22 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           />
         </ListItemButton>
         <LanguageSwitcher sx={navItemSx(false)} />
+        <ListItemButton
+          component="a"
+          href={`mailto:${t('supportEmail')}`}
+          sx={navItemSx(false)}
+          aria-label={t('nav.support')}
+        >
+          <ListItemIcon>
+            <MailOutlineIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('nav.support')}
+            secondary={t('supportEmail')}
+            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
+            secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
+          />
+        </ListItemButton>
         <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label={t('auth.logout')}>
           <ListItemIcon>
             <LogoutIcon />

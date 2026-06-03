@@ -13,8 +13,11 @@
     "faq": "Časté otázky",
     "about": "O aplikácii",
     "more": "Viac",
-    "home": "Domov — Pawly"
+    "home": "Domov — Pawly",
+    "support": "Kontakt"
   },
+  "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
+  "supportEmail": "support@pawly.sk",
   "actions": {
     "save": "Uložiť",
     "cancel": "Zrušiť",

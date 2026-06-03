@@ -15,10 +15,8 @@ import {
   Typography,
 } from '@mui/material';
 import AiFormattedText from '../AiFormattedText';
-import {
-  type HealthEpisodeRecord,
-  type SimilarEpisodeSummary,
-} from '../../types/healthEpisode';
+import AiDisclaimer from '../AiDisclaimer';
+import { type HealthEpisodeRecord, type SimilarEpisodeSummary } from '../../types/healthEpisode';
 import { fetchSimilarEpisodeSummary } from '../../services/api';
 import { logger } from '../../utils/logger';
 
@@ -128,7 +126,11 @@ export default function SimilarEpisodesDialog({
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {e.symptomTitle}
                 </Typography>
-                <Chip size="small" label={t(`category.${e.category}` as never)} variant="outlined" />
+                <Chip
+                  size="small"
+                  label={t(`category.${e.category}` as never)}
+                  variant="outlined"
+                />
                 <Chip size="small" label={t(`outcome.${e.outcome}` as never)} />
               </Stack>
               {e.whatWorked.length > 0 && (
@@ -158,6 +160,7 @@ export default function SimilarEpisodesDialog({
           </Stack>
         ) : state.status === 'success' && state.result ? (
           <Stack spacing={2}>
+            <AiDisclaimer />
             {state.result.summary && (
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>

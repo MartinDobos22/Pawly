@@ -13,8 +13,11 @@
     "faq": "FAQ",
     "about": "About",
     "more": "More",
-    "home": "Home — Pawly"
+    "home": "Home — Pawly",
+    "support": "Contact"
   },
+  "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
+  "supportEmail": "support@pawly.sk",
   "actions": {
     "save": "Save",
     "cancel": "Cancel",

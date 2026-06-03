@@ -31,6 +31,7 @@ import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
 import AllergenWarningBanner from '../components/AllergenWarningBanner';
 import PersonalizedVerdictCard from '../components/PersonalizedVerdictCard';
+import AiDisclaimer from '../components/AiDisclaimer';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../components/healthPassport/constants';
 import { today } from '../components/healthPassport/utils';
 import { formatDateShort } from '../utils/relativeDate';
@@ -296,6 +297,7 @@ export default function AnalyzePage() {
 
       {displayResult && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+          <AiDisclaimer sx={{ borderRadius: 3 }} />
           <Alert severity="info" sx={{ borderRadius: 3 }}>
             Zdroj analýzy: {sourceLabel}
           </Alert>
