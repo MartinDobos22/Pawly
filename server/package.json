@@ -12,7 +12,7 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "tsc --noEmit",
-    "test": "echo \"No server tests yet — pridaj Vitest cez /implement\" && exit 0"
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
