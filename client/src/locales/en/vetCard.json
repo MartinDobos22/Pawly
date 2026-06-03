@@ -41,6 +41,7 @@
     "ageYears": "{{age}} yr.",
     "cardCaption": "Vet Card",
     "switchTo": "Switch to {{name}}",
+    "switchPet": "Switch pet",
     "dateOfBirth": "Date of birth"
   },
   "healthProfile": {

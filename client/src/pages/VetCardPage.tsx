@@ -1,7 +1,7 @@
 import { Box, Card, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
 import {
@@ -350,15 +350,12 @@ export default function VetCardPage() {
     if (Number.isNaN(parsed.getTime())) return value;
     return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
   };
-  const { profiles } = usePetProfiles();
+  const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
   const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
 
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
   const [pdfLang, setPdfLang] = useState<PdfLang>('sk');
-
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
-  const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
 
   const dog = dogProfiles.find((p) => p.id === selectedDogId) ?? dogProfiles[0];
   const dogId = dog?.id;

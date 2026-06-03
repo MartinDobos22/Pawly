@@ -41,6 +41,7 @@
     "ageYears": "{{age}} r.",
     "cardCaption": "Karta pre veterinára",
     "switchTo": "Prepnúť na {{name}}",
+    "switchPet": "Prepnúť zviera",
     "dateOfBirth": "Dátum narodenia"
   },
   "healthProfile": {

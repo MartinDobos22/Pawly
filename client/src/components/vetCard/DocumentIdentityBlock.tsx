@@ -167,6 +167,7 @@ export default function DocumentIdentityBlock({
                   onChange={(e) => onSelectDog(e.target.value)}
                   variant="standard"
                   disableUnderline
+                  renderValue={() => t('identity.switchPet')}
                   sx={{
                     fontSize: '0.85rem',
                     color: 'text.secondary',
@@ -175,7 +176,7 @@ export default function DocumentIdentityBlock({
                 >
                   {dogProfiles.map((p) => (
                     <MenuItem key={p.id} value={p.id}>
-                      {t('identity.switchTo', { name: p.name })}
+                      {p.name}
                     </MenuItem>
                   ))}
                 </Select>
