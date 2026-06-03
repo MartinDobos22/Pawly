@@ -27,6 +27,7 @@ import {
   Description as DescriptionIcon,
   Info as InfoIcon,
   HelpOutline as HelpOutlineIcon,
+  Lock as LockIcon,
   Menu as MenuIcon,
   MoreHoriz as MoreHorizIcon,
   DarkMode as DarkModeIcon,
@@ -37,11 +38,12 @@ import {
   Logout as LogoutIcon,
   DeleteForever as DeleteForeverIcon,
   MailOutline as MailOutlineIcon,
+  CloudDownload as CloudDownloadIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
-import { deleteAccount } from '../services/accountApi';
+import { deleteAccount, exportUserData } from '../services/accountApi';
 
 const DRAWER_WIDTH = 272;
 
@@ -94,6 +96,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         { label: t('nav.notifications'), icon: <NotificationsActiveIcon />, path: '/notifikacie' },
         { label: t('nav.faq'), icon: <HelpOutlineIcon />, path: '/caste-otazky' },
         { label: t('nav.about'), icon: <InfoIcon />, path: '/o-aplikacii' },
+        { label: t('nav.privacy'), icon: <LockIcon />, path: '/ochrana-sukromia' },
       ],
     },
   ];
@@ -104,6 +107,22 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const handleLogout = async () => {
     await logout();
     navigate('/login', { replace: true });
+  };
+
+  const handleExportData = async () => {
+    try {
+      const blob = await exportUserData();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pawly-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.alert(t('auth.exportDataFailed'));
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -309,6 +328,19 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             secondary={t('supportEmail')}
             primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
             secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
+          />
+        </ListItemButton>
+        <ListItemButton
+          onClick={handleExportData}
+          sx={navItemSx(false)}
+          aria-label={t('auth.exportData')}
+        >
+          <ListItemIcon>
+            <CloudDownloadIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('auth.exportData')}
+            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
           />
         </ListItemButton>
         <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label={t('auth.logout')}>
