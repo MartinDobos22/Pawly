@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import analyzeRouter from './routes/analyze';
@@ -52,6 +53,44 @@ app.use(corsMiddleware);
 // Preflight pre všetky route používa rovnakú restrictive cors instanciu —
 // bez tohto by `app.options('*', cors())` defaultne odpovedalo s wildcard origin.
 app.options('*', corsMiddleware);
+
+const frontendSources = allowedOrigins.length > 0 ? allowedOrigins : ["'self'"];
+const isProduction = process.env.NODE_ENV === 'production';
+
+app.use(
+  helmet({
+    // API beží na Renderi a frontend typicky na Netlify (CORS_ORIGIN).
+    // Ak je frontend na rovnakom hoste, CORS_ORIGIN môže zostať prázdny a CSP
+    // sa obmedzí na 'self'. Pri oddelenom fronte pridávame povolené origins,
+    // aby prípadné same-server HTML/PWA odpovede mohli volať správny frontend/API host.
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        connectSrc: [
+          "'self'",
+          ...frontendSources,
+          'https://identitytoolkit.googleapis.com',
+          'https://securetoken.googleapis.com',
+          'https://*.googleapis.com',
+          'https://*.supabase.co',
+        ],
+        fontSrc: ["'self'", 'data:'],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https://images.unsplash.com'],
+        manifestSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        workerSrc: ["'self'", 'blob:'],
+        upgradeInsecureRequests: isProduction ? [] : null,
+      },
+    },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
+
 // Base64 attachments inflate payload size by roughly 33%, so keep a safer limit
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
