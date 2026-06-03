@@ -6,7 +6,6 @@ import {
   IconButton,
   Stack,
   Toolbar,
-  Typography,
   useTheme,
 } from '@mui/material';
 import {
