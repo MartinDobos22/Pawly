@@ -11,6 +11,8 @@ import {
 } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { auth, googleProvider } from '../config/firebase';
+import { clearUserSpecificLocalStorage } from '../hooks/useLocalStorage';
+import { clearQuickVisitClinicSuggestions } from '../utils/quickVisitClinicMemory';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import {
@@ -192,19 +194,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    // Vyčisti user-špecifické localStorage kľúče, nech neunikajú medzi účtami
-    // na zdieľanom prehliadači (dark-mode je neutrálna preferencia, tú nechávame).
-    [
-      'granule-check-food-safety-recent',
-      'granule-check-active-pet-id',
-      'granule-check-last-clinic-by-dog',
-    ].forEach((key) => {
-      try {
-        window.localStorage.removeItem(key);
-      } catch {
-        /* ignore */
-      }
-    });
+    // Vyčisti user-špecifické dáta, nech neunikajú medzi účtami na zdieľanom
+    // prehliadači (dark-mode/jazyk sú neutrálne preferencie, tie nechávame).
+    clearUserSpecificLocalStorage();
+    clearQuickVisitClinicSuggestions();
     await signOut(auth);
   }, []);
 
