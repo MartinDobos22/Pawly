@@ -8,6 +8,11 @@
     "featuresTitle": "What Pawly can do",
     "privacyTitle": "Your data is safe",
     "privacyDescription": "Access is protected by sign-in and all your pet records are private — only you can see them.",
+    "support": {
+      "title": "Like Pawly? Support the project",
+      "body": "Pawly is completely free for now. If it helps you take care of your pet, you can support it with a voluntary contribution — it covers our AI and server costs so the app stays ad-free.",
+      "cta": "Contribute"
+    },
     "madeWithLove": "Made with love for pets",
     "features": {
       "aiAnalysis": {

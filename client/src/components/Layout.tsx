@@ -39,6 +39,7 @@ import {
   DeleteForever as DeleteForeverIcon,
   MailOutline as MailOutlineIcon,
   CloudDownload as CloudDownloadIcon,
+  VolunteerActivism as VolunteerActivismIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -47,6 +48,7 @@ import { useAuth } from '../hooks/useAuth';
 import { deleteAccount, exportUserData } from '../services/accountApi';
 
 const DRAWER_WIDTH = 272;
+const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
 type NavItem = { label: string; icon: ReactNode; path: string };
 type NavSection = { id: string; label: string; items: NavItem[] };
@@ -289,6 +291,24 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           />
         </ListItemButton>
         <LanguageSwitcher sx={navItemSx(false)} />
+        {DONATE_URL && (
+          <ListItemButton
+            component="a"
+            href={DONATE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={navItemSx(false)}
+            aria-label={t('nav.donate')}
+          >
+            <ListItemIcon>
+              <VolunteerActivismIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('nav.donate')}
+              primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
+            />
+          </ListItemButton>
+        )}
         <ListItemButton
           component="a"
           href={`mailto:${t('supportEmail')}`}
