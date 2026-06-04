@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   notificationsApi,
@@ -7,6 +7,7 @@ import {
 } from '../services/notificationsApi';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
+import { useHealthData } from './useHealthData';
 
 interface State {
   prefs: NotificationPreferences | null;
@@ -17,6 +18,8 @@ interface State {
 }
 
 export function useNotificationPreferences() {
+  const { vaccinations, dewormings, ectos, visits, medications } = useHealthData();
+
   const [state, setState] = useState<State>({
     prefs: null,
     upcoming: [],
@@ -29,11 +32,8 @@ export function useNotificationPreferences() {
     let active = true;
     (async () => {
       try {
-        const [prefs, upcoming] = await Promise.all([
-          notificationsApi.getPreferences(),
-          notificationsApi.getUpcoming(),
-        ]);
-        if (active) setState((s) => ({ ...s, prefs, upcoming: upcoming.items, loading: false }));
+        const prefs = await notificationsApi.getPreferences();
+        if (active) setState((s) => ({ ...s, prefs, loading: false }));
       } catch (err) {
         if (active)
           setState((s) => ({
@@ -50,6 +50,33 @@ export function useNotificationPreferences() {
       active = false;
     };
   }, []);
+
+  const healthSignature = useMemo(() => {
+    const parts: string[] = [];
+    for (const v of vaccinations) parts.push(`v:${v.id}:${v.validUntil ?? ''}`);
+    for (const d of dewormings) parts.push(`d:${d.id}:${d.nextDueDate ?? ''}`);
+    for (const e of ectos) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
+    for (const vi of visits) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
+    for (const m of medications) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
+    return parts.join('|');
+  }, [vaccinations, dewormings, ectos, visits, medications]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const upcoming = await notificationsApi.getUpcoming();
+        if (active) setState((s) => ({ ...s, upcoming: upcoming.items }));
+      } catch (err) {
+        logger.error('Načítanie najbližších termínov zlyhalo', {
+          message: err instanceof Error ? err.message : String(err),
+        });
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [healthSignature]);
 
   const save = useCallback(async (patch: Partial<NotificationPreferences>) => {
     let snapshot: NotificationPreferences | null = null;
