@@ -9,6 +9,7 @@ import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { AuthProvider } from './contexts/AuthContext';
 import { PetProfilesProvider } from './contexts/PetProfilesContext';
+import { ActivePetProvider } from './contexts/ActivePetContext';
 import { HealthDataProvider } from './contexts/HealthDataContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
@@ -69,27 +70,35 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <PetProfilesProvider>
-                      <HealthDataProvider>
-                        <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-                          <Routes>
-                            <Route path="/analyza" element={<AnalyzePage />} />
-                            <Route path="/profily" element={<PetProfilePage />} />
-                            <Route path="/historia" element={<HistoryPage />} />
-                            <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
-                            <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
-                            <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
-                            <Route
-                              path="/zdravotny-pas/novy-zaznam"
-                              element={<HealthPassportPage />}
-                            />
-                            <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
-                            <Route path="/dennik" element={<EpisodeDiaryPage />} />
-                            <Route path="/notifikacie" element={<NotificationsPage />} />
-                            <Route path="/o-aplikacii" element={<AboutPage />} />
-                            <Route path="/caste-otazky" element={<FaqPage />} />
-                          </Routes>
-                        </Layout>
-                      </HealthDataProvider>
+                      <ActivePetProvider>
+                        <HealthDataProvider>
+                          <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+                            <Routes>
+                              <Route path="/analyza" element={<AnalyzePage />} />
+                              <Route path="/profily" element={<PetProfilePage />} />
+                              <Route path="/historia" element={<HistoryPage />} />
+                              <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
+                              <Route
+                                path="/zdravotny-pas/prehlad"
+                                element={<HealthPassportPage />}
+                              />
+                              <Route
+                                path="/zdravotny-pas/zaznamy"
+                                element={<HealthPassportPage />}
+                              />
+                              <Route
+                                path="/zdravotny-pas/novy-zaznam"
+                                element={<HealthPassportPage />}
+                              />
+                              <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
+                              <Route path="/dennik" element={<EpisodeDiaryPage />} />
+                              <Route path="/notifikacie" element={<NotificationsPage />} />
+                              <Route path="/o-aplikacii" element={<AboutPage />} />
+                              <Route path="/caste-otazky" element={<FaqPage />} />
+                            </Routes>
+                          </Layout>
+                        </HealthDataProvider>
+                      </ActivePetProvider>
                     </PetProfilesProvider>
                   </ProtectedRoute>
                 }
