@@ -28,6 +28,7 @@ import HealthPassportPage from './pages/HealthPassportPage';
 import VetCardPage from './pages/VetCardPage';
 import EpisodeDiaryPage from './pages/EpisodeDiaryPage';
 import NotificationsPage from './pages/NotificationsPage';
+import SettingsPage from './pages/SettingsPage';
 
 export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
@@ -95,6 +96,12 @@ export default function App() {
                               <Route path="/notifikacie" element={<NotificationsPage />} />
                               <Route path="/o-aplikacii" element={<AboutPage />} />
                               <Route path="/caste-otazky" element={<FaqPage />} />
+                              <Route
+                                path="/nastavenia"
+                                element={
+                                  <SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                                }
+                              />
                             </Routes>
                           </Layout>
                         </HealthDataProvider>

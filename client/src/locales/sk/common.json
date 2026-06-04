@@ -16,7 +16,14 @@
     "more": "Viac",
     "home": "Domov — Pawly",
     "support": "Kontakt",
-    "donate": "Podporiť projekt"
+    "donate": "Podporiť projekt",
+    "settings": "Nastavenia"
+  },
+  "settings": {
+    "title": "Nastavenia",
+    "appearance": "Vzhľad",
+    "account": "Účet",
+    "support": "Podpora"
   },
   "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
   "supportEmail": "support@pawly.sk",

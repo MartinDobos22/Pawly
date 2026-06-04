@@ -16,7 +16,14 @@
     "more": "More",
     "home": "Home — Pawly",
     "support": "Contact",
-    "donate": "Support the project"
+    "donate": "Support the project",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "account": "Account",
+    "support": "Support"
   },
   "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
   "supportEmail": "support@pawly.sk",
