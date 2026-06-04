@@ -8,6 +8,11 @@
     "featuresTitle": "Čo Pawly vie",
     "privacyTitle": "Tvoje dáta sú v bezpečí",
     "privacyDescription": "Prístup je chránený prihlásením a všetky záznamy o tvojich zvieratách sú súkromné — vidíš ich len ty.",
+    "support": {
+      "title": "Páči sa ti Pawly? Podpor projekt",
+      "body": "Pawly je zatiaľ úplne zadarmo. Ak ti pomáha starať sa o tvoje zviera, môžeš ho podporiť dobrovoľným príspevkom — pokryjeme z toho prevádzku AI a servera, aby aplikácia zostala bez reklám.",
+      "cta": "Prispieť"
+    },
     "madeWithLove": "Vytvorené s láskou pre zvieratá",
     "features": {
       "aiAnalysis": {

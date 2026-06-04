@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Box, Card, CardContent, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { Box, Button, Card, CardContent, Stack, Typography, alpha, useTheme } from '@mui/material';
 import PawlyLogo from '../components/PawlyLogo';
 import {
   Pets as PetsIcon,
@@ -9,7 +9,10 @@ import {
   Description as DescriptionIcon,
   Lock as LockIcon,
   Favorite as FavoriteIcon,
+  VolunteerActivism as VolunteerActivismIcon,
 } from '@mui/icons-material';
+
+const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
 export default function AboutPage() {
   const theme = useTheme();
@@ -155,6 +158,50 @@ export default function AboutPage() {
           </Stack>
         </CardContent>
       </Card>
+
+      {DONATE_URL && (
+        <Card sx={{ mb: 3 }}>
+          <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
+            <Stack direction="row" gap={1.75} alignItems="flex-start" sx={{ mb: 2 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  flexShrink: 0,
+                  bgcolor: alpha(theme.palette.primary.main, isDark ? 0.18 : 0.12),
+                  color: 'primary.main',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <VolunteerActivismIcon fontSize="small" />
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.25 }}>
+                  {t('about.support.title')}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('about.support.body')}
+                </Typography>
+              </Box>
+            </Stack>
+            <Button
+              variant="contained"
+              color="primary"
+              component="a"
+              href={DONATE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              startIcon={<VolunteerActivismIcon />}
+              sx={{ fontWeight: 600 }}
+            >
+              {t('about.support.cta')}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Stack direction="row" alignItems="center" justifyContent="center" gap={0.75} sx={{ mb: 2 }}>
         <Typography variant="body2" color="text.secondary">
