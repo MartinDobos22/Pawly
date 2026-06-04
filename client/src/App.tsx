@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -21,8 +21,9 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import AnalyzePage from './pages/AnalyzePage';
 import PetProfilePage from './pages/PetProfilePage';
 import HistoryPage from './pages/HistoryPage';
-import AboutPage from './pages/AboutPage';
-import FaqPage from './pages/FaqPage';
+import InfoPage from './pages/InfoPage';
+import ContactPage from './pages/ContactPage';
+import SupportProjectPage from './pages/SupportProjectPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import HealthPassportPage from './pages/HealthPassportPage';
 import VetCardPage from './pages/VetCardPage';
@@ -94,8 +95,17 @@ export default function App() {
                               <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
                               <Route path="/dennik" element={<EpisodeDiaryPage />} />
                               <Route path="/notifikacie" element={<NotificationsPage />} />
-                              <Route path="/o-aplikacii" element={<AboutPage />} />
-                              <Route path="/caste-otazky" element={<FaqPage />} />
+                              <Route path="/info" element={<InfoPage />} />
+                              <Route path="/kontakt" element={<ContactPage />} />
+                              <Route path="/podpora" element={<SupportProjectPage />} />
+                              <Route
+                                path="/o-aplikacii"
+                                element={<Navigate to="/info?tab=about" replace />}
+                              />
+                              <Route
+                                path="/caste-otazky"
+                                element={<Navigate to="/info?tab=faq" replace />}
+                              />
                               <Route
                                 path="/nastavenia"
                                 element={

@@ -26,8 +26,6 @@ import {
   HealthAndSafety as HealthAndSafetyIcon,
   Description as DescriptionIcon,
   Info as InfoIcon,
-  HelpOutline as HelpOutlineIcon,
-  Lock as LockIcon,
   Menu as MenuIcon,
   MoreHoriz as MoreHorizIcon,
   DarkMode as DarkModeIcon,
@@ -36,7 +34,11 @@ import {
   MenuBook as MenuBookIcon,
   NotificationsActive as NotificationsActiveIcon,
   Settings as SettingsIcon,
+  MailOutline as MailOutlineIcon,
+  VolunteerActivism as VolunteerActivismIcon,
 } from '@mui/icons-material';
+
+const IS_STRIPE_ENABLED = Boolean(import.meta.env.VITE_STRIPE_PAYMENT_LINK);
 import PetSwitcher from './PetSwitcher';
 import PawlyLogo from './PawlyLogo';
 
@@ -51,10 +53,11 @@ interface LayoutProps {
   onToggleTheme: () => void;
 }
 
-const isItemActive = (itemPath: string, currentPath: string) =>
-  itemPath === '/zdravotny-pas'
-    ? currentPath.startsWith('/zdravotny-pas')
-    : currentPath === itemPath;
+const isItemActive = (itemPath: string, currentPath: string) => {
+  if (itemPath === '/zdravotny-pas') return currentPath.startsWith('/zdravotny-pas');
+  if (itemPath === '/info') return currentPath.startsWith('/info');
+  return currentPath === itemPath;
+};
 
 export default function Layout({ children, darkMode, onToggleTheme }: LayoutProps) {
   const { t } = useTranslation();
@@ -88,9 +91,11 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       items: [
         { label: t('nav.profiles'), icon: <PetsIcon />, path: '/profily' },
         { label: t('nav.notifications'), icon: <NotificationsActiveIcon />, path: '/notifikacie' },
-        { label: t('nav.faq'), icon: <HelpOutlineIcon />, path: '/caste-otazky' },
-        { label: t('nav.about'), icon: <InfoIcon />, path: '/o-aplikacii' },
-        { label: t('nav.privacy'), icon: <LockIcon />, path: '/ochrana-sukromia' },
+        { label: t('nav.info'), icon: <InfoIcon />, path: '/info' },
+        { label: t('nav.contact'), icon: <MailOutlineIcon />, path: '/kontakt' },
+        ...(IS_STRIPE_ENABLED
+          ? [{ label: t('nav.donate'), icon: <VolunteerActivismIcon />, path: '/podpora' }]
+          : []),
       ],
     },
   ];
