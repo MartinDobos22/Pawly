@@ -9,7 +9,7 @@ const TEXT_PRIMARY = '#1A2A2F';
 const TEXT_SECONDARY = '#5C6B70';
 const DIVIDER = '#E6DFD4';
 
-const LOGO_URL = 'https://pawly.sk/icons/icon-192.png';
+const LOGO_URL = 'https://pawly.sk/branding/pawly-logo-light.png';
 const APP_NAME = 'Pawly';
 
 interface Copy {
@@ -101,8 +101,7 @@ export function buildPasswordResetHtml(link: string, locale: EmailLocale): strin
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; width:100%;">
           <tr>
             <td align="center" style="padding:24px 16px 16px;">
-              <img src="${LOGO_URL}" width="64" height="64" alt="${APP_NAME}" style="display:block; border:0; border-radius:14px;">
-              <div style="font-size:22px; font-weight:700; color:${BRAND_PRIMARY}; margin-top:12px; letter-spacing:-0.01em;">${APP_NAME}</div>
+              <img src="${LOGO_URL}" width="220" height="165" alt="${APP_NAME}" style="display:block; border:0; background-color:transparent; max-width:220px; height:auto;">
             </td>
           </tr>
 
