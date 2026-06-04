@@ -17,6 +17,7 @@ import authEmailsRouter from './routes/authEmails';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
+import { requireAiQuota } from './middleware/aiQuota';
 import { logger } from './utils/logger';
 
 dotenv.config();
@@ -161,11 +162,17 @@ app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/health', ensureUser, healthRouter);
 app.use('/api/account', ensureUser, accountRouter);
 app.use('/api/notifications', ensureUser, notificationsRouter);
-app.use('/api/analyze', aiHeavyLimiter, analyzeRouter);
-app.use('/api/episodes', episodesRouter);
-app.use('/api/extract-text', aiHeavyLimiter, extractTextRouter);
-app.use('/api/food-safety', aiHeavyLimiter, foodSafetyRouter);
-app.use('/api/interpret-passport', aiHeavyLimiter, interpretPassportRouter);
+app.use('/api/analyze', aiHeavyLimiter, ensureUser, requireAiQuota(), analyzeRouter);
+app.use('/api/episodes', ensureUser, episodesRouter);
+app.use('/api/extract-text', aiHeavyLimiter, ensureUser, requireAiQuota(), extractTextRouter);
+app.use('/api/food-safety', aiHeavyLimiter, ensureUser, requireAiQuota(), foodSafetyRouter);
+app.use(
+  '/api/interpret-passport',
+  aiHeavyLimiter,
+  ensureUser,
+  requireAiQuota(),
+  interpretPassportRouter
+);
 
 // Global error handler
 app.use(errorHandler);
