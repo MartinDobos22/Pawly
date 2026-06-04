@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Card, CardContent, Stack, Typography, alpha, useTheme } from '@mui/material';
-import PawlyLogo from '../components/PawlyLogo';
 import {
   Pets as PetsIcon,
   Science as ScienceIcon,
@@ -11,10 +10,16 @@ import {
   Favorite as FavoriteIcon,
   VolunteerActivism as VolunteerActivismIcon,
 } from '@mui/icons-material';
+import PawlyLogo from './PawlyLogo';
 
 const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
-export default function AboutPage() {
+interface AboutContentProps {
+  showLogo?: boolean;
+  showDonate?: boolean;
+}
+
+export default function AboutContent({ showLogo = true, showDonate = true }: AboutContentProps) {
   const theme = useTheme();
   const { t } = useTranslation('landing');
   const isDark = theme.palette.mode === 'dark';
@@ -48,8 +53,8 @@ export default function AboutPage() {
   ];
 
   return (
-    <Box sx={{ maxWidth: 760, mx: 'auto' }}>
-      <PawlyLogo size="lg" sx={{ mx: 'auto', mb: 2 }} />
+    <Box>
+      {showLogo && <PawlyLogo size="lg" sx={{ mx: 'auto', mb: 2 }} />}
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
         {t('about.title')}
       </Typography>
@@ -159,7 +164,7 @@ export default function AboutPage() {
         </CardContent>
       </Card>
 
-      {DONATE_URL && (
+      {showDonate && DONATE_URL && (
         <Card sx={{ mb: 3 }}>
           <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
             <Stack direction="row" gap={1.75} alignItems="flex-start" sx={{ mb: 2 }}>

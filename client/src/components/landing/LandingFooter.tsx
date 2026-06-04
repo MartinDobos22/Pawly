@@ -32,7 +32,7 @@ export default function LandingFooter() {
           </Stack>
           <Stack direction="row" gap={3}>
             <Link
-              href="/o-aplikacii"
+              href="/info?tab=about"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
             >

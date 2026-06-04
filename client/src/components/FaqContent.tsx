@@ -15,20 +15,28 @@ const SECTIONS: Array<{ key: string; itemCount: number }> = [
   { key: 'account', itemCount: 7 },
 ];
 
-export default function FaqPage() {
+interface FaqContentProps {
+  showHeader?: boolean;
+}
+
+export default function FaqContent({ showHeader = true }: FaqContentProps) {
   const { t } = useTranslation('landing');
 
   return (
-    <Box sx={{ maxWidth: 760, mx: 'auto' }}>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
-        <HelpIcon color="primary" />
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          {t('faq.title')}
-        </Typography>
-      </Stack>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        {t('faq.subtitle')}
-      </Typography>
+    <Box>
+      {showHeader && (
+        <>
+          <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
+            <HelpIcon color="primary" />
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              {t('faq.title')}
+            </Typography>
+          </Stack>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            {t('faq.subtitle')}
+          </Typography>
+        </>
+      )}
 
       {SECTIONS.map(({ key, itemCount }) => (
         <Box key={key} sx={{ mb: 3 }}>
