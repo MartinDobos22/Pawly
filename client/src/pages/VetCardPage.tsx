@@ -82,9 +82,16 @@ const PRINT_STYLES = `
 
   .brand-logo {
     display: block;
-    height: 36px;
+    height: 48px;
     width: auto;
     margin-bottom: 12px;
+    background-color: transparent;
+  }
+
+  .brand-logo--footer {
+    height: 28px;
+    margin: 0 0 6px;
+    background-color: transparent;
   }
 
   .dog-name {
@@ -1036,6 +1043,7 @@ export default function VetCardPage() {
   }
 
   <footer class="doc-foot">
+    <img class="brand-logo brand-logo--footer" src="/branding/pawly-logo-light.png" alt="Pawly" />
     ${t('vetPage.footer', { petName: dog.name, date: new Date().toLocaleDateString(lang) })}
   </footer>
 

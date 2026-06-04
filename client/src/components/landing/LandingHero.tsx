@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import PawlyLogo from '../PawlyLogo';
 
 const HERO_PHOTO =
   'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=900&q=80';
@@ -133,19 +134,7 @@ export default function LandingHero() {
         >
           {/* Left: text + CTAs */}
           <Stack spacing={3}>
-            <Box
-              component="img"
-              src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
-              alt="Pawly"
-              sx={{
-                alignSelf: 'flex-start',
-                height: { xs: 48, md: 64 },
-                width: 'auto',
-                maxWidth: '100%',
-                display: 'block',
-                mb: -1,
-              }}
-            />
+            <PawlyLogo size="lg" sx={{ alignSelf: 'flex-start', mb: -1 }} />
             <Chip
               icon={<SparkleIcon sx={{ fontSize: 16 }} />}
               label={t('hero.chip')}

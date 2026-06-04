@@ -1,6 +1,6 @@
 import { Box, Link, Stack, Typography, useTheme } from '@mui/material';
-import { Pets as PetsIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import PawlyLogo from '../PawlyLogo';
 
 export default function LandingFooter() {
   const theme = useTheme();
@@ -21,22 +21,8 @@ export default function LandingFooter() {
           alignItems={{ xs: 'flex-start', md: 'center' }}
           gap={2}
         >
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1.5,
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <PetsIcon sx={{ fontSize: 18 }} />
-            </Box>
-            <Typography sx={{ fontWeight: 800, fontSize: '0.95rem' }}>Pawly</Typography>
+          <Stack direction="row" alignItems="center" gap={1.25}>
+            <PawlyLogo size="sm" />
             <Typography
               variant="caption"
               sx={{ color: 'text.disabled', textTransform: 'none', letterSpacing: 0 }}

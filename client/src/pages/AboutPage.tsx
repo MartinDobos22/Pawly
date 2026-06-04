@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Box, Card, CardContent, Stack, Typography, alpha, useTheme } from '@mui/material';
+import PawlyLogo from '../components/PawlyLogo';
 import {
   Pets as PetsIcon,
   Science as ScienceIcon,
@@ -45,19 +46,7 @@ export default function AboutPage() {
 
   return (
     <Box sx={{ maxWidth: 760, mx: 'auto' }}>
-      <Box
-        component="img"
-        src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
-        alt="Pawly"
-        sx={{
-          display: 'block',
-          height: { xs: 64, md: 88 },
-          width: 'auto',
-          maxWidth: '100%',
-          mx: 'auto',
-          mb: 2,
-        }}
-      />
+      <PawlyLogo size="lg" sx={{ mx: 'auto', mb: 2 }} />
       <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
         {t('about.title')}
       </Typography>
