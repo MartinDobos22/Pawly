@@ -1,13 +1,4 @@
-import {
-  alpha,
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Toolbar,
-  useTheme,
-} from '@mui/material';
+import { alpha, AppBar, Box, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -30,6 +21,7 @@ import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
+import PawlyLogo from '../components/PawlyLogo';
 
 interface Props {
   darkMode: boolean;
@@ -89,26 +81,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           }}
         >
           <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
-            <Box
-              component="img"
-              src={
-                theme.palette.mode === 'dark'
-                  ? '/branding/pawly-logo-dark.png'
-                  : '/branding/pawly-logo-light.png'
-              }
-              alt="Pawly"
-              onClick={() => navigate('/')}
-              sx={{
-                height: 36,
-                width: 'auto',
-                display: 'block',
-                cursor: 'pointer',
-                filter:
-                  theme.palette.mode === 'dark'
-                    ? `drop-shadow(0 0 10px ${alpha(theme.palette.primary.main, 0.4)})`
-                    : 'none',
-              }}
-            />
+            <PawlyLogo size="md" glow onClick={() => navigate('/')} />
           </Stack>
           <LanguageSwitcher variant="compact" />
           <IconButton

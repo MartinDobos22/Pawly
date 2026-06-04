@@ -42,6 +42,7 @@ import {
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
 import LanguageSwitcher from './LanguageSwitcher';
+import PawlyLogo from './PawlyLogo';
 import { useAuth } from '../hooks/useAuth';
 import { deleteAccount, exportUserData } from '../services/accountApi';
 
@@ -214,19 +215,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             },
           }}
         >
-          <Box
-            component="img"
-            src={isDark ? '/branding/pawly-logo-dark.png' : '/branding/pawly-logo-light.png'}
-            alt="Pawly"
-            sx={{
-              height: 32,
-              width: 'auto',
-              display: 'block',
-              filter: isDark
-                ? `drop-shadow(0 0 8px ${alpha(theme.palette.primary.main, 0.35)})`
-                : 'none',
-            }}
-          />
+          <PawlyLogo size="md" glow />
         </Stack>
         <PetSwitcher />
       </Box>
