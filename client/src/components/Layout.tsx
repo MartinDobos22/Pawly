@@ -35,20 +35,12 @@ import {
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
   NotificationsActive as NotificationsActiveIcon,
-  Logout as LogoutIcon,
-  DeleteForever as DeleteForeverIcon,
-  MailOutline as MailOutlineIcon,
-  CloudDownload as CloudDownloadIcon,
-  VolunteerActivism as VolunteerActivismIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import PetSwitcher from './PetSwitcher';
-import LanguageSwitcher from './LanguageSwitcher';
 import PawlyLogo from './PawlyLogo';
-import { useAuth } from '../hooks/useAuth';
-import { deleteAccount, exportUserData } from '../services/accountApi';
 
 const DRAWER_WIDTH = 272;
-const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
 type NavItem = { label: string; icon: ReactNode; path: string };
 type NavSection = { id: string; label: string; items: NavItem[] };
@@ -71,7 +63,6 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   const NAV_SECTIONS: NavSection[] = [
     {
@@ -106,39 +97,6 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
 
   const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
   const MOBILE_NAV: NavItem[] = FLAT_NAV.slice(0, 4);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login', { replace: true });
-  };
-
-  const handleExportData = async () => {
-    try {
-      const blob = await exportUserData();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `pawly-export-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch {
-      window.alert(t('auth.exportDataFailed'));
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(t('auth.confirmDeleteMessage'));
-    if (!confirmed) return;
-    try {
-      await deleteAccount();
-      await logout();
-      navigate('/login', { replace: true });
-    } catch {
-      window.alert(t('auth.deleteAccountFailed'));
-    }
-  };
 
   const currentMobileIndex = MOBILE_NAV.findIndex((item) =>
     isItemActive(item.path, location.pathname)
@@ -279,93 +237,28 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       </Box>
 
       <Box sx={{ px: 1.25, pb: 1.5, pt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
-        <ListItemButton
-          onClick={onToggleTheme}
-          sx={navItemSx(false)}
-          aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
-        >
-          <ListItemIcon>{darkMode ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-          <ListItemText
-            primary={darkMode ? t('theme.light') : t('theme.dark')}
-            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-          />
-        </ListItemButton>
-        <LanguageSwitcher sx={navItemSx(false)} />
-        {DONATE_URL && (
-          <ListItemButton
-            component="a"
-            href={DONATE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={navItemSx(false)}
-            aria-label={t('nav.donate')}
-          >
-            <ListItemIcon>
-              <VolunteerActivismIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('nav.donate')}
-              primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-            />
-          </ListItemButton>
-        )}
-        <ListItemButton
-          component="a"
-          href={`mailto:${t('supportEmail')}`}
-          sx={navItemSx(false)}
-          aria-label={t('nav.support')}
-        >
-          <ListItemIcon>
-            <MailOutlineIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('nav.support')}
-            secondary={t('supportEmail')}
-            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-            secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={handleExportData}
-          sx={navItemSx(false)}
-          aria-label={t('auth.exportData')}
-        >
-          <ListItemIcon>
-            <CloudDownloadIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('auth.exportData')}
-            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-          />
-        </ListItemButton>
-        <ListItemButton onClick={handleLogout} sx={navItemSx(false)} aria-label={t('auth.logout')}>
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('auth.logout')}
-            secondary={user?.email ?? undefined}
-            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-            secondaryTypographyProps={{ fontSize: '0.72rem', noWrap: true }}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={handleDeleteAccount}
-          sx={{
-            ...navItemSx(false),
-            color: 'error.main',
-            '& .MuiListItemIcon-root': { color: 'error.main' },
-          }}
-          aria-label={t('auth.deleteAccount')}
-        >
-          <ListItemIcon>
-            <DeleteForeverIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('auth.deleteAccount')}
-            primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }}
-          />
-        </ListItemButton>
+        {(() => {
+          const settingsActive = location.pathname === '/nastavenia';
+          return (
+            <ListItemButton
+              selected={settingsActive}
+              onClick={() => handleNav('/nastavenia')}
+              sx={navItemSx(settingsActive)}
+              aria-label={t('nav.settings')}
+            >
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={t('nav.settings')}
+                primaryTypographyProps={{
+                  fontSize: '0.9rem',
+                  fontWeight: settingsActive ? 600 : 500,
+                }}
+              />
+            </ListItemButton>
+          );
+        })()}
       </Box>
     </Box>
   );
