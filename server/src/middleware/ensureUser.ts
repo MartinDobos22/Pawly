@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSupabase } from '../config/supabase';
 
+const uidToAppUserId = new Map<string, string>();
+
 export async function ensureUser(req: Request, _res: Response, next: NextFunction): Promise<void> {
   try {
     if (!req.user) {
@@ -10,8 +12,31 @@ export async function ensureUser(req: Request, _res: Response, next: NextFunctio
       throw err;
     }
 
+    const cached = uidToAppUserId.get(req.user.uid);
+    if (cached) {
+      req.appUserId = cached;
+      next();
+      return;
+    }
+
     const supabase = getSupabase();
-    const { data, error } = await supabase
+
+    const { data: existing, error: selectError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('firebase_uid', req.user.uid)
+      .maybeSingle();
+
+    if (selectError) throw selectError;
+
+    if (existing) {
+      uidToAppUserId.set(req.user.uid, existing.id);
+      req.appUserId = existing.id;
+      next();
+      return;
+    }
+
+    const { data: inserted, error: upsertError } = await supabase
       .from('users')
       .upsert(
         { firebase_uid: req.user.uid, email: req.user.email ?? null },
@@ -20,9 +45,10 @@ export async function ensureUser(req: Request, _res: Response, next: NextFunctio
       .select('id')
       .single();
 
-    if (error) throw error;
+    if (upsertError) throw upsertError;
 
-    req.appUserId = data.id;
+    uidToAppUserId.set(req.user.uid, inserted.id);
+    req.appUserId = inserted.id;
     next();
   } catch (err) {
     next(err);
