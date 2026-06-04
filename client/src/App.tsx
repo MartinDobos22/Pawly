@@ -25,6 +25,9 @@ import InfoPage from './pages/InfoPage';
 import ContactPage from './pages/ContactPage';
 import SupportProjectPage from './pages/SupportProjectPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
+import PrivacyPolicyRoute from './pages/PrivacyPolicyRoute';
 import HealthPassportPage from './pages/HealthPassportPage';
 import VetCardPage from './pages/VetCardPage';
 import EpisodeDiaryPage from './pages/EpisodeDiaryPage';
@@ -66,7 +69,10 @@ export default function App() {
                 path="/reset-hesla"
                 element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
               />
-              <Route path="/ochrana-sukromia" element={<PrivacyPolicyPage />} />
+              <Route
+                path="/ochrana-sukromia"
+                element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
               <Route
                 path="/*"
                 element={
