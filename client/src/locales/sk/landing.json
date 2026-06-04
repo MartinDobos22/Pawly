@@ -384,7 +384,7 @@
     "leadDaysNote": "Pripomenieme aj v deň termínu a hneď po ňom.",
     "leadDayChip_one": "{{count}} deň",
     "leadDayChip_few": "{{count}} dni",
-    "leadDayChip_many": "{{count}} dní",
+    "leadDayChip_other": "{{count}} dní",
     "typesTitle": "Typy záznamov",
     "upcomingTitle": "Najbližšie termíny",
     "loadError": "Nastavenia sa nepodarilo načítať.",
@@ -405,11 +405,11 @@
     "dueText": {
       "overdue_one": "po termíne o {{count}} deň",
       "overdue_few": "po termíne o {{count}} dni",
-      "overdue_many": "po termíne o {{count}} dní",
+      "overdue_other": "po termíne o {{count}} dní",
       "today": "dnes",
       "upcoming_one": "o {{count}} deň",
       "upcoming_few": "o {{count}} dni",
-      "upcoming_many": "o {{count}} dní"
+      "upcoming_other": "o {{count}} dní"
     },
     "noUpcoming": "Žiadne termíny v najbližšom období.",
     "saveSuccess": "Nastavenia uložené",
