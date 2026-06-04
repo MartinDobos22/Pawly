@@ -29,7 +29,7 @@ import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
 import SimilarEpisodesDialog from '../components/episodes/SimilarEpisodesDialog';
 import { useHealthEpisodes } from '../hooks/useHealthEpisodes';
 import { useEpisodeStorageSize } from '../hooks/useEpisodeStorageSize';
-import { usePetProfiles } from '../hooks/usePetProfiles';
+import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters';
 import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
@@ -39,10 +39,12 @@ export default function EpisodeDiaryPage() {
   const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
-  const { profiles, loading: petsLoading } = usePetProfiles();
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
-
-  const [selectedDogId, setSelectedDogId] = useState<string>(dogProfiles[0]?.id ?? '');
+  const {
+    dogProfiles,
+    activePetId: selectedDogId,
+    selectPet: setSelectedDogId,
+    loading: petsLoading,
+  } = useActivePet();
   const { medications, visits: vetVisits } = useHealthData();
 
   const { episodes, byDog, add, update, remove } = useHealthEpisodes();
