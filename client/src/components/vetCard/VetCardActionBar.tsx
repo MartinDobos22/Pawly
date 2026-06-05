@@ -68,6 +68,7 @@ export default function VetCardActionBar({
         mb: 1.5,
         display: 'flex',
         justifyContent: 'flex-end',
+        overflow: 'hidden',
         '@media print': { display: 'none' },
       }}
     >
@@ -94,6 +95,7 @@ export default function VetCardActionBar({
             textTransform: 'none',
             letterSpacing: 0,
             fontSize: '0.78rem',
+            display: { xs: 'none', sm: 'block' },
           }}
         >
           {t('actionBar.sectionCount', { enabled: enabledCount, total: ORDER.length })}
@@ -131,16 +133,27 @@ export default function VetCardActionBar({
             <PrintIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<PdfIcon />}
-          onClick={onExportPdf}
-          disabled={!canExport}
-          sx={{ minHeight: 32, py: 0.5, px: 1.5 }}
-        >
-          {t('actionBar.exportPdf')}
-        </Button>
+        <Tooltip title={t('actionBar.exportPdf')}>
+          <span>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<PdfIcon />}
+              onClick={onExportPdf}
+              disabled={!canExport}
+              sx={{
+                minHeight: 32,
+                py: 0.5,
+                px: { xs: 1, sm: 1.5 },
+                '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 } },
+              }}
+            >
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                {t('actionBar.exportPdf')}
+              </Box>
+            </Button>
+          </span>
+        </Tooltip>
       </Stack>
 
       <Menu

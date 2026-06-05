@@ -116,24 +116,36 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
-        <TimelineIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="h3" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
-            {tVc('clinicalHistory.title')}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'text.secondary',
-              textTransform: 'none',
-              letterSpacing: 0,
-              fontSize: '0.78rem',
-            }}
-          >
-            {tVc('clinicalHistory.subtitle')}
-          </Typography>
-        </Box>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        gap={1}
+        sx={{ mb: 1.5 }}
+      >
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}
+          sx={{ flex: 1, minWidth: 0, width: '100%' }}
+        >
+          <TimelineIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="h3" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
+              {tVc('clinicalHistory.title')}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                textTransform: 'none',
+                letterSpacing: 0,
+                fontSize: '0.78rem',
+              }}
+            >
+              {tVc('clinicalHistory.subtitle')}
+            </Typography>
+          </Box>
+        </Stack>
         <TextField
           size="small"
           placeholder={tVc('clinicalHistory.searchPlaceholder')}
@@ -157,7 +169,7 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
               </InputAdornment>
             ) : null,
           }}
-          sx={{ width: { xs: 160, sm: 240 } }}
+          sx={{ width: { xs: '100%', sm: 240 } }}
         />
       </Stack>
 
@@ -314,7 +326,13 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
                 total: visible.length,
               })}
             </Typography>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              gap={1.5}
+              flexWrap="wrap"
+              justifyContent="flex-end"
+            >
               <Stack direction="row" alignItems="center" gap={0.75}>
                 <Typography
                   variant="caption"
