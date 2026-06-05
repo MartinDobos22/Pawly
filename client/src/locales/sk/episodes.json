@@ -1,4 +1,7 @@
 {
+  "hints": {
+    "category": "Zdravotná oblasť epizódy (tráviace, kožné, pohybové…). Pomáha filtrovať a hľadať podobné minulé epizódy pre kontext."
+  },
   "page": {
     "title": "Denník epizód",
     "description": "Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš overené riešenie.",

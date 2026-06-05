@@ -1,4 +1,12 @@
 {
+  "hints": {
+    "allergies": "Allergies are immune-system reactions (e.g. to chicken, beef, gluten). Food analysis warns you when a food contains them.",
+    "intolerances": "An intolerance is a digestive issue (not an immune reaction) — e.g. lactose. Unlike an allergy it's usually not dangerous, but it causes discomfort.",
+    "healthConditions": "Long-term conditions such as obesity, diabetes or a sensitive stomach. They help the AI tailor food recommendations to your pet.",
+    "vaccination": "Regular vaccinations against infectious diseases. We track the expiry date and remind you when a booster is due.",
+    "deworming": "Regular deworming against internal parasites. The interval is usually 3–6 months depending on the pet's age and lifestyle.",
+    "ectoparasite": "Protection against ticks and fleas (spot-on, tablets, collar). We track how long the last application stays effective."
+  },
   "page": {
     "noPetSelected": "Select a pet",
     "noPetDescription": "Add a pet profile in the Profiles section.",

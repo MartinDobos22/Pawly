@@ -1,5 +1,6 @@
-import { Box, Card, CardContent, CircularProgress, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardContent, CircularProgress, Stack, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import HelpHint from './HelpHint';
 
 interface ScoreCardProps {
   score: number;
@@ -83,9 +84,12 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
           </Box>
         </Box>
 
-        <Typography variant="subtitle1" sx={{ fontWeight: 700, color, mb: 0.5 }}>
-          {getScoreLabel(score)}
-        </Typography>
+        <Stack direction="row" alignItems="center" justifyContent="center" gap={0.5} sx={{ mb: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color }}>
+            {getScoreLabel(score)}
+          </Typography>
+          <HelpHint text={t('hints.score')} />
+        </Stack>
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           {t('score.totalQuality')}

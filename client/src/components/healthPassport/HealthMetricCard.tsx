@@ -20,10 +20,12 @@ import {
 } from '@mui/icons-material';
 import type { ValidityStatus } from '../../types/dogHealth';
 import { relativeDate, formatDateShort } from '../../utils/relativeDate';
+import HelpHint from '../HelpHint';
 
 interface Props {
   icon: ReactElement;
   label: string;
+  hint?: string;
   status: ValidityStatus;
   nextDate?: string;
   lastDate?: string;
@@ -50,6 +52,7 @@ const statusIcon = (status: ValidityStatus) => {
 export default function HealthMetricCard({
   icon,
   label,
+  hint,
   status,
   nextDate,
   lastDate,
@@ -144,9 +147,12 @@ export default function HealthMetricCard({
             {icon}
           </Box>
           <Stack sx={{ minWidth: 0, flex: 1 }} spacing={0.25}>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
-              {label}
-            </Typography>
+            <Stack direction="row" alignItems="center" gap={0.25} sx={{ minWidth: 0 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+                {label}
+              </Typography>
+              {hint && <HelpHint text={hint} size={14} />}
+            </Stack>
             <Typography
               variant="body2"
               sx={{ color: 'text.secondary', fontStyle: 'italic', opacity: 0.85 }}
@@ -213,6 +219,7 @@ export default function HealthMetricCard({
             <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
               {label}
             </Typography>
+            {hint && <HelpHint text={hint} size={14} />}
           </Stack>
           <Tooltip title={statusLabel}>
             <meta.Icon sx={{ fontSize: 18, color: toneColor }} />

@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { ValidityStatus } from '../../types/dogHealth';
+import HelpHint from '../HelpHint';
 import VetCardStatusCell from './VetCardStatusCell';
 
 interface Props {
@@ -26,6 +27,7 @@ export default function VetCardStatusOverview({ rabies, combined, deworming, ect
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           {t('statusOverview.preventiveStatus')}
         </Typography>
+        <HelpHint text={t('hints.preventiveStatus')} size={14} />
       </Stack>
       <Box
         sx={{

@@ -1,4 +1,9 @@
 {
+  "hints": {
+    "score": "The 0–100 score rates the overall quality of the food: 0–30 poor, 31–60 average, 61–80 good, 81–100 excellent. It factors in both the ingredients and your pet's profile.",
+    "pros": "The food's upsides — quality ingredients, suitable nutrients and things that match your pet's needs.",
+    "cons": "What to watch out for — questionable ingredients, missing nutrients or things that may not suit your pet."
+  },
   "hero": {
     "title": "Food Analysis",
     "description": "Enter the food ingredients or take a photo of the packaging — AI will evaluate quality, allergen risks and recommendations for your dog. Or quickly ask \"Can my dog eat…?\"",

@@ -1,4 +1,7 @@
 {
+  "hints": {
+    "category": "The health area of the episode (digestive, skin, mobility…). It helps you filter and find similar past episodes for context."
+  },
   "page": {
     "title": "Health Diary",
     "description": "Record your dog's health episodes, what worked and what didn't — next time you'll see proven solutions.",

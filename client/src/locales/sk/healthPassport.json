@@ -1,4 +1,12 @@
 {
+  "hints": {
+    "allergies": "Alergie sú reakcie imunitného systému (napr. na kuracie mäso, hovädzie, lepok). Pri analýze krmiva ťa upozorníme, ak ich obsahuje.",
+    "intolerances": "Intolerancia je tráviaci problém (nie imunitná reakcia) — napr. laktóza. Na rozdiel od alergie zvyčajne nie je nebezpečná, ale spôsobuje ťažkosti.",
+    "healthConditions": "Dlhodobé stavy ako obezita, cukrovka či citlivé trávenie. Pomáhajú AI prispôsobiť odporúčania ku krmivu tvojmu zvieraťu.",
+    "vaccination": "Pravidelné očkovania proti nákazlivým chorobám. Sledujeme dátum platnosti a upozorníme, keď sa blíži preočkovanie.",
+    "deworming": "Pravidelné odčervenie proti vnútorným parazitom. Interval býva 3–6 mesiacov podľa veku a životného štýlu zvieraťa.",
+    "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná."
+  },
   "page": {
     "noPetSelected": "Vyber zviera",
     "noPetDescription": "Pridaj profil zvieraťa v sekcii Profily.",

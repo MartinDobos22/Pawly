@@ -1,4 +1,7 @@
 {
+  "hints": {
+    "preventiveStatus": "A quick overview of preventive care for the vet — green means valid, orange means expiring soon, red means overdue."
+  },
   "page": {
     "title": "Vet Card",
     "description": "Health summary for the veterinarian.",

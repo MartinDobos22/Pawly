@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import HelpHint from '../HelpHint';
 import {
   EPISODE_CATEGORIES,
   EPISODE_OUTCOMES,
@@ -28,22 +29,25 @@ export default function EpisodeFiltersBar({
 
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
-      <FormControl size="small" sx={{ minWidth: 160 }}>
-        <InputLabel id="episode-category-filter">{t('form.category')}</InputLabel>
-        <Select
-          labelId="episode-category-filter"
-          label={t('form.category')}
-          value={category}
-          onChange={(e) => onCategoryChange(e.target.value as EpisodeCategory | 'all')}
-        >
-          <MenuItem value="all">{t('filter.all')}</MenuItem>
-          {EPISODE_CATEGORIES.map((c) => (
-            <MenuItem key={c} value={c}>
-              {t(`category.${c}` as never)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <FormControl size="small" sx={{ minWidth: 160, flex: 1 }}>
+          <InputLabel id="episode-category-filter">{t('form.category')}</InputLabel>
+          <Select
+            labelId="episode-category-filter"
+            label={t('form.category')}
+            value={category}
+            onChange={(e) => onCategoryChange(e.target.value as EpisodeCategory | 'all')}
+          >
+            <MenuItem value="all">{t('filter.all')}</MenuItem>
+            {EPISODE_CATEGORIES.map((c) => (
+              <MenuItem key={c} value={c}>
+                {t(`category.${c}` as never)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <HelpHint text={t('hints.category')} />
+      </Stack>
 
       <FormControl size="small" sx={{ minWidth: 160 }}>
         <InputLabel id="episode-outcome-filter">{t('form.outcome')}</InputLabel>
