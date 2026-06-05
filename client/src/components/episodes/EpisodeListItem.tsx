@@ -272,7 +272,7 @@ export default function EpisodeListItem({
               sx={{
                 display: 'grid',
                 gap: 1,
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' },
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
               {episode.attachments.map((a) => (
@@ -288,7 +288,7 @@ export default function EpisodeListItem({
                     component="img"
                     src={signedUrls[a.objectPath] ?? ''}
                     alt={a.caption ?? t('item.attachment')}
-                    sx={{ width: '100%', height: 100, objectFit: 'cover', display: 'block' }}
+                    sx={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
                   />
                   {a.caption && (
                     <Typography variant="caption" sx={{ p: 0.5, display: 'block' }}>
@@ -313,10 +313,19 @@ export default function EpisodeListItem({
             {t('similar.findSimilar')}
           </Button>
           <Stack direction="row" spacing={0.5}>
-            <IconButton size="small" onClick={onEdit} aria-label={t('actions.edit', { ns: 'common' })}>
+            <IconButton
+              size="small"
+              onClick={onEdit}
+              aria-label={t('actions.edit', { ns: 'common' })}
+            >
               <EditIcon fontSize="small" />
             </IconButton>
-            <IconButton size="small" onClick={onDelete} aria-label={t('actions.delete', { ns: 'common' })} color="error">
+            <IconButton
+              size="small"
+              onClick={onDelete}
+              aria-label={t('actions.delete', { ns: 'common' })}
+              color="error"
+            >
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Stack>

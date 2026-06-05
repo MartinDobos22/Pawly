@@ -159,7 +159,7 @@ export default function AttachmentGallery({
           sx={{
             display: 'grid',
             gap: 1.5,
-            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' },
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(2, 1fr)' },
           }}
         >
           {attachments.map((attachment) => (
@@ -177,7 +177,7 @@ export default function AttachmentGallery({
                 component="img"
                 src={signedUrls[attachment.objectPath] ?? ''}
                 alt={attachment.caption ?? t('attachments.captionAlt')}
-                sx={{ width: '100%', height: 120, objectFit: 'cover', bgcolor: 'action.hover' }}
+                sx={{ width: '100%', height: 200, objectFit: 'cover', bgcolor: 'action.hover' }}
               />
               <Box sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <TextField
