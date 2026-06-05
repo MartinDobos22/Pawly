@@ -132,7 +132,13 @@ export default function RecentVisitsCard({ visits }: Props) {
           >
             {t('recentVisits.rangeOf', { start: rangeStart, end: rangeEnd, total: visits.length })}
           </Typography>
-          <Stack direction="row" alignItems="center" gap={1.5}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={1.5}
+            flexWrap="wrap"
+            justifyContent="flex-end"
+          >
             <Stack direction="row" alignItems="center" gap={0.75}>
               <Typography
                 variant="caption"
