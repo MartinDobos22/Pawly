@@ -14,6 +14,7 @@ import type {
 
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import { useConfirm } from '../hooks/useConfirm';
 import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
@@ -75,6 +76,7 @@ export default function HealthPassportPage() {
     removeMedication,
     toggleDose,
   } = useHealthData();
+  const { confirm, dialog: confirmDialog } = useConfirm();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
   const dogVaccinations = vaccinations.filter((v) => v.dogId === selectedDogId);
@@ -265,11 +267,18 @@ export default function HealthPassportPage() {
     [selectedVisitId, updateVisit, tCommon]
   );
 
-  const handleDeleteVisit = useCallback(() => {
+  const handleDeleteVisit = useCallback(async () => {
     if (!selectedVisitId) return;
+    const ok = await confirm({
+      title: tCommon('actions.confirmDeleteRecordTitle'),
+      message: tCommon('actions.confirmDeleteRecordMessage'),
+      confirmLabel: tCommon('actions.delete'),
+      danger: true,
+    });
+    if (!ok) return;
     void removeVisit(selectedVisitId);
     setSelectedVisitId(null);
-  }, [selectedVisitId, removeVisit]);
+  }, [selectedVisitId, removeVisit, confirm, tCommon]);
 
   // ── Record save handlers ────────────────────────────────────────────────────
   const handleSaveVaccination = useCallback(
@@ -403,8 +412,15 @@ export default function HealthPassportPage() {
     [updateExpense, tCommon]
   );
 
-  const handleDeleteRecord = useCallback(() => {
+  const handleDeleteRecord = useCallback(async () => {
     if (!selectedRecord) return;
+    const ok = await confirm({
+      title: tCommon('actions.confirmDeleteRecordTitle'),
+      message: tCommon('actions.confirmDeleteRecordMessage'),
+      confirmLabel: tCommon('actions.delete'),
+      danger: true,
+    });
+    if (!ok) return;
     if (selectedRecord.type === 'VACCINATION') void removeVaccination(selectedRecord.id);
     else if (selectedRecord.type === 'DEWORMING') void removeDeworming(selectedRecord.id);
     else if (selectedRecord.type === 'ECTOPARASITE') void removeEcto(selectedRecord.id);
@@ -420,6 +436,8 @@ export default function HealthPassportPage() {
     removeMedication,
     removeDietEntry,
     removeExpense,
+    confirm,
+    tCommon,
   ]);
 
   // ── PDF export ──────────────────────────────────────────────────────────────
@@ -685,6 +703,7 @@ export default function HealthPassportPage() {
           {snack.msg}
         </Alert>
       </Snackbar>
+      {confirmDialog}
     </Box>
   );
 }

@@ -50,7 +50,13 @@
     "search": "Hľadať",
     "clear": "Vymazať",
     "clearAll": "Vymazať všetko",
-    "deleteAll": "Zmazať všetko"
+    "deleteAll": "Zmazať všetko",
+    "irreversible": "Túto akciu nie je možné vrátiť späť.",
+    "typeToConfirm": "Pre potvrdenie napíš: {{value}}",
+    "confirmSaveTitle": "Uložiť záznam?",
+    "confirmSaveMessage": "Naozaj chceš uložiť tento záznam?",
+    "confirmDeleteRecordTitle": "Zmazať záznam?",
+    "confirmDeleteRecordMessage": "Naozaj chceš zmazať tento záznam? Záznam sa nedá obnoviť."
   },
   "theme": {
     "light": "Svetlý režim",

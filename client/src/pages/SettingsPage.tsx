@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import ConfirmDialog from '../components/ConfirmDialog';
 import {
   Box,
   Container,
@@ -74,14 +76,25 @@ export default function SettingsPage({ darkMode, onToggleTheme }: Props) {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(t('auth.confirmDeleteMessage'));
-    if (!confirmed) return;
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDeleteAccount = () => {
+    setDeleteError(null);
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleteLoading(true);
     try {
       await deleteAccount();
       await logout();
       navigate('/login', { replace: true });
     } catch {
+      setDeleteError(t('auth.deleteAccountFailed'));
+      setDeleteLoading(false);
+      setDeleteOpen(false);
       window.alert(t('auth.deleteAccountFailed'));
     }
   };
@@ -216,6 +229,22 @@ export default function SettingsPage({ darkMode, onToggleTheme }: Props) {
           )}
         </List>
       </Box>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title={t('auth.confirmDeleteTitle')}
+        message={t('auth.confirmDeleteMessage')}
+        confirmLabel={t('auth.deleteAccount')}
+        danger
+        loading={deleteLoading}
+        requireText={user?.email ?? undefined}
+        requireTextHelper={
+          user?.email ? t('actions.typeToConfirm', { value: user.email }) : undefined
+        }
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteOpen(false)}
+      />
+      {deleteError && null}
     </Container>
   );
 }
