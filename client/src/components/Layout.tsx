@@ -41,6 +41,7 @@ import {
 const IS_STRIPE_ENABLED = Boolean(import.meta.env.VITE_STRIPE_PAYMENT_LINK);
 import PetSwitcher from './PetSwitcher';
 import PawlyLogo from './PawlyLogo';
+import InstallAppBanner from './InstallAppBanner';
 
 const DRAWER_WIDTH = 272;
 
@@ -392,6 +393,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
             },
           }}
         >
+          <InstallAppBanner />
           {children}
         </Box>
 
