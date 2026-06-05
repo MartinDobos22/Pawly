@@ -11,12 +11,11 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
-import PetTypesStrip from '../components/landing/PetTypesStrip';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
 import ComparisonSection from '../components/landing/ComparisonSection';
-import PetPhotoWall from '../components/landing/PetPhotoWall';
+import PetSpeciesShowcase from '../components/landing/PetSpeciesShowcase';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
@@ -130,9 +129,6 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         <HowItWorks />
       </RevealOnScroll>
       <RevealOnScroll>
-        <PetTypesStrip />
-      </RevealOnScroll>
-      <RevealOnScroll>
         <InteractiveAiDemo />
       </RevealOnScroll>
       <RevealOnScroll>
@@ -148,7 +144,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         <AppPreview />
       </RevealOnScroll>
       <RevealOnScroll>
-        <PetPhotoWall />
+        <PetSpeciesShowcase />
       </RevealOnScroll>
       <RevealOnScroll>
         <FinalCta />
