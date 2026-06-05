@@ -1,4 +1,7 @@
 {
+  "help": {
+    "label": "Show help"
+  },
   "nav": {
     "sectionMain": "Main",
     "sectionOther": "Other",

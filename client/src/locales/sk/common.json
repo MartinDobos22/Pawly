@@ -1,4 +1,7 @@
 {
+  "help": {
+    "label": "Zobraziť pomôcku"
+  },
   "nav": {
     "sectionMain": "Hlavné",
     "sectionOther": "Ostatné",

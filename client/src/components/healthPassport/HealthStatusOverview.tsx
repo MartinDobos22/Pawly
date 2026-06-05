@@ -78,6 +78,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
       <HealthMetricCard
         icon={<VaccinesIcon />}
         label={t('overview.vaccination')}
+        hint={t('hints.vaccination')}
         status={vaccinationStatus}
         nextDate={vaccinationNextDate}
         lastDate={vaccinationLastDate}
@@ -90,6 +91,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
       <HealthMetricCard
         icon={<DewormIcon />}
         label={t('overview.deworming')}
+        hint={t('hints.deworming')}
         status={dewormingStatus}
         nextDate={dewormingNextDate}
         lastDate={dewormingLastDate}
@@ -104,6 +106,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
       <HealthMetricCard
         icon={<EctoIcon />}
         label={t('overview.ecto')}
+        hint={t('hints.ectoparasite')}
         status={ectoStatus}
         nextDate={ectoNextDate}
         lastDate={ectoLastDate}

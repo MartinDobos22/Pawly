@@ -29,6 +29,7 @@ import {
   Edit as EditIcon,
   Pets as PetsIcon,
 } from '@mui/icons-material';
+import HelpHint from '../components/HelpHint';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
@@ -595,7 +596,21 @@ export default function PetProfilePage() {
               options={ALLERGY_SUGGESTIONS}
               value={form.allergies}
               onChange={(_e, newVal) => setForm({ ...form, allergies: newVal })}
-              renderInput={(params) => <TextField {...params} label={t('profiles.allergies')} />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('profiles.allergies')}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {params.InputProps.endAdornment}
+                        <HelpHint text={t('hints.allergies')} />
+                      </>
+                    ),
+                  }}
+                />
+              )}
             />
             <Autocomplete
               multiple
@@ -603,7 +618,21 @@ export default function PetProfilePage() {
               options={INTOLERANCE_SUGGESTIONS}
               value={form.intolerances}
               onChange={(_e, newVal) => setForm({ ...form, intolerances: newVal })}
-              renderInput={(params) => <TextField {...params} label={t('profiles.intolerances')} />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('profiles.intolerances')}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {params.InputProps.endAdornment}
+                        <HelpHint text={t('hints.intolerances')} />
+                      </>
+                    ),
+                  }}
+                />
+              )}
             />
             <Autocomplete
               multiple
@@ -612,7 +641,19 @@ export default function PetProfilePage() {
               value={form.healthConditions}
               onChange={(_e, newVal) => setForm({ ...form, healthConditions: newVal })}
               renderInput={(params) => (
-                <TextField {...params} label={t('profiles.healthConditions')} />
+                <TextField
+                  {...params}
+                  label={t('profiles.healthConditions')}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {params.InputProps.endAdornment}
+                        <HelpHint text={t('hints.healthConditions')} />
+                      </>
+                    ),
+                  }}
+                />
               )}
             />
 
