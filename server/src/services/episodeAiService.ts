@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { logger } from '../utils/logger';
+import { AI_MODELS } from './aiService';
 import {
   auditAiProcessing,
   assertPrivacyGuard,
@@ -213,7 +214,7 @@ export async function summarizeSimilarEpisodes(
   try {
     const response = await client.chat.completions.create(
       {
-        model: 'gpt-4o-mini',
+        model: AI_MODELS.episodeSummary,
         temperature: 0.2,
         response_format: { type: 'json_object' },
         messages: [

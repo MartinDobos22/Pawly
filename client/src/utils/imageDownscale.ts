@@ -4,15 +4,32 @@ export interface DownscaleResult {
   mimeType: string;
 }
 
+export interface DownscaleOptions {
+  maxWidth?: number;
+  mimeType?: 'image/jpeg' | 'image/webp' | 'image/png';
+  quality?: number;
+  enhanceForOcr?: boolean;
+}
+
 export async function downscaleImage(
   file: File,
-  maxWidth = 1024,
+  maxWidthOrOptions: number | DownscaleOptions = 1600,
   mimeType: 'image/jpeg' | 'image/webp' | 'image/png' = 'image/jpeg',
   quality = 0.85
 ): Promise<DownscaleResult> {
+  const options: Required<DownscaleOptions> =
+    typeof maxWidthOrOptions === 'number'
+      ? { maxWidth: maxWidthOrOptions, mimeType, quality, enhanceForOcr: false }
+      : {
+          maxWidth: maxWidthOrOptions.maxWidth ?? 1600,
+          mimeType: maxWidthOrOptions.mimeType ?? mimeType,
+          quality: maxWidthOrOptions.quality ?? quality,
+          enhanceForOcr: maxWidthOrOptions.enhanceForOcr ?? false,
+        };
+
   const bitmap = await loadBitmap(file);
 
-  const scale = bitmap.width > maxWidth ? maxWidth / bitmap.width : 1;
+  const scale = bitmap.width > options.maxWidth ? options.maxWidth / bitmap.width : 1;
   const targetWidth = Math.round(bitmap.width * scale);
   const targetHeight = Math.round(bitmap.height * scale);
 
@@ -23,12 +40,15 @@ export async function downscaleImage(
   if (!ctx) {
     throw new Error('Canvas 2D kontext nie je dostupný.');
   }
+  if (options.enhanceForOcr) {
+    ctx.filter = 'contrast(1.15) brightness(1.05)';
+  }
   ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
 
-  const dataUrl = canvas.toDataURL(mimeType, quality);
+  const dataUrl = canvas.toDataURL(options.mimeType, options.quality);
   const bytes = estimateDataUrlBytes(dataUrl);
 
-  return { dataUrl, bytes, mimeType };
+  return { dataUrl, bytes, mimeType: options.mimeType };
 }
 
 function estimateDataUrlBytes(dataUrl: string): number {

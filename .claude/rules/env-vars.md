@@ -20,6 +20,24 @@
 
 > **Auth premenné sú povinné.** `server/src/config/firebase.ts` fail-fastne pri prvom overení tokenu ak ktorákoľvek `FIREBASE_*` chýba. Všetky `/api/*` endpointy okrem `/api/health` overujú Firebase ID token cez `middleware/firebaseAuth.ts`.
 
+## Model override premenné (server)
+
+Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default je v `server/src/services/aiService.ts` (`MODELS`). Ak premenná nie je nastavená, použije sa default. Hodnota musí byť validný OpenAI model ID (`gpt-4o`, `gpt-4o-mini`, `gpt-4.1`, …).
+
+| Premenná | Default | Endpoint / funkcia |
+|---|---|---|
+| `MODEL_OCR_NORMALIZE` | `gpt-4o-mini` | OCR text cleanup (`normalizeExtractedTextWithOpenAI`) |
+| `MODEL_OCR_VISION` | `gpt-4o` | OCR fallback po Google Vision (`extractTextFromImageWithOpenAI`) |
+| `MODEL_DOC_CONTEXT` | `gpt-4o-mini` | Document type detection (`analyzeDocumentContextWithOpenAI`) |
+| `MODEL_EXAM_ANALYSIS` | `gpt-4o` | Analýza vyšetrenia z OCR textu (`analyzeExamDocumentWithOpenAI`) |
+| `MODEL_VET_FILE` | `gpt-4o` | Multi-image vakc. preukaz (`analyzeVetFile`) |
+| `MODEL_PASSPORT_INTERPRET` | `gpt-4o-mini` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`) |
+| `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
+| `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
+| `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
+
+> Vision endpointy (`MODEL_OCR_VISION`, `MODEL_VET_FILE`) musia byť modely s vision podporou. Inak server vráti 502.
+
 ## Klient (`client/.env`)
 
 Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.

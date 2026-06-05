@@ -70,7 +70,7 @@ export default function AttachmentGallery({
         }
 
         try {
-          const downscaled = await downscaleImage(file);
+          const downscaled = await downscaleImage(file, 1024);
           const uploaded = await uploadHealthAttachment({
             petId: dogId,
             fileName: file.name,
