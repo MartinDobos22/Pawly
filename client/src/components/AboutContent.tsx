@@ -11,6 +11,7 @@ import {
   VolunteerActivism as VolunteerActivismIcon,
 } from '@mui/icons-material';
 import PawlyLogo from './PawlyLogo';
+import SocialLinks from './SocialLinks';
 
 const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
@@ -208,11 +209,14 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
         </Card>
       )}
 
-      <Stack direction="row" alignItems="center" justifyContent="center" gap={0.75} sx={{ mb: 2 }}>
+      <Stack direction="row" alignItems="center" justifyContent="center" gap={0.75} sx={{ mb: 1 }}>
         <Typography variant="body2" color="text.secondary">
           {t('about.madeWithLove')}
         </Typography>
         <FavoriteIcon sx={{ fontSize: 16, color: 'error.main' }} />
+      </Stack>
+      <Stack alignItems="center" sx={{ mb: 2 }}>
+        <SocialLinks />
       </Stack>
     </Box>
   );

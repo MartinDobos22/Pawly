@@ -1,6 +1,7 @@
 import { Box, Link, Stack, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import PawlyLogo from '../PawlyLogo';
+import SocialLinks from '../SocialLinks';
 
 export default function LandingFooter() {
   const theme = useTheme();
@@ -30,7 +31,7 @@ export default function LandingFooter() {
               · {new Date().getFullYear()}
             </Typography>
           </Stack>
-          <Stack direction="row" gap={3}>
+          <Stack direction="row" alignItems="center" gap={3}>
             <Link
               href="/info?tab=about"
               underline="hover"
@@ -52,6 +53,7 @@ export default function LandingFooter() {
             >
               {t('footer.start')}
             </Link>
+            <SocialLinks size="sm" />
           </Stack>
         </Stack>
       </Box>
