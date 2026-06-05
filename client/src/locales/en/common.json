@@ -105,6 +105,17 @@
     "loadProfilesFailed": "Failed to load profiles.",
     "loadHealthDataFailed": "Failed to load health data."
   },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Have a question, found a bug, or want to share feedback? We'd love to hear from you.",
+    "emailLabel": "Email us",
+    "responseHint": "We usually reply within a few business days.",
+    "faqHint": "Before writing, check the FAQ — you might find the answer there faster.",
+    "faqCta": "Open FAQ"
+  },
+  "support": {
+    "intro": "Pawly is built independently. If you find it useful, you can support its development with a one-time contribution."
+  },
   "relativeDate": {
     "today": "Today",
     "todayShort": "today",

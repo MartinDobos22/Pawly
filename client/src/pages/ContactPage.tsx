@@ -18,26 +18,16 @@ import {
 
 export default function ContactPage() {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const isDark = theme.palette.mode === 'dark';
-  const lang = i18n.language?.toLowerCase().startsWith('en') ? 'en' : 'sk';
   const email = t('supportEmail');
 
-  const title = lang === 'en' ? 'Contact' : 'Kontakt';
-  const subtitle =
-    lang === 'en'
-      ? 'Have a question, found a bug, or want to share feedback? We’d love to hear from you.'
-      : 'Máš otázku, narazil si na chybu alebo nám chceš dať spätnú väzbu? Napíš nám.';
-  const emailLabel = lang === 'en' ? 'Email us' : 'Napíš nám e-mail';
-  const responseHint =
-    lang === 'en'
-      ? 'We usually reply within a few business days.'
-      : 'Zvyčajne odpovieme v priebehu niekoľkých pracovných dní.';
-  const faqHint =
-    lang === 'en'
-      ? 'Before writing, you might find the answer in our FAQ.'
-      : 'Pred napísaním sa pozri do našich častých otázok — možno tam nájdeš odpoveď rýchlejšie.';
-  const faqCta = lang === 'en' ? 'Open FAQ' : 'Otvoriť FAQ';
+  const title = t('contact.title');
+  const subtitle = t('contact.subtitle');
+  const emailLabel = t('contact.emailLabel');
+  const responseHint = t('contact.responseHint');
+  const faqHint = t('contact.faqHint');
+  const faqCta = t('contact.faqCta');
 
   return (
     <Box sx={{ maxWidth: 760, mx: 'auto' }}>

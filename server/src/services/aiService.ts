@@ -484,7 +484,7 @@ async function analyzeExamDocumentWithOpenAI(
     return [
       `Analyzovaný typ vyšetrenia: ${examAlias}.`,
       'OpenAI API kľúč nie je dostupný, preto nebolo možné spustiť detailnú AI interpretáciu dokumentu.',
-      'Skontrolujte prosím serverové nastavenia a skúste analýzu znova.',
+      'Skontroluj, prosím, serverové nastavenia a skús analýzu znova.',
     ].join(' ');
   }
 
@@ -885,7 +885,7 @@ export async function extractTextFromAttachment(
     const pdfText = extractTextFromPdfBuffer(decodeBase64(attachment.base64Data));
     if (!pdfText) {
       throw new Error(
-        'Z PDF sa nepodarilo získať text. Skúste kvalitnejší export alebo fotku dokumentu.'
+        'Z PDF sa nepodarilo získať text. Skús kvalitnejší export alebo fotku dokumentu.'
       );
     }
 
@@ -943,7 +943,7 @@ export async function extractTextFromAttachment(
     textFromVision.length >= textFromOpenAIImage.length ? textFromVision : textFromOpenAIImage;
 
   if (!bestText) {
-    throw new Error('Z obrázka sa nepodarilo prečítať text. Nahrajte ostrejšiu fotku.');
+    throw new Error('Z obrázka sa nepodarilo prečítať text. Nahraj ostrejšiu fotku.');
   }
 
   const normalizedText = await normalizeExtractedTextWithOpenAI(bestText, privacy);
@@ -1365,7 +1365,7 @@ function generateMockPersonalizedNote(
     explanation = `Toto krmivo obsahuje alergény nebezpečné pre ${petProfile.name}. Neodporúčame ho podávať.`;
   } else if (healthWarningCount > 0 || score < 50) {
     verdict = 'S VÝHRADAMI';
-    explanation = `Krmivo má určité riziká pre ${petProfile.name} vzhľadom na jeho zdravotný stav. Konzultujte s veterinárom pred podávaním.`;
+    explanation = `Krmivo má určité riziká pre ${petProfile.name} vzhľadom na jeho zdravotný stav. Pred podávaním sa poraď s veterinárom.`;
   } else if (score >= 80) {
     verdict = 'VÝBORNÉ';
     explanation = `Toto krmivo je výbornou voľbou pre ${petProfile.name}. Zloženie je kvalitné a vhodné pre ${petProfile.animalType === 'dog' ? 'psa' : petProfile.animalType === 'cat' ? 'mačku' : 'zviera'} tohto profilu.`;
@@ -1615,7 +1615,7 @@ export async function callAiModel(
     } catch (retryErr) {
       if (retryErr instanceof InvalidAiInputError) throw retryErr;
       console.error('[AI Service] Retry failed:', retryErr);
-      throw new Error('Nepodarilo sa analyzovať zloženie. Skúste to znova neskôr.');
+      throw new Error('Nepodarilo sa analyzovať zloženie. Skús to znova neskôr.');
     }
   }
 }
