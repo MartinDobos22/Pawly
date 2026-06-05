@@ -1,0 +1,55 @@
+{
+  "banner": {
+    "title": "Install Pawly",
+    "description": "Add the app to your home screen — it opens in one tap, works offline and looks like a native app.",
+    "installCta": "Install app",
+    "iosHint": "Tap the Share icon and choose “Add to Home Screen”.",
+    "guideLink": "How to",
+    "dismiss": "Dismiss"
+  },
+  "guide": {
+    "title": "Install & guide",
+    "subtitle": "Add Pawly to your phone or computer and keep your pet's health passport always at hand.",
+    "installNowTitle": "Ready to install",
+    "installNowDescription": "Your browser supports direct installation. Just one click.",
+    "installNowCta": "Install app",
+    "platforms": {
+      "title": "Install by device",
+      "items": [
+        {
+          "q": "iPhone / iPad (Safari)",
+          "a": "Open Pawly in Safari. Tap the Share icon (square with an upward arrow) in the bottom bar, scroll down and choose “Add to Home Screen”. Confirm “Add” — the Pawly icon appears among your apps."
+        },
+        {
+          "q": "Android (Chrome)",
+          "a": "Open Pawly in Chrome. Tap the menu (three dots, top right) and choose “Add to Home screen” or “Install app”. You may also see an install prompt at the bottom — confirm it."
+        },
+        {
+          "q": "Desktop (Chrome / Edge)",
+          "a": "Open Pawly in Chrome or Edge. Click the install icon (monitor with an arrow) on the right of the address bar, or choose “Install Pawly” from the browser menu. The app opens in its own window."
+        }
+      ]
+    },
+    "usage": {
+      "title": "How to use Pawly",
+      "items": [
+        {
+          "q": "1. Create a pet profile",
+          "a": "In Profiles, add your pet — name, species, breed and any allergies or intolerances. You can have multiple profiles and switch between pets at the top."
+        },
+        {
+          "q": "2. Fill in the health passport",
+          "a": "In the Health Passport you record vaccinations, dewormings, parasite treatments and chronic conditions. Got an old paper card? Use AI import — snap a photo and Pawly extracts the records for you."
+        },
+        {
+          "q": "3. Analyze food",
+          "a": "In Analysis, paste the food's ingredients as text or photograph the packaging. The AI rates the quality and flags ingredients that clash with the allergies in your pet's profile."
+        },
+        {
+          "q": "4. Prepare the vet card",
+          "a": "The Vet Card produces a clean, print-ready (A4) summary — take it to a check-up or share it with your treating vet."
+        }
+      ]
+    }
+  }
+}

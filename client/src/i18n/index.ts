@@ -9,6 +9,7 @@ import skEpisodes from '../locales/sk/episodes.json';
 import skVetCard from '../locales/sk/vetCard.json';
 import skAuth from '../locales/sk/auth.json';
 import skLanding from '../locales/sk/landing.json';
+import skInstall from '../locales/sk/install.json';
 
 import enCommon from '../locales/en/common.json';
 import enAnalyze from '../locales/en/analyze.json';
@@ -17,6 +18,7 @@ import enEpisodes from '../locales/en/episodes.json';
 import enVetCard from '../locales/en/vetCard.json';
 import enAuth from '../locales/en/auth.json';
 import enLanding from '../locales/en/landing.json';
+import enInstall from '../locales/en/install.json';
 
 i18n
   .use(LanguageDetector)
@@ -25,7 +27,7 @@ i18n
     fallbackLng: 'sk',
     supportedLngs: ['sk', 'en'],
     defaultNS: 'common',
-    ns: ['common', 'analyze', 'healthPassport', 'episodes', 'vetCard', 'auth', 'landing'],
+    ns: ['common', 'analyze', 'healthPassport', 'episodes', 'vetCard', 'auth', 'landing', 'install'],
     detection: {
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: 'granule-check-language',
@@ -40,6 +42,7 @@ i18n
         vetCard: skVetCard,
         auth: skAuth,
         landing: skLanding,
+        install: skInstall,
       },
       en: {
         common: enCommon,
@@ -49,6 +52,7 @@ i18n
         vetCard: enVetCard,
         auth: enAuth,
         landing: enLanding,
+        install: enInstall,
       },
     },
     interpolation: {

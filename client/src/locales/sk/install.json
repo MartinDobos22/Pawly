@@ -1,0 +1,55 @@
+{
+  "banner": {
+    "title": "Nainštaluj si Pawly",
+    "description": "Pridaj si appku na plochu — otvára sa na jeden klik, funguje aj offline a vyzerá ako bežná aplikácia.",
+    "installCta": "Nainštalovať appku",
+    "iosHint": "Ťukni na ikonu Zdieľať a vyber „Pridať na plochu“.",
+    "guideLink": "Ako na to",
+    "dismiss": "Zavrieť"
+  },
+  "guide": {
+    "title": "Inštalácia a návod",
+    "subtitle": "Pridaj si Pawly na mobil alebo počítač a maj zdravotný pas svojho miláčika vždy po ruke.",
+    "installNowTitle": "Pripravené na inštaláciu",
+    "installNowDescription": "Tvoj prehliadač podporuje priamu inštaláciu. Stačí jeden klik.",
+    "installNowCta": "Nainštalovať appku",
+    "platforms": {
+      "title": "Inštalácia podľa zariadenia",
+      "items": [
+        {
+          "q": "iPhone / iPad (Safari)",
+          "a": "Otvor Pawly v Safari. Ťukni na ikonu Zdieľať (štvorček so šípkou nahor) v spodnej lište, posuň sa nadol a vyber „Pridať na plochu“. Potvrď „Pridať“ — ikona Pawly sa objaví medzi tvojimi appkami."
+        },
+        {
+          "q": "Android (Chrome)",
+          "a": "Otvor Pawly v Chrome. Ťukni na menu (tri bodky vpravo hore) a vyber „Pridať na plochu“ alebo „Inštalovať aplikáciu“. Prípadne sa ti dole zobrazí výzva na inštaláciu — potvrď ju."
+        },
+        {
+          "q": "Počítač (Chrome / Edge)",
+          "a": "Otvor Pawly v Chrome alebo Edge. V pravej časti adresového riadka klikni na ikonu inštalácie (monitor so šípkou) alebo cez menu prehliadača vyber „Inštalovať Pawly“. Appka sa otvorí vo vlastnom okne."
+        }
+      ]
+    },
+    "usage": {
+      "title": "Ako používať Pawly",
+      "items": [
+        {
+          "q": "1. Vytvor profil zvieraťa",
+          "a": "V sekcii Profily pridaj svojho miláčika — meno, druh, plemeno a prípadné alergie či intolerancie. Profilov môžeš mať viac a medzi zvieratami sa prepínaš hore."
+        },
+        {
+          "q": "2. Vyplň zdravotný pas",
+          "a": "V Zdravotnom pase zaznamenáš očkovania, odčervenia, ošetrenia proti parazitom a chronické stavy. Máš starú papierovú kartu? Použi AI import — odfoť ju a Pawly z nej vytiahne záznamy za teba."
+        },
+        {
+          "q": "3. Analyzuj krmivo",
+          "a": "V Analýze vlož zloženie krmiva textom alebo odfoť obal. AI vyhodnotí kvalitu a upozorní na zložky, ktoré nesedia s alergiami z profilu tvojho zvieraťa."
+        },
+        {
+          "q": "4. Priprav kartu pre veterinára",
+          "a": "Karta pre veterinára spraví prehľadný súhrn na tlač (A4) — vezmi ho so sebou na kontrolu alebo ho zdieľaj s ošetrujúcim lekárom."
+        }
+      ]
+    }
+  }
+}

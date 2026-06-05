@@ -5,15 +5,17 @@ import { Box, Tab, Tabs } from '@mui/material';
 import {
   HelpOutline as HelpOutlineIcon,
   Info as InfoIcon,
+  InstallMobile as InstallMobileIcon,
   Lock as LockIcon,
 } from '@mui/icons-material';
 import FaqContent from '../components/FaqContent';
 import AboutContent from '../components/AboutContent';
+import InstallGuideContent from '../components/InstallGuideContent';
 import PrivacyPolicyContent from '../components/PrivacyPolicyContent';
 
-type TabKey = 'faq' | 'about' | 'privacy';
+type TabKey = 'faq' | 'install' | 'about' | 'privacy';
 
-const TAB_KEYS: TabKey[] = ['faq', 'about', 'privacy'];
+const TAB_KEYS: TabKey[] = ['faq', 'install', 'about', 'privacy'];
 
 const isTabKey = (value: string | null): value is TabKey =>
   value !== null && (TAB_KEYS as string[]).includes(value);
@@ -50,6 +52,13 @@ export default function InfoPage() {
           sx={{ minHeight: 56, fontWeight: 600 }}
         />
         <Tab
+          value="install"
+          icon={<InstallMobileIcon />}
+          iconPosition="start"
+          label={t('nav.install')}
+          sx={{ minHeight: 56, fontWeight: 600 }}
+        />
+        <Tab
           value="about"
           icon={<InfoIcon />}
           iconPosition="start"
@@ -66,6 +75,7 @@ export default function InfoPage() {
       </Tabs>
 
       {activeTab === 'faq' && <FaqContent />}
+      {activeTab === 'install' && <InstallGuideContent />}
       {activeTab === 'about' && <AboutContent />}
       {activeTab === 'privacy' && <PrivacyPolicyContent />}
     </Box>
