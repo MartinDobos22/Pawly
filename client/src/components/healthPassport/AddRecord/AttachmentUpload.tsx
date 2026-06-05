@@ -120,7 +120,7 @@ export default function AttachmentUpload({
                     component="img"
                     src={entry.previewUrl}
                     alt={entry.file.name}
-                    sx={{ width: 40, height: 40, borderRadius: 1, objectFit: 'cover' }}
+                    sx={{ width: 64, height: 64, borderRadius: 1, objectFit: 'cover' }}
                   />
                 ) : (
                   <AttachFileIcon color="action" />
