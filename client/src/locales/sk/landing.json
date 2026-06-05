@@ -262,19 +262,19 @@
       "suitable": "Vhodná"
     }
   },
-  "photoWall": {
+  "allPets": {
     "title1": "Pre každého chlpáča",
     "title2": "aj nechlpáča",
     "subtitle": "Psy, mačky, králiky, vtáky, plazy aj kone — Pawly zvládne zdravotnú kartu pre každé domáce zviera.",
-    "pets": [
-      { "label": "Pes" },
-      { "label": "Mačka" },
-      { "label": "Králik" },
-      { "label": "Papagáj" },
-      { "label": "Škrečok" },
-      { "label": "Kôň" },
-      { "label": "Korytnačka" },
-      { "label": "Pes" }
+    "items": [
+      { "label": "Psy" },
+      { "label": "Mačky" },
+      { "label": "Králiky" },
+      { "label": "Hlodavce" },
+      { "label": "Vtáci" },
+      { "label": "Plazy" },
+      { "label": "Ryby" },
+      { "label": "Kone" }
     ]
   },
   "demo": {
@@ -369,19 +369,6 @@
         "explanation": "Losos je výborný zdroj omega-3 mastných kyselín. Surový môže obsahovať parazity."
       }
     }
-  },
-  "petTypes": {
-    "heading": "PAWPORT PRE VŠETKY DOMÁCE ZVIERATÁ",
-    "items": [
-      { "label": "Psy" },
-      { "label": "Mačky" },
-      { "label": "Králiky" },
-      { "label": "Hlodavce" },
-      { "label": "Vtáci" },
-      { "label": "Plazy" },
-      { "label": "Ryby" },
-      { "label": "Kone" }
-    ]
   },
   "notifications": {
     "title": "Notifikácie",

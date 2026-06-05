@@ -262,19 +262,19 @@
       "suitable": "Suitable"
     }
   },
-  "photoWall": {
+  "allPets": {
     "title1": "For every furry friend",
     "title2": "and every scaly one",
     "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawly handles a health card for every pet.",
-    "pets": [
-      { "label": "Dog" },
-      { "label": "Cat" },
-      { "label": "Rabbit" },
-      { "label": "Parrot" },
-      { "label": "Hamster" },
-      { "label": "Horse" },
-      { "label": "Turtle" },
-      { "label": "Dog" }
+    "items": [
+      { "label": "Dogs" },
+      { "label": "Cats" },
+      { "label": "Rabbits" },
+      { "label": "Rodents" },
+      { "label": "Birds" },
+      { "label": "Reptiles" },
+      { "label": "Fish" },
+      { "label": "Horses" }
     ]
   },
   "demo": {
@@ -372,19 +372,6 @@
         "explanation": "Salmon is an excellent source of omega-3 fatty acids. Raw salmon may contain parasites."
       }
     }
-  },
-  "petTypes": {
-    "heading": "PAWPORT FOR ALL PETS",
-    "items": [
-      { "label": "Dogs" },
-      { "label": "Cats" },
-      { "label": "Rabbits" },
-      { "label": "Rodents" },
-      { "label": "Birds" },
-      { "label": "Reptiles" },
-      { "label": "Fish" },
-      { "label": "Horses" }
-    ]
   },
   "notifications": {
     "title": "Notifications",
