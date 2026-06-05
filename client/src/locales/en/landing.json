@@ -214,6 +214,11 @@
     "profiles": "Profiles",
     "start": "Get started"
   },
+  "social": {
+    "instagram": "Pawly on Instagram",
+    "facebook": "Pawly on Facebook",
+    "followUs": "Follow us"
+  },
   "stats": {
     "items": [
       { "label": "health passport records" },

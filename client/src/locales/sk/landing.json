@@ -214,6 +214,11 @@
     "profiles": "Profily",
     "start": "Spustiť"
   },
+  "social": {
+    "instagram": "Pawly na Instagrame",
+    "facebook": "Pawly na Facebooku",
+    "followUs": "Sleduj nás"
+  },
   "stats": {
     "items": [
       { "label": "záznamov v zdrav. pasoch" },
