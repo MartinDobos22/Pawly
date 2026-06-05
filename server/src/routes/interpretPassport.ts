@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { interpretHealthPassportWithOpenAI } from '../services/aiService';
+import { interpretHealthPassportWithOpenAI, InvalidAiInputError } from '../services/aiService';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -53,6 +53,11 @@ router.post(
 
       res.json(result);
     } catch (error) {
+      if (error instanceof InvalidAiInputError) {
+        logger.warn('Interpretácia pasu odmietnutá: nevhodný dokument', { reason: error.message });
+        res.status(400).json({ error: { message: error.message, code: error.code } });
+        return;
+      }
       logger.error('Interpretácia pasu zlyhala', {
         message: error instanceof Error ? error.message : String(error),
       });

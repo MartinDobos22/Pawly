@@ -23,6 +23,7 @@ import {
   Pets as PetsIcon,
 } from '@mui/icons-material';
 import EmptyState from '../components/EmptyState';
+import { useConfirm } from '../hooks/useConfirm';
 import EpisodeFiltersBar from '../components/episodes/EpisodeFiltersBar';
 import EpisodeListItem from '../components/episodes/EpisodeListItem';
 import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
@@ -48,6 +49,7 @@ export default function EpisodeDiaryPage() {
   const { medications, visits: vetVisits } = useHealthData();
 
   const { episodes, byDog, add, update, remove } = useHealthEpisodes();
+  const { confirm, dialog: confirmDialog } = useConfirm();
   const dogEpisodes = byDog(selectedDogId);
   const storage = useEpisodeStorageSize(episodes);
 
@@ -119,11 +121,16 @@ export default function EpisodeDiaryPage() {
     setFormOpen(true);
   };
 
-  const handleDelete = (episode: HealthEpisodeRecord) => {
-    if (window.confirm(t('delete.confirm', { title: episode.symptomTitle }))) {
-      remove(episode.id);
-      if (expandedId === episode.id) setExpandedId(null);
-    }
+  const handleDelete = async (episode: HealthEpisodeRecord) => {
+    const ok = await confirm({
+      title: tCommon('actions.confirmDeleteRecordTitle'),
+      message: t('delete.confirm', { title: episode.symptomTitle }),
+      confirmLabel: tCommon('actions.delete'),
+      danger: true,
+    });
+    if (!ok) return;
+    remove(episode.id);
+    if (expandedId === episode.id) setExpandedId(null);
   };
 
   const handleFindSimilar = (episode: HealthEpisodeRecord) => {
@@ -335,6 +342,7 @@ export default function EpisodeDiaryPage() {
           {snack.msg}
         </Alert>
       </Snackbar>
+      {confirmDialog}
     </Box>
   );
 }

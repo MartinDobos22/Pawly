@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { callAiModel, extractTextFromAttachment } from '../services/aiService';
+import { callAiModel, extractTextFromAttachment, InvalidAiInputError } from '../services/aiService';
 import { AnalysisRequest, PetProfile } from '../types';
 import { logger } from '../utils/logger';
 import { isExamAlias } from '../services/examAlias';
@@ -113,6 +113,14 @@ router.post(
       });
       res.json(result);
     } catch (err) {
+      if (err instanceof InvalidAiInputError) {
+        logger.warn('Analýza odmietnutá: vstup nie je krmivo', { reason: err.message });
+        res.status(400).json({
+          error: { message: err.message, code: err.code },
+          status: 400,
+        });
+        return;
+      }
       next(err);
     }
   }
