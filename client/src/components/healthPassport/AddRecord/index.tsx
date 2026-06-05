@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
   alpha,
+  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import {
@@ -120,6 +121,8 @@ export default function AddRecord({
   onSave,
 }: AddRecordProps) {
   const { t } = useTranslation('healthPassport');
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [mode, setMode] = useState<Mode>('QUICK');
 
   const subtitleFor = (m: Mode): string => {
@@ -157,7 +160,7 @@ export default function AddRecord({
   );
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth fullScreen={fullScreen}>
       {mode === 'QUICK' && (
         <QuickEntryProvider
           dogId={dogId}
@@ -166,11 +169,11 @@ export default function AddRecord({
           onCancel={handleClose}
         >
           {dialogTitle}
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <ModeToggle mode={mode} onChange={setMode} />
             <QuickEntryBody />
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2 }}>
+          <DialogActions sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
             <QuickEntryFooter />
           </DialogActions>
         </QuickEntryProvider>
@@ -183,11 +186,11 @@ export default function AddRecord({
           onCancel={handleClose}
         >
           {dialogTitle}
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <ModeToggle mode={mode} onChange={setMode} />
             <ManualEntryBody />
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2 }}>
+          <DialogActions sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
             <ManualEntryFooter />
           </DialogActions>
         </ManualEntryProvider>
@@ -195,11 +198,11 @@ export default function AddRecord({
       {mode === 'AI' && (
         <AiImportProvider dogId={dogId} onSave={handleSave} onCancel={handleClose}>
           {dialogTitle}
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <ModeToggle mode={mode} onChange={setMode} />
             <AiImportBody />
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2 }}>
+          <DialogActions sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
             <AiImportFooter />
           </DialogActions>
         </AiImportProvider>
