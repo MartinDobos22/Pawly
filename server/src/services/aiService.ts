@@ -14,6 +14,20 @@ import {
   type PrivacyGuardContext,
 } from './privacyGuard';
 
+const MODELS = {
+  ocrNormalize: process.env.MODEL_OCR_NORMALIZE ?? 'gpt-4o-mini',
+  ocrVision: process.env.MODEL_OCR_VISION ?? 'gpt-4o',
+  documentContext: process.env.MODEL_DOC_CONTEXT ?? 'gpt-4o-mini',
+  examAnalysis: process.env.MODEL_EXAM_ANALYSIS ?? 'gpt-4o',
+  vetFileVision: process.env.MODEL_VET_FILE ?? 'gpt-4o',
+  passportInterpret: process.env.MODEL_PASSPORT_INTERPRET ?? 'gpt-4o-mini',
+  episodeSummary: process.env.MODEL_EPISODE_SUMMARY ?? 'gpt-4o-mini',
+  foodSafety: process.env.MODEL_FOOD_SAFETY ?? 'gpt-4o-mini',
+  feedAnalysis: process.env.MODEL_FEED_ANALYSIS ?? 'gpt-4o',
+} as const;
+
+export const AI_MODELS = MODELS;
+
 interface AttachmentInput {
   fileName: string;
   mimeType: string;
@@ -258,7 +272,7 @@ async function normalizeExtractedTextWithOpenAI(
 
   try {
     const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: MODELS.ocrNormalize,
       temperature: 0,
       messages: [
         {
@@ -299,7 +313,7 @@ async function extractTextFromImageWithOpenAI(
   try {
     const dataUrl = `data:${providerAttachment.mimeType};base64,${providerAttachment.base64Data}`;
     const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: MODELS.ocrVision,
       temperature: 0,
       messages: [
         {
@@ -309,7 +323,7 @@ async function extractTextFromImageWithOpenAI(
               type: 'text',
               text: 'Prepíš všetok čitateľný text zo zdravotného dokumentu zvieraťa. Vráť iba čistý text bez komentárov.',
             },
-            { type: 'image_url', image_url: { url: dataUrl } },
+            { type: 'image_url', image_url: { url: dataUrl, detail: 'high' } },
           ],
         },
       ],
@@ -407,7 +421,7 @@ async function analyzeDocumentContextWithOpenAI(
 
   try {
     const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: MODELS.documentContext,
       temperature: 0,
       response_format: { type: 'json_object' },
       messages: [
@@ -500,7 +514,7 @@ async function analyzeExamDocumentWithOpenAI(
   });
 
   const response = await client.chat.completions.create({
-    model: 'gpt-4o',
+    model: MODELS.examAnalysis,
     temperature: 0.2,
     messages: [
       { role: 'system', content: examPrompt },
@@ -544,13 +558,13 @@ export async function analyzeVetFile(
   const systemPrompt = EXAM_ALIAS_PROMPTS[alias];
   const imageContents = minimizedImageUrls.map((url) => ({
     type: 'image_url' as const,
-    image_url: { url },
+    image_url: { url, detail: 'high' as const },
   }));
 
   const userText = minimizedNote;
 
   const completion = await client.chat.completions.create({
-    model: 'gpt-4.1-mini',
+    model: MODELS.vetFileVision,
     messages: [
       { role: 'system', content: systemPrompt },
       {
@@ -607,7 +621,7 @@ export async function interpretHealthPassportWithOpenAI(
 
   try {
     const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: MODELS.passportInterpret,
       temperature: 0,
       response_format: { type: 'json_object' },
       messages: [
@@ -1542,7 +1556,7 @@ async function callOpenAI(
   assertPrivacyGuard(privacy ?? { processesHealthData: false }, userMessage);
 
   const response = await client.chat.completions.create({
-    model: 'gpt-4o',
+    model: MODELS.feedAnalysis,
     temperature: 0.3,
     response_format: { type: 'json_object' },
     messages: [

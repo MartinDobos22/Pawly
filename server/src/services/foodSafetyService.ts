@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import type { PetProfile } from '../types';
 import type { FoodSafetyResult, FoodSafetyVerdict } from '../types/foodSafety';
 import { logger } from '../utils/logger';
+import { AI_MODELS } from './aiService';
 
 const SYSTEM_PROMPT = `Si veterinárny poradca pre majiteľov psov. Odpovedáš na otázky typu "môže pes jesť / piť X?".
 
@@ -251,7 +252,7 @@ export async function askFoodSafety(
   try {
     const completion = await client.chat.completions.create(
       {
-        model: 'gpt-4o-mini',
+        model: AI_MODELS.foodSafety,
         temperature: 0.2,
         max_tokens: 500,
         response_format: { type: 'json_object' },

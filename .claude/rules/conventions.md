@@ -30,6 +30,8 @@ Klient **musí** kontrolovať `response.ok` a parsovať `{ error: { message } }`
 - **Token/cost guard:** pre dlhé inputy zváž truncation alebo odmietnutie request-u nad N znakov.
 - **Output parsing:** AI odpovede VŽDY validuj. Ak čakáš JSON, použi `response_format: { type: "json_object" }` a obal `JSON.parse` v try/catch — vráť 502 ak parse zlyhá.
 - **Žiadne PII** (mená, adresy) sa neposielajú do AI bez explicitného súhlasu používateľa.
+- **Vision calls:** vždy posielaj `image_url: { url, detail: 'high' }`. Default `auto` pri väčších obrázkoch ide cez low-detail patche a OCR/passport scan kvalita drasticky padne.
+- **Model IDs:** nikdy nehardcoduj `model: 'gpt-4o'` v servisoch — pridaj kľúč do `MODELS` v `server/src/services/aiService.ts` (exportované ako `AI_MODELS`) a dokumentuj v `.claude/rules/env-vars.md`.
 - **Rate limit:** všetky AI/OCR endpointy MUSIA byť za `aiHeavyLimiter` v `server/src/index.ts`. Ak pridávaš AI endpoint pod existujúci router (napr. `/api/episodes/similar-summary` pod `episodesRouter`), zváž split routra alebo per-route limiter — celý `episodesRouter` momentálne pod AI limiterom nie je.
 - **Per-user denný cap:** AI endpointy navyše MUSIA byť za `requireAiQuota()` (`middleware/aiQuota.ts`). Per-IP `aiHeavyLimiter` chráni len pred minútovým burstom; per-user denný cap (default 50/deň, env `AI_DAILY_LIMIT`) chráni OpenAI/Vision rozpočet pred power-userom alebo botom za prihlásením. Vyžaduje `ensureUser` pred sebou (potrebuje `req.appUserId`). Atómická check-and-increment cez Supabase RPC `app_increment_ai_quota` (migrácia `0009_ai_quota.sql`). Pri prekročení 429 + `code: "DAILY_AI_LIMIT"`.
 
