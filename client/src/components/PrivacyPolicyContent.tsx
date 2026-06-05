@@ -39,9 +39,9 @@ const SK_SECTIONS: Section[] = [
   {
     title: 'Tvoje práva (GDPR)',
     body: [
-      'Právo na prístup — všetky tvoje dáta vidíš v aplikácii, navyše si môžeš stiahnuť kompletný JSON export cez tlačidlo „Stiahnuť moje dáta" v menu.',
+      'Právo na prístup — všetky tvoje dáta vidíš v aplikácii, navyše si môžeš stiahnuť kompletný JSON export cez tlačidlo „Stiahnuť moje dáta“ v menu.',
       'Právo na opravu — všetky záznamy si môžeš upraviť priamo v aplikácii.',
-      'Právo na výmaz — tlačidlo „Zmazať účet" v menu nezvratne zmaže všetky tvoje dáta vrátane zvierat a zdravotných záznamov.',
+      'Právo na výmaz — tlačidlo „Zmazať účet“ v menu nezvratne zmaže všetky tvoje dáta vrátane zvierat a zdravotných záznamov.',
       'Právo na prenositeľnosť — export je vo formáte JSON.',
       'Právo namietať a podať sťažnosť dozornému orgánu (Úrad na ochranu osobných údajov SR).',
     ],

@@ -10,19 +10,15 @@ const DONATE_URL = import.meta.env.VITE_STRIPE_PAYMENT_LINK ?? '';
 
 export default function SupportProjectPage() {
   const theme = useTheme();
-  const { t, i18n } = useTranslation('landing');
+  const { t } = useTranslation('landing');
   const { t: tCommon } = useTranslation();
   const isDark = theme.palette.mode === 'dark';
-  const lang = i18n.language?.toLowerCase().startsWith('en') ? 'en' : 'sk';
 
   if (!DONATE_URL) {
     return <Navigate to="/info?tab=about" replace />;
   }
 
-  const intro =
-    lang === 'en'
-      ? 'Pawly is built independently. If you find it useful, you can support its development with a one-time contribution.'
-      : 'Pawly vyvíjame nezávisle. Ak ti pomáha, môžeš jeho ďalší vývoj podporiť jednorazovým príspevkom.';
+  const intro = tCommon('support.intro');
 
   return (
     <Box sx={{ maxWidth: 760, mx: 'auto' }}>

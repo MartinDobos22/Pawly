@@ -105,6 +105,17 @@
     "loadProfilesFailed": "Načítanie profilov zlyhalo.",
     "loadHealthDataFailed": "Načítanie zdravotných dát zlyhalo."
   },
+  "contact": {
+    "title": "Kontakt",
+    "subtitle": "Máš otázku, narazil si na chybu alebo nám chceš dať spätnú väzbu? Napíš nám.",
+    "emailLabel": "Napíš nám e-mail",
+    "responseHint": "Zvyčajne odpovieme do niekoľkých pracovných dní.",
+    "faqHint": "Pred napísaním sa pozri do častých otázok — možno tam odpoveď nájdeš rýchlejšie.",
+    "faqCta": "Otvoriť FAQ"
+  },
+  "support": {
+    "intro": "Pawly vyvíjame nezávisle. Ak ti pomáha, jeho ďalší vývoj môžeš podporiť jednorazovým príspevkom."
+  },
   "relativeDate": {
     "today": "Dnes",
     "todayShort": "dnes",

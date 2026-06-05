@@ -172,7 +172,7 @@ function buildFallbackResult(
   return {
     similarEpisodeIds: candidates.map((e) => e.id).slice(0, 5),
     summary: '',
-    recommendation: `${reason} Pri závažnejšom alebo opakujúcom sa stave konzultujte veterinára.`,
+    recommendation: `${reason} Pri závažnejšom alebo opakujúcom sa stave sa poraď s veterinárom.`,
   };
 }
 
@@ -188,7 +188,7 @@ export async function summarizeSimilarEpisodes(
       similarEpisodeIds: [],
       summary: '',
       recommendation:
-        'V histórii nie sú žiadne podobné epizódy. Pri závažnejšom stave konzultujte veterinára.',
+        'V histórii nie sú žiadne podobné epizódy. Pri závažnejšom stave sa poraď s veterinárom.',
     };
   }
 

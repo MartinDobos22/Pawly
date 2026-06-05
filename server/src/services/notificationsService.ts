@@ -3,6 +3,16 @@ import { getUserPetIds } from './petOwnership';
 import { isEmailEnabled, sendEmail } from '../config/email';
 import { daysUntil, dueStatus, type DueStatus } from '../utils/dueDates';
 import { logger } from '../utils/logger';
+import type { EmailLocale } from './emailTemplates/verifyEmail';
+import {
+  buildReminderHtml,
+  reminderSubject,
+  type ReminderRow,
+} from './emailTemplates/notificationReminder';
+
+function parseLocale(value: unknown): EmailLocale {
+  return value === 'en' ? 'en' : 'sk';
+}
 
 type Row = Record<string, unknown>;
 
@@ -227,57 +237,14 @@ function matchedOffset(prefs: NotificationPreferences, d: number): number | null
   return null;
 }
 
-/** Slovenské skloňovanie podľa počtu (1 / 2-4 / 5+). */
-function plural(n: number, one: string, few: string, many: string): string {
-  const abs = Math.abs(n);
-  if (abs === 1) return one;
-  if (abs >= 2 && abs <= 4) return few;
-  return many;
-}
-
-function statusText(d: number): string {
-  if (d < 0) return `po termíne o ${-d} ${plural(-d, 'deň', 'dni', 'dní')}`;
-  if (d === 0) return 'dnes';
-  return `o ${d} ${plural(d, 'deň', 'dni', 'dní')}`;
-}
-
-function buildEmailHtml(items: SweepCandidate[]): string {
-  const appUrl = process.env.APP_URL ?? '';
-  const rows = items
-    .slice()
-    .sort((a, b) => a.item.daysUntil - b.item.daysUntil)
-    .map((c) => {
-      const overdue = c.item.daysUntil < 0;
-      const color = overdue ? '#b3261e' : c.item.daysUntil <= 7 ? '#9a6700' : '#1b5e20';
-      return `<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(c.item.petName)}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(c.item.typeLabel)}: <strong>${escapeHtml(c.item.label)}</strong></td>
-        <td style="padding:8px 12px;border-bottom:1px solid #eee;color:${color};font-weight:600;">${escapeHtml(statusText(c.item.daysUntil))}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#666;">${escapeHtml(c.item.dueDate)}</td>
-      </tr>`;
-    })
-    .join('');
-
-  const cta = appUrl
-    ? `<p style="margin:20px 0;"><a href="${appUrl}/zdravotny-pas" style="background:#0f4c5c;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;display:inline-block;">Otvoriť zdravotný pas</a></p>`
-    : '';
-
-  return `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1a1a1a;max-width:560px;margin:0 auto;">
-    <h2 style="color:#0f4c5c;">Pripomienka z Pawlyu</h2>
-    <p>Pár termínov tvojich zvierat sa blíži alebo už ušlo. Tu je rýchly prehľad:</p>
-    <table style="border-collapse:collapse;width:100%;font-size:14px;">${rows}</table>
-    ${cta}
-    <p style="color:#888;font-size:12px;margin-top:24px;">Tieto pripomienky môžeš kedykoľvek vypnúť v aplikácii (Nastavenia → Notifikácie).</p>
-  </div>`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+function toReminderRows(items: SweepCandidate[]): ReminderRow[] {
+  return items.map((c) => ({
+    petName: c.item.petName,
+    typeLabel: c.item.typeLabel,
+    label: c.item.label,
+    dueDate: c.item.dueDate,
+    daysUntil: c.item.daysUntil,
+  }));
 }
 
 /** Prejde všetkých používateľov, pošle e-mail s pripomienkami a zaloguje odoslané. */
@@ -296,11 +263,15 @@ export async function runSweep(): Promise<SweepSummary> {
   if (allPetIds.length === 0)
     return { dryRun: !isEmailEnabled(), usersNotified: 0, itemsIncluded: 0 };
 
-  const { data: userRows, error: userErr } = await supabase.from('users').select('id, email');
+  const { data: userRows, error: userErr } = await supabase
+    .from('users')
+    .select('id, email, locale');
   if (userErr) throw userErr;
   const emails = new Map<string, string>();
+  const locales = new Map<string, EmailLocale>();
   for (const r of userRows as Row[]) {
     if (typeof r.email === 'string' && r.email) emails.set(String(r.id), r.email);
+    locales.set(String(r.id), parseLocale(r.locale));
   }
 
   const { data: prefRows, error: prefErr } = await supabase
@@ -397,9 +368,15 @@ export async function runSweep(): Promise<SweepSummary> {
       displayList.push(c);
     }
 
-    const subject = `Pawly: ${displayList.length} ${plural(displayList.length, 'termín', 'termíny', 'termínov')} čoskoro`;
+    const locale = locales.get(list[0].userId) ?? 'sk';
+    const subject = reminderSubject(locale, displayList.length);
+    const appUrl = process.env.APP_URL ?? '';
     try {
-      await sendEmail(email, subject, buildEmailHtml(displayList));
+      await sendEmail(
+        email,
+        subject,
+        buildReminderHtml(toReminderRows(displayList), locale, appUrl)
+      );
       usersNotified += 1;
       itemsIncluded += displayList.length;
       if (emailEnabled) {
