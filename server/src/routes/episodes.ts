@@ -51,7 +51,7 @@ router.post(
         });
         res.status(502).json({
           error: {
-            message: 'AI sumarizáciu sa nepodarilo dokončiť. Skúste neskôr.',
+            message: 'AI sumarizáciu sa nepodarilo dokončiť. Skús to neskôr.',
             code: 'AI_FAILED',
           },
         });

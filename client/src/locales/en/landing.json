@@ -1,10 +1,10 @@
 {
   "about": {
     "title": "About",
-    "subtitle": "A small helper for the big love you have for your pets.",
+    "subtitle": "A small helper for the big love you have for your pet.",
     "appName": "Pawly",
     "appTagline": "Everything about your pet's health in one place.",
-    "appDescription": "Pawly combines a digital health passport and intelligent food analysis for dogs, cats and other pets. It helps you keep track of vaccinations, medications and vet visits — and make food decisions with confidence. So you can focus on what matters most: your pet.",
+    "appDescription": "Pawly combines a digital health passport with AI food analysis for dogs, cats and other pets. It keeps your vaccinations, medications and vet visits in order — and helps you pick the right food with confidence. So you can focus on what matters most: your pet.",
     "featuresTitle": "What Pawly can do",
     "privacyTitle": "Your data is safe",
     "privacyDescription": "Access is protected by sign-in and all your pet records are private — only you can see them.",
@@ -17,7 +17,7 @@
     "features": {
       "aiAnalysis": {
         "title": "AI food analysis",
-        "description": "Type or photograph the ingredients and in seconds you'll know what your pet is getting."
+        "description": "Type or snap a photo of the ingredients — in seconds you'll know what's actually in your pet's food."
       },
       "healthPassport": {
         "title": "Digital health passport",
@@ -29,7 +29,7 @@
       },
       "vetCard": {
         "title": "Vet card",
-        "description": "A neat summary you can show or print at the vet."
+        "description": "A clear summary you can show on your phone or print before the visit."
       },
       "profiles": {
         "title": "Pet profiles",
@@ -153,7 +153,7 @@
   "features": {
     "title1": "Everything for your pet's health",
     "title2": "in one place",
-    "subtitle": "Six features that together cover the entire health life of your pet.",
+    "subtitle": "Six features that together cover every part of your pet's health care.",
     "items": [
       {
         "title": "Health passport",
@@ -165,7 +165,7 @@
       },
       {
         "title": "Reminders",
-        "text": "The card always shows what's needed: overdue deworming, upcoming vaccination, check-up."
+        "text": "Your card always shows what's due: overdue deworming, upcoming vaccinations, check-ups."
       },
       {
         "title": "Vet card",
@@ -177,13 +177,13 @@
       },
       {
         "title": "Health diary",
-        "text": "Record health episodes and based on history see what worked and what didn't."
+        "text": "Log health episodes and instantly see from past entries what worked and what didn't."
       }
     ]
   },
   "comparison": {
     "title": "Paper passport vs Pawly",
-    "subtitle": "Why switch from a worn paper passport to a digital health passport.",
+    "subtitle": "Why swap a worn paper passport for a digital one.",
     "paperTitle": "Paper passport",
     "pawlyTitle": "Pawly",
     "recommended": "Recommended",
@@ -198,13 +198,13 @@
       "Always on your phone, never lost",
       "Automatic vaccination and deworming reminders",
       "AI passport scanning and food analysis",
-      "Clear vet card with one click",
+      "A clear vet card in one click",
       "Works offline and completely free"
     ]
   },
   "cta": {
     "title": "Start caring for your pet's health today",
-    "subtitle": "No registration, no fees. Just add a pet profile and you're ready to use the digital health passport.",
+    "subtitle": "Free and ad-free. Just add a pet profile and you're ready to use the digital health passport.",
     "btnStart": "Open app",
     "btnProfile": "Create profile",
     "vetPhotoAlt": "Veterinary check-up of a pet"
@@ -221,10 +221,10 @@
   },
   "stats": {
     "items": [
-      { "label": "health passport records" },
-      { "label": "vaccinations recorded" },
-      { "label": "animal species" },
-      { "label": "free, no registration" }
+      { "label": "main features" },
+      { "label": "supported species" },
+      { "label": "to add a profile" },
+      { "label": "free, no ads" }
     ]
   },
   "appPreview": {
@@ -278,7 +278,7 @@
     ]
   },
   "demo": {
-    "badge": "No registration, try it now",
+    "badge": "Try it right here, no sign-in needed",
     "title": "Ask AI what your pet can eat",
     "subtitle": "Type a food or ingredient — instantly see if it's safe for your dog, cat or other pet.",
     "placeholder": "e.g. chocolate, carrot, apple, grapes…",

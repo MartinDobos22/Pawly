@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import AnimatedCounter from './AnimatedCounter';
 
 const STAT_NUMBERS = [
-  { target: 3200, suffix: '+' },
-  { target: 850, suffix: '+' },
-  { target: 120, suffix: '+' },
+  { target: 6, suffix: '' },
+  { target: 8, suffix: '+' },
+  { target: 60, suffix: ' s' },
   { target: 100, suffix: ' %' },
 ];
 

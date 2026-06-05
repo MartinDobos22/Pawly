@@ -94,7 +94,7 @@ router.post(
         logger.warn('Prázdny text na analýzu');
         res.status(400).json({
           error: {
-            message: 'Nepodarilo sa získať text na analýzu. Skontrolujte vstupný text alebo súbor.',
+            message: 'Nepodarilo sa získať text na analýzu. Skontroluj vstupný text alebo súbor.',
           },
           status: 400,
         });
