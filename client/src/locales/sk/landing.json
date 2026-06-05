@@ -4,7 +4,7 @@
     "subtitle": "Malý pomocník pre veľkú lásku k tvojim zvieratkám.",
     "appName": "Pawly",
     "appTagline": "Všetko o zdraví tvojho zvieraťa na jednom mieste.",
-    "appDescription": "Pawly spája digitálny zdravotný pas a inteligentnú analýzu krmiva pre psy, mačky a ďalšie domáce zvieratá. Pomáha ti mať poriadok v očkovaniach, liekoch aj návštevách veterinára — a rozhodovať sa o krmive s istotou. Aby si sa mohol naplno venovať tomu najdôležitejšiemu: svojmu zvieratku.",
+    "appDescription": "Pawly spája digitálny zdravotný pas a AI analýzu krmiva pre psy, mačky a ďalšie domáce zvieratá. Pomáha ti udržať si prehľad v očkovaniach, liekoch aj návštevách veterinára — a vyberať krmivo s istotou. Aby ti zostal čas na to najdôležitejšie: tvoje zviera.",
     "featuresTitle": "Čo Pawly vie",
     "privacyTitle": "Tvoje dáta sú v bezpečí",
     "privacyDescription": "Prístup je chránený prihlásením a všetky záznamy o tvojich zvieratách sú súkromné — vidíš ich len ty.",
@@ -17,7 +17,7 @@
     "features": {
       "aiAnalysis": {
         "title": "AI analýza krmiva",
-        "description": "Odpíš alebo odfoť zloženie a o pár sekúnd vieš, čo tvoje zviera dostáva."
+        "description": "Odpíš alebo odfoť zloženie a o pár sekúnd vieš, čo má tvoje zviera v miske."
       },
       "healthPassport": {
         "title": "Digitálny zdravotný pas",
@@ -29,7 +29,7 @@
       },
       "vetCard": {
         "title": "Karta pre veterinára",
-        "description": "Úhľadný súhrn, ktorý vieš ukázať alebo vytlačiť pri návšteve."
+        "description": "Prehľadný súhrn, ktorý ukážeš na mobile alebo vytlačíš pred návštevou."
       },
       "profiles": {
         "title": "Profily zvierat",
@@ -46,7 +46,7 @@
         "items": [
           {
             "q": "Kde sa ukladajú moje dáta?",
-            "a": "Tvoje profily zvierat a zdravotné záznamy sa ukladajú v zabezpečenej cloudovej databáze (Supabase) cez náš server. Sú viazané na tvoj účet — nie sú uložené len v prehliadači."
+            "a": "Profily zvierat a zdravotné záznamy sa ukladajú v zabezpečenej cloudovej databáze (Supabase) cez náš server. Sú viazané na tvoj účet — nie len v prehliadači."
           },
           {
             "q": "Kto vidí moje záznamy?",
@@ -153,7 +153,7 @@
   "features": {
     "title1": "Všetko pre zdravie tvojho miláčika",
     "title2": "na jednom mieste",
-    "subtitle": "Šesť funkcií, ktoré spolu pokrývajú celý zdravotný život tvojho zvieratka.",
+    "subtitle": "Šesť funkcií, ktoré ti pokryjú celú starostlivosť o zdravie tvojho miláčika.",
     "items": [
       {
         "title": "Zdravotný pas",
@@ -165,7 +165,7 @@
       },
       {
         "title": "Pripomienky",
-        "text": "Karta vždy ukazuje čo treba: odčervenie po termíne, blížiace sa očkovanie, kontrola."
+        "text": "Karta vždy ukáže, čo treba urobiť: odčervenie po termíne, blížiace sa očkovanie či kontrolu."
       },
       {
         "title": "Karta pre veterinára",
@@ -177,13 +177,13 @@
       },
       {
         "title": "Denník epizód",
-        "text": "Zaznamenaj zdravotné epizódy a podľa minulosti vidíš čo zabralo a čo nie."
+        "text": "Zapisuj zdravotné príhody a z minulých záznamov hneď vidíš, čo zabralo a čo nie."
       }
     ]
   },
   "comparison": {
     "title": "Papierový pas verzus Pawly",
-    "subtitle": "Prečo prejsť z otrhaného papiera na digitálny zdravotný pas.",
+    "subtitle": "Prečo vymeniť otrhaný papier za digitálny zdravotný pas.",
     "paperTitle": "Papierový pas",
     "pawlyTitle": "Pawly",
     "recommended": "Odporúčané",
@@ -198,13 +198,13 @@
       "Vždy v mobile, nikdy sa nestratí",
       "Automatické pripomienky očkovania a odčervenia",
       "AI skenovanie pasu aj analýza krmiva",
-      "Prehľadná karta pre veterinára na 1 klik",
+      "Prehľadná karta pre veterinára na jeden klik",
       "Funguje offline a úplne zadarmo"
     ]
   },
   "cta": {
-    "title": "Začni sa starať o zdravie tvojho miláčika ešte dnes",
-    "subtitle": "Žiadna registrácia, žiadne poplatky. Stačí pridať profil zvieraťa a môžeš naplno využívať digitálny zdravotný pas.",
+    "title": "Začni sa starať o zdravie svojho miláčika ešte dnes",
+    "subtitle": "Zadarmo a bez reklám. Stačí pridať profil zvieraťa a môžeš naplno využívať digitálny zdravotný pas.",
     "btnStart": "Vstúpiť do aplikácie",
     "btnProfile": "Vytvoriť profil",
     "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
@@ -221,10 +221,10 @@
   },
   "stats": {
     "items": [
-      { "label": "záznamov v zdrav. pasoch" },
-      { "label": "aplikovaných vakcinácií" },
+      { "label": "hlavných funkcií" },
       { "label": "druhov zvierat" },
-      { "label": "zadarmo, bez registrácie" }
+      { "label": "na pridanie profilu" },
+      { "label": "zadarmo, bez reklám" }
     ]
   },
   "appPreview": {
@@ -278,7 +278,7 @@
     ]
   },
   "demo": {
-    "badge": "Žiadna registrácia, vyskúšaj hneď",
+    "badge": "Vyskúšaj rovno tu, bez prihlásenia",
     "title": "Spýtaj sa AI, čo môže tvoj miláčik jesť",
     "subtitle": "Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre psa, mačku alebo iné zvieratko bezpečná.",
     "placeholder": "napr. čokoláda, mrkva, jablko, hrozno…",

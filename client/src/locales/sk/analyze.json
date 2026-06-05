@@ -6,7 +6,7 @@
   },
   "hero": {
     "title": "Analýza krmiva",
-    "description": "Vlož zloženie krmiva alebo vyfoť obal — AI vyhodnotí kvalitu, riziká alergénov a odporúčanie pre psa. Alebo sa rýchlo opýtaj „Môže pes jesť…?\"",
+    "description": "Vlož zloženie krmiva alebo vyfoť obal — AI vyhodnotí kvalitu, riziká alergénov a odporúčanie pre tvoje zviera. Alebo sa rýchlo opýtaj „Môže pes jesť…?“",
     "forPet": "Pre {{petName}}"
   },
   "form": {
@@ -44,7 +44,7 @@
   "allergenWarning": {
     "dangerTitle": "NEBEZPEČENSTVO – ZISTENÉ ALERGÉNY!",
     "healthWarningTitle": "ZDRAVOTNÉ VAROVANIE",
-    "petAtRisk": "Toto krmivo môže vážne ohroziť zdravie vášho zvieraťa!"
+    "petAtRisk": "Toto krmivo môže vážne ohroziť zdravie tvojho zvieraťa!"
   },
   "foodSafety": {
     "title": "Môže pes jesť…?",
@@ -54,7 +54,7 @@
     "watchOut": "Pozor na:",
     "alternatives": "Alternatívy:",
     "clearAnswer": "Vymazať odpoveď",
-    "offlineAnswer": "Offline odpoveď (bez AI). Pre presnejšie vyhodnotenie nakonfiguruj OpenAI kľúč.",
+    "offlineAnswer": "Offline odpoveď (bez AI). Pre presnejšie vyhodnotenie nastav OpenAI kľúč.",
     "verdicts": {
       "SAFE": "Bezpečné",
       "CAUTION": "Opatrne",
@@ -64,7 +64,7 @@
   "history": {
     "title": "História hodnotení",
     "emptyTitle": "Žiadna história",
-    "emptyDescription": "Zatiaľ ste neuložili žiadne hodnotenia. Analyzujte granule v sekcii Analýza a výsledok uložte sem.",
+    "emptyDescription": "Zatiaľ si neuložil žiadne hodnotenia. Analyzuj krmivo v sekcii Analýza a výsledok uložíš sem.",
     "runAnalysis": "Spustiť analýzu"
   },
   "snack": {

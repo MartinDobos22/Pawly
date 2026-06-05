@@ -4,18 +4,18 @@
   },
   "page": {
     "title": "Denník epizód",
-    "description": "Zaznamenávaj zdravotné epizódy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíš overené riešenie.",
-    "noPetsTitle": "Najprv vytvorte profil psa",
+    "description": "Zaznamenávaj zdravotné epizódy svojho zvieraťa — čo zabralo a čo nie. Pri budúcom výskyte uvidíš overené riešenie.",
+    "noPetsTitle": "Najprv si vytvor profil zvieraťa",
     "noPetsDescription": "Denník epizód potrebuje aspoň jeden profil zvieraťa.",
     "createProfile": "Vytvoriť profil",
     "newEpisode": "Nová epizóda",
-    "dogSelect": "Pes",
+    "dogSelect": "Zviera",
     "storageUsage": "Úložisko: {{used}} MB / {{limit}} MB",
-    "storageWarning": "Úložisko prílohov sa blíži k limitu ({{used}} MB / {{limit}} MB). Zvážte zmazanie starších epizód alebo uloženie bez prílohy."
+    "storageWarning": "Úložisko príloh sa blíži k limitu ({{used}} MB / {{limit}} MB). Zváž zmazanie starších epizód alebo uloženie bez prílohy."
   },
   "empty": {
     "noEpisodesTitle": "Zatiaľ žiadne epizódy",
-    "noEpisodesDescription": "Zaznamenajte zdravotné stavy psa, čo zabralo a čo nie — pri budúcom výskyte uvidíte overené riešenie.",
+    "noEpisodesDescription": "Zaznamenaj zdravotné stavy svojho zvieraťa — čo zabralo a čo nie. Pri budúcom výskyte uvidíš overené riešenie.",
     "addFirst": "Pridať prvú epizódu",
     "noFilterResultsTitle": "Žiadne epizódy v aktuálnom filtri",
     "noFilterResultsDescription": "Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
@@ -88,7 +88,7 @@
     "pastList": "Podobné epizódy v minulosti",
     "summary": "Zhrnutie",
     "recommendation": "Odporúčanie",
-    "noSimilar": "Zatiaľ neexistujú žiadne podobné epizódy v histórii. Pri závažnejšom stave konzultujte veterinára.",
+    "noSimilar": "V histórii zatiaľ nie sú žiadne podobné epizódy. Pri závažnejšom stave sa poraď s veterinárom.",
     "aiError": "AI sumarizáciu sa nepodarilo načítať: {{error}}. Zobrazujem aspoň lokálne podobné epizódy podľa kategórie.",
     "noLocalSimilar": "V histórii nie sú žiadne epizódy v rovnakej kategórii.",
     "workedLabel": "Zabralo:"
@@ -102,7 +102,7 @@
   "attachments": {
     "title": "Foto prílohy",
     "errorImageOnly": "Podporované sú len obrázky (JPG, PNG, WEBP).",
-    "errorTooLarge": "Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skúste menšie rozlíšenie.",
+    "errorTooLarge": "Obrázok je príliš veľký a nepodarilo sa ho zmenšiť. Skús menšie rozlíšenie.",
     "empty": "Žiadne prílohy.",
     "captionAlt": "Príloha",
     "captionPlaceholder": "Popis (voliteľné)",

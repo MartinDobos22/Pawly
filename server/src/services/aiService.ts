@@ -1312,7 +1312,7 @@ function detectMockAllergens(
         severity: 'high',
         condition,
         message:
-          'Krmivo obsahuje tukové zložky — zvážte nízkokalorické krmivo pre zviera s obezitou.',
+          'Krmivo obsahuje tukové zložky — zváž nízkokalorické krmivo pre zviera s obezitou.',
       });
     } else if (
       nc.includes('oblič') &&
@@ -1321,7 +1321,7 @@ function detectMockAllergens(
       healthWarnings.push({
         severity: 'high',
         condition,
-        message: 'Vysoký obsah proteínov môže zaťažovať obličky. Konzultujte s veterinárom.',
+        message: 'Vysoký obsah proteínov môže zaťažovať obličky. Poraď sa s veterinárom.',
       });
     } else if (
       nc.includes('diabetes') &&
