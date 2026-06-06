@@ -139,6 +139,16 @@
     "loadProfilesFailed": "Failed to load profiles.",
     "loadHealthDataFailed": "Failed to load health data."
   },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The URL you entered doesn't exist or has been moved.",
+    "backHome": "Back to health passport",
+    "backAnalyze": "Go to analysis"
+  },
+  "aiProgress": {
+    "slow": "This is taking longer than usual. You can keep waiting, or cancel.",
+    "cancel": "Cancel"
+  },
   "contact": {
     "title": "Contact",
     "subtitle": "Have a question, found a bug, or want to share feedback? We'd love to hear from you.",
