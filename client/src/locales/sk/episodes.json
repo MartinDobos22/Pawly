@@ -1,6 +1,9 @@
 {
   "hints": {
-    "category": "Zdravotná oblasť epizódy (tráviace, kožné, pohybové…). Pomáha filtrovať a hľadať podobné minulé epizódy pre kontext."
+    "category": "Zdravotná oblasť epizódy (tráviace, kožné, pohybové…). Pomáha filtrovať a hľadať podobné minulé epizódy pre kontext.",
+    "attachments": "Pridaj fotky alebo PDF (výsledky vyšetrení, fotky príznakov). Veľké obrázky sa automaticky zmenšujú aby šetrili miesto.",
+    "similarSummary": "AI sumár podobných minulých epizód — pomôže ti vidieť čo zabralo predtým a uľahčí komunikáciu s veterinárom.",
+    "severity": "Závažnosť epizódy: ľahká (drobné), stredná (potrebuje pozornosť), ťažká (návšteva veterinára nutná)."
   },
   "page": {
     "title": "Denník epizód",

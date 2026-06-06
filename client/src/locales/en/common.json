@@ -1,6 +1,40 @@
 {
   "help": {
-    "label": "Show help"
+    "label": "Show help",
+    "fabLabel": "Help and tutorial",
+    "dialogTitle": "Help",
+    "tabUsage": "How to use",
+    "tabInstall": "Install",
+    "tabTour": "Tour",
+    "restartTourTitle": "Start the welcome tour",
+    "restartTourDescription": "A short 4-step tutorial that walks you through the main features.",
+    "restartTourCta": "Start tour",
+    "close": "Close"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "step": "Step {{current}} of {{total}}",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to Pawly",
+        "body": "Analyze pet food from a photo or text — AI tells you whether it suits your pet and warns about allergens."
+      },
+      "profile": {
+        "title": "Profiles and health passport",
+        "body": "Create a pet profile, add allergies and keep a health passport — vaccinations, dewormings, medications and weight."
+      },
+      "diary": {
+        "title": "Diary and vet card",
+        "body": "Log health episodes and print a clear vet card with everything the vet needs before each visit."
+      },
+      "install": {
+        "title": "Install the app",
+        "body": "Add Pawly to your phone or desktop home screen and use it like a native app — even offline. You can find help anytime via the “?” button in the bottom-right."
+      }
+    }
   },
   "nav": {
     "sectionMain": "Main",

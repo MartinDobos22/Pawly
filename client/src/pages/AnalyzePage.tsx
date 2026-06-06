@@ -25,6 +25,7 @@ import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
+import HelpHint from '../components/HelpHint';
 import FoodSafetyCheck from '../components/analyze/FoodSafetyCheck';
 import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
@@ -197,6 +198,7 @@ export default function AnalyzePage() {
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {t('form.analyzeComposition')}
             </Typography>
+            <HelpHint text={t('hints.textInput')} />
           </Stack>
 
           <input
