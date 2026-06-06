@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSupabase } from '../config/supabase';
+import { withRetry } from '../utils/retry';
 
 const uidToAppUserId = new Map<string, string>();
 
@@ -28,13 +29,18 @@ export async function ensureUser(req: Request, _res: Response, next: NextFunctio
 
     const supabase = getSupabase();
 
-    const { data: existing, error: selectError } = await supabase
-      .from('users')
-      .select('id, locale')
-      .eq('firebase_uid', req.user.uid)
-      .maybeSingle();
-
-    if (selectError) throw selectError;
+    const existing = await withRetry(
+      async () => {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, locale')
+          .eq('firebase_uid', req.user!.uid)
+          .maybeSingle();
+        if (error) throw error;
+        return data;
+      },
+      { label: 'ensureUser.select' }
+    );
 
     if (existing) {
       uidToAppUserId.set(req.user.uid, existing.id);
@@ -54,16 +60,23 @@ export async function ensureUser(req: Request, _res: Response, next: NextFunctio
       return;
     }
 
-    const { data: inserted, error: upsertError } = await supabase
-      .from('users')
-      .upsert(
-        { firebase_uid: req.user.uid, email: req.user.email ?? null, locale },
-        { onConflict: 'firebase_uid' }
-      )
-      .select('id')
-      .single();
-
-    if (upsertError) throw upsertError;
+    // Upsert s ON CONFLICT zaručuje, že súbežný registrácia request neskončí
+    // unique-constraint chybou — druhý request len načíta existujúci id.
+    const inserted = await withRetry(
+      async () => {
+        const { data, error } = await supabase
+          .from('users')
+          .upsert(
+            { firebase_uid: req.user!.uid, email: req.user!.email ?? null, locale },
+            { onConflict: 'firebase_uid' }
+          )
+          .select('id')
+          .single();
+        if (error) throw error;
+        return data;
+      },
+      { label: 'ensureUser.upsert' }
+    );
 
     uidToAppUserId.set(req.user.uid, inserted.id);
     req.appUserId = inserted.id;

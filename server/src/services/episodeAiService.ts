@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
 import { logger } from '../utils/logger';
 import { AI_MODELS } from './aiService';
+import { getOpenAIClient } from '../config/openai';
 import {
   auditAiProcessing,
   assertPrivacyGuard,
@@ -45,13 +45,6 @@ const MAX_PAST_EPISODES = 30;
 const MAX_DESCRIPTION_LEN = 800;
 const MAX_LESSONS_LEN = 500;
 const OPENAI_TIMEOUT_MS = 30_000;
-
-function getOpenAIClient(): OpenAI | null {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey || apiKey === 'your-key-here') return null;
-  return new OpenAI({ apiKey });
-}
-
 function tokenize(value: string): Set<string> {
   return new Set(
     value
