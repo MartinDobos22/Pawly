@@ -94,7 +94,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       });
 
+    // Watchdog: ak Firebase SDK do 10 s neodpovie cez onAuthStateChanged,
+    // odblokuj ProtectedRoute aby user nezostal navždy na spinneri. Nastavíme
+    // user=null → ProtectedRoute presmeruje na /login a uvidí prípadnú chybu
+    // pri prvom pokuse o prihlásenie. 10 s je dosť dlho na slow 3G, ale
+    // krátko aby UX nebol zlomený.
+    let firstAuthEventReceived = false;
+    const watchdog = window.setTimeout(() => {
+      if (!firstAuthEventReceived) {
+        logger.error(
+          'AuthContext watchdog: Firebase neodpovedal do 10 s, odblokujem app s user=null'
+        );
+        setUser(null);
+        setLoading(false);
+      }
+    }, 10_000);
+
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
+      firstAuthEventReceived = true;
+      window.clearTimeout(watchdog);
+
       logger.info('Auth state zmena', {
         signedIn: Boolean(nextUser),
         uid: nextUser?.uid,
@@ -122,7 +141,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserVersion((v) => v + 1);
       setLoading(false);
     });
-    return unsubscribe;
+    return () => {
+      window.clearTimeout(watchdog);
+      unsubscribe();
+    };
   }, []);
 
   const register = useCallback(async (email: string, password: string) => {

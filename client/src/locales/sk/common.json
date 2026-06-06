@@ -160,6 +160,12 @@
   "support": {
     "intro": "Pawly vyvíjame nezávisle. Ak ti pomáha, jeho ďalší vývoj môžeš podporiť jednorazovým príspevkom."
   },
+  "donateThanks": {
+    "title": "Ďakujeme za podporu!",
+    "subtitle": "Tvoj príspevok pomôže Pawly rásť — nové funkcie, lepšiu kvalitu AI a stabilný provoz.",
+    "back": "Späť na zdravotný pas",
+    "another": "Podporiť znova"
+  },
   "relativeDate": {
     "today": "Dnes",
     "todayShort": "dnes",

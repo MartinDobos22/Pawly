@@ -31,6 +31,7 @@ import EpisodeDiaryPage from './pages/EpisodeDiaryPage';
 import NotificationsPage from './pages/NotificationsPage';
 import SettingsPage from './pages/SettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import DonateThanksPage from './pages/DonateThanksPage';
 
 export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
@@ -102,6 +103,7 @@ export default function App() {
                               <Route path="/info" element={<InfoPage />} />
                               <Route path="/kontakt" element={<ContactPage />} />
                               <Route path="/podpora" element={<SupportProjectPage />} />
+                              <Route path="/dakujeme" element={<DonateThanksPage />} />
                               <Route
                                 path="/o-aplikacii"
                                 element={<Navigate to="/info?tab=about" replace />}
