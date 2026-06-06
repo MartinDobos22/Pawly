@@ -1,6 +1,6 @@
 import type { PetProfile } from './index';
 
-export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
+export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE' | 'INVALID';
 
 export interface FoodSafetyRequest {
   query: string;
