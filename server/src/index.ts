@@ -18,9 +18,14 @@ import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
 import { requireAiQuota } from './middleware/aiQuota';
+import { assertOpenAIConfigured } from './config/openai';
 import { logger } from './utils/logger';
 
 dotenv.config();
+
+// Fail-fast: bez OPENAI_API_KEY by všetky AI endpointy ticho vracali 502
+// a deploy log by to neukázal. Radšej padnúť hneď pri štarte.
+assertOpenAIConfigured();
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;

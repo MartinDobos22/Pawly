@@ -1,8 +1,8 @@
-import OpenAI from 'openai';
 import type { PetProfile } from '../types';
 import type { FoodSafetyResult, FoodSafetyVerdict } from '../types/foodSafety';
 import { logger } from '../utils/logger';
 import { AI_MODELS } from './aiService';
+import { getOpenAIClient } from '../config/openai';
 
 const SYSTEM_PROMPT = `Si veterinárny poradca pre majiteľov psov. Odpovedáš na otázky typu "môže pes jesť / piť X?".
 
@@ -182,12 +182,6 @@ function mockAnswer(query: string, petProfile?: PetProfile): FoodSafetyResult {
     warnings: ['Skontroluj zdroje alebo sa opýtaj veterinára pred podaním'],
     source: 'mock',
   };
-}
-
-function getOpenAIClient(): OpenAI | null {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey || apiKey === 'your-key-here') return null;
-  return new OpenAI({ apiKey });
 }
 
 function buildUserMessage(query: string, petProfile?: PetProfile): string {
