@@ -59,8 +59,8 @@ jobs:
           version=$(grep -E "const CACHE_VERSION" public/sw.js | head -1 || true)
           echo "## PWA" >> $GITHUB_STEP_SUMMARY
           echo "- $version" >> $GITHUB_STEP_SUMMARY
-          if ! grep -qE "CACHE_VERSION\s*=\s*['\"]animalPassport-v[0-9]+['\"]" public/sw.js; then
-            echo "::warning file=client/public/sw.js::CACHE_VERSION nesedí so vzorom 'animalPassport-vN'"
+          if ! grep -qE "CACHE_VERSION\s*=\s*['\"]pawly-v[0-9]+['\"]" public/sw.js; then
+            echo "::warning file=client/public/sw.js::CACHE_VERSION nesedí so vzorom 'pawly-vN'"
           fi
 
   server:
@@ -94,12 +94,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # Audit blokuje merge na high+ vulnerabilities. Predtým bol `|| true` —
+      # nálezy len visualne pomáhali, ale nikoho neblokovali. Pri reálnom
+      # high vuln chceme zastaviť pipeline a riešiť (npm audit fix alebo
+      # explicitný resolution override).
       - name: Audit client
         working-directory: client
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
       - name: Audit server
         working-directory: server
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
 
   secrets-scan:
     name: gitleaks

@@ -52,7 +52,7 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 | `VITE_FIREBASE_STORAGE_BUCKET` | nie | — | Firebase storage bucket. |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | nie | — | Firebase messaging sender ID. |
 | `VITE_FIREBASE_APP_ID` | áno (auth) | — | Firebase Web App appId. Z Firebase Console → Project Settings → Your apps → Web app → SDK config. |
-| `VITE_STRIPE_PAYMENT_LINK` | nie | prázdne (feature skrytá) | URL Stripe Payment Linku pre dobrovoľný donate (Fáza 0 monetizácie). Vytvor v Stripe Dashboard → Payment Links. Konzumuje sa v `Layout.tsx` a `AboutPage.tsx`. Ak nie je nastavená, "Podporiť projekt" UI prvky sa nezobrazia. |
+| `VITE_STRIPE_PAYMENT_LINK` | nie | prázdne (feature skrytá) | URL Stripe Payment Linku pre dobrovoľný donate (Fáza 0 monetizácie). Vytvor v Stripe Dashboard → Payment Links. Konzumuje sa v `Layout.tsx` a `AboutPage.tsx`. Ak nie je nastavená, "Podporiť projekt" UI prvky sa nezobrazia. **Po vytvorení Payment Linku nastav `success_url` na `https://<tvoj-host>/dakujeme`** — tam aplikácia ukáže "Ďakujeme" page (`DonateThanksPage.tsx`). Bez toho user po platbe pristane na Stripe default page (nezistí, že platba dorazila do Pawly kontextu). |
 
 > **Konvencia:** premenná sa volá `VITE_API_URL`, nie `VITE_API_BASE_URL`. Ak ju premenuješ v kóde, updatni aj túto tabuľku, README a `.env.example`.
 

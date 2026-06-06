@@ -160,6 +160,12 @@
   "support": {
     "intro": "Pawly is built independently. If you find it useful, you can support its development with a one-time contribution."
   },
+  "donateThanks": {
+    "title": "Thank you for your support!",
+    "subtitle": "Your contribution helps Pawly grow — new features, better AI quality, and stable hosting.",
+    "back": "Back to health passport",
+    "another": "Donate again"
+  },
   "relativeDate": {
     "today": "Today",
     "todayShort": "today",

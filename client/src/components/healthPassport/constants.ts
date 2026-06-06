@@ -11,22 +11,29 @@ import {
 } from '@mui/icons-material';
 import { createElement } from 'react';
 
-export const TIMELINE_TYPE_META: Record<
-  TimelineEvent['type'],
-  { color: 'primary' | 'success' | 'warning' | 'error' | 'secondary' | 'info'; hex: string }
-> = {
-  VACCINATION: { color: 'success', hex: '#22c55e' },
-  DEWORMING: { color: 'secondary', hex: '#a855f7' },
-  ECTOPARASITE: { color: 'warning', hex: '#f59e0b' },
-  VET_VISIT: { color: 'primary', hex: '#3b82f6' },
-  MEDICATION: { color: 'info', hex: '#06b6d4' },
-  DIET: { color: 'success', hex: '#10b981' },
-  EXPENSE: { color: 'error', hex: '#f43f5e' },
-  NOTE: { color: 'info', hex: '#64748b' },
+export type TimelineTypeColor = 'primary' | 'success' | 'warning' | 'error' | 'secondary' | 'info';
+
+export const TIMELINE_TYPE_META: Record<TimelineEvent['type'], { color: TimelineTypeColor }> = {
+  VACCINATION: { color: 'success' },
+  DEWORMING: { color: 'secondary' },
+  ECTOPARASITE: { color: 'warning' },
+  VET_VISIT: { color: 'primary' },
+  MEDICATION: { color: 'info' },
+  DIET: { color: 'success' },
+  EXPENSE: { color: 'error' },
+  NOTE: { color: 'info' },
 };
 
 export const TIMELINE_FILTER_VALUES: Array<'ALL' | TimelineEvent['type']> = [
-  'ALL', 'VACCINATION', 'DEWORMING', 'ECTOPARASITE', 'VET_VISIT', 'MEDICATION', 'DIET', 'EXPENSE', 'NOTE',
+  'ALL',
+  'VACCINATION',
+  'DEWORMING',
+  'ECTOPARASITE',
+  'VET_VISIT',
+  'MEDICATION',
+  'DIET',
+  'EXPENSE',
+  'NOTE',
 ];
 
 export const TIMELINE_ICON_MAP: Record<TimelineEvent['type'], React.ReactElement> = {
@@ -41,7 +48,14 @@ export const TIMELINE_ICON_MAP: Record<TimelineEvent['type'], React.ReactElement
 };
 
 export const EXPORTABLE_TIMELINE_TYPES: TimelineEvent['type'][] = [
-  'VACCINATION', 'DEWORMING', 'ECTOPARASITE', 'VET_VISIT', 'MEDICATION', 'DIET', 'EXPENSE', 'NOTE',
+  'VACCINATION',
+  'DEWORMING',
+  'ECTOPARASITE',
+  'VET_VISIT',
+  'MEDICATION',
+  'DIET',
+  'EXPENSE',
+  'NOTE',
 ];
 
 export type VisitSubOption = { key: string; alias?: string };
@@ -128,9 +142,7 @@ export const VISIT_CATEGORY_OPTIONS: VisitCategoryOption[] = [
   {
     key: 'passport',
     main: 'Veterinárny pas',
-    sub: [
-      { key: 'passport_record', alias: 'veterinarny_pas' },
-    ],
+    sub: [{ key: 'passport_record', alias: 'veterinarny_pas' }],
   },
 ];
 
@@ -141,7 +153,29 @@ export const EXAM_SUBCATEGORY_TO_ALIAS: Record<string, string> = Object.fromEntr
 );
 
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-export const SUPPORTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-export const KNOWN_DEWORMING_KEYWORDS = ['drontal', 'milbemax', 'milprazon', 'caniverm', 'deworm', 'odcerv'];
-export const KNOWN_ECTOPARASITE_KEYWORDS = ['simparica', 'bravecto', 'advantix', 'nexgard', 'ecto', 'parazit', 'klie', 'blch'];
+export const SUPPORTED_FILE_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+];
+export const KNOWN_DEWORMING_KEYWORDS = [
+  'drontal',
+  'milbemax',
+  'milprazon',
+  'caniverm',
+  'deworm',
+  'odcerv',
+];
+export const KNOWN_ECTOPARASITE_KEYWORDS = [
+  'simparica',
+  'bravecto',
+  'advantix',
+  'nexgard',
+  'ecto',
+  'parazit',
+  'klie',
+  'blch',
+];
 export const KNOWN_RABIES_KEYWORDS = ['rabies', 'besnot', 'nobivac rabies'];

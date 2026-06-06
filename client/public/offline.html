@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1B5E20" />
+    <meta name="theme-color" content="#0F4C5C" />
     <title>Pawly – Offline</title>
     <script>
       (function () {
@@ -16,6 +16,17 @@
         });
       })();
     </script>
+    <!--
+      Farby sú zámerne hard-coded (offline.html nemôže importovať theme.ts —
+      slúži pred načítaním JS bundle). MUSIA byť ručne zladené s client/src/theme.ts
+      pri každom palette change. Mapping:
+        --bg-light:    lightSurface.default      (#FAF7F2)
+        --ink-light:   light.text.primary        (#1A2A2F)
+        --accent:      light.palette.primary     (#0F4C5C)
+        --bg-dark:     darkSurface.default       (#1A1F22)
+        --ink-dark:    dark.text.primary         (#E6EDEF)
+        --accent-dark: dark.palette.primary      (#6FBED1)
+    -->
     <style>
       * {
         margin: 0;
@@ -24,8 +35,8 @@
       }
       body {
         font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-        background: #fafafa;
-        color: #1c1b1f;
+        background: #faf7f2;
+        color: #1a2a2f;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -45,16 +56,16 @@
         font-size: 1.75rem;
         font-weight: 700;
         margin-bottom: 12px;
-        color: #1b5e20;
+        color: #0f4c5c;
       }
       p {
         font-size: 1rem;
         line-height: 1.6;
-        color: #49454f;
+        color: #4a5a60;
         margin-bottom: 32px;
       }
       button {
-        background: #1b5e20;
+        background: #0f4c5c;
         color: white;
         border: none;
         border-radius: 12px;
@@ -65,24 +76,25 @@
         transition: background 0.2s;
       }
       button:hover {
-        background: #2e7d32;
+        background: #0c3f4d;
       }
       @media (prefers-color-scheme: dark) {
         body {
-          background: #121212;
-          color: #e6e1e5;
+          background: #1a1f22;
+          color: #e6edef;
         }
         p {
-          color: #cac4d0;
+          color: #b8c1c3;
         }
         h1 {
-          color: #81c784;
+          color: #6fbed1;
         }
         button {
-          background: #388e3c;
+          background: #6fbed1;
+          color: #0c2228;
         }
         button:hover {
-          background: #4caf50;
+          background: #8fcedb;
         }
       }
     </style>

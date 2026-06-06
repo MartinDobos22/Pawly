@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
   alpha,
+  useTheme,
 } from '@mui/material';
 import { Close as CloseIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
@@ -122,6 +123,7 @@ export default function TimelineRecordDetailDialog({
   onDelete,
 }: TimelineRecordDetailDialogProps) {
   const { t } = useTranslation('healthPassport');
+  const theme = useTheme();
   const [editing, setEditing] = useState(false);
 
   const [vacDraft, setVacDraft] = useState<VacDraft>({
@@ -767,8 +769,8 @@ export default function TimelineRecordDetailDialog({
               width: 36,
               height: 36,
               borderRadius: 1.5,
-              bgcolor: alpha(meta2.hex, 0.12),
-              color: meta2.hex,
+              bgcolor: alpha(theme.palette[meta2.color].main, 0.12),
+              color: `${meta2.color}.main`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -782,7 +784,7 @@ export default function TimelineRecordDetailDialog({
             {t('detail.title')}
           </Typography>
           {meta2 && (
-            <Typography variant="caption" sx={{ color: meta2.hex, fontWeight: 600 }}>
+            <Typography variant="caption" sx={{ color: `${meta2.color}.main`, fontWeight: 600 }}>
               {t(`timeline.${state!.type}`)}
             </Typography>
           )}
