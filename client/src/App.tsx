@@ -30,6 +30,7 @@ import VetCardPage from './pages/VetCardPage';
 import EpisodeDiaryPage from './pages/EpisodeDiaryPage';
 import NotificationsPage from './pages/NotificationsPage';
 import SettingsPage from './pages/SettingsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
@@ -115,6 +116,7 @@ export default function App() {
                                   <SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
                                 }
                               />
+                              <Route path="*" element={<NotFoundPage />} />
                             </Routes>
                           </Layout>
                         </HealthDataProvider>

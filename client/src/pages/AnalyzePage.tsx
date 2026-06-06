@@ -77,8 +77,18 @@ export default function AnalyzePage() {
   const { t } = useTranslation('analyze');
   const [composition, setComposition] = useState('');
   const [sourceLabel, setSourceLabel] = useState('');
-  const { analyze, extractTextOnly, result, loadingText, extractingText, error, extractError } =
-    useAnalyze();
+  const {
+    analyze,
+    extractTextOnly,
+    cancel,
+    result,
+    loadingText,
+    extractingText,
+    error,
+    extractError,
+    slow,
+  } = useAnalyze();
+  const { t: tCommon } = useTranslation();
   const { activePet } = useActivePet();
   const { savedAnalyses, addSavedAnalysis, addDietEntry } = useHealthData();
   const [snackOpen, setSnackOpen] = useState(false);
@@ -264,6 +274,19 @@ export default function AnalyzePage() {
           >
             {loadingText ? t('form.analyzing') : t('form.analyze')}
           </Button>
+          {busy && slow && (
+            <Alert
+              severity="info"
+              sx={{ mt: 1.5, borderRadius: 2 }}
+              action={
+                <Button color="inherit" size="small" onClick={cancel}>
+                  {tCommon('aiProgress.cancel')}
+                </Button>
+              }
+            >
+              {tCommon('aiProgress.slow')}
+            </Alert>
+          )}
           {!activePet && (
             <Typography
               variant="caption"

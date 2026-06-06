@@ -139,6 +139,16 @@
     "loadProfilesFailed": "Načítanie profilov zlyhalo.",
     "loadHealthDataFailed": "Načítanie zdravotných dát zlyhalo."
   },
+  "notFound": {
+    "title": "Stránka sa nenašla",
+    "subtitle": "Adresa, ktorú si zadal, neexistuje alebo bola presunutá.",
+    "backHome": "Späť na zdravotný pas",
+    "backAnalyze": "Prejsť na analýzu"
+  },
+  "aiProgress": {
+    "slow": "Trvá to dlhšie ako zvyčajne. Môžeš ešte chvíľu počkať, alebo akciu zrušiť.",
+    "cancel": "Zrušiť"
+  },
   "contact": {
     "title": "Kontakt",
     "subtitle": "Máš otázku, narazil si na chybu alebo nám chceš dať spätnú väzbu? Napíš nám.",

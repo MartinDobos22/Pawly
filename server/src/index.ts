@@ -163,7 +163,7 @@ app.use('/api/health', ensureUser, healthRouter);
 app.use('/api/account', ensureUser, accountRouter);
 app.use('/api/notifications', ensureUser, notificationsRouter);
 app.use('/api/analyze', aiHeavyLimiter, ensureUser, requireAiQuota(), analyzeRouter);
-app.use('/api/episodes', ensureUser, episodesRouter);
+app.use('/api/episodes', aiHeavyLimiter, ensureUser, episodesRouter);
 app.use('/api/extract-text', aiHeavyLimiter, ensureUser, requireAiQuota(), extractTextRouter);
 app.use('/api/food-safety', aiHeavyLimiter, ensureUser, requireAiQuota(), foodSafetyRouter);
 app.use(

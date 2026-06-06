@@ -42,7 +42,8 @@ function sanitizePetProfileForAnalyze(petProfile?: PetProfile): PetProfile | und
 
 export async function analyzeComposition(
   composition: string,
-  petProfile?: PetProfile
+  petProfile?: PetProfile,
+  signal?: AbortSignal
 ): Promise<AnalysisResult> {
   const requestPayload: AnalysisRequest = {
     composition,
@@ -59,6 +60,7 @@ export async function analyzeComposition(
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
+    signal,
   });
 
   if (!res.ok) {
@@ -85,7 +87,8 @@ export async function analyzeComposition(
 
 export async function analyzeAttachment(
   attachment: AnalysisRequest['attachment'],
-  examAlias?: string
+  examAlias?: string,
+  signal?: AbortSignal
 ): Promise<FileExtractionResult> {
   const requestPayload = {
     sourceType: 'file',
@@ -104,6 +107,7 @@ export async function analyzeAttachment(
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify(requestPayload),
+    signal,
   });
 
   if (!res.ok) {
@@ -137,7 +141,8 @@ export async function extractTextFromImage(
     mimeType: string;
     base64Data: string;
   },
-  aiProcessingConsent = false
+  aiProcessingConsent = false,
+  signal?: AbortSignal
 ): Promise<{ extractedText: string; source: 'google-vision' | 'openai' | 'pdf-parser' | 'none' }> {
   logger.info('Odosielam súbor na OCR extrakciu', {
     fileName: attachment.fileName,
@@ -149,6 +154,7 @@ export async function extractTextFromImage(
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
     body: JSON.stringify({ attachment, aiProcessingConsent }),
+    signal,
   });
 
   if (!res.ok) {
