@@ -1,4 +1,4 @@
-import { Box, Card, Stack, Typography } from '@mui/material';
+import { Box, Card, Skeleton, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../hooks/useActivePet';
@@ -364,8 +364,21 @@ export default function VetCardPage() {
     if (Number.isNaN(parsed.getTime())) return value;
     return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
   };
-  const { dogProfiles, activePetId: selectedDogId, selectPet: setSelectedDogId } = useActivePet();
-  const { vaccinations, dewormings, ectos, visits, medications, dietEntries } = useHealthData();
+  const {
+    dogProfiles,
+    activePetId: selectedDogId,
+    selectPet: setSelectedDogId,
+    loading: petsLoading,
+  } = useActivePet();
+  const {
+    vaccinations,
+    dewormings,
+    ectos,
+    visits,
+    medications,
+    dietEntries,
+    loading: healthLoading,
+  } = useHealthData();
 
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
@@ -1083,6 +1096,20 @@ export default function VetCardPage() {
       }, 700);
     });
   };
+
+  if (petsLoading || healthLoading) {
+    return (
+      <Box sx={{ maxWidth: 760, mx: 'auto', py: 4 }}>
+        <Skeleton variant="text" width={240} height={48} sx={{ mb: 1 }} />
+        <Skeleton variant="text" width={320} height={24} sx={{ mb: 3 }} />
+        <Stack spacing={2}>
+          <Skeleton variant="rounded" height={120} />
+          <Skeleton variant="rounded" height={180} />
+          <Skeleton variant="rounded" height={220} />
+        </Stack>
+      </Box>
+    );
+  }
 
   if (!dog || !data) {
     return (
