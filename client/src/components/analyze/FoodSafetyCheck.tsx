@@ -18,6 +18,7 @@ import {
   Close as CloseIcon,
   ErrorOutline as UnsafeIcon,
   HelpOutline as QAIcon,
+  InfoOutlined as InvalidIcon,
   Search as SearchIcon,
   WarningAmber as CautionIcon,
 } from '@mui/icons-material';
@@ -31,12 +32,14 @@ const VERDICT_ICON: Record<FoodSafetyVerdict, typeof SafeIcon> = {
   SAFE: SafeIcon,
   CAUTION: CautionIcon,
   UNSAFE: UnsafeIcon,
+  INVALID: InvalidIcon,
 };
 
-const VERDICT_TONE: Record<FoodSafetyVerdict, 'success' | 'warning' | 'error'> = {
+const VERDICT_TONE: Record<FoodSafetyVerdict, 'success' | 'warning' | 'error' | 'info'> = {
   SAFE: 'success',
   CAUTION: 'warning',
   UNSAFE: 'error',
+  INVALID: 'info',
 };
 
 const RECENT_KEY = 'granule-check-food-safety-recent';
@@ -61,10 +64,12 @@ export default function FoodSafetyCheck() {
     try {
       const response = await askFoodSafety(q, activePet ?? undefined);
       setResult(response);
-      setRecent((prev) => {
-        const next = [q, ...prev.filter((p) => p.toLowerCase() !== q.toLowerCase())];
-        return next.slice(0, 5);
-      });
+      if (response.verdict !== 'INVALID') {
+        setRecent((prev) => {
+          const next = [q, ...prev.filter((p) => p.toLowerCase() !== q.toLowerCase())];
+          return next.slice(0, 5);
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.noAnswer'));
     } finally {

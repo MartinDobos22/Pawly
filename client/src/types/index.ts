@@ -43,7 +43,6 @@ export interface AnalysisRequest {
   aiProcessingConsent?: boolean;
 }
 
-
 export interface Ingredient {
   name: string;
   category: 'protein' | 'carb' | 'fat' | 'fiber' | 'additive' | 'mineral' | 'vitamin';
@@ -150,7 +149,7 @@ export interface ApiError {
   status?: number;
 }
 
-export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
+export type FoodSafetyVerdict = 'SAFE' | 'CAUTION' | 'UNSAFE' | 'INVALID';
 
 export interface FoodSafetyResult {
   query: string;

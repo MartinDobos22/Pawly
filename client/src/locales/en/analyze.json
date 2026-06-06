@@ -62,7 +62,8 @@
     "verdicts": {
       "SAFE": "Safe",
       "CAUTION": "Caution",
-      "UNSAFE": "Avoid"
+      "UNSAFE": "Avoid",
+      "INVALID": "Not a food"
     }
   },
   "history": {

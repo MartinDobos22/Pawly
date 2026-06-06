@@ -62,7 +62,8 @@
     "verdicts": {
       "SAFE": "Bezpečné",
       "CAUTION": "Opatrne",
-      "UNSAFE": "Nedávaj"
+      "UNSAFE": "Nedávaj",
+      "INVALID": "Nie je potravina"
     }
   },
   "history": {
