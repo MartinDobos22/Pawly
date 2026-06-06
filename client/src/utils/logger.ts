@@ -8,7 +8,13 @@ function formatMetadata(metadata?: Record<string, unknown>): string {
   return ` ${JSON.stringify(metadata)}`;
 }
 
+// V PROD potlačíme INFO šum, WARN/ERROR ostávajú (zachytí ich neskôr Sentry
+// alebo podobný hook). DEV chceme plný INFO výpis pre debug.
+const SILENCE_INFO_IN_PROD = import.meta.env.PROD;
+
 function log(level: LogLevel, message: string, metadata?: Record<string, unknown>): void {
+  if (level === 'INFO' && SILENCE_INFO_IN_PROD) return;
+
   const timestamp = new Date().toISOString();
   const entry = `[${timestamp}] [FE] [${level}] ${message}${formatMetadata(metadata)}`;
 

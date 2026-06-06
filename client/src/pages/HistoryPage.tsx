@@ -7,6 +7,8 @@ import {
   Box,
   Button,
   IconButton,
+  Skeleton,
+  Stack,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -24,7 +26,7 @@ import EmptyState from '../components/EmptyState';
 
 export default function HistoryPage() {
   const { t } = useTranslation('analyze');
-  const { savedAnalyses, removeSavedAnalysis, clearSavedAnalyses } = useHealthData();
+  const { savedAnalyses, removeSavedAnalysis, clearSavedAnalyses, loading } = useHealthData();
   const [expanded, setExpanded] = useState<string | false>(false);
   const theme = useTheme();
   const navigate = useNavigate();
@@ -49,6 +51,22 @@ export default function HistoryPage() {
       minute: '2-digit',
     });
   };
+
+  if (loading && savedAnalyses.length === 0) {
+    return (
+      <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Skeleton variant="text" width={180} height={40} />
+          <Skeleton variant="rounded" width={88} height={28} />
+        </Box>
+        <Stack spacing={1.5}>
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} variant="rounded" height={64} />
+          ))}
+        </Stack>
+      </Box>
+    );
+  }
 
   if (savedAnalyses.length === 0) {
     return (
