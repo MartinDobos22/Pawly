@@ -242,10 +242,10 @@
     "vetCardLabel": "Karta pre veterinára",
     "clinicalHistory": "Klinická história",
     "historyItems": [
-      { "date": "21. máj", "label": "Antiparazitiká", "tone": "warning" },
-      { "date": "21. máj", "label": "Veterinár · Veterina terasa", "tone": "primary" },
-      { "date": "27. mar", "label": "Veterinár · cassovet", "tone": "primary" },
-      { "date": "26. mar", "label": "Odčervenie · xyz", "tone": "success" }
+      { "date": "21. máj", "label": "Antiparazitiká · Bravecto", "tone": "warning" },
+      { "date": "12. máj", "label": "Veterinár · Kontrolná návšteva", "tone": "primary" },
+      { "date": "27. mar", "label": "Očkovanie · Besnota", "tone": "success" },
+      { "date": "14. mar", "label": "Odčervenie · Milbemax", "tone": "primary" }
     ],
     "mockCard": {
       "vaccination": "Očkovanie",

@@ -242,10 +242,10 @@
     "vetCardLabel": "Vet card",
     "clinicalHistory": "Clinical history",
     "historyItems": [
-      { "date": "May 21", "label": "Antiparasitic", "tone": "warning" },
-      { "date": "May 21", "label": "Vet · Veterina terasa", "tone": "primary" },
-      { "date": "Mar 27", "label": "Vet · cassovet", "tone": "primary" },
-      { "date": "Mar 26", "label": "Deworming · xyz", "tone": "success" }
+      { "date": "May 21", "label": "Antiparasitic · Bravecto", "tone": "warning" },
+      { "date": "May 12", "label": "Vet · Routine check-up", "tone": "primary" },
+      { "date": "Mar 27", "label": "Vaccination · Rabies", "tone": "success" },
+      { "date": "Mar 14", "label": "Deworming · Milbemax", "tone": "primary" }
     ],
     "mockCard": {
       "vaccination": "Vaccination",
