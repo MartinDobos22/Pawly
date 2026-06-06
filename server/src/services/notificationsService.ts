@@ -175,11 +175,32 @@ function isTypeEnabled(prefs: NotificationPreferences, source: SourceConfig): bo
   return prefs[source.prefKey];
 }
 
+/**
+ * Pre rovnakú dvojicu (pet_id, groupKeyCol) zachová iba záznam s najneskorším
+ * `dateCol` — novší termín nahrádza starší (vyriešený) záznam.
+ */
+function dedupeBySupersede(rows: Row[], dateCol: string, groupKeyCol: string): Row[] {
+  const best = new Map<string, Row>();
+  for (const row of rows) {
+    const dueDate = row[dateCol];
+    if (typeof dueDate !== 'string' || !dueDate) continue;
+    const key = `${String(row.pet_id)}|${String(row[groupKeyCol] ?? '')}`;
+    const prev = best.get(key);
+    if (!prev || String(prev[dateCol]) < dueDate) best.set(key, row);
+  }
+  return [...best.values()];
+}
+
 /** Najbližšie/po termíne položky pre používateľa (náhľad v nastaveniach). */
-export async function computeUpcoming(appUserId: string): Promise<UpcomingItem[]> {
+export async function computeUpcoming(appUserId: string, petId?: string): Promise<UpcomingItem[]> {
   const prefs = await getPreferences(appUserId);
-  const petIds = await getUserPetIds(appUserId);
-  if (petIds.length === 0) return [];
+  const ownedPetIds = await getUserPetIds(appUserId);
+  if (ownedPetIds.length === 0) return [];
+  let petIds = ownedPetIds;
+  if (petId) {
+    if (!ownedPetIds.includes(petId)) return [];
+    petIds = [petId];
+  }
 
   const supabase = getSupabase();
   const { data: petRows, error: petErr } = await supabase
@@ -196,11 +217,12 @@ export async function computeUpcoming(appUserId: string): Promise<UpcomingItem[]
     if (!isTypeEnabled(prefs, source)) continue;
     const { data, error } = await supabase.from(source.table).select('*').in('pet_id', petIds);
     if (error) throw error;
-    for (const row of data as Row[]) {
-      const dueDate = row[source.dateCol];
-      if (typeof dueDate !== 'string' || !dueDate) continue;
+    const deduped = dedupeBySupersede(data as Row[], source.dateCol, source.labelCol);
+    for (const row of deduped) {
+      const dueDate = row[source.dateCol] as string;
       const d = daysUntil(dueDate);
       if (d === null || d > PREVIEW_HORIZON_DAYS) continue;
+      if (source.type === 'MEDICATION' && d < 0) continue;
       items.push({
         recordId: String(row.id),
         type: source.type,
@@ -287,17 +309,18 @@ export async function runSweep(): Promise<SweepSummary> {
   for (const source of SOURCES) {
     const { data, error } = await supabase.from(source.table).select('*').in('pet_id', allPetIds);
     if (error) throw error;
-    for (const row of data as Row[]) {
+    const deduped = dedupeBySupersede(data as Row[], source.dateCol, source.labelCol);
+    for (const row of deduped) {
       const info = petInfo.get(String(row.pet_id));
       if (!info) continue;
       const email = emails.get(info.userId);
       if (!email) continue;
       const prefs = prefsByUser.get(info.userId) ?? DEFAULT_PREFERENCES;
       if (!prefs.emailEnabled || !isTypeEnabled(prefs, source)) continue;
-      const dueDate = row[source.dateCol];
-      if (typeof dueDate !== 'string' || !dueDate) continue;
+      const dueDate = row[source.dateCol] as string;
       const d = daysUntil(dueDate);
       if (d === null) continue;
+      if (source.type === 'MEDICATION' && d < 0) continue;
       const offset = matchedOffset(prefs, d);
       if (offset === null) continue;
       candidates.push({

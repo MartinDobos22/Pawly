@@ -8,6 +8,7 @@ import {
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import { useHealthData } from './useHealthData';
+import { useActivePet } from './useActivePet';
 
 interface State {
   prefs: NotificationPreferences | null;
@@ -19,6 +20,7 @@ interface State {
 
 export function useNotificationPreferences() {
   const { vaccinations, dewormings, ectos, visits, medications } = useHealthData();
+  const { activePetId } = useActivePet();
 
   const [state, setState] = useState<State>({
     prefs: null,
@@ -53,19 +55,28 @@ export function useNotificationPreferences() {
 
   const healthSignature = useMemo(() => {
     const parts: string[] = [];
-    for (const v of vaccinations) parts.push(`v:${v.id}:${v.validUntil ?? ''}`);
-    for (const d of dewormings) parts.push(`d:${d.id}:${d.nextDueDate ?? ''}`);
-    for (const e of ectos) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
-    for (const vi of visits) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
-    for (const m of medications) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
+    for (const v of vaccinations)
+      if (v.dogId === activePetId) parts.push(`v:${v.id}:${v.validUntil ?? ''}`);
+    for (const d of dewormings)
+      if (d.dogId === activePetId) parts.push(`d:${d.id}:${d.nextDueDate ?? ''}`);
+    for (const e of ectos)
+      if (e.dogId === activePetId) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
+    for (const vi of visits)
+      if (vi.dogId === activePetId) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
+    for (const m of medications)
+      if (m.dogId === activePetId) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
     return parts.join('|');
-  }, [vaccinations, dewormings, ectos, visits, medications]);
+  }, [vaccinations, dewormings, ectos, visits, medications, activePetId]);
 
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const upcoming = await notificationsApi.getUpcoming();
+        if (!activePetId) {
+          if (active) setState((s) => ({ ...s, upcoming: [] }));
+          return;
+        }
+        const upcoming = await notificationsApi.getUpcoming(activePetId);
         if (active) setState((s) => ({ ...s, upcoming: upcoming.items }));
       } catch (err) {
         logger.error('Načítanie najbližších termínov zlyhalo', {
@@ -76,7 +87,7 @@ export function useNotificationPreferences() {
     return () => {
       active = false;
     };
-  }, [healthSignature]);
+  }, [healthSignature, activePetId]);
 
   const save = useCallback(async (patch: Partial<NotificationPreferences>) => {
     let snapshot: NotificationPreferences | null = null;

@@ -58,5 +58,8 @@ export const notificationsApi = {
       method: 'PUT',
       body: JSON.stringify(patch),
     }),
-  getUpcoming: () => request<{ items: UpcomingItem[] }>('/upcoming'),
+  getUpcoming: (petId?: string) =>
+    request<{ items: UpcomingItem[] }>(
+      petId ? `/upcoming?petId=${encodeURIComponent(petId)}` : '/upcoming'
+    ),
 };
