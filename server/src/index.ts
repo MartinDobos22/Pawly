@@ -19,6 +19,7 @@ import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
 import { requireAiQuota } from './middleware/aiQuota';
 import { assertOpenAIConfigured } from './config/openai';
+import { getSupabase } from './config/supabase';
 import { logger } from './utils/logger';
 
 dotenv.config();
@@ -145,9 +146,38 @@ const aiHeavyLimiter = rateLimit({
 
 app.use('/api/', globalLimiter);
 
-// Health check (verejný — bez autentifikácie)
+// Liveness probe (verejný, bez autentifikácie). Lacný ping — slúži aj ako
+// keep-alive target pre externý cron na free-tier hostingoch (Render). NEČÍTA
+// DB ani externé služby, aby cron nezvyšoval Supabase request count zbytočne.
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Readiness probe — kontroluje že DB skutočne odpovedá. Použi na deploy gate
+// alebo monitor (Pingdom/Better Uptime), NIE na keep-alive (každý hit ide do
+// Supabase). 503 ak Supabase nedostupné; uptime monitor potom alertne reálny
+// outage namiesto falošne-zeleného stavu z /health.
+app.get('/api/ready', async (_req, res) => {
+  const startedAt = Date.now();
+  try {
+    const { error } = await getSupabase().from('users').select('id').limit(1);
+    if (error) throw error;
+    res.json({
+      status: 'ready',
+      checks: { database: 'ok' },
+      latencyMs: Date.now() - startedAt,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown';
+    logger.warn('Readiness check zlyhal', { message });
+    res.status(503).json({
+      status: 'unavailable',
+      checks: { database: 'fail' },
+      latencyMs: Date.now() - startedAt,
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // Cron endpoint — autentifikuje sa shared secretom (x-cron-secret), nie Firebase tokenom.
