@@ -1,6 +1,40 @@
 {
   "help": {
-    "label": "Zobraziť pomôcku"
+    "label": "Zobraziť pomôcku",
+    "fabLabel": "Pomoc a tutoriál",
+    "dialogTitle": "Pomoc",
+    "tabUsage": "Ako používať",
+    "tabInstall": "Inštalácia",
+    "tabTour": "Sprievodca",
+    "restartTourTitle": "Spustiť úvodný sprievodca",
+    "restartTourDescription": "Krátky 4-krokový tutoriál ti ukáže hlavné funkcie aplikácie.",
+    "restartTourCta": "Spustiť sprievodcu",
+    "close": "Zavrieť"
+  },
+  "onboarding": {
+    "skip": "Preskočiť",
+    "back": "Späť",
+    "next": "Ďalej",
+    "done": "Hotovo",
+    "step": "Krok {{current}} z {{total}}",
+    "steps": {
+      "welcome": {
+        "title": "Vitaj v Pawly",
+        "body": "Analyzuj krmivo z fotky alebo textu — AI ti povie, či sedí tvojmu zvieraťu, a varuje pred alergénmi."
+      },
+      "profile": {
+        "title": "Profily a zdravotný pas",
+        "body": "Vytvor profil zvieraťa, doplň alergie a veďvedú zdravotný pas — vakcinácie, odčervenia, lieky aj váhu."
+      },
+      "diary": {
+        "title": "Denník a karta pre veterinára",
+        "body": "Zapisuj zdravotné epizódy a pred návštevou veterinára si vytlač prehľadnú kartu so všetkým, čo potrebuje vedieť."
+      },
+      "install": {
+        "title": "Nainštaluj si appku",
+        "body": "Pridaj Pawly na plochu telefónu alebo počítača a používaj ju ako natívnu aplikáciu — aj offline. Pomoc nájdeš kedykoľvek cez tlačidlo „?“ vpravo dole."
+      }
+    }
   },
   "nav": {
     "sectionMain": "Hlavné",

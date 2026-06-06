@@ -1,6 +1,9 @@
 {
   "hints": {
-    "preventiveStatus": "Rýchly prehľad preventívnej starostlivosti pre veterinára — zelená znamená platné, oranžová že čoskoro vyprší, červená po termíne."
+    "preventiveStatus": "Rýchly prehľad preventívnej starostlivosti pre veterinára — zelená znamená platné, oranžová že čoskoro vyprší, červená po termíne.",
+    "print": "Vytlač kartu na A4 — všetko podstatné pre veterinára na jednom papieri. Funguje aj cez „Save as PDF“ v dialógu tlače.",
+    "export": "Stiahni si kartu ako PDF — môžeš ju poslať mailom alebo nahrať do veterinárneho systému.",
+    "card": "Karta zhŕňa identitu, alergie, diagnózy, vakcinácie, lieky a posledné epizódy. Aktualizuje sa automaticky podľa údajov v zdravotnom pase."
   },
   "page": {
     "title": "Karta pre veterinára",

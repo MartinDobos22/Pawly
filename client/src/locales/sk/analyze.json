@@ -2,7 +2,11 @@
   "hints": {
     "score": "Skóre 0–100 hodnotí celkovú kvalitu krmiva: 0–30 nevhodné, 31–60 priemerné, 61–80 dobré, 81–100 výborné. Berie do úvahy zloženie aj profil tvojho zvieraťa.",
     "pros": "Pozitíva krmiva — kvalitné zložky, vhodné živiny a to, čo sedí s potrebami tvojho zvieraťa.",
-    "cons": "Na čo si dať pozor — sporné zložky, chýbajúce živiny alebo veci, ktoré nemusia sadnúť tvojmu zvieraťu."
+    "cons": "Na čo si dať pozor — sporné zložky, chýbajúce živiny alebo veci, ktoré nemusia sadnúť tvojmu zvieraťu.",
+    "textInput": "Vlož presné zloženie z obalu krmiva (ingrediencie, analytické zložky). Čím podrobnejší text, tým presnejšia analýza.",
+    "fileUpload": "Nahraj fotku alebo PDF obalu (max 5 MB). AI vyčíta zloženie a vyhodnotí ho. Najlepšie funguje ostrá fotka časti so zložením.",
+    "allergenWarning": "Varovanie sa zobrazí ak krmivo obsahuje zložku, ktorú má tvoje zviera v profile ako alergén alebo intoleranciu.",
+    "foodSafety": "Rýchla otázka „Môže zviera jesť…?“ — odpoveď nenahrádza veterinára, ale dá ti orientačnú odpoveď s odôvodnením."
   },
   "hero": {
     "title": "Analýza krmiva",

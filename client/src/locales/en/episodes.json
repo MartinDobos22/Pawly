@@ -1,6 +1,9 @@
 {
   "hints": {
-    "category": "The health area of the episode (digestive, skin, mobility…). It helps you filter and find similar past episodes for context."
+    "category": "The health area of the episode (digestive, skin, mobility…). It helps you filter and find similar past episodes for context.",
+    "attachments": "Attach photos or PDFs (test results, symptom photos). Large images are automatically downscaled to save storage.",
+    "similarSummary": "AI summary of similar past episodes — helps you see what worked before and makes vet communication easier.",
+    "severity": "Episode severity: mild (minor), moderate (needs attention), severe (vet visit required)."
   },
   "page": {
     "title": "Health Diary",

@@ -1,6 +1,9 @@
 {
   "hints": {
-    "preventiveStatus": "A quick overview of preventive care for the vet — green means valid, orange means expiring soon, red means overdue."
+    "preventiveStatus": "A quick overview of preventive care for the vet — green means valid, orange means expiring soon, red means overdue.",
+    "print": "Print the card on A4 — everything the vet needs on one sheet. Works with “Save as PDF” in the print dialog too.",
+    "export": "Download the card as a PDF — you can email it or upload it to a vet clinic system.",
+    "card": "The card sums up identity, allergies, diagnoses, vaccinations, medications and recent episodes. It updates automatically from the health passport."
   },
   "page": {
     "title": "Vet Card",

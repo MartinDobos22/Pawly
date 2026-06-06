@@ -2,7 +2,11 @@
   "hints": {
     "score": "The 0–100 score rates the overall quality of the food: 0–30 poor, 31–60 average, 61–80 good, 81–100 excellent. It factors in both the ingredients and your pet's profile.",
     "pros": "The food's upsides — quality ingredients, suitable nutrients and things that match your pet's needs.",
-    "cons": "What to watch out for — questionable ingredients, missing nutrients or things that may not suit your pet."
+    "cons": "What to watch out for — questionable ingredients, missing nutrients or things that may not suit your pet.",
+    "textInput": "Paste the exact composition from the food packaging (ingredients, analytical components). The more detailed, the more precise the analysis.",
+    "fileUpload": "Upload a photo or PDF of the packaging (max 5 MB). AI reads the composition and evaluates it. A sharp photo of the ingredients list works best.",
+    "allergenWarning": "A warning appears when the food contains an ingredient marked as an allergen or intolerance in your pet's profile.",
+    "foodSafety": "Quick \"Can my pet eat…?\" check — the answer doesn't replace a vet, but gives you a quick guidance with reasoning."
   },
   "hero": {
     "title": "Food Analysis",

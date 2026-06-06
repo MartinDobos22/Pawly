@@ -17,12 +17,49 @@ import {
 } from '@mui/icons-material';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
-const SECTIONS: Array<{ key: 'platforms' | 'usage'; itemCount: number }> = [
-  { key: 'platforms', itemCount: 3 },
-  { key: 'usage', itemCount: 4 },
-];
+type SectionKey = 'platforms' | 'usage';
 
-export default function InstallGuideContent() {
+const SECTION_ITEM_COUNT: Record<SectionKey, number> = {
+  platforms: 3,
+  usage: 4,
+};
+
+function GuideAccordion({ sectionKey }: { sectionKey: SectionKey }) {
+  const { t } = useTranslation('install');
+  const theme = useTheme();
+  const itemCount = SECTION_ITEM_COUNT[sectionKey];
+
+  return (
+    <Stack spacing={1}>
+      {Array.from({ length: itemCount }, (_, i) => ({
+        q: t(`guide.${sectionKey}.items.${i}.q` as never),
+        a: t(`guide.${sectionKey}.items.${i}.a` as never),
+      })).map((item) => (
+        <Accordion
+          key={item.q}
+          disableGutters
+          sx={{
+            borderRadius: '8px !important',
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: 'none',
+            '&:before': { display: 'none' },
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography sx={{ fontWeight: 600 }}>{item.q}</Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ pt: 0 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+              {item.a}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </Stack>
+  );
+}
+
+export function InstallSection() {
   const { t } = useTranslation('install');
   const theme = useTheme();
   const { canInstall, promptInstall } = useInstallPrompt();
@@ -34,16 +71,6 @@ export default function InstallGuideContent() {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
-        <InstallMobileIcon color="primary" />
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          {t('guide.title')}
-        </Typography>
-      </Stack>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        {t('guide.subtitle')}
-      </Typography>
-
       {canInstall && (
         <Box
           sx={{
@@ -71,43 +98,52 @@ export default function InstallGuideContent() {
           </Button>
         </Box>
       )}
+      <Typography
+        variant="overline"
+        sx={{ color: 'text.secondary', display: 'block', mb: 1, px: 0.5 }}
+      >
+        {t('guide.platforms.title')}
+      </Typography>
+      <GuideAccordion sectionKey="platforms" />
+    </Box>
+  );
+}
 
-      {SECTIONS.map(({ key, itemCount }) => (
-        <Box key={key} sx={{ mb: 3 }}>
-          <Typography
-            variant="overline"
-            sx={{ color: 'text.secondary', display: 'block', mb: 1, px: 0.5 }}
-          >
-            {t(`guide.${key}.title` as never)}
-          </Typography>
-          <Stack spacing={1}>
-            {Array.from({ length: itemCount }, (_, i) => ({
-              q: t(`guide.${key}.items.${i}.q` as never),
-              a: t(`guide.${key}.items.${i}.a` as never),
-            })).map((item) => (
-              <Accordion
-                key={item.q}
-                disableGutters
-                sx={{
-                  borderRadius: '8px !important',
-                  border: `1px solid ${theme.palette.divider}`,
-                  boxShadow: 'none',
-                  '&:before': { display: 'none' },
-                }}
-              >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography sx={{ fontWeight: 600 }}>{item.q}</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ pt: 0 }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    {item.a}
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </Stack>
-        </Box>
-      ))}
+export function UsageSection() {
+  const { t } = useTranslation('install');
+  return (
+    <Box>
+      <Typography
+        variant="overline"
+        sx={{ color: 'text.secondary', display: 'block', mb: 1, px: 0.5 }}
+      >
+        {t('guide.usage.title')}
+      </Typography>
+      <GuideAccordion sectionKey="usage" />
+    </Box>
+  );
+}
+
+export default function InstallGuideContent() {
+  const { t } = useTranslation('install');
+
+  return (
+    <Box>
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
+        <InstallMobileIcon color="primary" />
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          {t('guide.title')}
+        </Typography>
+      </Stack>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        {t('guide.subtitle')}
+      </Typography>
+      <Box sx={{ mb: 3 }}>
+        <InstallSection />
+      </Box>
+      <Box>
+        <UsageSection />
+      </Box>
     </Box>
   );
 }
