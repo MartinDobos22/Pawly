@@ -5,13 +5,26 @@ import { logger } from '../utils/logger';
 const ENV_LIMIT = Number(process.env.AI_DAILY_LIMIT);
 const DEFAULT_DAILY_LIMIT = Number.isFinite(ENV_LIMIT) && ENV_LIMIT > 0 ? ENV_LIMIT : 50;
 
+const ENV_GLOBAL_LIMIT = Number(process.env.AI_GLOBAL_DAILY_CAP);
+const DEFAULT_GLOBAL_DAILY_CAP =
+  Number.isFinite(ENV_GLOBAL_LIMIT) && ENV_GLOBAL_LIMIT > 0 ? ENV_GLOBAL_LIMIT : 5000;
+
+const ALERT_THRESHOLD = 0.8;
+
 type QuotaRow = {
   exceeded: boolean;
   current_count: number;
   limit_value: number;
 };
 
-export function requireAiQuota(limit: number = DEFAULT_DAILY_LIMIT): RequestHandler {
+function pickRow(data: unknown): QuotaRow | undefined {
+  return Array.isArray(data) ? (data[0] as QuotaRow) : (data as QuotaRow | undefined);
+}
+
+export function requireAiQuota(
+  userLimit: number = DEFAULT_DAILY_LIMIT,
+  globalLimit: number = DEFAULT_GLOBAL_DAILY_CAP
+): RequestHandler {
   return async function aiQuotaMiddleware(
     req: Request,
     res: Response,
@@ -29,25 +42,69 @@ export function requireAiQuota(limit: number = DEFAULT_DAILY_LIMIT): RequestHand
       }
 
       const supabase = getSupabase();
-      const { data, error } = await supabase.rpc('app_increment_ai_quota', {
+
+      // Globálny check najprv: chráni pred kolektívnym burstom (botnet,
+      // viral moment). Pri prekročení vracia 503 — nie je to chyba usera,
+      // je to dočasná služba unavailable.
+      const { data: globalData, error: globalError } = await supabase.rpc(
+        'app_increment_global_ai_quota',
+        { p_limit: globalLimit }
+      );
+      if (globalError) throw globalError;
+
+      const globalResult = pickRow(globalData);
+      if (globalResult?.exceeded) {
+        logger.error('GLOBÁLNY denný AI cap prekročený — všetky AI endpointy vypnuté do polnoci', {
+          count: globalResult.current_count,
+          limit: globalResult.limit_value,
+          path: req.originalUrl,
+        });
+        res.status(503).json({
+          error: {
+            message:
+              'AI služba je dočasne nedostupná kvôli vysokému dennému zaťaženiu. Skús to neskôr.',
+            code: 'AI_GLOBAL_CAP_EXCEEDED',
+          },
+        });
+        return;
+      }
+
+      if (
+        globalResult &&
+        globalResult.current_count >= Math.floor(globalResult.limit_value * ALERT_THRESHOLD) &&
+        globalResult.current_count <
+          Math.floor(globalResult.limit_value * ALERT_THRESHOLD) + 5
+      ) {
+        // Logujeme len v okolí 80% prahu (5 hits okolo neho) aby nešumelo
+        // pri každom volaní nad 80%.
+        logger.warn('Globálny AI cap blízko prahu', {
+          count: globalResult.current_count,
+          limit: globalResult.limit_value,
+          percent: Math.round((globalResult.current_count / globalResult.limit_value) * 100),
+        });
+      }
+
+      // Per-user check druhý. Pri prekročení vracia 429 (rate limit usera,
+      // nie kolektívny outage). Global už bol inkrementovaný — akceptujeme
+      // marginálny over-count, je to konzervatívne (bližšie ku skutočnej
+      // záťaži).
+      const { data: userData, error: userError } = await supabase.rpc('app_increment_ai_quota', {
         p_app_user_id: req.appUserId,
-        p_limit: limit,
+        p_limit: userLimit,
       });
+      if (userError) throw userError;
 
-      if (error) throw error;
-
-      const result: QuotaRow | undefined = Array.isArray(data) ? data[0] : data;
-
-      if (result?.exceeded) {
+      const userResult = pickRow(userData);
+      if (userResult?.exceeded) {
         logger.warn('Denný AI limit prekročený', {
           appUserId: req.appUserId,
-          count: result.current_count,
-          limit: result.limit_value,
+          count: userResult.current_count,
+          limit: userResult.limit_value,
           path: req.originalUrl,
         });
         res.status(429).json({
           error: {
-            message: `Denný limit AI volaní (${result.limit_value}) bol vyčerpaný. Skús to znova zajtra.`,
+            message: `Denný limit AI volaní (${userResult.limit_value}) bol vyčerpaný. Skús to znova zajtra.`,
             code: 'DAILY_AI_LIMIT',
           },
         });

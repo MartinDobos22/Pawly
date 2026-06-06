@@ -15,6 +15,7 @@
 | `SUPABASE_URL` | áno (DB) | — | URL Supabase projektu. Z Supabase Dashboard → Project Settings → API. |
 | `SUPABASE_SERVICE_ROLE_KEY` | áno (DB) | — | **TAJOMSTVO** — service_role kľúč (obchádza RLS). Výhradne server-side, NIKDY do klienta. Z Supabase Dashboard → Project Settings → API. Číta `config/supabase.ts`. |
 | `AI_DAILY_LIMIT` | nie | `50` | Maximum AI volaní (analyze, OCR, interpret-passport, food-safety, similar-summary) na používateľa za kalendárny deň (UTC). Cost safety net — chráni pred power-userom/botom ktorý by vyžral OpenAI/Vision kredit. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_ai_quota`. Pri prekročení vracia 429 s `code: "DAILY_AI_LIMIT"`. |
+| `AI_GLOBAL_DAILY_CAP` | nie | `5000` | Globálny kolektívny denný strop AI volaní naprieč všetkými usermi. Kill switch ak by trending alebo botnet vystrelil OpenAI faktúru. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_global_ai_quota` (migrácia `0011_global_ai_quota.sql`). Pri 80% prahu loguje WARN; pri prekročení limitu vracia 503 s `code: "AI_GLOBAL_CAP_EXCEEDED"`. |
 
 > **Supabase premenné sú povinné pre DB.** `server/src/config/supabase.ts` fail-fastne ak `SUPABASE_URL` alebo `SUPABASE_SERVICE_ROLE_KEY` chýba. service_role kľúč obchádza RLS — autorizácia sa vynucuje v API vrstve (scope na `req.appUserId` cez `middleware/ensureUser.ts`).
 
