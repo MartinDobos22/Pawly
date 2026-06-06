@@ -61,7 +61,9 @@ router.put('/preferences', async (req: Request, res: Response, next: NextFunctio
 
 router.get('/upcoming', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json({ items: await computeUpcoming(req.appUserId as string) });
+    const petIdRaw = req.query.petId;
+    const petId = typeof petIdRaw === 'string' && petIdRaw ? petIdRaw : undefined;
+    res.json({ items: await computeUpcoming(req.appUserId as string, petId) });
   } catch (err) {
     next(err);
   }
