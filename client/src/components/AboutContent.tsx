@@ -68,8 +68,8 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
           <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
             <Box
               sx={{
-                width: 48,
-                height: 48,
+                width: 60,
+                height: 60,
                 borderRadius: 2,
                 bgcolor: 'primary.main',
                 color: 'primary.contrastText',
@@ -81,7 +81,7 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
                   : `0 4px 10px ${alpha(theme.palette.primary.main, 0.2)}`,
               }}
             >
-              <PetsIcon />
+              <PetsIcon fontSize="large" />
             </Box>
             <Box>
               <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.015em' }}>
@@ -108,8 +108,8 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
               <Stack key={title} direction="row" gap={1.75} alignItems="flex-start">
                 <Box
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 50,
+                    height: 50,
                     borderRadius: 2,
                     flexShrink: 0,
                     bgcolor: alpha(theme.palette.primary.main, isDark ? 0.18 : 0.1),
@@ -119,7 +119,7 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
                     justifyContent: 'center',
                   }}
                 >
-                  <Icon fontSize="small" />
+                  <Icon fontSize="medium" />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
@@ -213,7 +213,7 @@ export default function AboutContent({ showLogo = true, showDonate = true }: Abo
         <Typography variant="body2" color="text.secondary">
           {t('about.madeWithLove')}
         </Typography>
-        <FavoriteIcon sx={{ fontSize: 16, color: 'error.main' }} />
+        <FavoriteIcon sx={{ fontSize: 20, color: 'error.main' }} />
       </Stack>
       <Stack alignItems="center" sx={{ mb: 2 }}>
         <SocialLinks />

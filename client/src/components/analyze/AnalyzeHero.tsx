@@ -35,8 +35,8 @@ export default function AnalyzeHero() {
       >
         <Box
           sx={{
-            width: 48,
-            height: 48,
+            width: 60,
+            height: 60,
             borderRadius: 2,
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
@@ -47,7 +47,7 @@ export default function AnalyzeHero() {
             flexShrink: 0,
           }}
         >
-          <ScienceIcon />
+          <ScienceIcon fontSize="large" />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
