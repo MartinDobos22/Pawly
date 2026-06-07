@@ -1,5 +1,14 @@
 import { type ReactNode } from 'react';
-import { alpha, Box, Card, CardContent, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import {
+  alpha,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   DarkMode as DarkModeIcon,
@@ -61,8 +70,8 @@ export default function AuthLayout({
           <Stack direction="row" alignItems="center" gap={1.25} sx={{ mb: 3 }}>
             <Box
               sx={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: 1.5,
                 bgcolor: 'primary.main',
                 color: 'primary.contrastText',
@@ -74,9 +83,9 @@ export default function AuthLayout({
                   : `0 2px 6px ${alpha(theme.palette.primary.main, 0.18)}`,
               }}
             >
-              <PetsIcon sx={{ fontSize: 22 }} />
+              <PetsIcon sx={{ fontSize: 28 }} />
             </Box>
-            <Typography sx={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.015em' }}>
+            <Typography sx={{ fontWeight: 800, fontSize: '1.4rem', letterSpacing: '-0.015em' }}>
               Pawly
             </Typography>
           </Stack>

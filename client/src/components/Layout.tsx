@@ -141,8 +141,11 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       pr: 1.5,
       color: active ? activeTextColor : 'text.secondary',
       '& .MuiListItemIcon-root': {
-        minWidth: 36,
+        minWidth: 44,
         color: active ? (isDark ? 'primary.light' : 'primary.main') : 'text.secondary',
+      },
+      '& .MuiListItemIcon-root svg': {
+        fontSize: 30,
       },
       '&::before': accentBar(active),
       '&.Mui-selected': {
@@ -231,7 +234,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
                     <ListItemText
                       primary={item.label}
                       primaryTypographyProps={{
-                        fontSize: '0.9rem',
+                        fontSize: '1.05rem',
                         fontWeight: active ? 600 : 500,
                       }}
                     />
@@ -427,7 +430,8 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
                 '& .Mui-selected': {
                   color: `${theme.palette.primary.main} !important`,
                 },
-                '& .MuiBottomNavigationAction-label': { fontSize: '0.68rem' },
+                '& .MuiBottomNavigationAction-label': { fontSize: '0.82rem' },
+                '& .MuiBottomNavigationAction-root svg': { fontSize: 28 },
               }}
             >
               {MOBILE_NAV.map((item) => (

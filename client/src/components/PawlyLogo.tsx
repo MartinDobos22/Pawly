@@ -13,10 +13,10 @@ interface Props {
 }
 
 const HEIGHTS: Record<PawlyLogoSize, number | { xs: number; md: number }> = {
-  sm: 36,
-  md: { xs: 52, md: 64 },
-  lg: { xs: 88, md: 120 },
-  xl: { xs: 128, md: 176 },
+  sm: 44,
+  md: { xs: 64, md: 80 },
+  lg: { xs: 110, md: 152 },
+  xl: { xs: 160, md: 220 },
 };
 
 export default function PawlyLogo({
