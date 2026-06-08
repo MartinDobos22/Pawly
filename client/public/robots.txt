@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Disallow: /analyza
+Disallow: /profily
+Disallow: /historia
+Disallow: /zdravotny-pas
+Disallow: /karta-pre-veterinara
+Disallow: /dennik
+Disallow: /notifikacie
+Disallow: /nastavenia
+Disallow: /info
+Disallow: /kontakt
+Disallow: /podpora
+Disallow: /dakujeme
+Disallow: /overenie-emailu
+Disallow: /reset-hesla
+
+Sitemap: https://pawly.sk/sitemap.xml
