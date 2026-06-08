@@ -1,0 +1,84 @@
+import { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { sk, enUS } from 'date-fns/locale';
+import { PetProfilesProvider } from './contexts/PetProfilesContext';
+import { ActivePetProvider } from './contexts/ActivePetContext';
+import { HealthDataProvider } from './contexts/HealthDataContext';
+import Layout from './components/Layout';
+
+const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
+const PetProfilePage = lazy(() => import('./pages/PetProfilePage'));
+const HistoryPage = lazy(() => import('./pages/HistoryPage'));
+const InfoPage = lazy(() => import('./pages/InfoPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const SupportProjectPage = lazy(() => import('./pages/SupportProjectPage'));
+const HealthPassportPage = lazy(() => import('./pages/HealthPassportPage'));
+const VetCardPage = lazy(() => import('./pages/VetCardPage'));
+const EpisodeDiaryPage = lazy(() => import('./pages/EpisodeDiaryPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const DonateThanksPage = lazy(() => import('./pages/DonateThanksPage'));
+
+interface Props {
+  darkMode: boolean;
+  onToggleTheme: () => void;
+  language: string;
+}
+
+const fallback = (
+  <Box
+    sx={{
+      minHeight: '60vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
+
+export default function ProtectedApp({ darkMode, onToggleTheme, language }: Props) {
+  const dateLocale = language === 'en' ? enUS : sk;
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
+    <PetProfilesProvider>
+      <ActivePetProvider>
+        <HealthDataProvider>
+          <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+            <Suspense fallback={fallback}>
+              <Routes>
+                <Route path="/analyza" element={<AnalyzePage />} />
+                <Route path="/profily" element={<PetProfilePage />} />
+                <Route path="/historia" element={<HistoryPage />} />
+                <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
+                <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
+                <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
+                <Route path="/zdravotny-pas/novy-zaznam" element={<HealthPassportPage />} />
+                <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
+                <Route path="/dennik" element={<EpisodeDiaryPage />} />
+                <Route path="/notifikacie" element={<NotificationsPage />} />
+                <Route path="/info" element={<InfoPage />} />
+                <Route path="/kontakt" element={<ContactPage />} />
+                <Route path="/podpora" element={<SupportProjectPage />} />
+                <Route path="/dakujeme" element={<DonateThanksPage />} />
+                <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
+                <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
+                <Route
+                  path="/nastavenia"
+                  element={<SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Suspense>
+          </Layout>
+        </HealthDataProvider>
+      </ActivePetProvider>
+    </PetProfilesProvider>
+    </LocalizationProvider>
+  );
+}

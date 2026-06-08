@@ -11,4 +11,18 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'mui-vendor': ['@mui/material', '@mui/system', '@mui/icons-material'],
+          'mui-pickers': ['@mui/x-date-pickers', 'date-fns'],
+          'firebase-vendor': ['firebase/app', 'firebase/auth'],
+          'i18n-vendor': ['react-i18next', 'i18next'],
+        },
+      },
+    },
+  },
 });
