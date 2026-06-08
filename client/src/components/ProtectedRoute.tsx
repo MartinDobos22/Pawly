@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import { isGoogleUser } from '../utils/isGoogleUser';
+import Seo from './Seo';
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -32,5 +33,10 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate to="/overenie-emailu" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <Seo title="Pawly" noindex />
+      {children}
+    </>
+  );
 }
