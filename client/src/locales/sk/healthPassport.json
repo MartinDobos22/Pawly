@@ -50,7 +50,8 @@
     "titleVisit": "Veterinár: {{clinic}}",
     "titleMedication": "Liek: {{name}}",
     "titleDiet": "Diéta: {{food}}",
-    "titleExpense": "Výdavok {{amount}} €"
+    "titleExpense": "Výdavok {{amount}} €",
+    "inDays_other": "o {{count}} dní"
   },
   "detail": {
     "title": "Detail záznamu",
@@ -127,6 +128,7 @@
     "overdueHeadline_one": "Po termíne {{count}} deň",
     "overdueHeadline_few": "Po termíne {{count}} dni",
     "overdueHeadline_many": "Po termíne {{count}} dní",
+    "overdueHeadline_other": "Po termíne {{count}} dní",
     "schedule": "Naplánovať"
   },
   "visitCategory": {
@@ -266,7 +268,8 @@
     "clinicOptional": "Klinika / veterinár (voliteľné)",
     "diagnosisOptional": "Diagnóza (voliteľné)",
     "recommendationsOptional": "Odporúčania (voliteľné)",
-    "unknownRecord": "Neznámy záznam"
+    "unknownRecord": "Neznámy záznam",
+    "required_other": "Doplňte {{count}} povinných polí"
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",
@@ -481,14 +484,21 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
+    "intoleranceSuggestions": [
+      "Lepok",
+      "Laktóza",
+      "Kukurica",
+      "Sója",
+      "Obilniny"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
       "Obezita",
       "Problémy s kĺbmi",
       "Citlivé trávenie"
-    ]
+    ],
+    "deleteHasRecords_other": "Týmto sa zmaže aj {{count}} súvisiacich záznamov:"
   },
   "score": {
     "excellent": "Výborný",
@@ -580,7 +590,8 @@
     "weightLabel": "Hmotnosť (kg)",
     "cancel": "Zrušiť",
     "save": "Uložiť",
-    "tooltipLabel": "Hmotnosť"
+    "tooltipLabel": "Hmotnosť",
+    "seriesCount_other": "{{count}} záznamov"
   },
   "quickVisit": {
     "button": "Rýchla návšteva",
@@ -672,7 +683,10 @@
       "expired": "Expirované",
       "willExpire": "Vyprší {{date}}",
       "validUntil": "Platné do {{date}}"
-    }
+    },
+    "allergies_other": "{{count}} alergií",
+    "chronic_other": "{{count}} chronických diagnóz",
+    "activeMeds_other": "{{count}} aktívnych liekov"
   },
   "validation": {
     "invalidDate": "Zadajte platný dátum.",
