@@ -184,6 +184,10 @@
     "month_many": "mesiacov",
     "year_one": "rok",
     "year_few": "roky",
-    "year_many": "rokov"
+    "year_many": "rokov",
+    "day_other": "dní",
+    "week_other": "týždňov",
+    "month_other": "mesiacov",
+    "year_other": "rokov"
   }
 }
