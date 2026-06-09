@@ -1,19 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-  Link,
-} from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Stack, Typography, Link } from '@mui/material';
 import { confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import AuthLayout from '../components/auth/AuthLayout';
+import PasswordField from '../components/auth/PasswordField';
 import { logger } from '../utils/logger';
 
 interface Props {
@@ -172,9 +164,8 @@ export default function ResetPasswordPage({ darkMode, onToggleTheme }: Props) {
               <Stack gap={2}>
                 {submitError && <Alert severity="error">{submitError}</Alert>}
 
-                <TextField
+                <PasswordField
                   label={t('resetPassword.newPassword')}
-                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
@@ -182,9 +173,8 @@ export default function ResetPasswordPage({ darkMode, onToggleTheme }: Props) {
                   fullWidth
                   helperText={t('resetPassword.passwordHint')}
                 />
-                <TextField
+                <PasswordField
                   label={t('resetPassword.confirmPassword')}
-                  type="password"
                   value={confirmPwd}
                   onChange={(e) => setConfirmPwd(e.target.value)}
                   autoComplete="new-password"

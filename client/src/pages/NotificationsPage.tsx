@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
+  Button,
   Card,
   Chip,
   CircularProgress,
@@ -10,6 +11,7 @@ import {
   FormControlLabel,
   Stack,
   Switch,
+  TextField,
   Typography,
 } from '@mui/material';
 import { NotificationsActive as NotifyIcon } from '@mui/icons-material';
@@ -38,6 +40,7 @@ export default function NotificationsPage() {
   const { user } = useAuth();
   const { prefs, upcoming, loading, error, save } = useNotificationPreferences();
   const [localError, setLocalError] = useState<string | null>(null);
+  const [customDay, setCustomDay] = useState('');
   const { t } = useTranslation('landing');
 
   const dueText = (days: number): string => {
@@ -68,6 +71,32 @@ export default function NotificationsPage() {
     setLocalError(null);
     void save({ leadDays: next });
   };
+
+  const removeLeadDay = (day: number) => {
+    const next = prefs.leadDays.filter((d) => d !== day);
+    if (next.length === 0) {
+      setLocalError(t('notifications.minLeadDaysError'));
+      return;
+    }
+    setLocalError(null);
+    void save({ leadDays: next });
+  };
+
+  const addCustomLeadDay = () => {
+    const day = Number(customDay);
+    if (!Number.isInteger(day) || day < 1 || day > 365) {
+      setLocalError(t('notifications.invalidLeadDay'));
+      return;
+    }
+    setCustomDay('');
+    setLocalError(null);
+    if (prefs.leadDays.includes(day)) return;
+    void save({ leadDays: [...prefs.leadDays, day] });
+  };
+
+  const customLeadDays = prefs.leadDays
+    .filter((d) => !LEAD_DAY_OPTIONS.includes(d))
+    .sort((a, b) => b - a);
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
@@ -120,6 +149,35 @@ export default function NotificationsPage() {
                 onClick={() => toggleLeadDay(day)}
               />
             ))}
+            {customLeadDays.map((day) => (
+              <Chip
+                key={day}
+                label={t('notifications.leadDayChip', { count: day })}
+                color="primary"
+                variant="filled"
+                onDelete={() => removeLeadDay(day)}
+              />
+            ))}
+          </Stack>
+          <Stack direction="row" gap={1} alignItems="center">
+            <TextField
+              size="small"
+              type="number"
+              label={t('notifications.customDayLabel')}
+              value={customDay}
+              onChange={(e) => setCustomDay(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addCustomLeadDay();
+                }
+              }}
+              inputProps={{ min: 1, max: 365 }}
+              sx={{ width: (theme) => theme.spacing(18) }}
+            />
+            <Button variant="outlined" onClick={addCustomLeadDay}>
+              {t('notifications.addLeadDay')}
+            </Button>
           </Stack>
           <Typography variant="caption" color="text.secondary">
             {t('notifications.leadDaysNote')}

@@ -282,7 +282,9 @@
   "aiRecordsReview": {
     "emptyWithProfile": "AI nenašla očkovania ani úkony, no navrhla údaje do profilu (vyššie). Môžeš pokračovať a uložiť dokument.",
     "empty": "Po analýze sa tu zobrazia rozpoznané záznamy. Žiadne zatiaľ nie sú extrahované.",
-    "hint": "Skontroluj rozpoznané záznamy. Pre každý nastav cieľový typ alebo ho preskoč.",
+    "headerTitle": "Skontroluj a uprav záznamy",
+    "hint": "Každý rozpoznaný záznam môžeš upraviť — AI/OCR sa môže mýliť, hlavne pri dátumoch. Pre každý nastav cieľový typ, oprav údaje alebo ho preskoč.",
+    "verifyDateHint": "Over dátum oproti dokumentu",
     "duplicate": "Už existuje",
     "confidence": "Istota: {{level}}",
     "targetTypeLabel": "Cieľový typ",

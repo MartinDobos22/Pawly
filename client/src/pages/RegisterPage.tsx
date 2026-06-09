@@ -23,6 +23,7 @@ import { isInAppBrowser } from '../utils/isInAppBrowser';
 import { validatePassword } from '../utils/passwordPolicy';
 import AuthLayout from '../components/auth/AuthLayout';
 import GoogleIcon from '../components/auth/GoogleIcon';
+import PasswordField from '../components/auth/PasswordField';
 
 interface Props {
   darkMode: boolean;
@@ -121,9 +122,8 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
             required
             fullWidth
           />
-          <TextField
+          <PasswordField
             label={t('register.password')}
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onBlur={() => setPasswordTouched(true)}
@@ -158,9 +158,8 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
               ))}
             </Stack>
           </Box>
-          <TextField
+          <PasswordField
             label={t('register.confirmPassword')}
-            type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             autoComplete="new-password"

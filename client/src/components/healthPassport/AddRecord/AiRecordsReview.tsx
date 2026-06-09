@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
+  AlertTitle,
   Box,
   Card,
   CardContent,
@@ -12,6 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { FactCheck as FactCheckIcon } from '@mui/icons-material';
 
 import type { AiDetectedDraftRecord, AiDetectedRecordType } from '../hpTypes';
 
@@ -56,11 +59,18 @@ export default function AiRecordsReview({
 
   return (
     <Stack spacing={1.5}>
-      <Typography variant="body2" color="text.secondary">
+      <Alert severity="info" icon={<FactCheckIcon />}>
+        <AlertTitle sx={{ fontWeight: 600 }}>{t('aiRecordsReview.headerTitle')}</AlertTitle>
         {t('aiRecordsReview.hint')}
-      </Typography>
-      {records.map((record) => (
-        <Card key={record.id}>
+      </Alert>
+      {records.map((record) => {
+        const needsVerify = record.sourceConfidence !== 'high';
+        return (
+        <Card
+          key={record.id}
+          variant={needsVerify ? 'outlined' : undefined}
+          sx={needsVerify ? { borderColor: 'warning.main' } : undefined}
+        >
           <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
             <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }} flexWrap="wrap">
               <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1, minWidth: 0 }} noWrap>
@@ -116,6 +126,9 @@ export default function AiRecordsReview({
                 InputLabelProps={{ shrink: true }}
                 value={record.date}
                 onChange={(e) => onChange(record.id, { date: e.target.value })}
+                color={needsVerify ? 'warning' : undefined}
+                helperText={needsVerify ? t('aiRecordsReview.verifyDateHint') : undefined}
+                FormHelperTextProps={needsVerify ? { sx: { color: 'warning.main', mx: 0 } } : undefined}
               />
               <TextField
                 size="small"
@@ -124,6 +137,9 @@ export default function AiRecordsReview({
                 InputLabelProps={{ shrink: true }}
                 value={record.validUntil}
                 onChange={(e) => onChange(record.id, { validUntil: e.target.value })}
+                color={needsVerify ? 'warning' : undefined}
+                helperText={needsVerify ? t('aiRecordsReview.verifyDateHint') : undefined}
+                FormHelperTextProps={needsVerify ? { sx: { color: 'warning.main', mx: 0 } } : undefined}
               />
               <TextField
                 size="small"
@@ -134,7 +150,8 @@ export default function AiRecordsReview({
             </Box>
           </CardContent>
         </Card>
-      ))}
+        );
+      })}
     </Stack>
   );
 }

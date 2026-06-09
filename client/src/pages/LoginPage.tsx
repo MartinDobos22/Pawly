@@ -5,6 +5,7 @@ import { Alert, Box, Button, Divider, Link, Stack, TextField, Typography } from 
 import { useAuth } from '../hooks/useAuth';
 import AuthLayout from '../components/auth/AuthLayout';
 import GoogleIcon from '../components/auth/GoogleIcon';
+import PasswordField from '../components/auth/PasswordField';
 import { isInAppBrowser } from '../utils/isInAppBrowser';
 
 interface Props {
@@ -112,9 +113,8 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
             required
             fullWidth
           />
-          <TextField
+          <PasswordField
             label={t('login.password')}
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
