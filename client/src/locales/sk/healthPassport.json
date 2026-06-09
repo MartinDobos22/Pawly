@@ -287,6 +287,13 @@
     "hint": "Každý rozpoznaný záznam môžeš upraviť — AI/OCR sa môže mýliť, hlavne pri dátumoch. Pre každý nastav cieľový typ, oprav údaje alebo ho preskoč.",
     "verifyDateHint": "Over dátum oproti dokumentu",
     "duplicate": "Už existuje",
+    "historical": "Starší záznam",
+    "historicalTitle": "Pozor — importovaný záznam je starý",
+    "historicalDefault": "Tento záznam je starší než tvoje existujúce dáta. Bol predvolene preskočený, aby neprepísal aktuálne informácie. Ak ho chceš naozaj uložiť, prepni cieľový typ.",
+    "historicalComparison": "Tento záznam je starší než tvoj posledný uložený záznam ({{date}}). Bol predvolene preskočený, aby neprepísal aktuálne informácie. Ak ho chceš naozaj uložiť, prepni cieľový typ.",
+    "skipReason": {
+      "NO_DATE": "AI nenašla v dokumente dátum tohto záznamu. Bez dátumu ho nevieme zaradiť — doplň ho ručne alebo nechaj Preskočiť."
+    },
     "confidence": "Istota: {{level}}",
     "targetTypeLabel": "Cieľový typ",
     "recordFallback": "Záznam",

@@ -33,16 +33,20 @@ export function isDuplicateVaccination(params: {
   dogId: string;
 }): boolean {
   const { productName, sourceDisease, date, existing, dogId } = params;
-  const target = new Date(date).getTime();
-  if (Number.isNaN(target)) return false;
+  const target = new Date(date);
+  if (Number.isNaN(target.getTime())) return false;
+  const targetYear = target.getUTCFullYear();
 
   return existing.some((rec) => {
     if (rec.dogId !== dogId) return false;
-    const recTime = new Date(rec.dateApplied).getTime();
-    if (Number.isNaN(recTime)) return false;
-    const diffDays = Math.abs(recTime - target) / (1000 * 60 * 60 * 24);
-    if (diffDays > DUPLICATE_WINDOW_DAYS) return false;
-    return namesMatch(productName, rec.name) || diseaseMatches(sourceDisease, rec);
+    const recDate = new Date(rec.dateApplied);
+    if (Number.isNaN(recDate.getTime())) return false;
+    const diffDays = Math.abs(recDate.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);
+    const sameName = namesMatch(productName, rec.name);
+    const sameDisease = diseaseMatches(sourceDisease, rec);
+    if (diffDays <= DUPLICATE_WINDOW_DAYS && (sameName || sameDisease)) return true;
+    if (recDate.getUTCFullYear() === targetYear && (sameName || sameDisease)) return true;
+    return false;
   });
 }
 
@@ -52,6 +56,7 @@ export const today = () => new Date().toISOString().slice(0, 10);
 
 export const plusDays = (date: string, days: number) => {
   const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return date;
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 };
@@ -78,17 +83,33 @@ export function statusByDate(targetDate: string, soonDays: number): ValidityStat
   return 'VALID';
 }
 
-export const normalizeDateInput = (value: string) => {
-  if (!value) return today();
-  if (/^(\d{4})-(\d{2})-(\d{2})$/.test(value)) return value;
-  const m = value.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
+const MIN_YEAR = 1990;
+const MAX_YEAR_OFFSET = 30;
+
+const isPlausibleDate = (iso: string): boolean => {
+  const t = new Date(iso);
+  if (Number.isNaN(t.getTime())) return false;
+  const year = t.getUTCFullYear();
+  const maxYear = new Date().getUTCFullYear() + MAX_YEAR_OFFSET;
+  return year >= MIN_YEAR && year <= maxYear;
+};
+
+export const normalizeDateInput = (value: string | null | undefined): string | null => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return isPlausibleDate(trimmed) ? trimmed : null;
+  }
+  const m = trimmed.match(/^(\d{1,2})\s*[./\- ]\s*(\d{1,2})\s*[./\- ]\s*(\d{2,4})$/);
   if (m) {
     const day = m[1].padStart(2, '0');
     const month = m[2].padStart(2, '0');
     const year = m[3].length === 2 ? `20${m[3]}` : m[3];
-    return `${year}-${month}-${day}`;
+    const iso = `${year}-${month}-${day}`;
+    return isPlausibleDate(iso) ? iso : null;
   }
-  return today();
+  return null;
 };
 
 export const inferAiTargetType = (

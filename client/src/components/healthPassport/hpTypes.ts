@@ -1,6 +1,14 @@
 import type { EctoparasiteRecord, DietEntry, VaccinationRecord } from '../../types/dogHealth';
 
-export type AiDetectedRecordType = 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION' | 'NOTE' | 'SKIP';
+export type AiDetectedRecordType =
+  | 'VACCINATION'
+  | 'DEWORMING'
+  | 'ECTOPARASITE'
+  | 'MEDICATION'
+  | 'NOTE'
+  | 'SKIP';
+
+export type AiDraftSkipReason = 'NO_DATE' | 'DUPLICATE' | 'HISTORICAL';
 
 export interface AiDetectedDraftRecord {
   id: string;
@@ -13,9 +21,17 @@ export interface AiDetectedDraftRecord {
   batchNumber: string;
   intervalDays: number;
   isDuplicate?: boolean;
+  isHistorical?: boolean;
+  skipReason?: AiDraftSkipReason;
+  comparisonNote?: string;
 }
 
-export type WizardAdditionalRecordType = '' | 'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'MEDICATION';
+export type WizardAdditionalRecordType =
+  | ''
+  | 'VACCINATION'
+  | 'DEWORMING'
+  | 'ECTOPARASITE'
+  | 'MEDICATION';
 
 export interface WizardState {
   date: string;
