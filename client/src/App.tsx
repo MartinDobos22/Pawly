@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
+import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -40,50 +41,50 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-        <AuthProvider>
-          <BrowserRouter>
-            <Suspense fallback={suspenseFallback}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/login"
-                  element={<LoginPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/register"
-                  element={<RegisterPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/overenie-emailu"
-                  element={<VerifyEmailPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/reset-hesla"
-                  element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/ochrana-sukromia"
-                  element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
-                      <ProtectedApp
-                        darkMode={darkMode}
-                        onToggleTheme={onToggleTheme}
-                        language={language}
-                      />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </AuthProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Suspense fallback={suspenseFallback}>
+            <Routes>
+              <Route
+                path="/"
+                element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/login"
+                element={<LoginPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/register"
+                element={<RegisterPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/overenie-emailu"
+                element={<VerifyEmailPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/reset-hesla"
+                element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/ochrana-sukromia"
+                element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <ProtectedApp
+                      darkMode={darkMode}
+                      onToggleTheme={onToggleTheme}
+                      language={language}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
