@@ -284,6 +284,13 @@
     "hint": "You can edit every recognised record — AI/OCR can get things wrong, especially dates. For each one set the target type, fix the details or skip it.",
     "verifyDateHint": "Verify the date against the document",
     "duplicate": "Already exists",
+    "historical": "Older record",
+    "historicalTitle": "Heads up — imported record is old",
+    "historicalDefault": "This record is older than your existing data. It was skipped by default so it doesn't overwrite current info. If you really want to save it, switch the target type.",
+    "historicalComparison": "This record is older than your latest saved entry ({{date}}). It was skipped by default so it doesn't overwrite current info. If you really want to save it, switch the target type.",
+    "skipReason": {
+      "NO_DATE": "AI didn't find a date for this record in the document. Without a date we can't slot it in — fill it in manually or leave it as Skip."
+    },
     "confidence": "Confidence: {{level}}",
     "targetTypeLabel": "Target type",
     "recordFallback": "Record",

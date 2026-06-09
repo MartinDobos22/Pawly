@@ -90,42 +90,32 @@ export default function HealthPassportPage() {
 
   const latestDietId = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0]?.id;
 
-  // ── Status semaphores ──────────────────────────────────────────────────────
-  const vaccinationStatus = dogVaccinations.length
-    ? statusByDate(
-        [...dogVaccinations].sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0].validUntil,
-        30
-      )
-    : 'UNKNOWN';
-  const dewormingStatus = dogDewormings.length
-    ? statusByDate(
-        [...dogDewormings].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0]
-          .nextDueDate,
-        7
-      )
-    : 'UNKNOWN';
-  const ectoStatus = dogEctos.length
-    ? statusByDate(
-        [...dogEctos].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0].nextDueDate,
-        7
-      )
-    : 'UNKNOWN';
-
   const currentDiet = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
 
   // ── Latest records per domain (for metric cards) ───────────────────────────
+  // Sort by date administered (dateApplied / dateGiven), nie validUntil — historický
+  // import s pomýleným validUntil by inak prebil reálne novší záznam.
   const latestVaccination = useMemo(
-    () => [...dogVaccinations].sort((a, b) => b.validUntil.localeCompare(a.validUntil))[0],
+    () => [...dogVaccinations].sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))[0],
     [dogVaccinations]
   );
   const latestDeworming = useMemo(
-    () => [...dogDewormings].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    () => [...dogDewormings].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
     [dogDewormings]
   );
   const latestEcto = useMemo(
-    () => [...dogEctos].sort((a, b) => b.nextDueDate.localeCompare(a.nextDueDate))[0],
+    () => [...dogEctos].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
     [dogEctos]
   );
+
+  // ── Status semaphores ──────────────────────────────────────────────────────
+  const vaccinationStatus = latestVaccination
+    ? statusByDate(latestVaccination.validUntil, 30)
+    : 'UNKNOWN';
+  const dewormingStatus = latestDeworming
+    ? statusByDate(latestDeworming.nextDueDate, 7)
+    : 'UNKNOWN';
+  const ectoStatus = latestEcto ? statusByDate(latestEcto.nextDueDate, 7) : 'UNKNOWN';
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {

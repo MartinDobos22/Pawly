@@ -6,7 +6,7 @@ import { extractTextFromImage, interpretPassportText } from '../../../services/a
 import { uploadHealthAttachment } from '../../../services/healthApi';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
-import type { AiDetectedDraftRecord, AiDetectedRecordType } from '../hpTypes';
+import type { AiDetectedDraftRecord, AiDetectedRecordType, AiDraftSkipReason } from '../hpTypes';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../constants';
 import {
   inferAiTargetType,
@@ -169,71 +169,78 @@ interface BuildContext {
 
 export function useAiImport(dogId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
-  const { vaccinations: existingVaccinations } = useHealthData();
+  const {
+    vaccinations: existingVaccinations,
+    dewormings: existingDewormings,
+    ectos: existingEctos,
+  } = useHealthData();
   const { t } = useTranslation('healthPassport');
 
   const setStep = useCallback((step: AiStep) => dispatch({ type: 'SET_STEP', step }), []);
 
-  const addAttachmentFiles = useCallback(async (files: File[], currentCount: number) => {
-    if (files.length === 0) return;
+  const addAttachmentFiles = useCallback(
+    async (files: File[], currentCount: number) => {
+      if (files.length === 0) return;
 
-    if (currentCount >= MAX_ATTACHMENTS) {
-      dispatch({
-        type: 'SET_ATTACHMENT_ERROR',
-        message: t('addRecord.aiImport.maxPages', { count: MAX_ATTACHMENTS }),
-      });
-      return;
-    }
-
-    const available = MAX_ATTACHMENTS - currentCount;
-    const toProcess = files.slice(0, available);
-    const accepted: AiAttachmentEntry[] = [];
-    let lastError = '';
-
-    for (const file of toProcess) {
-      if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
-        lastError = t('addRecord.aiImport.unsupportedFile', { fileName: file.name });
-        continue;
-      }
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        lastError = t('addRecord.aiImport.fileTooLarge', { fileName: file.name });
-        continue;
-      }
-      try {
-        const { previewUrl, base64 } = await readFileAsBase64(file);
-        const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
-        const attachment = await uploadHealthAttachment({
-          petId: dogId,
-          ...pending,
-          caption: file.name,
+      if (currentCount >= MAX_ATTACHMENTS) {
+        dispatch({
+          type: 'SET_ATTACHMENT_ERROR',
+          message: t('addRecord.aiImport.maxPages', { count: MAX_ATTACHMENTS }),
         });
-        accepted.push({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          file,
-          previewUrl,
-          pending,
-          attachment,
-        });
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : '';
-        lastError =
-          msg === 'FILE_LOAD_FAILED' || !msg ? t('addRecord.aiImport.fileLoadFailed') : msg;
+        return;
       }
-    }
 
-    if (accepted.length > 0) {
-      dispatch({ type: 'ADD_ATTACHMENTS', entries: accepted });
-    }
-    if (lastError) {
-      dispatch({ type: 'SET_ATTACHMENT_ERROR', message: lastError });
-    }
-    if (files.length > available) {
-      dispatch({
-        type: 'SET_ATTACHMENT_ERROR',
-        message: t('addRecord.aiImport.maxPagesExceeded', { count: MAX_ATTACHMENTS }),
-      });
-    }
-  }, [dogId, t]);
+      const available = MAX_ATTACHMENTS - currentCount;
+      const toProcess = files.slice(0, available);
+      const accepted: AiAttachmentEntry[] = [];
+      let lastError = '';
+
+      for (const file of toProcess) {
+        if (!SUPPORTED_FILE_TYPES.includes(file.type)) {
+          lastError = t('addRecord.aiImport.unsupportedFile', { fileName: file.name });
+          continue;
+        }
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          lastError = t('addRecord.aiImport.fileTooLarge', { fileName: file.name });
+          continue;
+        }
+        try {
+          const { previewUrl, base64 } = await readFileAsBase64(file);
+          const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
+          const attachment = await uploadHealthAttachment({
+            petId: dogId,
+            ...pending,
+            caption: file.name,
+          });
+          accepted.push({
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            file,
+            previewUrl,
+            pending,
+            attachment,
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : '';
+          lastError =
+            msg === 'FILE_LOAD_FAILED' || !msg ? t('addRecord.aiImport.fileLoadFailed') : msg;
+        }
+      }
+
+      if (accepted.length > 0) {
+        dispatch({ type: 'ADD_ATTACHMENTS', entries: accepted });
+      }
+      if (lastError) {
+        dispatch({ type: 'SET_ATTACHMENT_ERROR', message: lastError });
+      }
+      if (files.length > available) {
+        dispatch({
+          type: 'SET_ATTACHMENT_ERROR',
+          message: t('addRecord.aiImport.maxPagesExceeded', { count: MAX_ATTACHMENTS }),
+        });
+      }
+    },
+    [dogId, t]
+  );
 
   const addAttachments = useCallback(
     (files: File[]) => addAttachmentFiles(files, state.attachments.length),
@@ -345,6 +352,31 @@ export function useAiImport(dogId: string) {
         'MEDICATION',
         'NOTE',
       ];
+
+      const latestDateFor = (type: AiDetectedRecordType): string | null => {
+        const pick = <T extends { dogId: string }>(items: T[], dateOf: (r: T) => string) => {
+          let max: string | null = null;
+          for (const rec of items) {
+            if (rec.dogId !== dogId) continue;
+            const iso = normalizeDateInput(dateOf(rec));
+            if (!iso) continue;
+            if (!max || iso > max) max = iso;
+          }
+          return max;
+        };
+        if (type === 'VACCINATION') return pick(existingVaccinations, (r) => r.dateApplied);
+        if (type === 'DEWORMING') return pick(existingDewormings, (r) => r.dateGiven);
+        if (type === 'ECTOPARASITE') return pick(existingEctos, (r) => r.dateGiven);
+        return null;
+      };
+
+      const HISTORICAL_MONTHS = 6;
+      const historicalCutoff = (() => {
+        const d = new Date();
+        d.setUTCMonth(d.getUTCMonth() - HISTORICAL_MONTHS);
+        return d.toISOString().slice(0, 10);
+      })();
+
       const drafts: AiDetectedDraftRecord[] = (records ?? []).map((item, index) => {
         const disease = item.disease ?? '';
         const recordType: AiDetectedRecordType = validTypes.includes(
@@ -352,30 +384,73 @@ export function useAiImport(dogId: string) {
         )
           ? item.type
           : inferAiTargetType(disease, item.name);
-        const date = normalizeDateInput(item.date);
-        const fallback = recordType === 'VACCINATION' ? plusDays(date, 365) : plusDays(date, 90);
         const productName = item.name || disease || t('addRecord.unknownRecord');
+
+        const normalizedDate = normalizeDateInput(item.date);
+        if (!normalizedDate) {
+          return {
+            id: `${Date.now()}-${index}`,
+            sourceConfidence: item.confidence,
+            sourceDisease: disease,
+            targetType: 'SKIP' as AiDetectedRecordType,
+            productName,
+            date: '',
+            validUntil: '',
+            batchNumber: item.batchNumber ?? '',
+            intervalDays: recordType === 'ECTOPARASITE' ? 30 : 90,
+            skipReason: 'NO_DATE' as AiDraftSkipReason,
+          };
+        }
+
+        const rawValidUntil = typeof item.validUntil === 'string' ? item.validUntil.trim() : '';
+        const normalizedValidUntil = rawValidUntil ? normalizeDateInput(rawValidUntil) : null;
+        const fallback = plusDays(normalizedDate, recordType === 'VACCINATION' ? 365 : 90);
+        const validUntil = normalizedValidUntil ?? fallback;
+
         const isDuplicate =
           recordType === 'VACCINATION' &&
           dogId !== '' &&
           isDuplicateVaccination({
             productName,
             sourceDisease: disease,
-            date,
+            date: normalizedDate,
             existing: existingVaccinations,
             dogId,
           });
+
+        const latestExisting = latestDateFor(recordType);
+        const isHistorical =
+          (recordType === 'VACCINATION' ||
+            recordType === 'DEWORMING' ||
+            recordType === 'ECTOPARASITE') &&
+          (normalizedDate < historicalCutoff ||
+            (latestExisting !== null && normalizedDate < latestExisting));
+
+        const comparisonNote =
+          isHistorical && latestExisting
+            ? t('aiRecordsReview.historicalComparison', { date: latestExisting })
+            : undefined;
+
+        let skipReason: AiDraftSkipReason | undefined;
+        if (isDuplicate) skipReason = 'DUPLICATE';
+        else if (isHistorical) skipReason = 'HISTORICAL';
+
+        const shouldSkip = isDuplicate || isHistorical;
+
         return {
           id: `${Date.now()}-${index}`,
           sourceConfidence: item.confidence,
           sourceDisease: disease,
-          targetType: isDuplicate ? 'SKIP' : recordType,
+          targetType: shouldSkip ? ('SKIP' as AiDetectedRecordType) : recordType,
           productName,
-          date,
-          validUntil: normalizeDateInput(item.validUntil ?? fallback),
+          date: normalizedDate,
+          validUntil,
           batchNumber: item.batchNumber ?? '',
           intervalDays: recordType === 'ECTOPARASITE' ? 30 : 90,
           isDuplicate,
+          isHistorical,
+          skipReason,
+          comparisonNote,
         };
       });
 
@@ -386,7 +461,15 @@ export function useAiImport(dogId: string) {
       const message = err instanceof Error ? err.message : t('addRecord.aiImport.analyzeFailed');
       dispatch({ type: 'SET_ANALYZE_ERROR', message });
     }
-  }, [state.attachments, dogId, existingVaccinations]);
+  }, [
+    state.attachments,
+    state.aiProcessingConsent,
+    dogId,
+    existingVaccinations,
+    existingDewormings,
+    existingEctos,
+    t,
+  ]);
 
   const buildBundle = useCallback(
     (ctx: BuildContext): VisitBundle => {
