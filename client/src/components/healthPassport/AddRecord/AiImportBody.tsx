@@ -76,6 +76,8 @@ export default function AiImportBody() {
               {t('addRecord.aiImport.uploadDescription')}
             </Typography>
 
+            <Alert severity="warning">{t('addRecord.aiImport.accuracyNotice')}</Alert>
+
             <Box
               sx={{
                 display: 'grid',
