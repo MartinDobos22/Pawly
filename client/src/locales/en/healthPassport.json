@@ -279,7 +279,9 @@
   "aiRecordsReview": {
     "emptyWithProfile": "AI found no vaccinations or procedures, but suggested profile data above. You can continue and save the document.",
     "empty": "Recognised records will appear here after analysis. None extracted yet.",
-    "hint": "Review the recognised records. Set the target type for each or skip it.",
+    "headerTitle": "Review and edit the records",
+    "hint": "You can edit every recognised record — AI/OCR can get things wrong, especially dates. For each one set the target type, fix the details or skip it.",
+    "verifyDateHint": "Verify the date against the document",
     "duplicate": "Already exists",
     "confidence": "Confidence: {{level}}",
     "targetTypeLabel": "Target type",
