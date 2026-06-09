@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -46,39 +47,39 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
   const dateLocale = language === 'en' ? enUS : sk;
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={dateLocale}>
-    <PetProfilesProvider>
-      <ActivePetProvider>
-        <HealthDataProvider>
-          <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-            <Suspense fallback={fallback}>
-              <Routes>
-                <Route path="/analyza" element={<AnalyzePage />} />
-                <Route path="/profily" element={<PetProfilePage />} />
-                <Route path="/historia" element={<HistoryPage />} />
-                <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
-                <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
-                <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
-                <Route path="/zdravotny-pas/novy-zaznam" element={<HealthPassportPage />} />
-                <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
-                <Route path="/dennik" element={<EpisodeDiaryPage />} />
-                <Route path="/notifikacie" element={<NotificationsPage />} />
-                <Route path="/info" element={<InfoPage />} />
-                <Route path="/kontakt" element={<ContactPage />} />
-                <Route path="/podpora" element={<SupportProjectPage />} />
-                <Route path="/dakujeme" element={<DonateThanksPage />} />
-                <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
-                <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
-                <Route
-                  path="/nastavenia"
-                  element={<SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-                />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Suspense>
-          </Layout>
-        </HealthDataProvider>
-      </ActivePetProvider>
-    </PetProfilesProvider>
+      <PetProfilesProvider>
+        <ActivePetProvider>
+          <HealthDataProvider>
+            <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+              <Suspense fallback={fallback}>
+                <Routes>
+                  <Route path="/analyza" element={<AnalyzePage />} />
+                  <Route path="/profily" element={<PetProfilePage />} />
+                  <Route path="/historia" element={<HistoryPage />} />
+                  <Route path="/zdravotny-pas" element={<HealthPassportPage />} />
+                  <Route path="/zdravotny-pas/prehlad" element={<HealthPassportPage />} />
+                  <Route path="/zdravotny-pas/zaznamy" element={<HealthPassportPage />} />
+                  <Route path="/zdravotny-pas/novy-zaznam" element={<HealthPassportPage />} />
+                  <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
+                  <Route path="/dennik" element={<EpisodeDiaryPage />} />
+                  <Route path="/notifikacie" element={<NotificationsPage />} />
+                  <Route path="/info" element={<InfoPage />} />
+                  <Route path="/kontakt" element={<ContactPage />} />
+                  <Route path="/podpora" element={<SupportProjectPage />} />
+                  <Route path="/dakujeme" element={<DonateThanksPage />} />
+                  <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
+                  <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
+                  <Route
+                    path="/nastavenia"
+                    element={<SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                  />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          </HealthDataProvider>
+        </ActivePetProvider>
+      </PetProfilesProvider>
     </LocalizationProvider>
   );
 }

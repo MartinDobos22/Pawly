@@ -1,6 +1,6 @@
 // Pawly Service Worker
 // Verzia cache – zmeňte pri každom deployi aby sa cache invalidoval
-const CACHE_VERSION = 'pawly-v24';
+const CACHE_VERSION = 'pawly-v25';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
@@ -86,6 +86,27 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request).catch(() => {
         return caches.match('/offline.html');
+      })
+    );
+    return;
+  }
+
+  // Hashed build assety (/assets/*) — network-only, NIKDY necachuj.
+  // Po deploy môže Netlify pre nezistený starý hash vrátiť index.html (SPA fallback),
+  // čo by sa inak zacacheovalo ako JS a spôsobilo MIME error pri ďalšom načítaní.
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      fetch(request).then((response) => {
+        const contentType = response.headers.get('content-type') || '';
+        const expectsJs = /\.(js|mjs)$/.test(url.pathname);
+        const expectsCss = url.pathname.endsWith('.css');
+        if (
+          (expectsJs && !/javascript|ecmascript/i.test(contentType)) ||
+          (expectsCss && !/css/i.test(contentType))
+        ) {
+          throw new TypeError(`Unexpected content-type for ${url.pathname}: ${contentType}`);
+        }
+        return response;
       })
     );
     return;
