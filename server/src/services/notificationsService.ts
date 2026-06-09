@@ -114,6 +114,7 @@ const SOURCES: SourceConfig[] = [
 ];
 
 const PREVIEW_HORIZON_DAYS = 60;
+const PREVIEW_OVERDUE_DAYS = 30;
 
 function rowToPreferences(row: Row): NotificationPreferences {
   const leadDays = Array.isArray(row.lead_days)
@@ -221,7 +222,7 @@ export async function computeUpcoming(appUserId: string, petId?: string): Promis
     for (const row of deduped) {
       const dueDate = row[source.dateCol] as string;
       const d = daysUntil(dueDate);
-      if (d === null || d > PREVIEW_HORIZON_DAYS) continue;
+      if (d === null || d > PREVIEW_HORIZON_DAYS || d < -PREVIEW_OVERDUE_DAYS) continue;
       if (source.type === 'MEDICATION' && d < 0) continue;
       items.push({
         recordId: String(row.id),
