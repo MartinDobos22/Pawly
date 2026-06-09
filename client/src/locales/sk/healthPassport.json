@@ -211,6 +211,7 @@
     },
     "aiImport": {
       "uploadDescription": "Nahraj jednu alebo viac strán dokumentu (zdravotný pas, laboratórny výsledok, správa od veterinára…). AI z nich extrahuje záznamy naraz a v ďalšom kroku ti dá zoznam na schválenie.",
+      "accuracyNotice": "AI číta údaje z fotky/dokumentu a môže sa pomýliť — najmä pri dátumoch a číslach. V ďalšom kroku si všetky prečítané údaje skontroluj a podľa potreby oprav pred uložením.",
       "required": "Doplňte {{count}} povinné pole",
       "required_other": "Doplňte {{count}} povinných polí",
       "analyzing": "Analyzujem…",

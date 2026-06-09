@@ -208,6 +208,7 @@
     },
     "aiImport": {
       "uploadDescription": "Upload one or more pages of a document (health passport, lab results, vet report…). AI will extract records at once and give you a list to approve in the next step.",
+      "accuracyNotice": "AI reads the data from your photo/document and can get it wrong — especially dates and numbers. In the next step, check every value it read and correct it if needed before saving.",
       "required": "Fill in {{count}} required field",
       "required_other": "Fill in {{count}} required fields",
       "analyzing": "Analysing…",
