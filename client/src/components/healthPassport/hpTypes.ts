@@ -1,4 +1,4 @@
-import type { EctoparasiteRecord, DietEntry, VaccinationRecord } from '../../types/dogHealth';
+import type { EctoparasiteRecord, DietEntry, VaccinationRecord } from '../../types/petHealth';
 
 export type AiDetectedRecordType =
   | 'VACCINATION'

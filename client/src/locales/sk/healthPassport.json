@@ -399,15 +399,15 @@
   "profiles": {
     "pageTitle": "Profily zvierat",
     "pageSubtitle": "Rozšírený profil pre zdravie, vakcinácie a návštevy veterinára. Pridaj informácie o alergiách, chronických stavoch a aktivite.",
-    "addPet": "Pridať psa",
+    "addPet": "Pridať zviera",
     "emptyTitle": "Zatiaľ žiadny profil",
-    "emptyDescription": "Vytvor prvý profil psa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte pre veterinára.",
+    "emptyDescription": "Vytvor prvý profil zvieraťa a získaj prístup k Zdravotnému pasu, Denníku epizód a Karte pre veterinára.",
     "createProfile": "Vytvoriť profil",
     "chip": "Čip: {{chip}}",
     "ageYears": "{{years}} r.",
     "ageMonths": "{{months}} mes.",
-    "dialogTitleNew": "Nový profil psa",
-    "dialogTitleEdit": "Upraviť profil psa",
+    "dialogTitleNew": "Nový profil zvieraťa",
+    "dialogTitleEdit": "Upraviť profil zvieraťa",
     "nameLabel": "Meno *",
     "nameRequired": "Meno je povinné.",
     "nameHint": "Povinné pole",
@@ -447,7 +447,7 @@
     "activityLow": "Nízka",
     "activityModerate": "Stredná",
     "activityHigh": "Vysoká",
-    "activityWorking": "Pracovný pes",
+    "activityWorking": "Pracovné plemeno / služobné zviera",
     "allergies": "Alergie",
     "intolerances": "Intolerancie",
     "healthConditions": "Zdravotné ťažkosti",
@@ -484,13 +484,7 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": [
-      "Lepok",
-      "Laktóza",
-      "Kukurica",
-      "Sója",
-      "Obilniny"
-    ],
+    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
@@ -606,8 +600,8 @@
     "diagnosis": "Zdravý, bez problémov"
   },
   "vetPage": {
-    "noProfile": "Žiadny profil psa",
-    "noProfileDescription": "Najprv vytvorte profil psa a pridajte zdravotné záznamy.",
+    "noProfile": "Žiadny profil zvieraťa",
+    "noProfileDescription": "Najprv vytvorte profil zvieraťa a pridajte zdravotné záznamy.",
     "docLabel": "Klinická karta zvieraťa",
     "docTitle": "Klinická karta – {{name}}",
     "sectionHealth": "Zdravotný profil",

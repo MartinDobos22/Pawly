@@ -7,7 +7,7 @@ import {
   ShieldOutlined as ShieldIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import HelpHint from '../HelpHint';
 import VetCardStatusCell from './VetCardStatusCell';
 

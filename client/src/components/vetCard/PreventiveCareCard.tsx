@@ -7,7 +7,7 @@ import {
   VaccinesOutlined as VaccinesIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import { statusColor } from '../healthPassport/utils.ts';
 
 export interface PreventiveItem {

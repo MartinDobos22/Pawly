@@ -16,7 +16,7 @@ import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
-import type { TimelineEvent } from '../types/dogHealth';
+import type { TimelineEvent } from '../types/petHealth';
 import { dedupList, subtractList } from '../utils/healthProfileDedup';
 
 type PdfLang = 'sk' | 'en';
@@ -94,7 +94,7 @@ const PRINT_STYLES = `
     background-color: transparent;
   }
 
-  .dog-name {
+  .pet-name {
     font-size: 22px;
     font-weight: 700;
     margin: 0 0 4px;
@@ -102,7 +102,7 @@ const PRINT_STYLES = `
     letter-spacing: -0.01em;
   }
 
-  .dog-meta {
+  .pet-meta {
     font-size: 12px;
     color: var(--ink-2);
     margin-bottom: 8px;
@@ -385,19 +385,19 @@ export default function VetCardPage() {
   const [pdfLang, setPdfLang] = useState<PdfLang>('sk');
 
   const dog = dogProfiles.find((p) => p.id === selectedDogId) ?? dogProfiles[0];
-  const dogId = dog?.id;
+  const petId = dog?.id;
 
   const data = useMemo(() => {
-    if (!dogId) return null;
+    if (!petId) return null;
 
-    const dogVaccines = vaccinations.filter((x) => x.dogId === dogId);
-    const dogDeworm = dewormings.filter((x) => x.dogId === dogId);
-    const dogEctos = ectos.filter((x) => x.dogId === dogId);
-    const dogVisits = visits.filter((x) => x.dogId === dogId);
+    const dogVaccines = vaccinations.filter((x) => x.petId === petId);
+    const dogDeworm = dewormings.filter((x) => x.petId === petId);
+    const dogEctos = ectos.filter((x) => x.petId === petId);
+    const dogVisits = visits.filter((x) => x.petId === petId);
     const activeMeds = medications.filter(
-      (x) => x.dogId === dogId && (x.longTerm || !x.endDate || x.endDate >= today())
+      (x) => x.petId === petId && (x.longTerm || !x.endDate || x.endDate >= today())
     );
-    const dogDiet = dietEntries.filter((x) => x.dogId === dogId);
+    const dogDiet = dietEntries.filter((x) => x.petId === petId);
 
     const rabies = dogVaccines
       .filter((x) => x.type === 'RABIES')
@@ -420,7 +420,7 @@ export default function VetCardPage() {
     const timeline: TimelineEvent[] = [
       ...dogVaccines.map((x) => ({
         id: `vac-${x.id}`,
-        dogId,
+        petId,
         type: 'VACCINATION' as const,
         title: t('timeline.titleVaccination', { name: x.name }),
         subtitle: x.validUntil
@@ -430,7 +430,7 @@ export default function VetCardPage() {
       })),
       ...dogDeworm.map((x) => ({
         id: `dew-${x.id}`,
-        dogId,
+        petId,
         type: 'DEWORMING' as const,
         title: t('timeline.titleDeworming', { product: x.productName }),
         subtitle: x.nextDueDate
@@ -440,7 +440,7 @@ export default function VetCardPage() {
       })),
       ...dogEctos.map((x) => ({
         id: `ect-${x.id}`,
-        dogId,
+        petId,
         type: 'ECTOPARASITE' as const,
         title: t('timeline.titleEcto', { product: x.productName }),
         subtitle: x.nextDueDate
@@ -450,7 +450,7 @@ export default function VetCardPage() {
       })),
       ...dogVisits.map((x) => ({
         id: `vis-${x.id}`,
-        dogId,
+        petId,
         type: 'VET_VISIT' as const,
         title: t('timeline.titleVisit', { clinic: x.clinicName }),
         subtitle: x.reason,
@@ -458,7 +458,7 @@ export default function VetCardPage() {
       })),
       ...activeMeds.map((x) => ({
         id: `med-${x.id}`,
-        dogId,
+        petId,
         type: 'MEDICATION' as const,
         title: t('timeline.titleMedication', { name: x.name }),
         subtitle: `${x.dose} · ${x.frequency}`,
@@ -466,7 +466,7 @@ export default function VetCardPage() {
       })),
       ...dogDiet.map((x) => ({
         id: `diet-${x.id}`,
-        dogId,
+        petId,
         type: 'DIET' as const,
         title: t('timeline.titleDiet', { food: x.foodName }),
         subtitle: x.suitabilityStatus
@@ -489,7 +489,7 @@ export default function VetCardPage() {
       significantVisits,
       timeline,
     };
-  }, [dogId, vaccinations, dewormings, ectos, visits, medications, dietEntries, t, fmtDateShort]);
+  }, [petId, vaccinations, dewormings, ectos, visits, medications, dietEntries, t, fmtDateShort]);
 
   const handlePrint = () => {
     if (!dog || !data) return;
@@ -676,11 +676,11 @@ export default function VetCardPage() {
       dog.chronicConditions?.map((c) => c.title) ?? dog.healthConditions
     );
 
-    const dogVaccinesAll = vaccinations.filter((x) => x.dogId === dogId);
-    const dogDewormAll = dewormings.filter((x) => x.dogId === dogId);
-    const dogEctosAll = ectos.filter((x) => x.dogId === dogId);
-    const dogVisitsAll = visits.filter((x) => x.dogId === dogId);
-    const dogDietAll = dietEntries.filter((x) => x.dogId === dogId);
+    const dogVaccinesAll = vaccinations.filter((x) => x.petId === petId);
+    const dogDewormAll = dewormings.filter((x) => x.petId === petId);
+    const dogEctosAll = ectos.filter((x) => x.petId === petId);
+    const dogVisitsAll = visits.filter((x) => x.petId === petId);
+    const dogDietAll = dietEntries.filter((x) => x.petId === petId);
 
     const pdfTimeline = [
       ...dogVaccinesAll.map((x) => ({
@@ -906,11 +906,11 @@ export default function VetCardPage() {
       <span class="label">${t('vetPage.docLabel')}</span>
       <span>${new Date().toLocaleDateString(lang)}</span>
     </div>
-    <h1 class="dog-name">${dog.name}</h1>
+    <h1 class="pet-name">${dog.name}</h1>
     ${
       sections.identity
         ? `
-    <div class="dog-meta">${metaParts.join(' · ') || '–'}</div>
+    <div class="pet-meta">${metaParts.join(' · ') || '–'}</div>
     ${heroBadges ? `<div class="head-badges">${heroBadges}</div>` : ''}`
         : ''
     }

@@ -18,7 +18,7 @@ import {
   ErrorOutline as ErrorIcon,
   AddCircleOutline as PlusIcon,
 } from '@mui/icons-material';
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 import HelpHint from '../HelpHint';
 

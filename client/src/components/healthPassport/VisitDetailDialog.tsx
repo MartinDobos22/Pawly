@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { VetVisitRecord } from '../../types/dogHealth';
+import type { VetVisitRecord } from '../../types/petHealth';
 import AiFormattedText from '../AiFormattedText';
 
 interface VisitDraft {

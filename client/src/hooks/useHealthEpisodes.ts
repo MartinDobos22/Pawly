@@ -4,7 +4,7 @@ import type { HealthEpisodeRecord } from '../types/healthEpisode';
 
 export interface UseHealthEpisodesApi {
   episodes: HealthEpisodeRecord[];
-  byDog: (dogId: string) => HealthEpisodeRecord[];
+  byDog: (petId: string) => HealthEpisodeRecord[];
   getById: (id: string) => HealthEpisodeRecord | undefined;
   add: (
     payload: Omit<HealthEpisodeRecord, 'id' | 'createdAt' | 'updatedAt'>
@@ -20,7 +20,7 @@ export function useHealthEpisodes(): UseHealthEpisodesApi {
   const { episodes, addEpisode, updateEpisode, removeEpisode } = useHealthData();
 
   const byDog = useCallback(
-    (dogId: string) => episodes.filter((e) => e.dogId === dogId),
+    (petId: string) => episodes.filter((e) => e.petId === petId),
     [episodes]
   );
 

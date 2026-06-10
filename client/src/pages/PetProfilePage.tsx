@@ -102,25 +102,25 @@ export default function PetProfilePage() {
     const counts = [
       {
         label: t('profiles.recordVaccinations'),
-        count: vaccinations.filter((x) => x.dogId === id).length,
+        count: vaccinations.filter((x) => x.petId === id).length,
       },
       {
         label: t('profiles.recordDewormings'),
-        count: dewormings.filter((x) => x.dogId === id).length,
+        count: dewormings.filter((x) => x.petId === id).length,
       },
-      { label: t('profiles.recordEctos'), count: ectos.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordVisits'), count: visits.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordEctos'), count: ectos.filter((x) => x.petId === id).length },
+      { label: t('profiles.recordVisits'), count: visits.filter((x) => x.petId === id).length },
       {
         label: t('profiles.recordMedications'),
-        count: medications.filter((x) => x.dogId === id).length,
+        count: medications.filter((x) => x.petId === id).length,
       },
-      { label: t('profiles.recordDoseLogs'), count: doseLogs.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordDoseLogs'), count: doseLogs.filter((x) => x.petId === id).length },
       {
         label: t('profiles.recordDietEntries'),
-        count: dietEntries.filter((x) => x.dogId === id).length,
+        count: dietEntries.filter((x) => x.petId === id).length,
       },
-      { label: t('profiles.recordExpenses'), count: expenses.filter((x) => x.dogId === id).length },
-      { label: t('profiles.recordEpisodes'), count: episodes.filter((x) => x.dogId === id).length },
+      { label: t('profiles.recordExpenses'), count: expenses.filter((x) => x.petId === id).length },
+      { label: t('profiles.recordEpisodes'), count: episodes.filter((x) => x.petId === id).length },
       {
         label: t('profiles.recordAnalyses'),
         count: savedAnalyses.filter((x) => x.petProfileId === id).length,

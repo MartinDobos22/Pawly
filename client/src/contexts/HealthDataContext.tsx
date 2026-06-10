@@ -9,7 +9,7 @@ import type {
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 import type { HealthEpisodeRecord } from '../types/healthEpisode';
 import type { SavedAnalysis } from '../types';
 import type { VisitBundle } from '../utils/vetVisitHelper';

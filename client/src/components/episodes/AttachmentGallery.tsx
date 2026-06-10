@@ -14,14 +14,14 @@ import {
 const MAX_ORIGINAL_FALLBACK_BYTES = 500 * 1024;
 
 interface AttachmentGalleryProps {
-  dogId: string;
+  petId: string;
   attachments: EpisodeAttachment[];
   onChange: (next: EpisodeAttachment[]) => void;
   disabled?: boolean;
 }
 
 export default function AttachmentGallery({
-  dogId,
+  petId,
   attachments,
   onChange,
   disabled = false,
@@ -41,7 +41,7 @@ export default function AttachmentGallery({
     }
 
     let cancelled = false;
-    getHealthAttachmentSignedUrls(dogId, objectPaths)
+    getHealthAttachmentSignedUrls(petId, objectPaths)
       .then((urls) => {
         if (!cancelled) setSignedUrls(urls);
       })
@@ -54,7 +54,7 @@ export default function AttachmentGallery({
     return () => {
       cancelled = true;
     };
-  }, [dogId, attachments]);
+  }, [petId, attachments]);
 
   const handleAdd = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -72,7 +72,7 @@ export default function AttachmentGallery({
         try {
           const downscaled = await downscaleImage(file, 1024);
           const uploaded = await uploadHealthAttachment({
-            petId: dogId,
+            petId: petId,
             fileName: file.name,
             mimeType: downscaled.mimeType,
             base64Data: downscaled.dataUrl.split(',')[1] ?? downscaled.dataUrl,
@@ -90,7 +90,7 @@ export default function AttachmentGallery({
           if (file.size <= MAX_ORIGINAL_FALLBACK_BYTES) {
             const dataUrl = await fileToDataUrl(file);
             const uploaded = await uploadHealthAttachment({
-              petId: dogId,
+              petId: petId,
               fileName: file.name,
               mimeType: file.type,
               base64Data: dataUrl.split(',')[1] ?? dataUrl,
@@ -114,7 +114,7 @@ export default function AttachmentGallery({
 
   const handleDelete = (objectPath: string) => {
     onChange(attachments.filter((a) => a.objectPath !== objectPath));
-    void deleteHealthAttachment(dogId, objectPath).catch((err) => {
+    void deleteHealthAttachment(petId, objectPath).catch((err) => {
       logger.warn('Nepodarilo sa zmazať objekt prílohy', {
         error: err instanceof Error ? err.message : 'unknown',
         objectPath,

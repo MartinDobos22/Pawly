@@ -125,7 +125,7 @@
     "statFree": "Zadarmo",
     "statAiScan": "Skenovanie pasu",
     "statOffline": "Offline-ready",
-    "dogPhotoAlt": "Zlatý retriever sa pozerá do kamery",
+    "dogPhotoAlt": "Domáci miláčik sa pozerá do kamery",
     "floatingVaccination": "Očkovanie",
     "floatingValidUntil": "Platné do 23. 6. 2026",
     "navEnter": "Vstúpiť",
@@ -280,7 +280,7 @@
   "demo": {
     "badge": "Vyskúšaj rovno tu, bez prihlásenia",
     "title": "Spýtaj sa AI, čo môže tvoj miláčik jesť",
-    "subtitle": "Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre psa, mačku alebo iné zvieratko bezpečná.",
+    "subtitle": "Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre tvojho miláčika bezpečná.",
     "placeholder": "napr. čokoláda, mrkva, jablko, hrozno…",
     "askBtn": "Spýtať sa",
     "askingBtn": "Pýtam sa…",
@@ -301,14 +301,14 @@
     "responses": {
       "čokoláda": {
         "verdict": "UNSAFE",
-        "short": "Nie, čokoláda je pre psa toxická.",
-        "explanation": "Obsahuje teobromín, ktorý je pre psov toxický a môže spôsobiť vracanie, triašku, kŕče alebo zlyhanie srdca.",
-        "alternatives": ["psie pamlsky", "kúsok jablka", "mrkva"]
+        "short": "Nie, čokoláda je pre zvieratá toxická.",
+        "explanation": "Obsahuje teobromín, ktorý je pre zvieratá toxický a môže spôsobiť vracanie, triašku, kŕče alebo zlyhanie srdca.",
+        "alternatives": ["pamlsky pre miláčikov", "kúsok jablka", "mrkva"]
       },
       "hrozno": {
         "verdict": "UNSAFE",
         "short": "Nie, hrozno môže spôsobiť zlyhanie obličiek.",
-        "explanation": "Aj malé množstvo hrozna alebo hrozienok môže u psov spôsobiť akútne zlyhanie obličiek.",
+        "explanation": "Aj malé množstvo hrozna alebo hrozienok môže spôsobiť akútne zlyhanie obličiek.",
         "alternatives": ["čučoriedky", "jablko bez jadierok", "banán"]
       },
       "cibuľa": {
@@ -347,15 +347,15 @@
       },
       "mlieko": {
         "verdict": "CAUTION",
-        "short": "Mnoho psov má intoleranciu laktózy.",
-        "explanation": "Niektoré psy strávia mlieko bez problému, iné dostanú hnačku. Vyskúšaj malé množstvo a sleduj reakciu.",
+        "short": "Mnoho zvierat má intoleranciu laktózy.",
+        "explanation": "Niektoré zvieratá strávia mlieko bez problému, iné dostanú hnačku. Vyskúšaj malé množstvo a sleduj reakciu.",
         "warnings": ["Sleduj prípadné tráviace ťažkosti", "Bezlaktózové verzie sú lepšie"]
       },
       "syr": {
         "verdict": "CAUTION",
         "short": "V malých množstvách áno.",
         "explanation": "Tvrdé syry s nízkym obsahom laktózy sú OK ako pamlsky. Pozor na obsah soli.",
-        "warnings": ["Pozor na soľ", "Nie pre psy s alergiou na mliečne produkty"]
+        "warnings": ["Pozor na soľ", "Nie pre zvieratá s alergiou na mliečne produkty"]
       },
       "avokádo": {
         "verdict": "UNSAFE",

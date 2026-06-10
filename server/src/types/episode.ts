@@ -31,7 +31,7 @@ export interface EpisodeAttachment {
 
 export interface HealthEpisodeRecord {
   id: string;
-  dogId: string;
+  petId: string;
   createdAt: string;
   updatedAt: string;
   symptomTitle: string;

@@ -8,7 +8,7 @@ import type {
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 import type { HealthEpisodeRecord } from '../types/episode';
 
 type Row = Record<string, unknown>;
@@ -23,7 +23,7 @@ function build(pairs: Array<[string, unknown]>): Row {
   return row;
 }
 
-export interface EntityMapper<Dto extends { id: string; dogId: string }> {
+export interface EntityMapper<Dto extends { id: string; petId: string }> {
   table: string;
   toRow: (dto: Partial<Dto>) => Row;
   toDto: (row: Row) => Dto;
@@ -42,7 +42,7 @@ export const vaccinationMapper: EntityMapper<VaccinationRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     type: r.type as VaccinationRecord['type'],
     name: String(r.name),
     dateApplied: str(r.date_applied) ?? '',
@@ -64,7 +64,7 @@ export const dewormingMapper: EntityMapper<DewormingRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     productName: String(r.product_name),
     dateGiven: str(r.date_given) ?? '',
     intervalDays: num(r.interval_days) ?? 0,
@@ -87,7 +87,7 @@ export const ectoparasiteMapper: EntityMapper<EctoparasiteRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     productName: String(r.product_name),
     form: r.form as EctoparasiteRecord['form'],
     dateGiven: str(r.date_given) ?? '',
@@ -118,7 +118,7 @@ export const vetVisitMapper: EntityMapper<VetVisitRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     date: str(r.date) ?? '',
     clinicName: str(r.clinic_name) ?? '',
     vetName: str(r.vet_name),
@@ -150,7 +150,7 @@ export const medicationMapper: EntityMapper<MedicationRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     name: String(r.name),
     reason: str(r.reason) ?? '',
     dose: str(r.dose) ?? '',
@@ -172,7 +172,7 @@ export const doseLogMapper: EntityMapper<MedicationDoseLog> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     medicationId: String(r.medication_id),
     date: str(r.date) ?? '',
     taken: Boolean(r.taken),
@@ -193,7 +193,7 @@ export const dietEntryMapper: EntityMapper<DietEntry> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     foodId: str(r.food_id),
     foodName: String(r.food_name),
     startedAt: str(r.started_at) ?? '',
@@ -218,7 +218,7 @@ export const expenseMapper: EntityMapper<ExpenseRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     date: str(r.date) ?? '',
     amount: Number(r.amount ?? 0),
     currency: str(r.currency) ?? 'EUR',
@@ -238,7 +238,7 @@ export const weightLogMapper: EntityMapper<WeightLog> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     date: str(r.date) ?? '',
     kg: Number(r.kg ?? 0),
   }),
@@ -268,7 +268,7 @@ export const episodeMapper: EntityMapper<HealthEpisodeRecord> = {
     ]),
   toDto: (r) => ({
     id: String(r.id),
-    dogId: String(r.pet_id),
+    petId: String(r.pet_id),
     createdAt: str(r.created_at) ?? '',
     updatedAt: str(r.updated_at) ?? '',
     symptomTitle: String(r.symptom_title),

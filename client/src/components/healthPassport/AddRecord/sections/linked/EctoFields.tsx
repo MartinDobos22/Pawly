@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
-import type { EctoparasiteRecord } from '../../../../../types/dogHealth';
+import type { EctoparasiteRecord } from '../../../../../types/petHealth';
 import type { EctoFieldsValues } from '../../formTypes';
 import { formatDate, plusDays } from '../../../utils';
 

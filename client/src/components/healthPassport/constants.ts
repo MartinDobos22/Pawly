@@ -1,4 +1,4 @@
-import type { TimelineEvent } from '../../types/dogHealth';
+import type { TimelineEvent } from '../../types/petHealth';
 import {
   Biotech as BiotechIcon,
   EventNote as EventNoteIcon,

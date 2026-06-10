@@ -302,7 +302,7 @@ export default function EpisodeDiaryPage() {
       <EpisodeFormDialog
         open={formOpen}
         initial={editing}
-        dogId={selectedDogId}
+        petId={selectedDogId}
         medications={medications}
         vetVisits={vetVisits}
         storageWarning={storageWarning}

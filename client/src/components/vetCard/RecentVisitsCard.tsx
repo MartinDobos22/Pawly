@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { LocalHospitalOutlined as HospitalIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import type { VetVisitRecord } from '../../types/dogHealth';
+import type { VetVisitRecord } from '../../types/petHealth';
 import AiFormattedText from '../AiFormattedText';
 
 interface Props {

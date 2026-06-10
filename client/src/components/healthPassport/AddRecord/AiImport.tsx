@@ -7,7 +7,7 @@ import { useAiImport as useAiImportInternal } from './useAiImport';
 
 interface AiImportContextValue {
   state: AiFormState;
-  dogId: string;
+  petId: string;
   maxAttachments: number;
   setStep: (step: AiStep) => void;
   addAttachments: (files: File[]) => Promise<void>;
@@ -35,14 +35,14 @@ export function useAiImportContext(): AiImportContextValue {
 }
 
 interface AiImportProviderProps {
-  dogId: string;
+  petId: string;
   onSave: (bundle: VisitBundle) => void;
   onCancel: () => void;
   children: ReactNode;
 }
 
 export default function AiImportProvider({
-  dogId,
+  petId,
   onSave,
   onCancel,
   children,
@@ -65,17 +65,17 @@ export default function AiImportProvider({
     buildBundle,
     clearProfilePatch,
     reset,
-  } = useAiImportInternal(dogId);
+  } = useAiImportInternal(petId);
 
   const submit = () => {
-    const bundle = buildBundle({ dogId });
+    const bundle = buildBundle({ petId });
     onSave(bundle);
     reset();
   };
 
   const value: AiImportContextValue = {
     state,
-    dogId,
+    petId,
     maxAttachments,
     setStep,
     addAttachments,

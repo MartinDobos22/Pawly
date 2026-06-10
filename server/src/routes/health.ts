@@ -52,7 +52,7 @@ function assertDateRange(body: unknown, startField: string, endField: string, me
   }
 }
 
-function registerCrud<Dto extends { id: string; dogId: string }>(
+function registerCrud<Dto extends { id: string; petId: string }>(
   path: string,
   crud: Crud<Dto>,
   options: { skipDelete?: boolean } = {}

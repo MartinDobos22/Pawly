@@ -23,7 +23,7 @@ import {
   Scale as ScaleIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
-import type { ValidityStatus, VetVisitRecord } from '../../types/dogHealth';
+import type { ValidityStatus, VetVisitRecord } from '../../types/petHealth';
 import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
 import QuickVisitButton from './QuickVisitButton';
 
@@ -280,7 +280,7 @@ export default function PassportHero({
                 {t('hero.addRecord')}
               </Button>
               <QuickVisitButton
-                dogId={selectedDogId}
+                petId={selectedDogId}
                 disabled={!selectedDogId}
                 onCreate={onQuickVisitCreate}
                 onUndo={onQuickVisitUndo}

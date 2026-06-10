@@ -1,4 +1,4 @@
-import type { AttachmentRef, DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
+import type { AttachmentRef, DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/petHealth';
 import type { AiDetectedDraftRecord } from '../hpTypes';
 
 export interface VisitBasicsValues {

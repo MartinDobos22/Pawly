@@ -16,7 +16,7 @@ import type {
   EctoparasiteRecord,
   MedicationRecord,
   MedicationDoseLog,
-} from '../../types/dogHealth';
+} from '../../types/petHealth';
 import { today } from './utils.ts';
 import { relativeDate } from '../../utils/relativeDate';
 

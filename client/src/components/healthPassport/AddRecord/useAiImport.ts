@@ -163,11 +163,11 @@ const readFileAsBase64 = (file: File) =>
   });
 
 interface BuildContext {
-  dogId: string;
+  petId: string;
   examType?: string;
 }
 
-export function useAiImport(dogId: string) {
+export function useAiImport(petId: string) {
   const [state, dispatch] = useReducer(reducer, INITIAL_AI_STATE);
   const {
     vaccinations: existingVaccinations,
@@ -208,7 +208,7 @@ export function useAiImport(dogId: string) {
           const { previewUrl, base64 } = await readFileAsBase64(file);
           const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
           const attachment = await uploadHealthAttachment({
-            petId: dogId,
+            petId: petId,
             ...pending,
             caption: file.name,
           });
@@ -239,7 +239,7 @@ export function useAiImport(dogId: string) {
         });
       }
     },
-    [dogId, t]
+    [petId, t]
   );
 
   const addAttachments = useCallback(
@@ -354,10 +354,10 @@ export function useAiImport(dogId: string) {
       ];
 
       const latestDateFor = (type: AiDetectedRecordType): string | null => {
-        const pick = <T extends { dogId: string }>(items: T[], dateOf: (r: T) => string) => {
+        const pick = <T extends { petId: string }>(items: T[], dateOf: (r: T) => string) => {
           let max: string | null = null;
           for (const rec of items) {
-            if (rec.dogId !== dogId) continue;
+            if (rec.petId !== petId) continue;
             const iso = normalizeDateInput(dateOf(rec));
             if (!iso) continue;
             if (!max || iso > max) max = iso;
@@ -409,13 +409,13 @@ export function useAiImport(dogId: string) {
 
         const isDuplicate =
           recordType === 'VACCINATION' &&
-          dogId !== '' &&
+          petId !== '' &&
           isDuplicateVaccination({
             productName,
             sourceDisease: disease,
             date: normalizedDate,
             existing: existingVaccinations,
-            dogId,
+            petId,
           });
 
         const latestExisting = latestDateFor(recordType);
@@ -464,7 +464,7 @@ export function useAiImport(dogId: string) {
   }, [
     state.attachments,
     state.aiProcessingConsent,
-    dogId,
+    petId,
     existingVaccinations,
     existingDewormings,
     existingEctos,
@@ -499,7 +499,7 @@ export function useAiImport(dogId: string) {
       }));
 
       return VetVisitHelper.createAiVisitBundle({
-        dogId: ctx.dogId,
+        petId: ctx.petId,
         draft: state.visitDraft,
         selectedVisitMainCategory: state.selectedMainCategory,
         selectedVisitSubcategory: state.selectedSubcategory,

@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Bolt as BoltIcon, Close as CloseIcon, Undo as UndoIcon } from '@mui/icons-material';
 
-import type { VetVisitRecord } from '../../types/dogHealth';
+import type { VetVisitRecord } from '../../types/petHealth';
 import {
   getQuickVisitClinicSuggestion,
   rememberQuickVisitClinicSuggestion,
@@ -24,7 +24,7 @@ import { today, uid } from './utils';
 const SNACK_DURATION_MS = 6000;
 
 interface QuickVisitButtonProps {
-  dogId: string;
+  petId: string;
   disabled?: boolean;
   onCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onUndo: (id: string) => void;
@@ -36,7 +36,7 @@ interface LastCreatedRef {
 }
 
 export default function QuickVisitButton({
-  dogId,
+  petId,
   disabled,
   onCreate,
   onUndo,
@@ -46,22 +46,22 @@ export default function QuickVisitButton({
   // exists, keep only a short tab-session hint in memory so clinic names are not
   // persisted in localStorage or shared between browser accounts.
   const [lastClinic, setLastClinic] = useState(() =>
-    dogId ? getQuickVisitClinicSuggestion(dogId) : ''
+    petId ? getQuickVisitClinicSuggestion(petId) : ''
   );
   const [lastCreated, setLastCreated] = useState<LastCreatedRef | null>(null);
   const [promptOpen, setPromptOpen] = useState(false);
   const [promptClinic, setPromptClinic] = useState('');
 
   useEffect(() => {
-    setLastClinic(dogId ? getQuickVisitClinicSuggestion(dogId) : '');
-  }, [dogId]);
+    setLastClinic(petId ? getQuickVisitClinicSuggestion(petId) : '');
+  }, [petId]);
 
   const buildAndSave = async (clinic: string) => {
-    if (!dogId || !clinic.trim()) return;
+    if (!petId || !clinic.trim()) return;
     const trimmed = clinic.trim();
     const visit: VetVisitRecord = {
       id: uid(),
-      dogId,
+      petId,
       date: today(),
       clinicName: trimmed,
       reason: t('quickVisit.reason'),
@@ -71,13 +71,13 @@ export default function QuickVisitButton({
     const created = await onCreate(visit);
     setLastCreated({ id: created.id, clinic: created.clinicName });
     if (trimmed !== lastClinic) {
-      rememberQuickVisitClinicSuggestion(dogId, trimmed);
-      setLastClinic(getQuickVisitClinicSuggestion(dogId));
+      rememberQuickVisitClinicSuggestion(petId, trimmed);
+      setLastClinic(getQuickVisitClinicSuggestion(petId));
     }
   };
 
   const handleClick = () => {
-    if (!dogId) return;
+    if (!petId) return;
     if (!lastClinic.trim()) {
       setPromptClinic('');
       setPromptOpen(true);
@@ -110,7 +110,7 @@ export default function QuickVisitButton({
         color="primary"
         startIcon={<BoltIcon />}
         onClick={handleClick}
-        disabled={disabled || !dogId}
+        disabled={disabled || !petId}
       >
         {t('quickVisit.button')}
       </Button>

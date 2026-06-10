@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '../../../i18n';
 import { VISIT_CATEGORY_OPTIONS } from '../constants';
 
-import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/dogHealth';
+import type { DietEntry, EctoparasiteRecord, VaccinationRecord } from '../../../types/petHealth';
 import {
   VetVisitHelper,
   type VisitBundle,
@@ -277,7 +277,7 @@ export const sectionsWithErrors = (errors: ErrorMap) => ({
 });
 
 interface BuildContext {
-  dogId: string;
+  petId: string;
   currentDietEntryId?: string;
 }
 
@@ -349,7 +349,7 @@ export function useAddRecordForm() {
           })()
         : '';
       return VetVisitHelper.createWizardVisitBundle({
-        dogId: ctx.dogId,
+        petId: ctx.petId,
         draft: toWizardDraft(state),
         mainCategory: mainLabel,
         subcategory: subLabel,

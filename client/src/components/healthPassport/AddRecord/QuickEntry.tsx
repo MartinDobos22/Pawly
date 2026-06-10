@@ -80,7 +80,7 @@ export function useQuickEntry(): ContextValue {
 }
 
 interface ProviderProps {
-  dogId: string;
+  petId: string;
   currentDietEntryId?: string;
   onSave: (bundle: VisitBundle) => void;
   onCancel: () => void;
@@ -119,7 +119,7 @@ function useData() {
 }
 
 export default function QuickEntryProvider({
-  dogId,
+  petId,
   currentDietEntryId,
   onSave,
   onCancel,
@@ -209,7 +209,7 @@ export default function QuickEntryProvider({
     };
 
     const bundle = VetVisitHelper.createWizardVisitBundle({
-      dogId,
+      petId,
       draft,
       mainCategory: '',
       subcategory: '',
@@ -228,7 +228,7 @@ export default function QuickEntryProvider({
     ecto,
     medication,
     diet,
-    dogId,
+    petId,
     currentDietEntryId,
     onSave,
   ]);

@@ -30,7 +30,7 @@ export default function AiImportBody() {
   const { t } = useTranslation('healthPassport');
   const {
     state,
-    dogId,
+    petId,
     maxAttachments,
     addAttachments,
     removeAttachment,
@@ -170,9 +170,9 @@ export default function AiImportBody() {
       {state.step === 1 && (
         <>
           <AiDisclaimer />
-          {state.detectedProfilePatch && dogId !== '' && (
+          {state.detectedProfilePatch && petId !== '' && (
             <AiProfileMergeReview
-              dogId={dogId}
+              petId={petId}
               patch={state.detectedProfilePatch}
               onDone={() => clearProfilePatch()}
               onSkip={() => clearProfilePatch()}

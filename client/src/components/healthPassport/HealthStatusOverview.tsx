@@ -6,7 +6,7 @@ import {
   PestControl as EctoIcon,
   Restaurant as DietIcon,
 } from '@mui/icons-material';
-import type { ValidityStatus, DietEntry } from '../../types/dogHealth';
+import type { ValidityStatus, DietEntry } from '../../types/petHealth';
 import HealthMetricCard from './HealthMetricCard';
 
 interface HealthStatusOverviewProps {
