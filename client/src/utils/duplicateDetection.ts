@@ -3,7 +3,7 @@ import type {
   EctoparasiteRecord,
   MedicationRecord,
   VaccinationRecord,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 import type { VisitBundle } from './vetVisitHelper';
 
 export type DuplicateRecordType = 'vaccination' | 'deworming' | 'ectoparasite' | 'medication';
@@ -42,12 +42,12 @@ export function findBundleDuplicates(
   existing: ExistingRecords
 ): DuplicateMatch[] {
   const matches: DuplicateMatch[] = [];
-  const dogId = bundle.visit.dogId;
+  const petId = bundle.visit.petId;
 
   for (const v of bundle.vaccinations) {
     const dup = existing.vaccinations.find(
       (e) =>
-        e.dogId === dogId && norm(e.name) === norm(v.name) && sameDay(e.validUntil, v.validUntil)
+        e.petId === petId && norm(e.name) === norm(v.name) && sameDay(e.validUntil, v.validUntil)
     );
     if (dup) {
       matches.push({
@@ -62,7 +62,7 @@ export function findBundleDuplicates(
   for (const d of bundle.dewormings) {
     const dup = existing.dewormings.find(
       (e) =>
-        e.dogId === dogId &&
+        e.petId === petId &&
         norm(e.productName) === norm(d.productName) &&
         sameDay(e.nextDueDate, d.nextDueDate)
     );
@@ -79,7 +79,7 @@ export function findBundleDuplicates(
   for (const e of bundle.ectos) {
     const dup = existing.ectos.find(
       (ex) =>
-        ex.dogId === dogId &&
+        ex.petId === petId &&
         norm(ex.productName) === norm(e.productName) &&
         sameDay(ex.nextDueDate, e.nextDueDate)
     );
@@ -95,7 +95,7 @@ export function findBundleDuplicates(
 
   for (const m of bundle.medications) {
     const dup = existing.medications.find(
-      (e) => e.dogId === dogId && norm(e.name) === norm(m.name) && sameDay(e.startDate, m.startDate)
+      (e) => e.petId === petId && norm(e.name) === norm(m.name) && sameDay(e.startDate, m.startDate)
     );
     if (dup) {
       matches.push({

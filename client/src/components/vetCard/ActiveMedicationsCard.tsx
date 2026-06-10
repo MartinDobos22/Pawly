@@ -1,7 +1,7 @@
 import { Box, Card, Divider, Stack, Typography } from '@mui/material';
 import { MedicationOutlined as MedicationIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import type { MedicationRecord } from '../../types/dogHealth';
+import type { MedicationRecord } from '../../types/petHealth';
 
 interface Props {
   medications: MedicationRecord[];

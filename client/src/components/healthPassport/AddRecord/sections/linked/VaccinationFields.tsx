@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
-import type { VaccinationRecord } from '../../../../../types/dogHealth';
+import type { VaccinationRecord } from '../../../../../types/petHealth';
 import type { VaccinationFieldsValues } from '../../formTypes';
 import DateField from '../../../../DateField';
 

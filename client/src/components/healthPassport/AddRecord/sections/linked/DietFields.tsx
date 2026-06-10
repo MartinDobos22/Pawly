@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 
-import type { DietEntry } from '../../../../../types/dogHealth';
+import type { DietEntry } from '../../../../../types/petHealth';
 import type { DietFieldsValues } from '../../formTypes';
 
 type Suitability = NonNullable<DietEntry['suitabilityStatus']>;

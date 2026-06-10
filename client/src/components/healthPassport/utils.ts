@@ -1,4 +1,4 @@
-import type { ValidityStatus, VaccinationRecord } from '../../types/dogHealth';
+import type { ValidityStatus, VaccinationRecord } from '../../types/petHealth';
 import { KNOWN_DEWORMING_KEYWORDS, KNOWN_ECTOPARASITE_KEYWORDS } from './constants.ts';
 
 const MIN_NAME_OVERLAP = 4;
@@ -30,15 +30,15 @@ export function isDuplicateVaccination(params: {
   sourceDisease?: string;
   date: string;
   existing: VaccinationRecord[];
-  dogId: string;
+  petId: string;
 }): boolean {
-  const { productName, sourceDisease, date, existing, dogId } = params;
+  const { productName, sourceDisease, date, existing, petId } = params;
   const target = new Date(date);
   if (Number.isNaN(target.getTime())) return false;
   const targetYear = target.getUTCFullYear();
 
   return existing.some((rec) => {
-    if (rec.dogId !== dogId) return false;
+    if (rec.petId !== petId) return false;
     const recDate = new Date(rec.dateApplied);
     if (Number.isNaN(recDate.getTime())) return false;
     const diffDays = Math.abs(recDate.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);

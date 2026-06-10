@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { ReactElement } from 'react';
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 
 interface Props {
   icon: ReactElement;

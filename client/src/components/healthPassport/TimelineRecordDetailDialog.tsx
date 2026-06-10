@@ -26,7 +26,7 @@ import type {
   DietEntry,
   ExpenseRecord,
   ExpenseCategory,
-} from '../../types/dogHealth';
+} from '../../types/petHealth';
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 import { today } from './utils.ts';
 

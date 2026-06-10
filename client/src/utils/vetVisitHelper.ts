@@ -8,7 +8,7 @@ import type {
   MedicationRecord,
   VaccinationRecord,
   VetVisitRecord,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 import i18n from '../i18n';
 
 interface VisitAttachmentDraft {
@@ -70,7 +70,7 @@ export interface AiVisitDraftInput {
 }
 
 interface WizardVisitBundleInput {
-  dogId: string;
+  petId: string;
   draft: WizardVisitDraft;
   mainCategory: string;
   subcategory: string;
@@ -81,7 +81,7 @@ interface WizardVisitBundleInput {
 }
 
 interface AiVisitBundleInput {
-  dogId: string;
+  petId: string;
   draft: AiVisitDraftInput;
   selectedVisitMainCategory: string;
   selectedVisitSubcategory: string;
@@ -153,7 +153,7 @@ export class VetVisitHelper {
 
   static createWizardVisitBundle(input: WizardVisitBundleInput): VisitBundle {
     const {
-      dogId,
+      petId,
       draft,
       mainCategory,
       subcategory,
@@ -178,7 +178,7 @@ export class VetVisitHelper {
       const medicationId = uid();
       medications.push({
         id: medicationId,
-        dogId,
+        petId,
         name: draft.medName,
         reason: draft.medReason,
         dose: draft.medDose,
@@ -187,12 +187,12 @@ export class VetVisitHelper {
         endDate: draft.medEndDate || undefined,
         fromVetVisitId: visitId,
       });
-      doseLogs.push({ id: uid(), dogId, medicationId, date: draft.date, taken: false });
+      doseLogs.push({ id: uid(), petId, medicationId, date: draft.date, taken: false });
     }
 
     const visit: VetVisitRecord = {
       id: visitId,
-      dogId,
+      petId,
       date: draft.date,
       clinicName: draft.clinicName,
       reason,
@@ -209,7 +209,7 @@ export class VetVisitHelper {
         ? [
             {
               id: uid(),
-              dogId,
+              petId,
               type: draft.vaccineType,
               name: draft.vaccineName,
               dateApplied: draft.date,
@@ -224,7 +224,7 @@ export class VetVisitHelper {
         ? [
             {
               id: uid(),
-              dogId,
+              petId,
               productName: draft.dewormProduct,
               dateGiven: draft.date,
               intervalDays: computeIntervalDays(
@@ -244,7 +244,7 @@ export class VetVisitHelper {
         ? [
             {
               id: uid(),
-              dogId,
+              petId,
               productName: draft.ectoProduct,
               form: draft.ectoForm,
               dateGiven: draft.date,
@@ -264,7 +264,7 @@ export class VetVisitHelper {
         ? [
             {
               id: uid(),
-              dogId,
+              petId,
               foodName: draft.foodName,
               startedAt: draft.date,
               reactionNotes: draft.reactionNotes,
@@ -289,7 +289,7 @@ export class VetVisitHelper {
     if (draft.totalExpense) {
       expenses.push({
         id: uid(),
-        dogId,
+        petId,
         date: draft.date,
         amount: Number(draft.totalExpense),
         currency: 'EUR',
@@ -300,7 +300,7 @@ export class VetVisitHelper {
     if (draft.extraMedicationExpense) {
       expenses.push({
         id: uid(),
-        dogId,
+        petId,
         date: draft.date,
         amount: Number(draft.extraMedicationExpense),
         currency: 'EUR',
@@ -311,7 +311,7 @@ export class VetVisitHelper {
     if (draft.extraFoodExpense) {
       expenses.push({
         id: uid(),
-        dogId,
+        petId,
         date: draft.date,
         amount: Number(draft.extraFoodExpense),
         currency: 'EUR',
@@ -326,7 +326,7 @@ export class VetVisitHelper {
 
   static createAiVisitBundle(input: AiVisitBundleInput): VisitBundle {
     const {
-      dogId,
+      petId,
       draft,
       selectedVisitMainCategory,
       selectedVisitSubcategory,
@@ -374,7 +374,7 @@ export class VetVisitHelper {
           : 'OTHER';
         vaccinations.push({
           id: uid(),
-          dogId,
+          petId,
           type: vaccineType,
           name: record.productName,
           dateApplied: record.date,
@@ -392,7 +392,7 @@ export class VetVisitHelper {
         );
         dewormings.push({
           id: uid(),
-          dogId,
+          petId,
           productName: record.productName,
           dateGiven: record.date,
           intervalDays,
@@ -409,7 +409,7 @@ export class VetVisitHelper {
         );
         ectos.push({
           id: uid(),
-          dogId,
+          petId,
           productName: record.productName,
           form: 'TABLET',
           dateGiven: record.date,
@@ -422,7 +422,7 @@ export class VetVisitHelper {
       if (record.targetType === 'MEDICATION') {
         medications.push({
           id: uid(),
-          dogId,
+          petId,
           name: record.productName,
           reason:
             record.sourceDisease ||
@@ -439,7 +439,7 @@ export class VetVisitHelper {
 
     const visit: VetVisitRecord = {
       id: visitId,
-      dogId,
+      petId,
       date: draft.date,
       clinicName: draft.clinicName.trim(),
       reason:

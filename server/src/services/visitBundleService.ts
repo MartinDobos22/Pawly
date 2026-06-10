@@ -20,7 +20,7 @@ import type {
   MedicationRecord,
   VaccinationRecord,
   VetVisitRecord,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 
 type Row = Record<string, unknown>;
 
@@ -56,8 +56,8 @@ export async function createVisitBundle(
   appUserId: string,
   bundle: VisitBundle
 ): Promise<VisitBundle> {
-  const petId = bundle.visit?.dogId;
-  if (!petId) throw httpError(400, 'Chýba dogId v návšteve.', 'INVALID_INPUT');
+  const petId = bundle.visit?.petId;
+  if (!petId) throw httpError(400, 'Chýba petId v návšteve.', 'INVALID_INPUT');
   await assertPetOwned(appUserId, petId);
 
   for (const v of bundle.vaccinations ?? []) {

@@ -7,7 +7,7 @@ import {
   ArrowDownward as DownIcon,
   RemoveCircleOutline as FlatIcon,
 } from '@mui/icons-material';
-import type { ExpenseRecord } from '../../types/dogHealth';
+import type { ExpenseRecord } from '../../types/petHealth';
 import { today } from './utils.ts';
 import { formatDateShort } from '../../utils/relativeDate';
 import ExpenseDonut from './ExpenseDonut';

@@ -10,7 +10,7 @@ import type {
   TimelineEvent,
   VaccinationRecord,
   VetVisitRecord,
-} from '../types/dogHealth';
+} from '../types/petHealth';
 
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
@@ -79,14 +79,14 @@ export default function HealthPassportPage() {
   const { confirm, dialog: confirmDialog } = useConfirm();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
-  const dogVaccinations = vaccinations.filter((v) => v.dogId === selectedDogId);
-  const dogDewormings = dewormings.filter((v) => v.dogId === selectedDogId);
-  const dogEctos = ectos.filter((v) => v.dogId === selectedDogId);
-  const dogVisits = visits.filter((v) => v.dogId === selectedDogId);
-  const dogMeds = medications.filter((v) => v.dogId === selectedDogId);
-  const dogDoseLogs = doseLogs.filter((v) => v.dogId === selectedDogId);
-  const dogDiet = dietEntries.filter((v) => v.dogId === selectedDogId);
-  const dogExpenses = expenses.filter((v) => v.dogId === selectedDogId);
+  const dogVaccinations = vaccinations.filter((v) => v.petId === selectedDogId);
+  const dogDewormings = dewormings.filter((v) => v.petId === selectedDogId);
+  const dogEctos = ectos.filter((v) => v.petId === selectedDogId);
+  const dogVisits = visits.filter((v) => v.petId === selectedDogId);
+  const dogMeds = medications.filter((v) => v.petId === selectedDogId);
+  const dogDoseLogs = doseLogs.filter((v) => v.petId === selectedDogId);
+  const dogDiet = dietEntries.filter((v) => v.petId === selectedDogId);
+  const dogExpenses = expenses.filter((v) => v.petId === selectedDogId);
 
   const latestDietId = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0]?.id;
 
@@ -123,7 +123,7 @@ export default function HealthPassportPage() {
     dogVaccinations.forEach((v) =>
       items.push({
         id: `vac-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'VACCINATION',
         title: t('timeline.titleVaccination', { name: v.name }),
         subtitle: v.validUntil
@@ -135,7 +135,7 @@ export default function HealthPassportPage() {
     dogDewormings.forEach((v) =>
       items.push({
         id: `dew-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'DEWORMING',
         title: t('timeline.titleDeworming', { product: v.productName }),
         subtitle: v.nextDueDate
@@ -147,7 +147,7 @@ export default function HealthPassportPage() {
     dogEctos.forEach((v) =>
       items.push({
         id: `ect-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'ECTOPARASITE',
         title: t('timeline.titleEcto', { product: v.productName }),
         subtitle: v.nextDueDate
@@ -159,7 +159,7 @@ export default function HealthPassportPage() {
     dogVisits.forEach((v) =>
       items.push({
         id: `visit-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'VET_VISIT',
         title: t('timeline.titleVisit', { clinic: v.clinicName }),
         subtitle: v.reason,
@@ -169,7 +169,7 @@ export default function HealthPassportPage() {
     dogMeds.forEach((v) =>
       items.push({
         id: `med-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'MEDICATION',
         title: t('timeline.titleMedication', { name: v.name }),
         subtitle: `${v.dose}, ${v.frequency}`,
@@ -179,7 +179,7 @@ export default function HealthPassportPage() {
     dogDiet.forEach((v) =>
       items.push({
         id: `diet-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'DIET',
         title: t('timeline.titleDiet', { food: v.foodName }),
         subtitle: v.suitabilityStatus,
@@ -189,7 +189,7 @@ export default function HealthPassportPage() {
     dogExpenses.forEach((v) =>
       items.push({
         id: `exp-${v.id}`,
-        dogId: v.dogId,
+        petId: v.petId,
         type: 'EXPENSE',
         title: t('timeline.titleExpense', { amount: v.amount.toFixed(2) }),
         subtitle: v.category,
@@ -612,7 +612,7 @@ export default function HealthPassportPage() {
               void toggleDose(logId);
             }}
           />
-          <WeightTrendCard dogId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
+          <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
           <ExpenseSummaryCard expenses={dogExpenses} />
         </Stack>
       </Box>
@@ -620,7 +620,7 @@ export default function HealthPassportPage() {
       {/* ── Add record dialog ────────────────────────────────────────────── */}
       <AddRecord
         open={wizardOpen}
-        dogId={selectedDogId}
+        petId={selectedDogId}
         currentDietEntryId={latestDietId}
         onClose={() => setWizardOpen(false)}
         onSave={dispatchBundle}

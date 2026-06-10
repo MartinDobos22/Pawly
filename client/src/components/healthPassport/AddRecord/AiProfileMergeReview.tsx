@@ -22,7 +22,7 @@ import {
 } from '../../../utils/petProfileMerge';
 
 interface Props {
-  dogId: string;
+  petId: string;
   patch: PetProfilePatch;
   onDone: (changedFields: string[]) => void;
   onSkip: () => void;
@@ -39,10 +39,10 @@ function describeValue(_key: IdentifierKey, value: string | undefined): string {
   return value;
 }
 
-export default function AiProfileMergeReview({ dogId, patch, onDone, onSkip }: Props) {
+export default function AiProfileMergeReview({ petId, patch, onDone, onSkip }: Props) {
   const { t } = useTranslation('healthPassport');
   const { profiles, updateProfile } = usePetProfiles();
-  const profile = useMemo(() => profiles.find((p) => p.id === dogId) ?? null, [profiles, dogId]);
+  const profile = useMemo(() => profiles.find((p) => p.id === petId) ?? null, [profiles, petId]);
 
   const identifierEntries = useMemo(() => {
     if (!patch.identifiers) return [];

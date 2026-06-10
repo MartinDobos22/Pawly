@@ -33,7 +33,7 @@ type Mode = 'QUICK' | 'MANUAL' | 'AI';
 
 interface AddRecordProps {
   open: boolean;
-  dogId: string;
+  petId: string;
   currentDietEntryId?: string;
   onClose: () => void;
   onSave: (bundle: VisitBundle) => void;
@@ -115,7 +115,7 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
 
 export default function AddRecord({
   open,
-  dogId,
+  petId,
   currentDietEntryId,
   onClose,
   onSave,
@@ -163,7 +163,7 @@ export default function AddRecord({
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth fullScreen={fullScreen}>
       {mode === 'QUICK' && (
         <QuickEntryProvider
-          dogId={dogId}
+          petId={petId}
           currentDietEntryId={currentDietEntryId}
           onSave={handleSave}
           onCancel={handleClose}
@@ -180,7 +180,7 @@ export default function AddRecord({
       )}
       {mode === 'MANUAL' && (
         <ManualEntryProvider
-          dogId={dogId}
+          petId={petId}
           currentDietEntryId={currentDietEntryId}
           onSave={handleSave}
           onCancel={handleClose}
@@ -196,7 +196,7 @@ export default function AddRecord({
         </ManualEntryProvider>
       )}
       {mode === 'AI' && (
-        <AiImportProvider dogId={dogId} onSave={handleSave} onCancel={handleClose}>
+        <AiImportProvider petId={petId} onSave={handleSave} onCancel={handleClose}>
           {dialogTitle}
           <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <ModeToggle mode={mode} onChange={setMode} />

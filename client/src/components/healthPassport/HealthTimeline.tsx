@@ -19,7 +19,7 @@ import {
   TuneOutlined as TuneIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import type { TimelineEvent } from '../../types/dogHealth';
+import type { TimelineEvent } from '../../types/petHealth';
 import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
 
 const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');

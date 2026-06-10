@@ -30,13 +30,13 @@ import { formatDateShort } from '../../utils/relativeDate';
 import DateField from '../DateField';
 
 interface Props {
-  dogId: string;
+  petId: string;
   fallbackWeightKg?: number;
 }
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
+export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const { weightLogs: logs, addWeightLog } = useHealthData();
@@ -45,8 +45,8 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
   const [draftDate, setDraftDate] = useState<string>(todayIso());
 
   const series = useMemo(
-    () => logs.filter((l) => l.dogId === dogId).sort((a, b) => a.date.localeCompare(b.date)),
-    [logs, dogId]
+    () => logs.filter((l) => l.petId === petId).sort((a, b) => a.date.localeCompare(b.date)),
+    [logs, petId]
   );
 
   const last = series[series.length - 1];
@@ -72,7 +72,7 @@ export default function WeightTrendCard({ dogId, fallbackWeightKg }: Props) {
   const handleSave = async () => {
     const kg = parseFloat(draftKg.replace(',', '.'));
     if (!Number.isFinite(kg) || kg <= 0) return;
-    await addWeightLog({ dogId, date: draftDate || todayIso(), kg });
+    await addWeightLog({ petId, date: draftDate || todayIso(), kg });
     setOpen(false);
     setDraftKg('');
     setDraftDate(todayIso());

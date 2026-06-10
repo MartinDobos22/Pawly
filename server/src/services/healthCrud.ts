@@ -4,14 +4,14 @@ import type { EntityMapper } from './healthMappers';
 
 type Row = Record<string, unknown>;
 
-export interface Crud<Dto extends { id: string; dogId: string }> {
+export interface Crud<Dto extends { id: string; petId: string }> {
   list: (appUserId: string) => Promise<Dto[]>;
   create: (appUserId: string, dto: Partial<Dto>) => Promise<Dto>;
   update: (appUserId: string, id: string, dto: Partial<Dto>) => Promise<Dto>;
   remove: (appUserId: string, id: string) => Promise<void>;
 }
 
-export function makeCrud<Dto extends { id: string; dogId: string }>(
+export function makeCrud<Dto extends { id: string; petId: string }>(
   mapper: EntityMapper<Dto>
 ): Crud<Dto> {
   const supabase = () => getSupabase();
@@ -27,8 +27,8 @@ export function makeCrud<Dto extends { id: string; dogId: string }>(
     },
 
     async create(appUserId, dto) {
-      if (!dto.dogId) throw httpError(400, 'Chýba dogId.', 'INVALID_INPUT');
-      const row = { ...mapper.toRow(dto), pet_id: dto.dogId };
+      if (!dto.petId) throw httpError(400, 'Chýba petId.', 'INVALID_INPUT');
+      const row = { ...mapper.toRow(dto), pet_id: dto.petId };
       const { data, error } = await supabase().rpc('app_create_health_row', {
         p_app_user_id: appUserId,
         p_table: mapper.table,

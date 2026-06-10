@@ -1,4 +1,4 @@
-import type { ValidityStatus } from '../../types/dogHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 
 function formatDateShort(value: string, lang = 'sk-SK'): string {
   const parsed = new Date(value);

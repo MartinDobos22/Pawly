@@ -37,7 +37,7 @@ import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../components/healthP
 import { today } from '../components/healthPassport/utils';
 import { formatDateShort } from '../utils/relativeDate';
 import type { AnalysisResult } from '../types';
-import type { DietEntry } from '../types/dogHealth';
+import type { DietEntry } from '../types/petHealth';
 
 function deriveSuitability(result: AnalysisResult): NonNullable<DietEntry['suitabilityStatus']> {
   const critical =
@@ -159,7 +159,7 @@ export default function AnalyzePage() {
     if (activePet) {
       const suitability = deriveSuitability(displayResult);
       await addDietEntry({
-        dogId: activePet.id,
+        petId: activePet.id,
         foodName: sourceLabel || t('foodFromAnalysis'),
         startedAt: today(),
         reactionNotes: displayResult.summary,

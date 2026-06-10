@@ -20,7 +20,7 @@ import {
   TimelineOutlined as TimelineIcon,
 } from '@mui/icons-material';
 
-import type { TimelineEvent } from '../../types/dogHealth';
+import type { TimelineEvent } from '../../types/petHealth';
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from '../healthPassport/constants';
 
 type ClinicalEventType = Exclude<TimelineEvent['type'], 'EXPENSE'>;

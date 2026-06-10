@@ -55,7 +55,7 @@ export function useManualEntry(): ManualEntryContextValue {
 }
 
 interface ManualEntryProviderProps {
-  dogId: string;
+  petId: string;
   currentDietEntryId?: string;
   onSave: (bundle: VisitBundle) => void;
   onCancel: () => void;
@@ -63,7 +63,7 @@ interface ManualEntryProviderProps {
 }
 
 export default function ManualEntryProvider({
-  dogId,
+  petId,
   currentDietEntryId,
   onSave,
   onCancel,
@@ -100,7 +100,7 @@ export default function ManualEntryProvider({
     markSubmitAttempted();
     const validationErrors = validateManualForm(state);
     if (Object.keys(validationErrors).length > 0) return;
-    const bundle = buildBundle({ dogId, currentDietEntryId });
+    const bundle = buildBundle({ petId, currentDietEntryId });
 
     const duplicates = findBundleDuplicates(bundle, {
       vaccinations,

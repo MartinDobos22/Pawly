@@ -27,7 +27,7 @@ import {
   type EpisodeSeverity,
   type HealthEpisodeRecord,
 } from '../../types/healthEpisode';
-import type { MedicationRecord, VetVisitRecord } from '../../types/dogHealth';
+import type { MedicationRecord, VetVisitRecord } from '../../types/petHealth';
 import { getHealthAttachmentSignedUrls } from '../../services/healthApi';
 import { logger } from '../../utils/logger';
 
@@ -96,7 +96,7 @@ export default function EpisodeListItem({
     }
 
     let cancelled = false;
-    getHealthAttachmentSignedUrls(episode.dogId, objectPaths)
+    getHealthAttachmentSignedUrls(episode.petId, objectPaths)
       .then((urls) => {
         if (!cancelled) setSignedUrls(urls);
       })
@@ -109,7 +109,7 @@ export default function EpisodeListItem({
     return () => {
       cancelled = true;
     };
-  }, [episode.attachments, episode.dogId]);
+  }, [episode.attachments, episode.petId]);
 
   return (
     <Accordion

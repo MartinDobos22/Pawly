@@ -1,4 +1,4 @@
-export type DogSex = 'MALE' | 'FEMALE' | 'UNKNOWN';
+export type PetSex = 'MALE' | 'FEMALE' | 'UNKNOWN';
 export type VaccineType = 'RABIES' | 'COMBINED' | 'OTHER';
 export type ValidityStatus = 'VALID' | 'EXPIRING_SOON' | 'EXPIRED' | 'UNKNOWN';
 export type EctoForm = 'TABLET' | 'SPOT_ON' | 'COLLAR';
@@ -36,7 +36,7 @@ export interface ProcedureRecord {
 
 export interface VaccinationRecord {
   id: string;
-  dogId: string;
+  petId: string;
   type: VaccineType;
   name: string;
   dateApplied: string;
@@ -47,7 +47,7 @@ export interface VaccinationRecord {
 
 export interface DewormingRecord {
   id: string;
-  dogId: string;
+  petId: string;
   productName: string;
   dateGiven: string;
   intervalDays: number;
@@ -57,7 +57,7 @@ export interface DewormingRecord {
 
 export interface EctoparasiteRecord {
   id: string;
-  dogId: string;
+  petId: string;
   productName: string;
   form: EctoForm;
   dateGiven: string;
@@ -69,7 +69,7 @@ export interface EctoparasiteRecord {
 
 export interface VetVisitRecord {
   id: string;
-  dogId: string;
+  petId: string;
   date: string;
   clinicName: string;
   vetName?: string;
@@ -87,7 +87,7 @@ export interface VetVisitRecord {
 
 export interface MedicationRecord {
   id: string;
-  dogId: string;
+  petId: string;
   name: string;
   reason: string;
   dose: string;
@@ -100,7 +100,7 @@ export interface MedicationRecord {
 
 export interface MedicationDoseLog {
   id: string;
-  dogId: string;
+  petId: string;
   medicationId: string;
   date: string;
   taken: boolean;
@@ -108,7 +108,7 @@ export interface MedicationDoseLog {
 
 export interface DietEntry {
   id: string;
-  dogId: string;
+  petId: string;
   foodId?: string;
   foodName: string;
   startedAt: string;
@@ -120,7 +120,7 @@ export interface DietEntry {
 
 export interface ExpenseRecord {
   id: string;
-  dogId: string;
+  petId: string;
   date: string;
   amount: number;
   currency: string;
@@ -132,7 +132,7 @@ export interface ExpenseRecord {
 
 export interface TimelineEvent {
   id: string;
-  dogId: string;
+  petId: string;
   type: TimelineType;
   title: string;
   subtitle?: string;
@@ -141,7 +141,7 @@ export interface TimelineEvent {
 
 export interface WeightLog {
   id: string;
-  dogId: string;
+  petId: string;
   date: string;
   kg: number;
 }

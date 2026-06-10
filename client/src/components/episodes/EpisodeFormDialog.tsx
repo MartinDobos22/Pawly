@@ -31,12 +31,12 @@ import {
   type EpisodeSeverity,
   type HealthEpisodeRecord,
 } from '../../types/healthEpisode';
-import type { MedicationRecord, VetVisitRecord } from '../../types/dogHealth';
+import type { MedicationRecord, VetVisitRecord } from '../../types/petHealth';
 
 interface EpisodeFormDialogProps {
   open: boolean;
   initial?: HealthEpisodeRecord;
-  dogId: string;
+  petId: string;
   medications: MedicationRecord[];
   vetVisits: VetVisitRecord[];
   storageWarning?: string;
@@ -118,7 +118,7 @@ function fromRecord(record: HealthEpisodeRecord): FormState {
 export default function EpisodeFormDialog({
   open,
   initial,
-  dogId,
+  petId,
   medications,
   vetVisits,
   storageWarning,
@@ -137,12 +137,12 @@ export default function EpisodeFormDialog({
   }, [open, initial]);
 
   const dogMedications = useMemo(
-    () => medications.filter((m) => m.dogId === dogId),
-    [medications, dogId]
+    () => medications.filter((m) => m.petId === petId),
+    [medications, petId]
   );
   const dogVetVisits = useMemo(
-    () => vetVisits.filter((v) => v.dogId === dogId),
-    [vetVisits, dogId]
+    () => vetVisits.filter((v) => v.petId === petId),
+    [vetVisits, petId]
   );
 
   const [isSaving, setIsSaving] = useState(false);
@@ -157,7 +157,7 @@ export default function EpisodeFormDialog({
     try {
       await onSave(
         {
-          dogId,
+          petId,
           symptomTitle: state.symptomTitle.trim(),
           symptomDescription: state.symptomDescription.trim(),
           category: state.category,
@@ -415,7 +415,7 @@ export default function EpisodeFormDialog({
           <Divider />
 
           <AttachmentGallery
-            dogId={dogId}
+            petId={petId}
             attachments={state.attachments}
             onChange={(v) => update('attachments', v)}
           />

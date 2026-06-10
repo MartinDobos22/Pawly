@@ -56,15 +56,15 @@ export function useNotificationPreferences() {
   const healthSignature = useMemo(() => {
     const parts: string[] = [];
     for (const v of vaccinations)
-      if (v.dogId === activePetId) parts.push(`v:${v.id}:${v.validUntil ?? ''}`);
+      if (v.petId === activePetId) parts.push(`v:${v.id}:${v.validUntil ?? ''}`);
     for (const d of dewormings)
-      if (d.dogId === activePetId) parts.push(`d:${d.id}:${d.nextDueDate ?? ''}`);
+      if (d.petId === activePetId) parts.push(`d:${d.id}:${d.nextDueDate ?? ''}`);
     for (const e of ectos)
-      if (e.dogId === activePetId) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
+      if (e.petId === activePetId) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
     for (const vi of visits)
-      if (vi.dogId === activePetId) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
+      if (vi.petId === activePetId) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
     for (const m of medications)
-      if (m.dogId === activePetId) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
+      if (m.petId === activePetId) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
     return parts.join('|');
   }, [vaccinations, dewormings, ectos, visits, medications, activePetId]);
 
