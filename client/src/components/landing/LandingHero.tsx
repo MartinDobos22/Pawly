@@ -259,8 +259,6 @@ export default function LandingHero() {
               alt={t('hero.dogPhotoAlt')}
               loading="eager"
               fetchPriority="high"
-              width={900}
-              height={1125}
               sx={{
                 position: 'relative',
                 width: '100%',
