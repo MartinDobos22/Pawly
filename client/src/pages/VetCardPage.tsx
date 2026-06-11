@@ -1166,7 +1166,7 @@ export default function VetCardPage() {
     });
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: '100%', overflowX: 'clip' }}>
       <VetCardActionBar
         exportSections={exportSections}
         onChangeSections={setExportSections}

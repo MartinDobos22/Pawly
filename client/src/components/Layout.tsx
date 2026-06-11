@@ -348,7 +348,9 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         </Drawer>
       )}
 
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Box
+        sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+      >
         {!isDesktop && (
           <AppBar
             position="sticky"
