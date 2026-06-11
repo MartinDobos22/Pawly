@@ -102,16 +102,25 @@ app.use(
 // to avoid rejecting valid 5 MB uploads from the UI.
 app.use(express.json({ limit: '15mb' }));
 
+// Keep-alive cron na free-tier hostingu pinguje /api/health každých ~10 min.
+// Bez tichého zoznamu by request log bol zaplavený a reálne udalosti by sa stratili.
+// 4xx/5xx ale logujeme vždy, aby sme nestratili signál o outage.
+const SILENT_REQUEST_LOG_PATHS = new Set(['/api/health', '/api/ready']);
+
 app.use((req, res, next) => {
   const startTime = Date.now();
+  const silent = SILENT_REQUEST_LOG_PATHS.has(req.path);
 
-  logger.info('Prichádzajúci request', {
-    method: req.method,
-    path: req.originalUrl,
-    ip: req.ip,
-  });
+  if (!silent) {
+    logger.info('Prichádzajúci request', {
+      method: req.method,
+      path: req.originalUrl,
+      ip: req.ip,
+    });
+  }
 
   res.on('finish', () => {
+    if (silent && res.statusCode < 400) return;
     logger.info('Request dokončený', {
       method: req.method,
       path: req.originalUrl,
