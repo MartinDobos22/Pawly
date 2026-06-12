@@ -6,7 +6,7 @@ export type EpisodeCategory =
   | 'behavioral'
   | 'other';
 
-export type EpisodeOutcome = 'resolved' | 'ongoing' | 'recurring';
+export type EpisodeOutcome = 'resolved' | 'ongoing' | 'recurring' | 'unspecified';
 export type EpisodeSeverity = 'mild' | 'moderate' | 'severe';
 
 export interface EpisodeAttachment {
@@ -60,7 +60,12 @@ export const EPISODE_CATEGORIES: EpisodeCategory[] = [
   'other',
 ];
 
-export const EPISODE_OUTCOMES: EpisodeOutcome[] = ['resolved', 'ongoing', 'recurring'];
+export const EPISODE_OUTCOMES: EpisodeOutcome[] = [
+  'unspecified',
+  'resolved',
+  'ongoing',
+  'recurring',
+];
 export const EPISODE_SEVERITIES: EpisodeSeverity[] = ['mild', 'moderate', 'severe'];
 
 export const EPISODE_CATEGORY_LABEL: Record<EpisodeCategory, string> = {
@@ -73,6 +78,7 @@ export const EPISODE_CATEGORY_LABEL: Record<EpisodeCategory, string> = {
 };
 
 export const EPISODE_OUTCOME_LABEL: Record<EpisodeOutcome, string> = {
+  unspecified: 'Neurčené',
   resolved: 'Vyriešené',
   ongoing: 'Pretrváva',
   recurring: 'Opakujúce sa',

@@ -32,6 +32,7 @@
     "other": "Iné"
   },
   "outcome": {
+    "unspecified": "Neurčené",
     "resolved": "Vyriešené",
     "ongoing": "Pretrváva",
     "recurring": "Opakujúce sa"
@@ -51,7 +52,7 @@
     "category": "Kategória",
     "severity": "Závažnosť",
     "outcome": "Stav",
-    "startedAt": "Začiatok",
+    "startedAt": "Deň zápisu",
     "endedAt": "Koniec (voliteľné)",
     "location": "Miesto",
     "locationPlaceholder": "napr. na výlete v Tatrách",

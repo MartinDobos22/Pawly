@@ -32,6 +32,7 @@
     "other": "Other"
   },
   "outcome": {
+    "unspecified": "Unspecified",
     "resolved": "Resolved",
     "ongoing": "Ongoing",
     "recurring": "Recurring"
@@ -51,7 +52,7 @@
     "category": "Category",
     "severity": "Severity",
     "outcome": "Status",
-    "startedAt": "Start",
+    "startedAt": "Date logged",
     "endedAt": "End (optional)",
     "location": "Location",
     "locationPlaceholder": "e.g. hiking trip in the mountains",
