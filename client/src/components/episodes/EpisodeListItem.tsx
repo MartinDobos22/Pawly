@@ -42,7 +42,8 @@ interface EpisodeListItemProps {
   vetVisits: VetVisitRecord[];
 }
 
-const OUTCOME_CHIP_COLOR: Record<EpisodeOutcome, 'success' | 'warning' | 'error'> = {
+const OUTCOME_CHIP_COLOR: Record<EpisodeOutcome, 'success' | 'warning' | 'error' | 'default'> = {
+  unspecified: 'default',
   resolved: 'success',
   ongoing: 'warning',
   recurring: 'error',

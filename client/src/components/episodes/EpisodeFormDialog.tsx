@@ -86,7 +86,7 @@ function emptyState(): FormState {
     treatmentNotes: '',
     whatWorked: [],
     whatDidntWork: [],
-    outcome: 'resolved',
+    outcome: 'unspecified',
     severity: 'moderate',
     lessonsLearned: '',
     attachments: [],

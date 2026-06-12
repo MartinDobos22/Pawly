@@ -6,7 +6,7 @@ export type EpisodeCategory =
   | 'behavioral'
   | 'other';
 
-export type EpisodeOutcome = 'resolved' | 'ongoing' | 'recurring';
+export type EpisodeOutcome = 'resolved' | 'ongoing' | 'recurring' | 'unspecified';
 export type EpisodeSeverity = 'mild' | 'moderate' | 'severe';
 
 export const EPISODE_CATEGORIES: EpisodeCategory[] = [
@@ -18,7 +18,12 @@ export const EPISODE_CATEGORIES: EpisodeCategory[] = [
   'other',
 ];
 
-export const EPISODE_OUTCOMES: EpisodeOutcome[] = ['resolved', 'ongoing', 'recurring'];
+export const EPISODE_OUTCOMES: EpisodeOutcome[] = [
+  'unspecified',
+  'resolved',
+  'ongoing',
+  'recurring',
+];
 export const EPISODE_SEVERITIES: EpisodeSeverity[] = ['mild', 'moderate', 'severe'];
 
 export interface EpisodeAttachment {
