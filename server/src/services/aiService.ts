@@ -29,6 +29,10 @@ const MODELS = {
 
 export const AI_MODELS = MODELS;
 
+const OPENAI_ANALYSIS_TIMEOUT_MS = 30_000;
+const OPENAI_LIGHT_TIMEOUT_MS = 10_000;
+const VISION_FETCH_TIMEOUT_MS = 15_000;
+
 interface AttachmentInput {
   fileName: string;
   mimeType: string;
@@ -234,10 +238,11 @@ async function extractTextFromImageWithGoogleVision(
           },
         ],
       }),
+      signal: AbortSignal.timeout(VISION_FETCH_TIMEOUT_MS),
     });
 
     if (!response.ok) {
-      console.error('[AI Service] Google Vision HTTP error:', response.status);
+      logger.error('Google Vision HTTP chyba', { status: response.status });
       return '';
     }
 
@@ -255,7 +260,9 @@ async function extractTextFromImageWithGoogleVision(
     const text = payload.responses?.[0]?.fullTextAnnotation?.text ?? '';
     return text.trim();
   } catch (error) {
-    console.error('[AI Service] Google Vision OCR failed:', error);
+    logger.error('Google Vision OCR zlyhalo', {
+      message: error instanceof Error ? error.message : 'unknown',
+    });
     return '';
   }
 }
@@ -272,21 +279,24 @@ async function normalizeExtractedTextWithOpenAI(
   assertPrivacyGuard(withHealthPrivacy(privacy), minimizedText);
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODELS.ocrNormalize,
-      temperature: 0,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'Uprav OCR text bez zmeny významu: oprav iba zjavné OCR chyby, zachovaj jazyk a štruktúru. Vráť iba čistý text.',
-        },
-        {
-          role: 'user',
-          content: minimizedText,
-        },
-      ],
-    });
+    const response = await client.chat.completions.create(
+      {
+        model: MODELS.ocrNormalize,
+        temperature: 0,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Uprav OCR text bez zmeny významu: oprav iba zjavné OCR chyby, zachovaj jazyk a štruktúru. Vráť iba čistý text.',
+          },
+          {
+            role: 'user',
+            content: minimizedText,
+          },
+        ],
+      },
+      { timeout: OPENAI_LIGHT_TIMEOUT_MS }
+    );
 
     auditAiProcessing({
       userId: privacy?.userId,
@@ -313,22 +323,25 @@ async function extractTextFromImageWithOpenAI(
 
   try {
     const dataUrl = `data:${providerAttachment.mimeType};base64,${providerAttachment.base64Data}`;
-    const response = await client.chat.completions.create({
-      model: MODELS.ocrVision,
-      temperature: 0,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Prepíš všetok čitateľný text zo zdravotného dokumentu zvieraťa. Vráť iba čistý text bez komentárov.',
-            },
-            { type: 'image_url', image_url: { url: dataUrl, detail: 'high' } },
-          ],
-        },
-      ],
-    });
+    const response = await client.chat.completions.create(
+      {
+        model: MODELS.ocrVision,
+        temperature: 0,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'Prepíš všetok čitateľný text zo zdravotného dokumentu zvieraťa. Vráť iba čistý text bez komentárov.',
+              },
+              { type: 'image_url', image_url: { url: dataUrl, detail: 'high' } },
+            ],
+          },
+        ],
+      },
+      { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+    );
 
     auditAiProcessing({
       userId: privacy?.userId,
@@ -421,14 +434,15 @@ async function analyzeDocumentContextWithOpenAI(
   assertPrivacyGuard(withHealthPrivacy(privacy), minimizedText);
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODELS.documentContext,
-      temperature: 0,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: `Si veterinárny asistent. Urči kontext extrahovaného textu z dokumentu (fotka/PDF) a vráť iba JSON.
+    const response = await client.chat.completions.create(
+      {
+        model: MODELS.documentContext,
+        temperature: 0,
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'system',
+            content: `Si veterinárny asistent. Urči kontext extrahovaného textu z dokumentu (fotka/PDF) a vráť iba JSON.
 Formát:
 {
   "documentType": "krmivo|laboratorny-vysledok|veterinarna-sprava|ucet|ine",
@@ -437,13 +451,15 @@ Formát:
   "keyFindings": ["bod 1", "bod 2"],
   "recommendedActions": ["krok 1", "krok 2"]
 }`,
-        },
-        {
-          role: 'user',
-          content: minimizedText,
-        },
-      ],
-    });
+          },
+          {
+            role: 'user',
+            content: minimizedText,
+          },
+        ],
+      },
+      { timeout: OPENAI_LIGHT_TIMEOUT_MS }
+    );
 
     const content = response.choices[0]?.message?.content;
     if (!content) return null;
@@ -514,14 +530,17 @@ async function analyzeExamDocumentWithOpenAI(
     promptPreview: examPrompt.slice(0, 160),
   });
 
-  const response = await client.chat.completions.create({
-    model: MODELS.examAnalysis,
-    temperature: 0.2,
-    messages: [
-      { role: 'system', content: examPrompt },
-      { role: 'user', content: `Analyzuj tento dokument:\n\n${minimizedText}` },
-    ],
-  });
+  const response = await client.chat.completions.create(
+    {
+      model: MODELS.examAnalysis,
+      temperature: 0.2,
+      messages: [
+        { role: 'system', content: examPrompt },
+        { role: 'user', content: `Analyzuj tento dokument:\n\n${minimizedText}` },
+      ],
+    },
+    { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+  );
 
   auditAiProcessing({
     userId: privacy?.userId,
@@ -564,16 +583,19 @@ export async function analyzeVetFile(
 
   const userText = minimizedNote;
 
-  const completion = await client.chat.completions.create({
-    model: MODELS.vetFileVision,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      {
-        role: 'user',
-        content: [{ type: 'text', text: userText }, ...imageContents],
-      },
-    ],
-  });
+  const completion = await client.chat.completions.create(
+    {
+      model: MODELS.vetFileVision,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: [{ type: 'text', text: userText }, ...imageContents],
+        },
+      ],
+    },
+    { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+  );
 
   auditAiProcessing({
     userId: privacy?.userId,
@@ -621,14 +643,15 @@ export async function interpretHealthPassportWithOpenAI(
   }
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODELS.passportInterpret,
-      temperature: 0,
-      response_format: { type: 'json_object' },
-      messages: [
-        {
-          role: 'system',
-          content: `Si veterinárny asistent. Z textu ĽUBOVOĽNÉHO veterinárneho dokumentu (zdravotný pas, laboratórny výsledok, správa od veterinára, recept, prepúšťacia správa, účtenka za odčervenie/antiparazitiká…) extrahuj štruktúrované zdravotné záznamy o zvierati.
+    const response = await client.chat.completions.create(
+      {
+        model: MODELS.passportInterpret,
+        temperature: 0,
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'system',
+            content: `Si veterinárny asistent. Z textu ĽUBOVOĽNÉHO veterinárneho dokumentu (zdravotný pas, laboratórny výsledok, správa od veterinára, recept, prepúšťacia správa, účtenka za odčervenie/antiparazitiká…) extrahuj štruktúrované zdravotné záznamy o zvierati.
 
 VALIDÁCIA VSTUPU: Ak OCR text NEVYZERÁ ako veterinárny dokument (napr. náhodný text, prázdny obsah, kód, urážky, fotka jedla bez kontextu, iný neveterinárny dokument), vráť VÝHRADNE tento JSON:
 { "isValidInput": false, "rejectionReason": "Krátka hláška v slovenčine prečo dokument nie je veterinárny." }
@@ -686,13 +709,15 @@ PRAVIDLÁ PRE IDENTIFIKÁTORY A ZDRAVOTNÉ PRÍZNAKY:
 - allergies: pri alergologickom KRVNOM TESTE (napr. IgE panel s alergénmi a triedou/AU·ml) vráť LEN POZITÍVNE alergény — tie s triedou ≥ 1, resp. hodnotou AU·ml ≥ 0.35. Negatívne (Trieda 0 / hodnota < 0.35) IGNORUJ. V inom dokumente extrahuj alergie len keď je sekcia "alergie"/"intolerancie". Ak nič, vráť [].
 - Pre dateOfBirth striktne YYYY-MM-DD; ak je dátum nejasný, vráť "".
 Ak údaj v texte chýba, použi prázdny string alebo pole.`,
-        },
-        {
-          role: 'user',
-          content: wrapOcrForPrompt(trimmedText),
-        },
-      ],
-    });
+          },
+          {
+            role: 'user',
+            content: wrapOcrForPrompt(trimmedText),
+          },
+        ],
+      },
+      { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+    );
 
     auditAiProcessing({
       userId: privacy?.userId,
@@ -1548,15 +1573,18 @@ async function callOpenAI(
   );
   assertPrivacyGuard(privacy ?? { processesHealthData: false }, userMessage);
 
-  const response = await client.chat.completions.create({
-    model: MODELS.feedAnalysis,
-    temperature: 0.3,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: userMessage },
-    ],
-  });
+  const response = await client.chat.completions.create(
+    {
+      model: MODELS.feedAnalysis,
+      temperature: 0.3,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userMessage },
+      ],
+    },
+    { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+  );
 
   auditAiProcessing({
     userId: privacy?.userId,
@@ -1568,7 +1596,12 @@ async function callOpenAI(
   const content = response.choices[0]?.message?.content;
   if (!content) throw new Error('Empty response from OpenAI');
 
-  const parsed = JSON.parse(content) as Record<string, unknown>;
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(content) as Record<string, unknown>;
+  } catch {
+    throw new Error('Neplatná odpoveď z OpenAI (nevalidný JSON).');
+  }
   if (parsed?.isValidInput === false) {
     const reason =
       typeof parsed.rejectionReason === 'string' && parsed.rejectionReason.trim().length > 0
@@ -1581,6 +1614,7 @@ async function callOpenAI(
 
 export class InvalidAiInputError extends Error {
   readonly code = 'INVALID_AI_INPUT';
+  readonly status = 400;
   constructor(message: string) {
     super(message);
     this.name = 'InvalidAiInputError';
@@ -1616,12 +1650,16 @@ export async function callAiModel(
     return await callOpenAI(composition, petProfile, privacy);
   } catch (err) {
     if (err instanceof InvalidAiInputError) throw err;
-    console.error('[AI Service] First attempt failed:', err);
+    logger.warn('[AI Service] Prvý pokus o analýzu zlyhal, skúšam znova', {
+      message: err instanceof Error ? err.message : String(err),
+    });
     try {
       return await callOpenAI(composition, petProfile, privacy);
     } catch (retryErr) {
       if (retryErr instanceof InvalidAiInputError) throw retryErr;
-      console.error('[AI Service] Retry failed:', retryErr);
+      logger.error('[AI Service] Opakovaný pokus o analýzu zlyhal', {
+        message: retryErr instanceof Error ? retryErr.message : String(retryErr),
+      });
       throw new Error('Nepodarilo sa analyzovať zloženie. Skús to znova neskôr.');
     }
   }

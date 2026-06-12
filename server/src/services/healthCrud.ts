@@ -4,6 +4,12 @@ import type { EntityMapper } from './healthMappers';
 
 type Row = Record<string, unknown>;
 
+function assertObjectBody(body: unknown): void {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw httpError(400, 'Neplatné telo požiadavky.', 'INVALID_INPUT');
+  }
+}
+
 export interface Crud<Dto extends { id: string; petId: string }> {
   list: (appUserId: string) => Promise<Dto[]>;
   create: (appUserId: string, dto: Partial<Dto>) => Promise<Dto>;
@@ -27,6 +33,7 @@ export function makeCrud<Dto extends { id: string; petId: string }>(
     },
 
     async create(appUserId, dto) {
+      assertObjectBody(dto);
       if (!dto.petId) throw httpError(400, 'Chýba petId.', 'INVALID_INPUT');
       const row = { ...mapper.toRow(dto), pet_id: dto.petId };
       const { data, error } = await supabase().rpc('app_create_health_row', {
@@ -39,6 +46,7 @@ export function makeCrud<Dto extends { id: string; petId: string }>(
     },
 
     async update(appUserId, id, dto) {
+      assertObjectBody(dto);
       const payload = mapper.toRow(dto);
       const { data, error } = await supabase().rpc('app_update_health_row', {
         p_app_user_id: appUserId,
