@@ -185,22 +185,11 @@ export default function HealthMetricCard({
       onClick={onOpen}
       sx={{
         position: 'relative',
-        overflow: 'hidden',
         p: 2,
-        pl: 2.25,
         cursor: onOpen ? 'pointer' : 'default',
-        borderColor: alpha(toneColor, 0.35),
+        borderColor: alpha(toneColor, 0.25),
         bgcolor: surface,
         transition: 'transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: '3px',
-          bgcolor: toneColor,
-        },
         '&:hover': onOpen
           ? {
               transform: 'translateY(-1px)',

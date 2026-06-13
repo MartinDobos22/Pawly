@@ -17,11 +17,13 @@ import {
   PictureAsPdf as PdfIcon,
   Clear as ClearIcon,
   TuneOutlined as TuneIcon,
+  Check as CheckIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/petHealth';
 import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 import { statusColor } from './utils.ts';
+import { md3 } from './md3';
 import { relativeDate } from '../../utils/relativeDate';
 
 const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');
@@ -96,19 +98,21 @@ export default function HealthTimeline({
   }, [visible]);
 
   const isAllActive = selected.size === 0;
+  const m = md3(theme);
   const hoverShadow = `0 6px 18px ${alpha(
     theme.palette.common.black,
     theme.palette.mode === 'dark' ? 0.4 : 0.12
   )}`;
-  const isDark = theme.palette.mode === 'dark';
 
   const filterChipSx = (active: boolean): SxProps<Theme> => ({
     fontWeight: 600,
-    border: 0,
-    color: active ? 'background.paper' : 'text.secondary',
-    bgcolor: active ? 'text.primary' : alpha(theme.palette.text.primary, isDark ? 0.07 : 0.05),
+    borderRadius: m.shape.sm,
+    border: active ? 0 : `1px solid ${m.outline}`,
+    color: active ? m.onSecondaryContainer : 'text.secondary',
+    bgcolor: active ? m.secondaryContainer : 'transparent',
+    '& .MuiChip-icon': { color: 'inherit', ml: 0.5, mr: -0.25 },
     '&:hover': {
-      bgcolor: active ? 'text.primary' : alpha(theme.palette.text.primary, isDark ? 0.12 : 0.09),
+      bgcolor: active ? m.secondaryContainer : m.state(theme.palette.text.primary),
     },
   });
 
@@ -192,6 +196,7 @@ export default function HealthTimeline({
           size="small"
           clickable
           aria-pressed={isAllActive}
+          icon={isAllActive ? <CheckIcon sx={{ fontSize: 16 }} /> : undefined}
           onClick={() => toggleType('ALL')}
           sx={filterChipSx(isAllActive)}
         />
@@ -205,6 +210,7 @@ export default function HealthTimeline({
               size="small"
               clickable
               aria-pressed={isActive}
+              icon={isActive ? <CheckIcon sx={{ fontSize: 16 }} /> : undefined}
               onClick={() => toggleType(type)}
               sx={filterChipSx(isActive)}
             />
