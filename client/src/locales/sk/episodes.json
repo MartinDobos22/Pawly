@@ -1,26 +1,26 @@
 {
   "hints": {
-    "category": "Zdravotná oblasť epizódy (tráviace, kožné, pohybové…). Pomáha filtrovať a hľadať podobné minulé epizódy pre kontext.",
+    "category": "Zdravotná oblasť záznamu (tráviace, kožné, pohybové…). Pomáha filtrovať a hľadať podobné minulé záznamy pre kontext.",
     "attachments": "Pridaj fotky alebo PDF (výsledky vyšetrení, fotky príznakov). Veľké obrázky sa automaticky zmenšujú aby šetrili miesto.",
-    "similarSummary": "AI sumár podobných minulých epizód — pomôže ti vidieť čo zabralo predtým a uľahčí komunikáciu s veterinárom.",
-    "severity": "Závažnosť epizódy: ľahká (drobné), stredná (potrebuje pozornosť), ťažká (návšteva veterinára nutná)."
+    "similarSummary": "AI sumár podobných minulých záznamov — pomôže ti vidieť čo zabralo predtým a uľahčí komunikáciu s veterinárom.",
+    "severity": "Závažnosť záznamu: ľahká (drobné), stredná (potrebuje pozornosť), ťažká (návšteva veterinára nutná)."
   },
   "page": {
-    "title": "Denník epizód",
-    "description": "Zaznamenávaj zdravotné epizódy svojho zvieraťa — čo zabralo a čo nie. Pri budúcom výskyte uvidíš overené riešenie.",
+    "title": "Zdravotný denník",
+    "description": "Zaznamenávaj zdravotné záznamy svojho zvieraťa — čo zabralo a čo nie. Pri budúcom výskyte uvidíš overené riešenie.",
     "noPetsTitle": "Najprv si vytvor profil zvieraťa",
-    "noPetsDescription": "Denník epizód potrebuje aspoň jeden profil zvieraťa.",
+    "noPetsDescription": "Zdravotný denník potrebuje aspoň jeden profil zvieraťa.",
     "createProfile": "Vytvoriť profil",
-    "newEpisode": "Nová epizóda",
+    "newEpisode": "Nový záznam",
     "dogSelect": "Zviera",
     "storageUsage": "Úložisko: {{used}} MB / {{limit}} MB",
-    "storageWarning": "Úložisko príloh sa blíži k limitu ({{used}} MB / {{limit}} MB). Zváž zmazanie starších epizód alebo uloženie bez prílohy."
+    "storageWarning": "Úložisko príloh sa blíži k limitu ({{used}} MB / {{limit}} MB). Zváž zmazanie starších záznamov alebo uloženie bez prílohy."
   },
   "empty": {
-    "noEpisodesTitle": "Zatiaľ žiadne epizódy",
+    "noEpisodesTitle": "Zatiaľ žiadne záznamy",
     "noEpisodesDescription": "Zaznamenaj zdravotné stavy svojho zvieraťa — čo zabralo a čo nie. Pri budúcom výskyte uvidíš overené riešenie.",
-    "addFirst": "Pridať prvú epizódu",
-    "noFilterResultsTitle": "Žiadne epizódy v aktuálnom filtri",
+    "addFirst": "Pridať prvý záznam",
+    "noFilterResultsTitle": "Žiadne záznamy v aktuálnom filtri",
     "noFilterResultsDescription": "Skús odstrániť kategóriu alebo vymazať vyhľadávanie."
   },
   "category": {
@@ -43,10 +43,10 @@
     "severe": "Závažná"
   },
   "form": {
-    "titleNew": "Nová epizóda",
-    "titleEdit": "Upraviť epizódu",
-    "symptomTitle": "Názov symptómu",
-    "symptomTitlePlaceholder": "napr. Reflux, Hnačka, Krívanie",
+    "titleNew": "Nový záznam",
+    "titleEdit": "Upraviť záznam",
+    "symptomTitle": "Čo sa stalo?",
+    "symptomTitlePlaceholder": "napr. Kliešť, Hnačka, Krívanie",
     "symptomDescription": "Popis",
     "symptomContext": "Symptóm a kontext",
     "category": "Kategória",
@@ -82,19 +82,19 @@
     "searchPlaceholder": "Hľadať v symptómoch, liečbe, poznámkach…"
   },
   "delete": {
-    "confirm": "Naozaj zmazať epizódu \"{{title}}\"?"
+    "confirm": "Naozaj zmazať záznam \"{{title}}\"?"
   },
   "similar": {
-    "title": "Podobné epizódy",
+    "title": "Podobné záznamy",
     "findSimilar": "Nájsť podobné z minulosti",
-    "loading": "Hľadám podobné epizódy a sumarizujem...",
-    "noSelected": "Žiadna epizóda nie je vybraná.",
-    "pastList": "Podobné epizódy v minulosti",
+    "loading": "Hľadám podobné záznamy a sumarizujem...",
+    "noSelected": "Žiadny záznam nie je vybraný.",
+    "pastList": "Podobné záznamy v minulosti",
     "summary": "Zhrnutie",
     "recommendation": "Odporúčanie",
-    "noSimilar": "V histórii zatiaľ nie sú žiadne podobné epizódy. Pri závažnejšom stave sa poraď s veterinárom.",
-    "aiError": "AI sumarizáciu sa nepodarilo načítať: {{error}}. Zobrazujem aspoň lokálne podobné epizódy podľa kategórie.",
-    "noLocalSimilar": "V histórii nie sú žiadne epizódy v rovnakej kategórii.",
+    "noSimilar": "V histórii zatiaľ nie sú žiadne podobné záznamy. Pri závažnejšom stave sa poraď s veterinárom.",
+    "aiError": "AI sumarizáciu sa nepodarilo načítať: {{error}}. Zobrazujem aspoň lokálne podobné záznamy podľa kategórie.",
+    "noLocalSimilar": "V histórii nie sú žiadne záznamy v rovnakej kategórii.",
     "workedLabel": "Zabralo:"
   },
   "item": {

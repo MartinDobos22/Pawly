@@ -11,6 +11,29 @@
     "restartTourCta": "Spustiť sprievodcu",
     "close": "Zavrieť"
   },
+  "featureIntro": {
+    "dismiss": "Zavrieť",
+    "diary": {
+      "title": "Na čo slúži Zdravotný denník",
+      "body": "Zapisuj si, čo sa zvieraťu stalo a čo zabralo — pri ďalšom výskyte uvidíš overené riešenie.",
+      "example": "Napr. „Kliešť na chrbte → odstránený, podaný Bravecto, zabralo.“"
+    },
+    "passport": {
+      "title": "Na čo slúži Zdravotný pas",
+      "body": "Maj vakcinácie, odčervenia, lieky aj váhu na jednom mieste a stráž si termíny.",
+      "example": "Napr. budúci termín preočkovania proti besnote a história návštev."
+    },
+    "vetCard": {
+      "title": "Na čo slúži Karta pre veterinára",
+      "body": "Pred návštevou si vytlač prehľadný súhrn so všetkým, čo veterinár potrebuje vedieť.",
+      "example": "Napr. aktívne lieky, posledné vakcinácie a nedávne ťažkosti na jednom liste."
+    },
+    "analyze": {
+      "title": "Na čo slúži Analýza",
+      "body": "Odfoť alebo vlož zloženie krmiva a AI ti povie, či sedí tvojmu zvieraťu.",
+      "example": "Napr. upozornenie na alergén kura pri psovi s potravinovou alergiou."
+    }
+  },
   "onboarding": {
     "skip": "Preskočiť",
     "back": "Späť",
@@ -27,8 +50,8 @@
         "body": "Vytvor profil zvieraťa, doplň alergie a veďvedú zdravotný pas — vakcinácie, odčervenia, lieky aj váhu."
       },
       "diary": {
-        "title": "Denník a karta pre veterinára",
-        "body": "Zapisuj zdravotné epizódy a pred návštevou veterinára si vytlač prehľadnú kartu so všetkým, čo potrebuje vedieť."
+        "title": "Zdravotný denník a karta pre veterinára",
+        "body": "Zapisuj zdravotné záznamy a pred návštevou veterinára si vytlač prehľadnú kartu so všetkým, čo potrebuje vedieť."
       },
       "install": {
         "title": "Nainštaluj si appku",

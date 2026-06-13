@@ -1,8 +1,10 @@
 import { Box, Card, Skeleton, Stack, Typography } from '@mui/material';
+import { Description as DescriptionIcon } from '@mui/icons-material';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import FeatureIntro from '../components/FeatureIntro';
 import ClinicalHistory from '../components/vetCard/ClinicalHistory';
 import {
   DEFAULT_EXPORT_SECTIONS,
@@ -1167,6 +1169,7 @@ export default function VetCardPage() {
 
   return (
     <Box sx={{ maxWidth: '100%', overflowX: 'clip' }}>
+      <FeatureIntro featureKey="vetCard" icon={<DescriptionIcon />} hideOnPrint />
       <VetCardActionBar
         exportSections={exportSections}
         onChangeSections={setExportSections}

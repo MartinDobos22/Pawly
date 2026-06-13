@@ -11,6 +11,29 @@
     "restartTourCta": "Start tour",
     "close": "Close"
   },
+  "featureIntro": {
+    "dismiss": "Dismiss",
+    "diary": {
+      "title": "What the Health Diary is for",
+      "body": "Log what happened to your pet and what worked — next time you'll see a proven solution.",
+      "example": "e.g. “Tick on the back → removed, gave Bravecto, worked.”"
+    },
+    "passport": {
+      "title": "What the Health Passport is for",
+      "body": "Keep vaccinations, dewormings, medications and weight in one place and track due dates.",
+      "example": "e.g. the next rabies booster date and a history of visits."
+    },
+    "vetCard": {
+      "title": "What the Vet Card is for",
+      "body": "Print a clear summary with everything the vet needs before each visit.",
+      "example": "e.g. active medications, recent vaccinations and recent issues on one page."
+    },
+    "analyze": {
+      "title": "What the Analysis is for",
+      "body": "Snap or paste a food's ingredients and AI tells you whether it suits your pet.",
+      "example": "e.g. a chicken allergen warning for a dog with a food allergy."
+    }
+  },
   "onboarding": {
     "skip": "Skip",
     "back": "Back",
@@ -27,8 +50,8 @@
         "body": "Create a pet profile, add allergies and keep a health passport — vaccinations, dewormings, medications and weight."
       },
       "diary": {
-        "title": "Diary and vet card",
-        "body": "Log health episodes and print a clear vet card with everything the vet needs before each visit."
+        "title": "Health diary and vet card",
+        "body": "Log health records and print a clear vet card with everything the vet needs before each visit."
       },
       "install": {
         "title": "Install the app",

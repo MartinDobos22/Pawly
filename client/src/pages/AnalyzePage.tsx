@@ -25,6 +25,7 @@ import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
+import FeatureIntro from '../components/FeatureIntro';
 import HelpHint from '../components/HelpHint';
 import FoodSafetyCheck from '../components/analyze/FoodSafetyCheck';
 import ScoreCard from '../components/ScoreCard';
@@ -192,6 +193,7 @@ export default function AnalyzePage() {
 
   return (
     <Box>
+      <FeatureIntro featureKey="analyze" icon={<ScienceIcon />} />
       <AnalyzeHero />
 
       <Box
