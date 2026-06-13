@@ -134,7 +134,7 @@ export default function HealthMetricCard({
             sx={{
               width: 36,
               height: 36,
-              borderRadius: 1.5,
+              borderRadius: 2,
               bgcolor: alpha(theme.palette.text.secondary, 0.08),
               color: 'text.secondary',
               display: 'flex',
@@ -185,15 +185,29 @@ export default function HealthMetricCard({
       onClick={onOpen}
       sx={{
         position: 'relative',
+        overflow: 'hidden',
         p: 2,
+        pl: 2.25,
         cursor: onOpen ? 'pointer' : 'default',
         borderColor: alpha(toneColor, 0.35),
         bgcolor: surface,
         transition: 'transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '3px',
+          bgcolor: toneColor,
+        },
         '&:hover': onOpen
           ? {
               transform: 'translateY(-1px)',
-              boxShadow: '0 6px 18px rgba(15,76,92,0.10)',
+              boxShadow: `0 6px 18px ${alpha(
+                theme.palette.common.black,
+                theme.palette.mode === 'dark' ? 0.4 : 0.12
+              )}`,
             }
           : undefined,
       }}
@@ -205,7 +219,7 @@ export default function HealthMetricCard({
               sx={{
                 width: 36,
                 height: 36,
-                borderRadius: 1.5,
+                borderRadius: 2,
                 bgcolor: alpha(toneColor, 0.16),
                 color: toneColor,
                 display: 'flex',

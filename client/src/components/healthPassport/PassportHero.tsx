@@ -169,7 +169,7 @@ export default function PassportHero({
         mb: 2.5,
         position: 'relative',
         overflow: 'hidden',
-        borderRadius: 4,
+        borderRadius: 3,
         bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.12),
         border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
       }}
@@ -205,7 +205,10 @@ export default function PassportHero({
               fontWeight: 700,
               fontSize: { xs: '1.5rem', md: '1.9rem' },
               border: `3px solid ${theme.palette.background.paper}`,
-              boxShadow: '0 2px 8px rgba(15,76,92,0.10)',
+              boxShadow: `0 2px 8px ${alpha(
+                theme.palette.common.black,
+                theme.palette.mode === 'dark' ? 0.4 : 0.1
+              )}`,
             }}
           >
             {initials(dog.name) || <PetsIcon />}
@@ -275,7 +278,6 @@ export default function PassportHero({
                 startIcon={<AddIcon />}
                 onClick={onAddRecord}
                 size="large"
-                sx={{ boxShadow: '0 4px 14px rgba(15,76,92,0.25)' }}
               >
                 {t('hero.addRecord')}
               </Button>

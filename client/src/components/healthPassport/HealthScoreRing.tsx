@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Stack, Tooltip, Typography, alpha, useTheme } from '@mui/material';
 
 export interface ScoreBreakdownItem {
   label: string;
@@ -15,13 +15,6 @@ interface Props {
   breakdown?: ScoreBreakdownItem[];
   incomplete?: boolean;
 }
-
-const statusDot: Record<ScoreBreakdownItem['status'], string> = {
-  good: '#2F7D5B',
-  soon: '#B8860B',
-  bad: '#B4452C',
-  unknown: '#9AA0A2',
-};
 
 export default function HealthScoreRing({
   score,
@@ -56,8 +49,14 @@ export default function HealthScoreRing({
         ? theme.palette.warning.main
         : theme.palette.error.main;
 
-  const trackColor =
-    theme.palette.mode === 'light' ? 'rgba(15,76,92,0.10)' : 'rgba(255,255,255,0.10)';
+  const statusDot: Record<ScoreBreakdownItem['status'], string> = {
+    good: theme.palette.success.main,
+    soon: theme.palette.warning.main,
+    bad: theme.palette.error.main,
+    unknown: theme.palette.text.secondary,
+  };
+
+  const trackColor = alpha(theme.palette.text.primary, 0.1);
 
   const glowFilter =
     theme.palette.mode === 'dark' && hasScore ? `drop-shadow(0 0 6px ${color}55)` : undefined;
