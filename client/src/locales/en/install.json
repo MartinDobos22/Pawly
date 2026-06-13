@@ -46,7 +46,11 @@
           "a": "In Analysis, paste the food's ingredients as text or photograph the packaging. The AI rates the quality and flags ingredients that clash with the allergies in your pet's profile."
         },
         {
-          "q": "4. Prepare the vet card",
+          "q": "4. Log episodes in the diary",
+          "a": "In the Diary you record health episodes — vomiting, limping, skin issues or behaviour changes — with a date, category and note. For each new episode the AI pulls a summary of similar past records so you can spot the connections."
+        },
+        {
+          "q": "5. Prepare the vet card",
           "a": "The Vet Card produces a clean, print-ready (A4) summary — take it to a check-up or share it with your treating vet."
         }
       ]

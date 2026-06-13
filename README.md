@@ -1,145 +1,146 @@
-# GranuleCheck – Hodnotenie psích granúl 🐕
+# Pawly – Digitálny zdravotný pas a analýza krmiva pre domáce zvieratá 🐾
 
-Inteligentná PWA aplikácia na analýzu zloženia psích granúl a zdravotných podkladov. Môžete skopírovať text pre analýzu granúl alebo nahrať PDF/fotku (napr. veterinárny bloček, krvné testy, alergologické výsledky) a aplikácia vypíše extrahovaný obsah súboru.
+Pawly je PWA aplikácia, ktorá drží zdravotnú agendu tvojho miláčika na jednom mieste a pomáha ti rozhodovať sa o jeho strave. Vieš si viesť **profily zvierat**, **zdravotný pas** (očkovania, odčervenia, ošetrenia proti parazitom, chronické stavy), **denník zdravotných epizód**, pripraviť **kartu pre veterinára** na tlač a nechať si AI **vyhodnotiť zloženie krmiva** voči alergiám konkrétneho zvieraťa. Zdravotnú kartu alebo výsledky vyšetrení môžeš odfotiť/nahrať ako PDF a AI z nich vytiahne štruktúrované záznamy (OCR).
 
 ## Technológie
 
-| Vrstva       | Technológie                                          |
-| ------------ | ---------------------------------------------------- |
-| **Frontend** | React 18, TypeScript, Material UI 5 (MD3 štýl), Vite |
-| **Backend**  | Node.js, Express, TypeScript                         |
-| **PWA**      | Service Worker, Web App Manifest, Offline podpora    |
+| Vrstva        | Technológie                                                               |
+| ------------- | ------------------------------------------------------------------------- |
+| **Frontend**  | React 18, TypeScript, Material UI 6 (MD3), Vite, react-i18next (SK/EN)    |
+| **Backend**   | Node.js, Express, TypeScript                                              |
+| **AI / OCR**  | OpenAI SDK, Google Vision API                                             |
+| **Auth**      | Firebase Authentication (ID token na každom `/api/*` okrem `/api/health`) |
+| **Databáza**  | Supabase (PostgreSQL, RLS deny-by-default, prístup len cez backend)       |
+| **PWA**       | Service Worker, Web App Manifest, offline fallback                        |
+| **Nasadenie** | Netlify (frontend) + Render (backend)                                     |
+
+> Pôvodný projekt „GranuleCheck" sa rozrástol z čistej analýzy granúl na celú zdravotnú agendu. História návrhu je v `docs/dog-health-modules-design.md`.
+
+## Funkcie a routy (SK slugy)
+
+| Route                                          | Stránka                         | Doména                                                    |
+| ---------------------------------------------- | ------------------------------- | --------------------------------------------------------- |
+| `/analyza`                                     | `AnalyzePage`                   | Analýza krmiva (text alebo PDF/foto) + food-safety otázky |
+| `/profily`                                     | `PetProfilePage`                | Profily zvierat (alergie, intolerancie, zdravotné stavy)  |
+| `/zdravotny-pas/*`                             | `HealthPassportPage`            | Zdravotný pas + AI import z fotenej karty                 |
+| `/dennik`                                      | `EpisodeDiaryPage`              | Denník epizód + AI zhrnutie podobných minulých záznamov   |
+| `/karta-pre-veterinara`                        | `VetCardPage`                   | Print-ready (A4) súhrn pre veterinára                     |
+| `/historia`                                    | `HistoryPage`                   | História uložených analýz                                 |
+| `/notifikacie`                                 | `NotificationsPage`             | Pripomienky (očkovania, odčervenia, …)                    |
+| `/nastavenia`, `/info`, `/kontakt`, `/podpora` | `Settings/Info/Contact/Support` | Nastavenia, FAQ, kontakt, podpora projektu                |
+
+Verejné (bez prihlásenia): `/` (landing), `/login`, `/register`, `/overenie-emailu`, `/reset-hesla`, `/ochrana-sukromia`.
+
+## API endpointy (`server/src/routes/`)
+
+`analyze`, `episodes`, `extract-text`, `interpret-passport`, `food-safety`, `health`, `pets`, `account`, `notifications`, `cron`, `authEmails`. AI/OCR endpointy bežia za per-IP rate limitom (`aiHeavyLimiter`) aj per-user denným capom (`requireAiQuota`).
 
 ## Štruktúra projektu
 
 ```
-granule-check/
-├── client/                     # Frontend (Vite + React)
-│   ├── public/
-│   │   ├── manifest.json       # PWA manifest
-│   │   ├── offline.html        # Offline fallback stránka
-│   │   ├── sw.js               # Service Worker
-│   │   └── icons/              # PWA ikony (192px, 512px)
-│   ├── src/
-│   │   ├── main.tsx            # Vstupný bod
-│   │   ├── App.tsx             # Router + Theme provider
-│   │   ├── theme.ts            # MD3 light + dark téma
-│   │   ├── components/
-│   │   │   ├── Layout.tsx      # Spotify-like layout (drawer/bottom nav)
-│   │   │   ├── ScoreCard.tsx   # Kruhové skóre 0-100
-│   │   │   ├── ProsConsCard.tsx # Výhody / Nevýhody
-│   │   │   └── RecommendationChip.tsx # Odporúčania
-│   │   ├── pages/
-│   │   │   ├── AnalyzePage.tsx # Hlavná stránka s formulárom
-│   │   │   ├── HistoryPage.tsx # História uložených analýz
-│   │   │   └── AboutPage.tsx   # O aplikácii
-│   │   ├── hooks/
-│   │   │   ├── useAnalyze.ts   # Hook pre API volanie
-│   │   │   └── useLocalStorage.ts # Generic localStorage hook
-│   │   ├── services/
-│   │   │   └── api.ts          # Fetch wrapper pre /api/analyze
-│   │   └── types/
-│   │       └── index.ts        # TypeScript rozhrania
-│   ├── index.html
-│   ├── vite.config.ts
-│   └── package.json
-├── server/                     # Backend (Express)
-│   ├── src/
-│   │   ├── index.ts            # Express server (port 3001)
-│   │   ├── routes/
-│   │   │   └── analyze.ts      # POST /api/analyze
-│   │   ├── services/
-│   │   │   └── aiService.ts    # Mock AI analýza zloženia
-│   │   ├── middleware/
-│   │   │   └── errorHandler.ts # Globálny error handler
-│   │   └── types/
-│   │       └── index.ts        # Zdieľané TypeScript typy
-│   ├── tsconfig.json
-│   └── package.json
-└── README.md
+Pawly/
+├── client/                 # Frontend (Vite + React 18 + MUI 6 + PWA)
+│   ├── public/             # manifest.json, sw.js, offline.html, icons/
+│   └── src/
+│       ├── pages/          # Route-level stránky
+│       ├── components/     # Reusable UI (episodes/, healthPassport/, vetCard/, landing/, …)
+│       ├── hooks/          # Custom hooky (jeden hook = jeden súbor)
+│       ├── contexts/       # PetProfilesContext, HealthDataContext, Auth
+│       ├── services/       # API klienti (api.ts, dogHealthApi.ts, petsApi.ts, healthApi.ts)
+│       ├── locales/        # i18n preklady (sk/, en/)
+│       └── theme.ts        # MD3 light + dark — jediné miesto pre farby
+├── server/                 # Backend (Express + TS)
+│   └── src/
+│       ├── routes/         # API endpointy
+│       ├── services/       # AI/OCR/business logika (aiService, episodeAiService, …)
+│       ├── middleware/     # firebaseAuth, ensureUser, aiQuota, errorHandler (vždy posledný)
+│       ├── config/         # firebase.ts, supabase.ts
+│       └── utils/          # logger, sanitizeOcrText, …
+├── supabase/migrations/    # SQL migrácie (0001 → …)
+├── docs/                   # Produktové a prevádzkové dokumenty
+├── netlify.toml            # Frontend deploy (Netlify)
+├── render.yaml             # Backend deploy (Render)
+└── .claude/                # Projektové pravidlá, skills, agenti, hooks
 ```
 
 ## Inštalácia a spustenie
 
 ### Predpoklady
 
-- **Node.js 18+** (odporúčame 20 LTS)
-- **npm** 9+
+- **Node.js 20 LTS**, **npm 9+**
+- Účty/kľúče pre: OpenAI, Google Vision, Firebase (Auth) a Supabase (DB)
 
 ### 1. Inštalácia závislostí
 
 ```bash
-# Backend
-cd server
-npm install
-
-# Frontend
-cd ../client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
-### 2. Spustenie vývojového servera
+### 2. Konfigurácia premenných prostredia
 
-V dvoch termináloch:
+Vytvor `server/.env` a `client/.env` podľa `.claude/rules/env-vars.md`. Minimum:
+
+```env
+# server/.env
+OPENAI_API_KEY=...
+GOOGLE_VISION_API_KEY=...
+FIREBASE_PROJECT_ID=...
+FIREBASE_CLIENT_EMAIL=...
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+CORS_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
+```
+
+```env
+# client/.env
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_APP_ID=...
+# VITE_API_URL=  # prázdne v dev → Vite proxy na :3001
+```
+
+> **NIKDY** necommituj `.env`. `SUPABASE_SERVICE_ROLE_KEY` obchádza RLS — v lokálnom `.env` používaj **dev** Supabase projekt, nie produkčný. Detaily v `.claude/rules/env-vars.md` a `docs/security-checklist.md`.
+
+### 3. Databáza (Supabase)
+
+Spusti migrácie z `supabase/migrations/` v poradí cez Supabase SQL editor.
+
+### 4. Vývojový server
 
 ```bash
 # Terminál 1 – Backend (port 3001)
-cd server
-npm run dev
+cd server && npm run dev
 
 # Terminál 2 – Frontend (port 5173)
-cd client
-npm run dev
+cd client && npm run dev
 ```
 
-Aplikácia bude dostupná na **http://localhost:5173**
+Aplikácia beží na **http://localhost:5173**, API na **http://localhost:3001** (Vite proxuje `/api/*`).
 
-## Testovanie na mobile
+### Užitočné skripty
 
-1. Zistite IP adresu vášho počítača (napr. `192.168.1.100`)
-2. Uistite sa, že mobil je na rovnakej Wi-Fi sieti
-3. Vo `vite.config.ts` pridajte do `server` bloku:
-   ```ts
-   host: '0.0.0.0';
-   ```
-4. Na mobile otvorte `http://192.168.1.100:5173`
-5. V Chrome: menu → "Pridať na plochu" pre PWA zážitok
+| Príkaz               | Účel                               |
+| -------------------- | ---------------------------------- |
+| `npm run build`      | Produkčný build (client aj server) |
+| `npm run type-check` | `tsc --noEmit` (slúži aj ako lint) |
 
-## Generovanie PWA ikon
+## PWA
 
-Aktuálne ikony sú placeholder. Pre produkciu:
+Pri zmene statických aktív (manifest, ikony, app shell) **vždy zvýš `CACHE_VERSION`** v `client/public/sw.js`, inak používatelia uvidia starú verziu. `offline.html` musí byť self-contained (žiadne externé fonty/CSS). SW sa registruje len v produkcii.
 
-1. Navštívte [realfavicongenerator.net](https://realfavicongenerator.net)
-2. Nahrajte logo vo formáte SVG/PNG (min. 512×512)
-3. Stiahnuté ikony nahraďte v `client/public/icons/`
+## Nasadenie
 
-## Konfigurácia AI a OCR
+- **Frontend → Netlify** (`netlify.toml`): base `client`, build `npm run build`, publish `dist`, SPA fallback na `index.html`.
+- **Backend → Render** (`render.yaml`): rootDir `server`, healthcheck `/api/health`. Premenné (`OPENAI_API_KEY`, `SUPABASE_*`, `FIREBASE_*`, `CORS_ORIGIN`, …) nastav v Render dashboard — `sync: false`, nikdy v repo.
+- **Notifikácie:** denný cron (cron-job.org) volá `POST /api/cron/notifications` s hlavičkou `x-cron-secret`. Postup v `docs/cron-notifications-setup.md`.
 
-Backend používa:
+## Dokumentácia
 
-- `OPENAI_API_KEY` pre analýzu granúl a normalizáciu textu.
-- `GOOGLE_VISION_API_KEY` pre OCR sken obrázkov cez Google Vision API.
-
-Príklad `.env` pre backend:
-
-```env
-OPENAI_API_KEY=...
-GOOGLE_VISION_API_KEY=...
-```
-
-## Ďalšie kroky pre produkciu
-
-- [ ] **Databáza** – PostgreSQL / MongoDB pre ukladanie analýz
-- [ ] **Autentifikácia** – Prihlasovanie používateľov (Google OAuth, email)
-- [ ] **Reálne AI** – Napojenie na Claude / GPT pre skutočnú analýzu
-- [ ] **Deployment** – Docker + Vercel (frontend) + Railway/Fly.io (backend)
-- [ ] **Testy** – Vitest (unit), Playwright (E2E)
-- [ ] **CI/CD** – GitHub Actions pre automatický build a deploy
-- [ ] **SEO** – Server-side rendering alebo prerendering
-- [ ] **Notifikácie** – Push notifikácie pre nové funkcie
-
-## Produktový návrh rozšírení
-
-Detailný návrh dátového modelu, API vrstvy, UX flow a notifikačných pravidiel pre „zdravotný pas psa“ nájdete v dokumente `docs/dog-health-modules-design.md`.
-
-Nastavenie denného notifikačného cronu (cron-job.org + Render env premenné) a riešenie `503` chýb nájdete v `docs/cron-notifications-setup.md`.
+- `.claude/rules/` — záväzné projektové konvencie (architektúra, PWA, env premenné, zdravotný pas, …)
+- `docs/dog-health-modules-design.md` — návrh dátového modelu zdravotného pasu
+- `docs/security-checklist.md` — bezpečnosť, backup, postup pri leaku kľúča
+- `docs/cron-notifications-setup.md` — nastavenie notifikačného cronu
+- `docs/launch-test-plan.md` — testovací plán pred spustením

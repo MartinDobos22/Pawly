@@ -46,7 +46,11 @@
           "a": "V Analýze vlož zloženie krmiva textom alebo odfoť obal. AI vyhodnotí kvalitu a upozorní na zložky, ktoré nesedia s alergiami z profilu tvojho zvieraťa."
         },
         {
-          "q": "4. Priprav kartu pre veterinára",
+          "q": "4. Zapisuj epizódy do denníka",
+          "a": "V Denníku si zaznamenáš zdravotné epizódy — zvracanie, kuľhanie, kožné problémy či zmeny správania — s dátumom, kategóriou a poznámkou. AI ti k novej epizóde vytiahne zhrnutie podobných minulých záznamov, aby si videl súvislosti."
+        },
+        {
+          "q": "5. Priprav kartu pre veterinára",
           "a": "Karta pre veterinára spraví prehľadný súhrn na tlač (A4) — vezmi ho so sebou na kontrolu alebo ho zdieľaj s ošetrujúcim lekárom."
         }
       ]
