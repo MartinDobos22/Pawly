@@ -1,26 +1,26 @@
 {
   "hints": {
-    "category": "The health area of the episode (digestive, skin, mobility…). It helps you filter and find similar past episodes for context.",
+    "category": "The health area of the record (digestive, skin, mobility…). It helps you filter and find similar past records for context.",
     "attachments": "Attach photos or PDFs (test results, symptom photos). Large images are automatically downscaled to save storage.",
-    "similarSummary": "AI summary of similar past episodes — helps you see what worked before and makes vet communication easier.",
-    "severity": "Episode severity: mild (minor), moderate (needs attention), severe (vet visit required)."
+    "similarSummary": "AI summary of similar past records — helps you see what worked before and makes vet communication easier.",
+    "severity": "Record severity: mild (minor), moderate (needs attention), severe (vet visit required)."
   },
   "page": {
     "title": "Health Diary",
-    "description": "Record your dog's health episodes, what worked and what didn't — next time you'll see proven solutions.",
+    "description": "Record your dog's health records, what worked and what didn't — next time you'll see proven solutions.",
     "noPetsTitle": "Create a pet profile first",
     "noPetsDescription": "The health diary requires at least one pet profile.",
     "createProfile": "Create profile",
-    "newEpisode": "New episode",
+    "newEpisode": "New record",
     "dogSelect": "Dog",
     "storageUsage": "Storage: {{used}} MB / {{limit}} MB",
-    "storageWarning": "Attachment storage is approaching the limit ({{used}} MB / {{limit}} MB). Consider deleting older episodes or saving without attachments."
+    "storageWarning": "Attachment storage is approaching the limit ({{used}} MB / {{limit}} MB). Consider deleting older records or saving without attachments."
   },
   "empty": {
-    "noEpisodesTitle": "No episodes yet",
+    "noEpisodesTitle": "No records yet",
     "noEpisodesDescription": "Record your dog's health conditions, what worked and what didn't — next time you'll see proven solutions.",
-    "addFirst": "Add first episode",
-    "noFilterResultsTitle": "No episodes match the current filter",
+    "addFirst": "Add first record",
+    "noFilterResultsTitle": "No records match the current filter",
     "noFilterResultsDescription": "Try removing a category filter or clearing the search."
   },
   "category": {
@@ -43,10 +43,10 @@
     "severe": "Severe"
   },
   "form": {
-    "titleNew": "New episode",
-    "titleEdit": "Edit episode",
-    "symptomTitle": "Symptom name",
-    "symptomTitlePlaceholder": "e.g. Reflux, Diarrhoea, Limping",
+    "titleNew": "New record",
+    "titleEdit": "Edit record",
+    "symptomTitle": "What happened?",
+    "symptomTitlePlaceholder": "e.g. Tick, Diarrhoea, Limping",
     "symptomDescription": "Description",
     "symptomContext": "Symptom & context",
     "category": "Category",
@@ -82,19 +82,19 @@
     "searchPlaceholder": "Search symptoms, treatment, notes…"
   },
   "delete": {
-    "confirm": "Really delete episode \"{{title}}\"?"
+    "confirm": "Really delete record \"{{title}}\"?"
   },
   "similar": {
-    "title": "Similar episodes",
+    "title": "Similar records",
     "findSimilar": "Find similar from history",
-    "loading": "Searching for similar episodes and summarising...",
-    "noSelected": "No episode is selected.",
-    "pastList": "Similar past episodes",
+    "loading": "Searching for similar records and summarising...",
+    "noSelected": "No record is selected.",
+    "pastList": "Similar past records",
     "summary": "Summary",
     "recommendation": "Recommendation",
-    "noSimilar": "No similar episodes found in history yet. For serious conditions please consult a veterinarian.",
-    "aiError": "Failed to load AI summary: {{error}}. Showing local similar episodes by category.",
-    "noLocalSimilar": "No episodes in the same category in history.",
+    "noSimilar": "No similar records found in history yet. For serious conditions please consult a veterinarian.",
+    "aiError": "Failed to load AI summary: {{error}}. Showing local similar records by category.",
+    "noLocalSimilar": "No records in the same category in history.",
     "workedLabel": "Worked:"
   },
   "item": {

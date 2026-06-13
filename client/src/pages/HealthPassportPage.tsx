@@ -18,6 +18,7 @@ import { useConfirm } from '../hooks/useConfirm';
 import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
+import FeatureIntro from '../components/FeatureIntro';
 import PassportHero from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
@@ -516,6 +517,7 @@ export default function HealthPassportPage() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
+      <FeatureIntro featureKey="passport" icon={<PetsIcon />} />
       {selectedDog && (
         <PassportHero
           dog={selectedDog}

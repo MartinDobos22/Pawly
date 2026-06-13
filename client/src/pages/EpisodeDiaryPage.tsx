@@ -23,6 +23,7 @@ import {
   Pets as PetsIcon,
 } from '@mui/icons-material';
 import EmptyState from '../components/EmptyState';
+import FeatureIntro from '../components/FeatureIntro';
 import { useConfirm } from '../hooks/useConfirm';
 import EpisodeFiltersBar from '../components/episodes/EpisodeFiltersBar';
 import EpisodeListItem from '../components/episodes/EpisodeListItem';
@@ -143,6 +144,7 @@ export default function EpisodeDiaryPage() {
 
   return (
     <Box>
+      <FeatureIntro featureKey="diary" icon={<MenuBookIcon />} />
       <Box
         sx={{
           mb: 2.5,
