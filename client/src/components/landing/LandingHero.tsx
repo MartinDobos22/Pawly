@@ -239,6 +239,17 @@ export default function LandingHero() {
                   {t('hero.statOffline')}
                 </Typography>
               </Stack>
+              <Stack>
+                <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'primary.main' }}>
+                  PDF
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
+                  {t('hero.statVetCard')}
+                </Typography>
+              </Stack>
             </Stack>
           </Stack>
 
