@@ -101,24 +101,16 @@ export default function HealthTimeline({
     theme.palette.mode === 'dark' ? 0.4 : 0.12
   )}`;
   const isDark = theme.palette.mode === 'dark';
-  const chipTint = isDark ? 0.2 : 0.1;
-  const chipTintHover = isDark ? 0.28 : 0.16;
 
-  const filterChipSx = (
-    paletteKey: (typeof TIMELINE_TYPE_META)[SelectableType]['color'],
-    active: boolean
-  ): SxProps<Theme> => {
-    const main = theme.palette[paletteKey].main;
-    return {
-      fontWeight: 600,
-      border: 0,
-      color: active ? theme.palette[paletteKey].contrastText : main,
-      bgcolor: active ? main : alpha(main, chipTint),
-      '&:hover': {
-        bgcolor: active ? main : alpha(main, chipTintHover),
-      },
-    };
-  };
+  const filterChipSx = (active: boolean): SxProps<Theme> => ({
+    fontWeight: 600,
+    border: 0,
+    color: active ? 'background.paper' : 'text.secondary',
+    bgcolor: active ? 'text.primary' : alpha(theme.palette.text.primary, isDark ? 0.07 : 0.05),
+    '&:hover': {
+      bgcolor: active ? 'text.primary' : alpha(theme.palette.text.primary, isDark ? 0.12 : 0.09),
+    },
+  });
 
   return (
     <Box>
@@ -201,19 +193,7 @@ export default function HealthTimeline({
           clickable
           aria-pressed={isAllActive}
           onClick={() => toggleType('ALL')}
-          sx={{
-            fontWeight: 600,
-            border: 0,
-            color: isAllActive ? theme.palette.primary.contrastText : 'text.secondary',
-            bgcolor: isAllActive
-              ? 'primary.main'
-              : alpha(theme.palette.text.primary, isDark ? 0.12 : 0.06),
-            '&:hover': {
-              bgcolor: isAllActive
-                ? 'primary.main'
-                : alpha(theme.palette.text.primary, isDark ? 0.18 : 0.1),
-            },
-          }}
+          sx={filterChipSx(isAllActive)}
         />
         {TIMELINE_FILTER_VALUES.filter((v) => v !== 'ALL').map((v) => {
           const type = v as SelectableType;
@@ -226,7 +206,7 @@ export default function HealthTimeline({
               clickable
               aria-pressed={isActive}
               onClick={() => toggleType(type)}
-              sx={filterChipSx(TIMELINE_TYPE_META[type].color, isActive)}
+              sx={filterChipSx(isActive)}
             />
           );
         })}
