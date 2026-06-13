@@ -89,7 +89,6 @@ export const savedAnalysesApi = {
   clear: () => request<void>('/saved-analyses', { method: 'DELETE' }),
 };
 
-
 export interface UploadHealthAttachmentPayload {
   petId: string;
   fileName: string;
@@ -98,7 +97,9 @@ export interface UploadHealthAttachmentPayload {
   caption?: string;
 }
 
-export function uploadHealthAttachment(payload: UploadHealthAttachmentPayload): Promise<AttachmentRef> {
+export function uploadHealthAttachment(
+  payload: UploadHealthAttachmentPayload
+): Promise<AttachmentRef> {
   return request<AttachmentRef>('/attachments/upload', {
     method: 'POST',
     body: JSON.stringify(payload),

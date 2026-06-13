@@ -15,7 +15,10 @@ export default function InstallAppBanner() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { canInstall, isInstalled, platform, promptInstall } = useInstallPrompt();
-  const [dismissed, setDismissed] = useLocalStorage('granule-check-install-banner-dismissed', false);
+  const [dismissed, setDismissed] = useLocalStorage(
+    'granule-check-install-banner-dismissed',
+    false
+  );
 
   const handleInstall = useCallback(() => {
     void promptInstall();
@@ -66,13 +69,7 @@ export default function InstallAppBanner() {
             {t('banner.description')}
           </Typography>
 
-          <Stack
-            direction="row"
-            gap={1}
-            alignItems="center"
-            flexWrap="wrap"
-            sx={{ mt: 1.5 }}
-          >
+          <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap" sx={{ mt: 1.5 }}>
             {canInstall ? (
               <Button
                 variant="contained"

@@ -136,9 +136,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
 
           {inAppBrowser && (
             <Stack gap={1}>
-              <Alert severity="warning">
-                {t('login.inAppBrowserWarning')}
-              </Alert>
+              <Alert severity="warning">{t('login.inAppBrowserWarning')}</Alert>
               <Button variant="text" size="small" onClick={handleOpenInBrowser}>
                 {t('login.openInBrowser')}
               </Button>

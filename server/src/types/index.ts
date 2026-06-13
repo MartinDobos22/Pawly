@@ -43,7 +43,6 @@ export interface AnalysisRequest {
   aiProcessingConsent?: boolean;
 }
 
-
 export interface Ingredient {
   name: string;
   category: 'protein' | 'carb' | 'fat' | 'fiber' | 'additive' | 'mineral' | 'vitamin';

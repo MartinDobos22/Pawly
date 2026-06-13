@@ -1,4 +1,12 @@
-import { Box, Card, CardContent, CircularProgress, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import HelpHint from './HelpHint';
 
@@ -44,7 +52,9 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
             value={100}
             size={160}
             thickness={4}
-            sx={{ color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+            sx={{
+              color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+            }}
           />
           {/* Score arc */}
           <CircularProgress
@@ -84,7 +94,13 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
           </Box>
         </Box>
 
-        <Stack direction="row" alignItems="center" justifyContent="center" gap={0.5} sx={{ mb: 0.5 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          gap={0.5}
+          sx={{ mb: 0.5 }}
+        >
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color }}>
             {getScoreLabel(score)}
           </Typography>

@@ -17,7 +17,10 @@ export interface HealthAttachmentMeta {
 
 function sanitizeFileName(fileName: string): string {
   const normalized = fileName.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-  const safe = normalized.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  const safe = normalized
+    .replace(/[^a-zA-Z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
   return safe.slice(0, 120) || 'attachment';
 }
 
@@ -42,14 +45,25 @@ function assertObjectPathForPet(objectPath: string, petId: string): void {
 
 export async function uploadHealthAttachment(
   appUserId: string,
-  input: { petId?: unknown; fileName?: unknown; mimeType?: unknown; base64Data?: unknown; caption?: unknown }
+  input: {
+    petId?: unknown;
+    fileName?: unknown;
+    mimeType?: unknown;
+    base64Data?: unknown;
+    caption?: unknown;
+  }
 ): Promise<HealthAttachmentMeta> {
   const petId = typeof input.petId === 'string' ? input.petId : '';
   if (!petId) throw httpError(400, 'Chýba petId.', 'INVALID_INPUT');
   await assertPetOwned(appUserId, petId);
 
-  const mimeType = typeof input.mimeType === 'string' && input.mimeType ? input.mimeType : 'application/octet-stream';
-  const fileName = sanitizeFileName(typeof input.fileName === 'string' ? input.fileName : 'attachment');
+  const mimeType =
+    typeof input.mimeType === 'string' && input.mimeType
+      ? input.mimeType
+      : 'application/octet-stream';
+  const fileName = sanitizeFileName(
+    typeof input.fileName === 'string' ? input.fileName : 'attachment'
+  );
   const buffer = decodeBase64(input.base64Data);
   const objectPath = `${petId}/${randomUUID()}-${fileName}`;
 
@@ -59,8 +73,15 @@ export async function uploadHealthAttachment(
   });
   if (error) throw error;
 
-  const caption = typeof input.caption === 'string' && input.caption.trim() ? input.caption.trim() : undefined;
-  return { objectPath, mimeType, size: buffer.length, caption, createdAt: new Date().toISOString() };
+  const caption =
+    typeof input.caption === 'string' && input.caption.trim() ? input.caption.trim() : undefined;
+  return {
+    objectPath,
+    mimeType,
+    size: buffer.length,
+    caption,
+    createdAt: new Date().toISOString(),
+  };
 }
 
 export async function createHealthAttachmentSignedUrls(
@@ -78,8 +99,7 @@ export async function createHealthAttachmentSignedUrls(
   if (objectPaths.length === 0) return {};
 
   const { data, error } = await getSupabase()
-    .storage
-    .from(BUCKET)
+    .storage.from(BUCKET)
     .createSignedUrls(objectPaths, SIGNED_URL_TTL_SECONDS);
   if (error) throw error;
 
