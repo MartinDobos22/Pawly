@@ -15,7 +15,6 @@ import {
   Search as SearchIcon,
   PictureAsPdf as PdfIcon,
   Clear as ClearIcon,
-  ChevronRight as ChevronIcon,
   TuneOutlined as TuneIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -112,7 +111,7 @@ export default function HealthTimeline({
   }, [visible]);
 
   const isAllActive = selected.size === 0;
-  const railColor = alpha(theme.palette.primary.main, 0.18);
+  const railColor = alpha(theme.palette.primary.main, 0.12);
 
   return (
     <Box>
@@ -243,60 +242,45 @@ export default function HealthTimeline({
               content: '""',
               position: 'absolute',
               left: { xs: 10, md: 14 },
-              top: 8,
-              bottom: 8,
-              width: 2,
-              bgcolor: railColor,
-              borderRadius: 2,
+              top: 0,
+              bottom: 0,
+              width: '1px',
+              background: `linear-gradient(to bottom, transparent 0, ${railColor} 32px, ${railColor} calc(100% - 32px), transparent 100%)`,
             },
           }}
         >
           {groups.map(([day, events]) => {
             const meta = dayMeta(day);
             return (
-              <Box key={day} sx={{ position: 'relative', mb: 3 }}>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    left: { xs: -22, md: -27 },
-                    top: 2,
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    bgcolor: 'background.paper',
-                    border: `2px solid ${theme.palette.primary.main}`,
-                    boxShadow:
-                      meta?.tone === 'today'
-                        ? `0 0 0 4px ${alpha(theme.palette.primary.main, 0.18)}`
-                        : 'none',
-                  }}
-                />
-                <Stack direction="row" alignItems="baseline" gap={1} sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+              <Box key={day} sx={{ position: 'relative', mb: { xs: 3.5, md: 4 } }}>
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  gap={1}
+                  flexWrap="wrap"
+                  rowGap={0.25}
+                  sx={{ mb: 1.5 }}
+                >
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
                     {formatDayHeader(day)}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                     {weekdayName(day)}
                   </Typography>
                   {meta && (
-                    <Chip
-                      label={meta.label}
-                      size="small"
+                    <Typography
+                      variant="caption"
                       sx={{
-                        height: 20,
-                        fontSize: '0.7rem',
-                        bgcolor:
-                          meta.tone === 'today'
-                            ? alpha(theme.palette.primary.main, 0.14)
-                            : alpha(theme.palette.text.secondary, 0.08),
-                        color: meta.tone === 'today' ? 'primary.main' : 'text.secondary',
                         fontWeight: 600,
+                        color: meta.tone === 'today' ? 'primary.main' : 'text.secondary',
                       }}
-                    />
+                    >
+                      {meta.label}
+                    </Typography>
                   )}
                 </Stack>
 
-                <Stack spacing={1}>
+                <Stack spacing={0.5}>
                   {events.map((event) => {
                     return (
                       <Box
@@ -311,19 +295,21 @@ export default function HealthTimeline({
                           }
                         }}
                         sx={{
+                          position: 'relative',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1.5,
-                          p: 1.25,
-                          borderRadius: 2.5,
-                          border: `1px solid ${theme.palette.divider}`,
-                          bgcolor: 'background.paper',
+                          px: 1.25,
+                          py: 1,
+                          borderRadius: 2,
                           cursor: 'pointer',
-                          transition:
-                            'border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease',
+                          transition: 'background-color 140ms ease',
                           '&:hover': {
-                            borderColor: alpha(theme.palette.primary.main, 0.4),
-                            boxShadow: '0 4px 12px rgba(15,76,92,0.08)',
+                            bgcolor: alpha(theme.palette.primary.main, 0.04),
+                          },
+                          '&:hover .timelineNode, &:focus-visible .timelineNode': {
+                            bgcolor: theme.palette.primary.main,
+                            borderColor: theme.palette.primary.main,
                           },
                           '&:focus-visible': {
                             outline: `2px solid ${theme.palette.primary.main}`,
@@ -332,12 +318,23 @@ export default function HealthTimeline({
                         }}
                       >
                         <Box
+                          className="timelineNode"
                           sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.primary.main, 0.08),
-                            color: 'primary.main',
+                            position: 'absolute',
+                            left: { xs: -19, md: -22 },
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: 'background.paper',
+                            border: `2px solid ${alpha(theme.palette.primary.main, 0.45)}`,
+                            transition: 'background-color 140ms ease, border-color 140ms ease',
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            color: 'text.secondary',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -347,33 +344,25 @@ export default function HealthTimeline({
                           {TIMELINE_ICON_MAP[event.type]}
                         </Box>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.25 }}>
-                            <Chip
-                              label={t(`timeline.${event.type}`)}
-                              size="small"
-                              variant="outlined"
-                              sx={{
-                                height: 20,
-                                fontSize: '0.68rem',
-                                fontWeight: 600,
-                                borderColor: alpha(theme.palette.primary.main, 0.25),
-                                color: 'primary.main',
-                              }}
-                            />
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 600, color: 'text.primary' }}
-                              noWrap
-                            >
-                              {event.title}
-                            </Typography>
-                          </Stack>
+                          <Typography
+                            variant="overline"
+                            sx={{ display: 'block', lineHeight: 1.4, color: 'text.secondary' }}
+                          >
+                            {t(`timeline.${event.type}`)}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 600, color: 'text.primary' }}
+                            noWrap
+                          >
+                            {event.title}
+                          </Typography>
                           {event.subtitle && (
                             <Typography
                               variant="caption"
                               sx={{
+                                display: 'block',
                                 color: 'text.secondary',
-                                letterSpacing: 0,
                                 textTransform: 'none',
                               }}
                               noWrap
@@ -382,7 +371,6 @@ export default function HealthTimeline({
                             </Typography>
                           )}
                         </Box>
-                        <ChevronIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
                       </Box>
                     );
                   })}
