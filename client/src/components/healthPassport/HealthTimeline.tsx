@@ -11,6 +11,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material';
 import {
   Search as SearchIcon,
   PictureAsPdf as PdfIcon,
@@ -99,6 +100,25 @@ export default function HealthTimeline({
     theme.palette.common.black,
     theme.palette.mode === 'dark' ? 0.4 : 0.12
   )}`;
+  const isDark = theme.palette.mode === 'dark';
+  const chipTint = isDark ? 0.2 : 0.1;
+  const chipTintHover = isDark ? 0.28 : 0.16;
+
+  const filterChipSx = (
+    paletteKey: (typeof TIMELINE_TYPE_META)[SelectableType]['color'],
+    active: boolean
+  ): SxProps<Theme> => {
+    const main = theme.palette[paletteKey].main;
+    return {
+      fontWeight: 600,
+      border: 0,
+      color: active ? theme.palette[paletteKey].contrastText : main,
+      bgcolor: active ? main : alpha(main, chipTint),
+      '&:hover': {
+        bgcolor: active ? main : alpha(main, chipTintHover),
+      },
+    };
+  };
 
   return (
     <Box>
@@ -179,9 +199,21 @@ export default function HealthTimeline({
           label={t('filter.ALL')}
           size="small"
           clickable
-          variant={isAllActive ? 'filled' : 'outlined'}
-          color={isAllActive ? 'primary' : 'default'}
+          aria-pressed={isAllActive}
           onClick={() => toggleType('ALL')}
+          sx={{
+            fontWeight: 600,
+            border: 0,
+            color: isAllActive ? theme.palette.primary.contrastText : 'text.secondary',
+            bgcolor: isAllActive
+              ? 'primary.main'
+              : alpha(theme.palette.text.primary, isDark ? 0.12 : 0.06),
+            '&:hover': {
+              bgcolor: isAllActive
+                ? 'primary.main'
+                : alpha(theme.palette.text.primary, isDark ? 0.18 : 0.1),
+            },
+          }}
         />
         {TIMELINE_FILTER_VALUES.filter((v) => v !== 'ALL').map((v) => {
           const type = v as SelectableType;
@@ -192,9 +224,9 @@ export default function HealthTimeline({
               label={t(`filter.${v}`)}
               size="small"
               clickable
-              variant={isActive ? 'filled' : 'outlined'}
-              color={isActive ? TIMELINE_TYPE_META[type].color : 'default'}
+              aria-pressed={isActive}
               onClick={() => toggleType(type)}
+              sx={filterChipSx(TIMELINE_TYPE_META[type].color, isActive)}
             />
           );
         })}
