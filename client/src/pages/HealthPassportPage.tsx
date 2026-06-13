@@ -1,7 +1,25 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Box, Button, Card, Snackbar, Stack, Typography } from '@mui/material';
-import { Pets as PetsIcon } from '@mui/icons-material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Fab,
+  Snackbar,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import {
+  Pets as PetsIcon,
+  Add as AddIcon,
+  SpaceDashboardOutlined as DashboardIcon,
+  ViewTimelineOutlined as TimelineIcon,
+} from '@mui/icons-material';
 
 import type {
   DietEntry,
@@ -36,6 +54,7 @@ import {
   computeIntervalDaysFromDates,
   escapeHtml,
 } from '../components/healthPassport/utils';
+import { md3 } from '../components/healthPassport/md3';
 
 export default function HealthPassportPage() {
   const { t, i18n } = useTranslation('healthPassport');
@@ -78,6 +97,8 @@ export default function HealthPassportPage() {
     toggleDose,
   } = useHealthData();
   const { confirm, dialog: confirmDialog } = useConfirm();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
   const dogVaccinations = vaccinations.filter((v) => v.petId === selectedDogId);
@@ -524,110 +545,192 @@ export default function HealthPassportPage() {
     : null;
   const dietStatus: 'VALID' | 'UNKNOWN' = currentDiet ? 'VALID' : 'UNKNOWN';
 
+  const theme = useTheme();
+  const m = md3(theme);
+  const activeTab: 'overview' | 'records' = location.pathname.includes('/zaznamy')
+    ? 'records'
+    : 'overview';
+  const handleTabChange = (_: unknown, value: string) => {
+    navigate(value === 'records' ? '/zdravotny-pas/zaznamy' : '/zdravotny-pas/prehlad');
+  };
+
+  useEffect(() => {
+    if (location.pathname.includes('/novy-zaznam')) setWizardOpen(true);
+  }, [location.pathname]);
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
       <FeatureIntro featureKey="passport" icon={<PetsIcon />} />
-      {selectedDog && (
-        <PassportHero
-          dog={selectedDog}
-          dogProfiles={dogProfiles}
-          selectedDogId={selectedDogId}
-          onSelectDog={setSelectedDogId}
-          vaccinationStatus={vaccinationStatus}
-          dewormingStatus={dewormingStatus}
-          ectoStatus={ectoStatus}
-          dietStatus={dietStatus}
-          onAddRecord={() => setWizardOpen(true)}
-          onQuickVisitCreate={handleQuickVisitCreate}
-          onQuickVisitUndo={handleQuickVisitUndo}
-        />
-      )}
 
-      {/* ── Status overview ────────────────────────────────────────────────── */}
-      <HealthStatusOverview
-        vaccinationStatus={vaccinationStatus}
-        dewormingStatus={dewormingStatus}
-        ectoStatus={ectoStatus}
-        currentDiet={currentDiet}
-        vaccinationNextDate={latestVaccination?.validUntil}
-        vaccinationLastDate={latestVaccination?.dateApplied}
-        dewormingNextDate={latestDeworming?.nextDueDate}
-        dewormingLastDate={latestDeworming?.dateGiven}
-        dewormingIntervalDays={
-          latestDeworming
-            ? (latestDeworming.intervalDays ??
-              computeIntervalDaysFromDates(
-                latestDeworming.dateGiven,
-                latestDeworming.nextDueDate,
-                90
-              ))
-            : undefined
-        }
-        dewormingPreparation={latestDeworming?.productName}
-        ectoNextDate={latestEcto?.nextDueDate}
-        ectoLastDate={latestEcto?.dateGiven}
-        ectoIntervalDays={
-          latestEcto
-            ? (latestEcto.intervalDays ??
-              computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
-            : undefined
-        }
-        ectoPreparation={latestEcto?.productName}
-        onAddVaccination={() => setWizardOpen(true)}
-        onAddDeworming={() => setWizardOpen(true)}
-        onAddEcto={() => setWizardOpen(true)}
-        onAddDiet={() => setWizardOpen(true)}
-        onOpenVaccination={
-          latestVaccination
-            ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
-            : undefined
-        }
-        onOpenDeworming={
-          latestDeworming
-            ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
-            : undefined
-        }
-        onOpenEcto={
-          latestEcto
-            ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
-            : undefined
-        }
-        onOpenDiet={
-          currentDiet ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' }) : undefined
-        }
-      />
-
-      {/* ── Dashboard: timeline (left) + tasks/expenses stack (right) ─────── */}
-      <Box
+      <Tabs
+        value={activeTab}
+        onChange={handleTabChange}
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
-          gap: 1.5,
+          minHeight: 48,
+          mb: 2,
+          '& .MuiTabs-indicator': {
+            height: 3,
+            borderRadius: '3px 3px 0 0',
+            backgroundColor: 'primary.main',
+          },
+          '& .MuiTab-root': {
+            minHeight: 48,
+            textTransform: 'none',
+            fontWeight: 600,
+            color: 'text.secondary',
+            '&.Mui-selected': { color: 'primary.main' },
+          },
         }}
       >
-        <Card sx={{ p: { xs: 1.5, md: 2 } }}>
+        <Tab
+          value="overview"
+          iconPosition="start"
+          icon={<DashboardIcon sx={{ fontSize: 20 }} />}
+          label={t('tabs.overview')}
+        />
+        <Tab
+          value="records"
+          iconPosition="start"
+          icon={<TimelineIcon sx={{ fontSize: 20 }} />}
+          label={t('tabs.records')}
+        />
+      </Tabs>
+
+      {activeTab === 'overview' && (
+        <Box>
+          {selectedDog && (
+            <PassportHero
+              dog={selectedDog}
+              dogProfiles={dogProfiles}
+              selectedDogId={selectedDogId}
+              onSelectDog={setSelectedDogId}
+              vaccinationStatus={vaccinationStatus}
+              dewormingStatus={dewormingStatus}
+              ectoStatus={ectoStatus}
+              dietStatus={dietStatus}
+              onAddRecord={() => setWizardOpen(true)}
+              onQuickVisitCreate={handleQuickVisitCreate}
+              onQuickVisitUndo={handleQuickVisitUndo}
+            />
+          )}
+
+          {/* ── Status overview ────────────────────────────────────────────────── */}
+          <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mt: 0.5, mb: 1 }}>
+            {t('sections.status')}
+          </Typography>
+          <HealthStatusOverview
+            vaccinationStatus={vaccinationStatus}
+            dewormingStatus={dewormingStatus}
+            ectoStatus={ectoStatus}
+            currentDiet={currentDiet}
+            vaccinationNextDate={latestVaccination?.validUntil}
+            vaccinationLastDate={latestVaccination?.dateApplied}
+            dewormingNextDate={latestDeworming?.nextDueDate}
+            dewormingLastDate={latestDeworming?.dateGiven}
+            dewormingIntervalDays={
+              latestDeworming
+                ? (latestDeworming.intervalDays ??
+                  computeIntervalDaysFromDates(
+                    latestDeworming.dateGiven,
+                    latestDeworming.nextDueDate,
+                    90
+                  ))
+                : undefined
+            }
+            dewormingPreparation={latestDeworming?.productName}
+            ectoNextDate={latestEcto?.nextDueDate}
+            ectoLastDate={latestEcto?.dateGiven}
+            ectoIntervalDays={
+              latestEcto
+                ? (latestEcto.intervalDays ??
+                  computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
+                : undefined
+            }
+            ectoPreparation={latestEcto?.productName}
+            onAddVaccination={() => setWizardOpen(true)}
+            onAddDeworming={() => setWizardOpen(true)}
+            onAddEcto={() => setWizardOpen(true)}
+            onAddDiet={() => setWizardOpen(true)}
+            onOpenVaccination={
+              latestVaccination
+                ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+                : undefined
+            }
+            onOpenDeworming={
+              latestDeworming
+                ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+                : undefined
+            }
+            onOpenEcto={
+              latestEcto
+                ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
+                : undefined
+            }
+            onOpenDiet={
+              currentDiet
+                ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' })
+                : undefined
+            }
+          />
+
+          {/* ── Dashboard widgets (bento) ───────────────────────────────────────── */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(2, minmax(0, 1fr))',
+                lg: 'repeat(3, minmax(0, 1fr))',
+              },
+              gap: 1.5,
+              alignItems: 'start',
+            }}
+          >
+            <UpcomingTasksCard
+              vetVisits={dogVisits}
+              dewormings={dogDewormings}
+              ectos={dogEctos}
+              medications={dogMeds}
+              doseLogs={dogDoseLogs}
+              onToggleDose={(logId) => {
+                void toggleDose(logId);
+              }}
+            />
+            <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
+            <ExpenseSummaryCard expenses={dogExpenses} />
+          </Box>
+        </Box>
+      )}
+
+      {activeTab === 'records' && (
+        <Card sx={{ p: { xs: 1.5, md: 2 }, borderRadius: m.shape.lg }}>
           <HealthTimeline
             timeline={timeline}
             onOpenDetail={handleOpenDetail}
             onExportPdf={handleExportPdf}
           />
         </Card>
-        <Stack spacing={1.5}>
-          <UpcomingTasksCard
-            vetVisits={dogVisits}
-            dewormings={dogDewormings}
-            ectos={dogEctos}
-            medications={dogMeds}
-            doseLogs={dogDoseLogs}
-            onToggleDose={(logId) => {
-              void toggleDose(logId);
-            }}
-          />
-          <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
-          <ExpenseSummaryCard expenses={dogExpenses} />
-        </Stack>
-      </Box>
+      )}
+
+      <Fab
+        variant="extended"
+        color="primary"
+        onClick={() => setWizardOpen(true)}
+        aria-label={t('hero.addRecord')}
+        sx={{
+          position: 'fixed',
+          right: { xs: 16, md: 24 },
+          bottom: { xs: 88, md: 24 },
+          zIndex: (th) => th.zIndex.fab,
+          textTransform: 'none',
+          fontWeight: 600,
+          boxShadow: m.elevation3,
+        }}
+      >
+        <AddIcon sx={{ mr: 1 }} />
+        {t('hero.addRecord')}
+      </Fab>
 
       {/* ── Add record dialog ────────────────────────────────────────────── */}
       <AddRecord

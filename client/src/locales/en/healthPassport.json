@@ -19,6 +19,16 @@
     "exportColType": "Type",
     "exportColDetail": "Detail"
   },
+  "tabs": {
+    "overview": "Overview",
+    "records": "Records"
+  },
+  "sections": {
+    "status": "Health status",
+    "upcoming": "Upcoming",
+    "weight": "Weight",
+    "expenses": "Expenses"
+  },
   "timeline": {
     "title": "Timeline",
     "VACCINATION": "Vaccination",

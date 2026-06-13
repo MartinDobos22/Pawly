@@ -19,6 +19,16 @@
     "exportColType": "Typ",
     "exportColDetail": "Detail"
   },
+  "tabs": {
+    "overview": "Prehľad",
+    "records": "Záznamy"
+  },
+  "sections": {
+    "status": "Zdravotný stav",
+    "upcoming": "Najbližšie úlohy",
+    "weight": "Hmotnosť",
+    "expenses": "Výdavky"
+  },
   "timeline": {
     "title": "Časová os",
     "VACCINATION": "Očkovanie",
