@@ -131,6 +131,8 @@ export default function HealthPassportPage() {
           ? t('timeline.subtitleValidUntil', { date: v.validUntil })
           : undefined,
         date: v.dateApplied,
+        dueDate: v.validUntil || undefined,
+        status: v.validUntil ? statusByDate(v.validUntil, 30) : undefined,
       })
     );
     dogDewormings.forEach((v) =>
@@ -143,6 +145,8 @@ export default function HealthPassportPage() {
           ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
           : undefined,
         date: v.dateGiven,
+        dueDate: v.nextDueDate || undefined,
+        status: v.nextDueDate ? statusByDate(v.nextDueDate, 7) : undefined,
       })
     );
     dogEctos.forEach((v) =>
@@ -155,6 +159,8 @@ export default function HealthPassportPage() {
           ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
           : undefined,
         date: v.dateGiven,
+        dueDate: v.nextDueDate || undefined,
+        status: v.nextDueDate ? statusByDate(v.nextDueDate, 7) : undefined,
       })
     );
     dogVisits.forEach((v) =>
@@ -165,6 +171,8 @@ export default function HealthPassportPage() {
         title: t('timeline.titleVisit', { clinic: v.clinicName }),
         subtitle: v.reason,
         date: v.date,
+        dueDate: v.nextCheckDate || undefined,
+        status: v.nextCheckDate ? statusByDate(v.nextCheckDate, 14) : undefined,
       })
     );
     dogMeds.forEach((v) =>
@@ -175,6 +183,8 @@ export default function HealthPassportPage() {
         title: t('timeline.titleMedication', { name: v.name }),
         subtitle: `${v.dose}, ${v.frequency}`,
         date: v.startDate,
+        dueDate: v.endDate || undefined,
+        status: v.endDate ? statusByDate(v.endDate, 7) : undefined,
       })
     );
     dogDiet.forEach((v) =>

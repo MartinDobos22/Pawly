@@ -19,7 +19,9 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/petHealth';
-import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
+import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
+import { statusColor } from './utils.ts';
+import { relativeDate } from '../../utils/relativeDate';
 
 const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');
 
@@ -31,16 +33,7 @@ interface HealthTimelineProps {
 
 type SelectableType = TimelineEvent['type'];
 
-const dayKey = (iso: string) => iso.slice(0, 10);
-
-const dayDiffFromToday = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return Number.NaN;
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-  return Math.round((date.getTime() - now.getTime()) / 86_400_000);
-};
+const monthKey = (iso: string) => iso.slice(0, 7);
 
 export default function HealthTimeline({
   timeline,
@@ -54,26 +47,17 @@ export default function HealthTimeline({
 
   const lang = localeTag(i18n.language);
 
-  const formatDayHeader = (iso: string) => {
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) return iso;
-    return date.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+  const formatMonth = (key: string) => {
+    const d = new Date(`${key}-01T00:00:00`);
+    if (Number.isNaN(d.getTime())) return key;
+    const label = d.toLocaleDateString(lang, { month: 'long', year: 'numeric' });
+    return label.charAt(0).toUpperCase() + label.slice(1);
   };
 
-  const weekdayName = (iso: string) => {
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) return '';
-    return date.toLocaleDateString(lang, { weekday: 'long' });
-  };
-
-  const dayMeta = (iso: string) => {
-    const diff = dayDiffFromToday(iso);
-    if (Number.isNaN(diff)) return null;
-    if (diff === 0) return { label: t('timeline.today'), tone: 'today' as const };
-    if (diff === -1) return { label: t('timeline.yesterday'), tone: 'recent' as const };
-    if (diff > 0 && diff < 14)
-      return { label: t('timeline.inDays', { count: diff }), tone: 'future' as const };
-    return null;
+  const formatDay = (iso: string) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
   };
 
   const toggleType = (type: SelectableType | 'ALL') => {
@@ -99,10 +83,10 @@ export default function HealthTimeline({
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [timeline, selected, search]);
 
-  const groups = useMemo(() => {
+  const months = useMemo(() => {
     const map = new Map<string, TimelineEvent[]>();
     for (const e of visible) {
-      const k = dayKey(e.date);
+      const k = monthKey(e.date);
       const list = map.get(k);
       if (list) list.push(e);
       else map.set(k, [e]);
@@ -111,7 +95,10 @@ export default function HealthTimeline({
   }, [visible]);
 
   const isAllActive = selected.size === 0;
-  const railColor = alpha(theme.palette.primary.main, 0.12);
+  const hoverShadow = `0 6px 18px ${alpha(
+    theme.palette.common.black,
+    theme.palette.mode === 'dark' ? 0.4 : 0.12
+  )}`;
 
   return (
     <Box>
@@ -197,7 +184,8 @@ export default function HealthTimeline({
           onClick={() => toggleType('ALL')}
         />
         {TIMELINE_FILTER_VALUES.filter((v) => v !== 'ALL').map((v) => {
-          const isActive = selected.has(v as SelectableType);
+          const type = v as SelectableType;
+          const isActive = selected.has(type);
           return (
             <Chip
               key={v}
@@ -205,8 +193,8 @@ export default function HealthTimeline({
               size="small"
               clickable
               variant={isActive ? 'filled' : 'outlined'}
-              color={isActive ? 'primary' : 'default'}
-              onClick={() => toggleType(v as SelectableType)}
+              color={isActive ? TIMELINE_TYPE_META[type].color : 'default'}
+              onClick={() => toggleType(type)}
             />
           );
         })}
@@ -221,7 +209,7 @@ export default function HealthTimeline({
         )}
       </Stack>
 
-      {groups.length === 0 ? (
+      {months.length === 0 ? (
         <Box
           sx={{
             textAlign: 'center',
@@ -234,151 +222,161 @@ export default function HealthTimeline({
           <Typography variant="body2">{t('timeline.noRecords')}</Typography>
         </Box>
       ) : (
-        <Box
-          sx={{
-            position: 'relative',
-            pl: { xs: 3.25, md: 4 },
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              left: { xs: 10, md: 14 },
-              top: 0,
-              bottom: 0,
-              width: '1px',
-              background: `linear-gradient(to bottom, transparent 0, ${railColor} 32px, ${railColor} calc(100% - 32px), transparent 100%)`,
-            },
-          }}
-        >
-          {groups.map(([day, events]) => {
-            const meta = dayMeta(day);
-            return (
-              <Box key={day} sx={{ position: 'relative', mb: { xs: 3.5, md: 4 } }}>
-                <Stack
-                  direction="row"
-                  alignItems="baseline"
-                  gap={1}
-                  flexWrap="wrap"
-                  rowGap={0.25}
-                  sx={{ mb: 1.5 }}
-                >
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                    {formatDayHeader(day)}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                    {weekdayName(day)}
-                  </Typography>
-                  {meta && (
-                    <Typography
-                      variant="caption"
+        <Stack spacing={3}>
+          {months.map(([month, events]) => (
+            <Box key={month}>
+              <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 1.5 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {formatMonth(month)}
+                </Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+                <Chip
+                  label={events.length}
+                  size="small"
+                  sx={{
+                    height: 20,
+                    minWidth: 28,
+                    fontWeight: 600,
+                    bgcolor: alpha(theme.palette.text.secondary, 0.08),
+                    color: 'text.secondary',
+                  }}
+                />
+              </Stack>
+
+              <Stack spacing={1}>
+                {events.map((event) => {
+                  const cat = TIMELINE_TYPE_META[event.type].color;
+                  const catColor = theme.palette[cat].main;
+                  const sc = event.status ? statusColor(event.status) : 'default';
+                  const pillKey = sc === 'default' ? null : sc;
+                  const due = event.dueDate ? relativeDate(event.dueDate) : null;
+                  return (
+                    <Box
+                      key={event.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => onOpenDetail(event)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onOpenDetail(event);
+                        }
+                      }}
                       sx={{
-                        fontWeight: 600,
-                        color: meta.tone === 'today' ? 'primary.main' : 'text.secondary',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        pl: 2,
+                        pr: 1.5,
+                        py: 1.25,
+                        borderRadius: 2.5,
+                        border: `1px solid ${theme.palette.divider}`,
+                        bgcolor: 'background.paper',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        transition:
+                          'transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: '3px',
+                          bgcolor: catColor,
+                        },
+                        '&:hover': {
+                          transform: 'translateY(-1px)',
+                          boxShadow: hoverShadow,
+                          borderColor: alpha(catColor, 0.4),
+                        },
+                        '&:focus-visible': {
+                          outline: `2px solid ${catColor}`,
+                          outlineOffset: 2,
+                        },
                       }}
                     >
-                      {meta.label}
-                    </Typography>
-                  )}
-                </Stack>
-
-                <Stack spacing={0.5}>
-                  {events.map((event) => {
-                    return (
                       <Box
-                        key={event.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => onOpenDetail(event)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onOpenDetail(event);
-                          }
-                        }}
                         sx={{
-                          position: 'relative',
+                          width: 38,
+                          height: 38,
+                          borderRadius: 2,
+                          bgcolor: alpha(catColor, 0.14),
+                          color: catColor,
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 1.5,
-                          px: 1.25,
-                          py: 1,
-                          borderRadius: 2,
-                          cursor: 'pointer',
-                          transition: 'background-color 140ms ease',
-                          '&:hover': {
-                            bgcolor: alpha(theme.palette.primary.main, 0.04),
-                          },
-                          '&:hover .timelineNode, &:focus-visible .timelineNode': {
-                            bgcolor: theme.palette.primary.main,
-                            borderColor: theme.palette.primary.main,
-                          },
-                          '&:focus-visible': {
-                            outline: `2px solid ${theme.palette.primary.main}`,
-                            outlineOffset: 2,
-                          },
+                          justifyContent: 'center',
+                          flexShrink: 0,
                         }}
                       >
-                        <Box
-                          className="timelineNode"
-                          sx={{
-                            position: 'absolute',
-                            left: { xs: -19, md: -22 },
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            bgcolor: 'background.paper',
-                            border: `2px solid ${alpha(theme.palette.primary.main, 0.45)}`,
-                            transition: 'background-color 140ms ease, border-color 140ms ease',
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            color: 'text.secondary',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
+                        {TIMELINE_ICON_MAP[event.type]}
+                      </Box>
+
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="overline"
+                          sx={{ display: 'block', lineHeight: 1.4, color: catColor }}
                         >
-                          {TIMELINE_ICON_MAP[event.type]}
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          {t(`timeline.${event.type}`)}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600, color: 'text.primary' }}
+                          noWrap
+                        >
+                          {event.title}
+                        </Typography>
+                        {event.subtitle && (
                           <Typography
-                            variant="overline"
-                            sx={{ display: 'block', lineHeight: 1.4, color: 'text.secondary' }}
-                          >
-                            {t(`timeline.${event.type}`)}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{ fontWeight: 600, color: 'text.primary' }}
+                            variant="caption"
+                            sx={{
+                              display: 'block',
+                              color: 'text.secondary',
+                              textTransform: 'none',
+                            }}
                             noWrap
                           >
-                            {event.title}
+                            {event.subtitle}
                           </Typography>
-                          {event.subtitle && (
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                display: 'block',
-                                color: 'text.secondary',
-                                textTransform: 'none',
-                              }}
-                              noWrap
-                            >
-                              {event.subtitle}
-                            </Typography>
-                          )}
-                        </Box>
+                        )}
                       </Box>
-                    );
-                  })}
-                </Stack>
-              </Box>
-            );
-          })}
-        </Box>
+
+                      <Stack
+                        sx={{ flexShrink: 0, alignItems: 'flex-end', gap: 0.5, textAlign: 'right' }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}
+                        >
+                          {formatDay(event.date)}
+                        </Typography>
+                        {pillKey && due && (
+                          <Box
+                            component="span"
+                            sx={{
+                              px: 0.75,
+                              py: 0.25,
+                              borderRadius: 1.5,
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              lineHeight: 1.4,
+                              whiteSpace: 'nowrap',
+                              bgcolor: alpha(theme.palette[pillKey].main, 0.14),
+                              color: theme.palette[pillKey].main,
+                            }}
+                          >
+                            {due.short}
+                          </Box>
+                        )}
+                      </Stack>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            </Box>
+          ))}
+        </Stack>
       )}
     </Box>
   );

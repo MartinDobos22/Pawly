@@ -137,6 +137,8 @@ export interface TimelineEvent {
   title: string;
   subtitle?: string;
   date: string;
+  dueDate?: string;
+  status?: ValidityStatus;
 }
 
 export interface WeightLog {
