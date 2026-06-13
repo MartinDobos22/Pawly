@@ -44,7 +44,12 @@ function isInvalidDateRange(startIso: unknown, endIso: unknown): boolean {
   return end < start;
 }
 
-function assertDateRange(body: unknown, startField: string, endField: string, message: string): void {
+function assertDateRange(
+  body: unknown,
+  startField: string,
+  endField: string,
+  message: string
+): void {
   if (!body || typeof body !== 'object') return;
   const record = body as Record<string, unknown>;
   if (isInvalidDateRange(record[startField], record[endField])) {
@@ -133,7 +138,6 @@ router.use(
     'Ďalšia dávka antiparazitika musí byť rovnaká alebo neskôr ako dátum podania.'
   )
 );
-
 
 router.post('/attachments/upload', async (req: Request, res: Response, next: NextFunction) => {
   try {

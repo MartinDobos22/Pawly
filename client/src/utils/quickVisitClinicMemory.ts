@@ -3,10 +3,7 @@ const QUICK_VISIT_CLINIC_SUGGESTION_MAX_LENGTH = 64;
 const quickVisitClinicSuggestionByDogId = new Map<string, string>();
 
 function normalizeClinicSuggestion(clinic: string) {
-  return clinic
-    .trim()
-    .replace(/\s+/g, ' ')
-    .slice(0, QUICK_VISIT_CLINIC_SUGGESTION_MAX_LENGTH);
+  return clinic.trim().replace(/\s+/g, ' ').slice(0, QUICK_VISIT_CLINIC_SUGGESTION_MAX_LENGTH);
 }
 
 export function getQuickVisitClinicSuggestion(petId: string) {

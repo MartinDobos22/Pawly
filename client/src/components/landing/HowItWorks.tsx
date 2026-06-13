@@ -11,7 +11,10 @@ const STEP_ICONS = [ProfileIcon, AiScanIcon, VetCardIcon];
 export default function HowItWorks() {
   const theme = useTheme();
   const { t } = useTranslation('landing');
-  const steps = t('howItWorks.steps', { returnObjects: true }) as Array<{ title: string; text: string }>;
+  const steps = t('howItWorks.steps', { returnObjects: true }) as Array<{
+    title: string;
+    text: string;
+  }>;
 
   return (
     <Box id="how-it-works" sx={{ py: { xs: 8, md: 14 } }}>

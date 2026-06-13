@@ -22,7 +22,10 @@ const FEATURE_ICONS: Array<{ icon: React.ElementType; tone: FeatureTone }> = [
 export default function FeatureGrid() {
   const theme = useTheme();
   const { t } = useTranslation('landing');
-  const featureItems = t('features.items', { returnObjects: true }) as Array<{ title: string; text: string }>;
+  const featureItems = t('features.items', { returnObjects: true }) as Array<{
+    title: string;
+    text: string;
+  }>;
 
   return (
     <Box sx={{ py: { xs: 8, md: 14 } }}>

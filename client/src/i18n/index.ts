@@ -27,7 +27,16 @@ i18n
     fallbackLng: 'sk',
     supportedLngs: ['sk', 'en'],
     defaultNS: 'common',
-    ns: ['common', 'analyze', 'healthPassport', 'episodes', 'vetCard', 'auth', 'landing', 'install'],
+    ns: [
+      'common',
+      'analyze',
+      'healthPassport',
+      'episodes',
+      'vetCard',
+      'auth',
+      'landing',
+      'install',
+    ],
     detection: {
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: 'granule-check-language',

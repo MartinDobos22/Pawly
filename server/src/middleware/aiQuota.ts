@@ -72,8 +72,7 @@ export function requireAiQuota(
       if (
         globalResult &&
         globalResult.current_count >= Math.floor(globalResult.limit_value * ALERT_THRESHOLD) &&
-        globalResult.current_count <
-          Math.floor(globalResult.limit_value * ALERT_THRESHOLD) + 5
+        globalResult.current_count < Math.floor(globalResult.limit_value * ALERT_THRESHOLD) + 5
       ) {
         // Logujeme len v okolí 80% prahu (5 hits okolo neho) aby nešumelo
         // pri každom volaní nad 80%.

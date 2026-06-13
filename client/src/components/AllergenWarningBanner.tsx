@@ -8,9 +8,14 @@ interface AllergenWarningBannerProps {
   healthWarnings: HealthWarning[];
 }
 
-export default function AllergenWarningBanner({ allergenWarnings, healthWarnings }: AllergenWarningBannerProps) {
+export default function AllergenWarningBanner({
+  allergenWarnings,
+  healthWarnings,
+}: AllergenWarningBannerProps) {
   const { t } = useTranslation('analyze');
-  const criticalAllergens = allergenWarnings.filter((w) => w.severity === 'critical' || w.severity === 'high');
+  const criticalAllergens = allergenWarnings.filter(
+    (w) => w.severity === 'critical' || w.severity === 'high'
+  );
   const otherAllergens = allergenWarnings.filter((w) => w.severity === 'moderate');
   const allAllergens = [...criticalAllergens, ...otherAllergens];
 
@@ -50,7 +55,16 @@ export default function AllergenWarningBanner({ allergenWarnings, healthWarnings
             </Box>
           ))}
 
-          <Typography variant="body2" sx={{ mt: 2, fontWeight: 700, opacity: 0.95, borderTop: '1px solid rgba(255,255,255,0.3)', pt: 1.5 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 2,
+              fontWeight: 700,
+              opacity: 0.95,
+              borderTop: '1px solid rgba(255,255,255,0.3)',
+              pt: 1.5,
+            }}
+          >
             {t('allergenWarning.petAtRisk')}
           </Typography>
         </Box>
