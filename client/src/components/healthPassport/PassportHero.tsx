@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { type ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,8 +23,7 @@ import {
   Scale as ScaleIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
-import type { ValidityStatus, VetVisitRecord } from '../../types/petHealth';
-import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
+import type { VetVisitRecord } from '../../types/petHealth';
 import QuickVisitButton from './QuickVisitButton';
 
 interface Props {
@@ -32,10 +31,6 @@ interface Props {
   dogProfiles: PetProfile[];
   selectedDogId: string;
   onSelectDog: (id: string) => void;
-  vaccinationStatus: ValidityStatus;
-  dewormingStatus: ValidityStatus;
-  ectoStatus: ValidityStatus;
-  dietStatus: ValidityStatus;
   onAddRecord: () => void;
   onQuickVisitCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onQuickVisitUndo: (id: string) => void;
@@ -49,29 +44,11 @@ const initials = (name: string) =>
     .map((p) => p[0]?.toUpperCase() ?? '')
     .join('');
 
-const statusToScore = (s: ValidityStatus): number => {
-  if (s === 'VALID') return 100;
-  if (s === 'EXPIRING_SOON') return 60;
-  if (s === 'EXPIRED') return 10;
-  return 40;
-};
-
-const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
-  if (s === 'VALID') return 'good';
-  if (s === 'EXPIRING_SOON') return 'soon';
-  if (s === 'EXPIRED') return 'bad';
-  return 'unknown';
-};
-
 export default function PassportHero({
   dog,
   dogProfiles,
   selectedDogId,
   onSelectDog,
-  vaccinationStatus,
-  dewormingStatus,
-  ectoStatus,
-  dietStatus,
   onAddRecord,
   onQuickVisitCreate,
   onQuickVisitUndo,
@@ -104,57 +81,11 @@ export default function PassportHero({
     return null;
   };
 
-  const statusDetail = (s: ValidityStatus): string => {
-    if (s === 'VALID') return t('hero.statusValid');
-    if (s === 'EXPIRING_SOON') return t('hero.statusExpiringSoon');
-    if (s === 'EXPIRED') return t('hero.statusExpired');
-    return t('hero.statusUnknown');
-  };
-
-  const statuses = [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus];
-  const unknownCount = statuses.filter((s) => s === 'UNKNOWN').length;
-  const allUnknown = unknownCount === statuses.length;
-
-  const score = useMemo(() => {
-    if (allUnknown) return null;
-    const values = statuses.map(statusToScore);
-    return values.reduce((a, b) => a + b, 0) / values.length;
-  }, [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus, allUnknown]);
-
-  const incomplete = unknownCount > 0 && !allUnknown;
-
-  const scoreBreakdown: ScoreBreakdownItem[] = [
-    {
-      label: t('hero.vaccLabel'),
-      shortLabel: t('hero.vaccShort'),
-      status: statusToBreakdown(vaccinationStatus),
-      detail: statusDetail(vaccinationStatus),
-    },
-    {
-      label: t('hero.dewLabel'),
-      shortLabel: t('hero.dewShort'),
-      status: statusToBreakdown(dewormingStatus),
-      detail: statusDetail(dewormingStatus),
-    },
-    {
-      label: t('hero.ectoLabel'),
-      shortLabel: t('hero.ectoShort'),
-      status: statusToBreakdown(ectoStatus),
-      detail: statusDetail(ectoStatus),
-    },
-    {
-      label: t('hero.dietLabel'),
-      shortLabel: t('hero.dietShort'),
-      status: statusToBreakdown(dietStatus),
-      detail: statusDetail(dietStatus),
-    },
-  ];
-
   const ageLabel = computeAgeLabel(dog);
   const sex =
     dog.sex === 'MALE' ? t('hero.sexMale') : dog.sex === 'FEMALE' ? t('hero.sexFemale') : null;
 
-  const chips: { label: string; icon?: React.ReactElement }[] = [];
+  const chips: { label: string; icon?: ReactElement }[] = [];
   if (dog.breed) chips.push({ label: dog.breed, icon: <PetsIcon sx={{ fontSize: 14 }} /> });
   if (ageLabel) chips.push({ label: ageLabel, icon: <CakeIcon sx={{ fontSize: 14 }} /> });
   if (dog.weightKg)
@@ -166,7 +97,7 @@ export default function PassportHero({
   return (
     <Box
       sx={{
-        mb: 2.5,
+        mb: 1.5,
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 3,
@@ -177,25 +108,25 @@ export default function PassportHero({
         )}`,
       }}
     >
-      <Box sx={{ position: 'relative', p: { xs: 2, md: 2.5 } }}>
+      <Box sx={{ p: { xs: 2, md: 2.5 } }}>
         <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={{ xs: 2, md: 2.5 }}
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={{ xs: 1.5, sm: 2.5 }}
         >
           <Avatar
             src={dog.photoUrl || undefined}
             alt={dog.name}
             sx={{
-              width: { xs: 72, md: 96 },
-              height: { xs: 72, md: 96 },
+              width: { xs: 56, md: 72 },
+              height: { xs: 56, md: 72 },
               bgcolor: alpha(
                 theme.palette.primary.main,
                 theme.palette.mode === 'light' ? 0.16 : 0.25
               ),
               color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
               fontWeight: 700,
-              fontSize: { xs: '1.5rem', md: '1.9rem' },
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
               border: `3px solid ${theme.palette.background.paper}`,
               boxShadow: `0 2px 8px ${alpha(
                 theme.palette.common.black,
@@ -206,12 +137,12 @@ export default function PassportHero({
             {initials(dog.name) || <PetsIcon />}
           </Avatar>
 
-          <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1.25}>
+          <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1}>
             <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
               <Typography
                 variant="h1"
                 sx={{
-                  fontSize: { xs: '1.5rem', md: '2rem' },
+                  fontSize: { xs: '1.4rem', md: '1.75rem' },
                   fontWeight: 700,
                   lineHeight: 1.1,
                   letterSpacing: '-0.02em',
@@ -263,13 +194,12 @@ export default function PassportHero({
               ))}
             </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 1 }}>
+            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 0.5 }}>
               <Button
                 variant="contained"
                 color="primary"
                 startIcon={<AddIcon />}
                 onClick={onAddRecord}
-                size="large"
               >
                 {t('hero.addRecord')}
               </Button>
@@ -288,22 +218,6 @@ export default function PassportHero({
               </Button>
             </Stack>
           </Stack>
-
-          <Box
-            sx={{
-              display: 'flex',
-              alignSelf: { xs: 'center', md: 'center' },
-              flexShrink: 0,
-              pl: { md: 2 },
-            }}
-          >
-            <HealthScoreRing
-              score={score}
-              size={96}
-              breakdown={scoreBreakdown}
-              incomplete={incomplete}
-            />
-          </Box>
         </Stack>
       </Box>
     </Box>

@@ -24,6 +24,7 @@
     "records": "Records"
   },
   "sections": {
+    "score": "Health score",
     "status": "Health status",
     "upcoming": "Upcoming",
     "weight": "Weight",

@@ -38,6 +38,7 @@ import type { VisitBundle } from '../utils/vetVisitHelper';
 // Sub-components
 import FeatureIntro from '../components/FeatureIntro';
 import PassportHero from '../components/healthPassport/PassportHero';
+import HealthScoreCard from '../components/healthPassport/HealthScoreCard';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
@@ -605,15 +606,19 @@ export default function HealthPassportPage() {
               dogProfiles={dogProfiles}
               selectedDogId={selectedDogId}
               onSelectDog={setSelectedDogId}
-              vaccinationStatus={vaccinationStatus}
-              dewormingStatus={dewormingStatus}
-              ectoStatus={ectoStatus}
-              dietStatus={dietStatus}
               onAddRecord={() => setWizardOpen(true)}
               onQuickVisitCreate={handleQuickVisitCreate}
               onQuickVisitUndo={handleQuickVisitUndo}
             />
           )}
+
+          {/* ── Health score (hlavný widget) ─────────────────────────────────────── */}
+          <HealthScoreCard
+            vaccinationStatus={vaccinationStatus}
+            dewormingStatus={dewormingStatus}
+            ectoStatus={ectoStatus}
+            dietStatus={dietStatus}
+          />
 
           {/* ── Status overview ────────────────────────────────────────────────── */}
           <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mt: 0.5, mb: 1 }}>
@@ -678,15 +683,14 @@ export default function HealthPassportPage() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: 'repeat(2, minmax(0, 1fr))',
-                lg: 'repeat(3, minmax(0, 1fr))',
-              },
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
               gap: 1.5,
               alignItems: 'start',
             }}
           >
+            <Box sx={{ gridColumn: { md: 'span 2' } }}>
+              <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
+            </Box>
             <UpcomingTasksCard
               vetVisits={dogVisits}
               dewormings={dogDewormings}
@@ -697,7 +701,6 @@ export default function HealthPassportPage() {
                 void toggleDose(logId);
               }}
             />
-            <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
             <ExpenseSummaryCard expenses={dogExpenses} />
           </Box>
         </Box>

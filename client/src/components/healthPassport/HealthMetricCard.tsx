@@ -229,7 +229,7 @@ export default function HealthMetricCard({
           </Tooltip>
         </Stack>
 
-        <Box sx={{ minHeight: 56 }}>
+        <Box sx={{ minHeight: 44 }}>
           <Stack direction="row" alignItems="center" gap={1}>
             {isOverdue && <ErrorIcon sx={{ fontSize: 20, color: 'error.main', flexShrink: 0 }} />}
             <Typography
