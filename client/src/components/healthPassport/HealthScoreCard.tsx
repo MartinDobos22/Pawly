@@ -85,7 +85,7 @@ export default function HealthScoreCard({
   return (
     <Card
       sx={{
-        mb: 1.5,
+        height: '100%',
         p: { xs: 2, md: 3 },
         border: 0,
         borderRadius: 2,
@@ -93,12 +93,14 @@ export default function HealthScoreCard({
           theme.palette.common.black,
           theme.palette.mode === 'dark' ? 0.4 : 0.08
         )}`,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mb: 1.5 }}>
         {t('sections.score')}
       </Typography>
-      <Stack alignItems="center">
+      <Stack alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
         <HealthScoreRing
           score={score}
           size={150}
