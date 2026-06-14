@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,6 +25,7 @@ import {
 import type { PetProfile } from '../../types';
 import type { VetVisitRecord } from '../../types/petHealth';
 import QuickVisitButton from './QuickVisitButton';
+import { md3 } from './md3';
 
 interface Props {
   dog: PetProfile;
@@ -34,6 +35,7 @@ interface Props {
   onAddRecord: () => void;
   onQuickVisitCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onQuickVisitUndo: (id: string) => void;
+  scoreSlot?: ReactNode;
 }
 
 const initials = (name: string) =>
@@ -52,10 +54,12 @@ export default function PassportHero({
   onAddRecord,
   onQuickVisitCreate,
   onQuickVisitUndo,
+  scoreSlot,
 }: Props) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const navigate = useNavigate();
+  const m = md3(theme);
 
   const computeAgeLabel = (p: PetProfile): string | null => {
     if (p.dateOfBirth) {
@@ -97,127 +101,151 @@ export default function PassportHero({
   return (
     <Box
       sx={{
-        mb: 1.5,
+        mb: 2,
         position: 'relative',
         overflow: 'hidden',
-        borderRadius: 3,
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.14),
-        boxShadow: `0 2px 12px ${alpha(
-          theme.palette.common.black,
-          theme.palette.mode === 'dark' ? 0.4 : 0.08
-        )}`,
+        borderRadius: theme.spacing(3),
+        bgcolor: m.primaryContainer,
+        boxShadow: m.elevation1,
       }}
     >
-      <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+      <Box sx={{ p: { xs: 2, md: 3 } }}>
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
-          gap={{ xs: 1.5, sm: 2.5 }}
+          direction={{ xs: 'column', md: 'row' }}
+          alignItems={{ xs: 'stretch', md: 'center' }}
+          gap={{ xs: 2, md: 3 }}
         >
-          <Avatar
-            src={dog.photoUrl || undefined}
-            alt={dog.name}
-            sx={{
-              width: { xs: 56, md: 72 },
-              height: { xs: 56, md: 72 },
-              bgcolor: alpha(
-                theme.palette.primary.main,
-                theme.palette.mode === 'light' ? 0.16 : 0.25
-              ),
-              color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
-              fontWeight: 700,
-              fontSize: { xs: '1.25rem', md: '1.5rem' },
-              border: `3px solid ${theme.palette.background.paper}`,
-              boxShadow: `0 2px 8px ${alpha(
-                theme.palette.common.black,
-                theme.palette.mode === 'dark' ? 0.4 : 0.1
-              )}`,
-            }}
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            gap={{ xs: 1.5, sm: 2.5 }}
+            sx={{ flex: 1, minWidth: 0 }}
           >
-            {initials(dog.name) || <PetsIcon />}
-          </Avatar>
+            <Avatar
+              src={dog.photoUrl || undefined}
+              alt={dog.name}
+              sx={{
+                width: { xs: 56, md: 72 },
+                height: { xs: 56, md: 72 },
+                bgcolor: alpha(
+                  theme.palette.primary.main,
+                  theme.palette.mode === 'light' ? 0.16 : 0.25
+                ),
+                color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
+                fontWeight: 700,
+                fontSize: { xs: '1.25rem', md: '1.5rem' },
+                border: `3px solid ${theme.palette.background.paper}`,
+                boxShadow: `0 2px 8px ${alpha(
+                  theme.palette.common.black,
+                  theme.palette.mode === 'dark' ? 0.4 : 0.1
+                )}`,
+              }}
+            >
+              {initials(dog.name) || <PetsIcon />}
+            </Avatar>
 
-          <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1}>
-            <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: { xs: '1.4rem', md: '1.75rem' },
-                  fontWeight: 700,
-                  lineHeight: 1.1,
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {dog.name}
-              </Typography>
-              {dogProfiles.length > 1 && (
-                <FormControl size="small">
-                  <Select
-                    value={selectedDogId}
-                    onChange={(e) => onSelectDog(e.target.value)}
-                    variant="standard"
-                    disableUnderline
-                    renderValue={() => t('hero.switchPet')}
-                    sx={{
-                      fontSize: '0.85rem',
-                      color: 'text.secondary',
-                      '& .MuiSelect-select': { py: 0.5, pr: 3 },
-                    }}
-                  >
-                    {dogProfiles.map((p) => (
-                      <MenuItem key={p.id} value={p.id}>
-                        {p.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            </Stack>
-
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {chips.map((c, idx) => (
-                <Chip
-                  key={`${c.label}-${idx}`}
-                  label={c.label}
-                  icon={c.icon}
-                  size="small"
-                  variant="outlined"
+            <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1}>
+              <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
+                <Typography
+                  variant="h1"
                   sx={{
-                    bgcolor: 'background.paper',
-                    borderColor: alpha(theme.palette.primary.main, 0.2),
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    fontSize: '0.78rem',
-                    '& .MuiChip-icon': { color: 'primary.main', ml: 0.75 },
+                    fontSize: { xs: '1.4rem', md: '1.75rem' },
+                    fontWeight: 700,
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.02em',
                   }}
-                />
-              ))}
-            </Stack>
+                >
+                  {dog.name}
+                </Typography>
+                {dogProfiles.length > 1 && (
+                  <FormControl size="small">
+                    <Select
+                      value={selectedDogId}
+                      onChange={(e) => onSelectDog(e.target.value)}
+                      variant="standard"
+                      disableUnderline
+                      renderValue={() => t('hero.switchPet')}
+                      sx={{
+                        fontSize: '0.85rem',
+                        color: 'text.secondary',
+                        '& .MuiSelect-select': { py: 0.5, pr: 3 },
+                      }}
+                    >
+                      {dogProfiles.map((p) => (
+                        <MenuItem key={p.id} value={p.id}>
+                          {p.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 0.5 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={onAddRecord}
-              >
-                {t('hero.addRecord')}
-              </Button>
-              <QuickVisitButton
-                petId={selectedDogId}
-                disabled={!selectedDogId}
-                onCreate={onQuickVisitCreate}
-                onUndo={onQuickVisitUndo}
-              />
-              <Button
-                variant="text"
-                startIcon={<CardIcon />}
-                onClick={() => navigate('/karta-pre-veterinara')}
-              >
-                {t('hero.vetCard')}
-              </Button>
+              <Stack direction="row" flexWrap="wrap" gap={0.75}>
+                {chips.map((c, idx) => (
+                  <Chip
+                    key={`${c.label}-${idx}`}
+                    label={c.label}
+                    icon={c.icon}
+                    size="small"
+                    variant="outlined"
+                    sx={{
+                      bgcolor: 'background.paper',
+                      borderColor: alpha(theme.palette.primary.main, 0.2),
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      fontSize: '0.78rem',
+                      '& .MuiChip-icon': { color: 'primary.main', ml: 0.75 },
+                    }}
+                  />
+                ))}
+              </Stack>
+
+              <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 0.5 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={onAddRecord}
+                >
+                  {t('hero.addRecord')}
+                </Button>
+                <QuickVisitButton
+                  petId={selectedDogId}
+                  disabled={!selectedDogId}
+                  onCreate={onQuickVisitCreate}
+                  onUndo={onQuickVisitUndo}
+                />
+                <Button
+                  variant="text"
+                  startIcon={<CardIcon />}
+                  onClick={() => navigate('/karta-pre-veterinara')}
+                >
+                  {t('hero.vetCard')}
+                </Button>
+              </Stack>
             </Stack>
           </Stack>
+
+          {scoreSlot && (
+            <Box
+              sx={{
+                flexShrink: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                width: { xs: '100%', md: 'auto' },
+                pt: { xs: 2, md: 0 },
+                pl: { md: 3 },
+                borderTop: {
+                  xs: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+                  md: 'none',
+                },
+                borderLeft: { md: `1px solid ${alpha(theme.palette.primary.main, 0.15)}` },
+              }}
+            >
+              {scoreSlot}
+            </Box>
+          )}
         </Stack>
       </Box>
     </Box>

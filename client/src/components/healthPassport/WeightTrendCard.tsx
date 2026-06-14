@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
-  Card,
   Chip,
   Dialog,
   DialogActions,
@@ -28,6 +27,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis
 import { useHealthData } from '../../hooks/useHealthData';
 import { formatDateShort } from '../../utils/relativeDate';
 import DateField from '../DateField';
+import DashboardTile from './DashboardTile';
 
 interface Props {
   petId: string;
@@ -120,17 +120,7 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
 
   return (
     <>
-      <Card
-        sx={{
-          p: 2,
-          border: 0,
-          borderRadius: 2,
-          boxShadow: `0 2px 12px ${alpha(
-            theme.palette.common.black,
-            theme.palette.mode === 'dark' ? 0.4 : 0.08
-          )}`,
-        }}
-      >
+      <DashboardTile sx={{ p: 2.5 }}>
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <ScaleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
           <Typography variant="subtitle2" sx={{ fontWeight: 700, flex: 1 }}>
@@ -224,7 +214,7 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
             )}
           </>
         )}
-      </Card>
+      </DashboardTile>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ pr: 6 }}>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Card, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { Box, Button, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
   MedicalServices as VetIcon,
@@ -19,6 +19,7 @@ import type {
 } from '../../types/petHealth';
 import { today } from './utils.ts';
 import { relativeDate } from '../../utils/relativeDate';
+import DashboardTile from './DashboardTile';
 
 interface TaskItem {
   id: string;
@@ -134,7 +135,7 @@ export default function UpcomingTasksCard({
 
   if (tasks.length === 0 && todayDoseLogs.length === 0) {
     return (
-      <Card sx={{ p: 2.5 }}>
+      <DashboardTile sx={{ p: 2.5 }}>
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
@@ -148,22 +149,12 @@ export default function UpcomingTasksCard({
             {t('upcoming.noTasks')}
           </Typography>
         </Stack>
-      </Card>
+      </DashboardTile>
     );
   }
 
   return (
-    <Card
-      sx={{
-        p: 2,
-        border: 0,
-        borderRadius: 2,
-        boxShadow: `0 2px 12px ${alpha(
-          theme.palette.common.black,
-          theme.palette.mode === 'dark' ? 0.4 : 0.08
-        )}`,
-      }}
-    >
+    <DashboardTile sx={{ p: 2.5 }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.75 }}>
         <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
@@ -284,6 +275,6 @@ export default function UpcomingTasksCard({
           </Box>
         )}
       </Stack>
-    </Card>
+    </DashboardTile>
   );
 }

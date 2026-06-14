@@ -1,15 +1,14 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Stack, Typography, alpha, useTheme } from '@mui/material';
 import type { ValidityStatus } from '../../types/petHealth';
 import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
-import { md3 } from './md3';
 
 interface Props {
   vaccinationStatus: ValidityStatus;
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
   dietStatus: ValidityStatus;
+  size?: number;
 }
 
 const statusToScore = (s: ValidityStatus): number => {
@@ -26,15 +25,14 @@ const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
   return 'unknown';
 };
 
-export default function HealthScoreCard({
+export default function HealthScoreCluster({
   vaccinationStatus,
   dewormingStatus,
   ectoStatus,
   dietStatus,
+  size = 120,
 }: Props) {
   const { t } = useTranslation('healthPassport');
-  const theme = useTheme();
-  const m = md3(theme);
 
   const statusDetail = (s: ValidityStatus): string => {
     if (s === 'VALID') return t('hero.statusValid');
@@ -83,31 +81,6 @@ export default function HealthScoreCard({
   ];
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        p: { xs: 2, md: 3 },
-        border: 0,
-        borderRadius: 2,
-        boxShadow: `0 2px 12px ${alpha(
-          theme.palette.common.black,
-          theme.palette.mode === 'dark' ? 0.4 : 0.08
-        )}`,
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mb: 1.5 }}>
-        {t('sections.score')}
-      </Typography>
-      <Stack alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
-        <HealthScoreRing
-          score={score}
-          size={150}
-          breakdown={scoreBreakdown}
-          incomplete={incomplete}
-        />
-      </Stack>
-    </Card>
+    <HealthScoreRing score={score} size={size} breakdown={scoreBreakdown} incomplete={incomplete} />
   );
 }

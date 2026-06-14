@@ -68,9 +68,10 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
         gridTemplateColumns: {
           xs: '1fr',
           sm: 'repeat(2, 1fr)',
+          lg: 'repeat(4, 1fr)',
         },
         alignItems: 'start',
-        gap: 1.5,
+        gap: 2,
       }}
     >
       <HealthMetricCard

@@ -38,7 +38,7 @@ import type { VisitBundle } from '../utils/vetVisitHelper';
 // Sub-components
 import FeatureIntro from '../components/FeatureIntro';
 import PassportHero from '../components/healthPassport/PassportHero';
-import HealthScoreCard from '../components/healthPassport/HealthScoreCard';
+import HealthScoreCluster from '../components/healthPassport/HealthScoreCluster';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
@@ -609,96 +609,84 @@ export default function HealthPassportPage() {
               onAddRecord={() => setWizardOpen(true)}
               onQuickVisitCreate={handleQuickVisitCreate}
               onQuickVisitUndo={handleQuickVisitUndo}
+              scoreSlot={
+                <HealthScoreCluster
+                  vaccinationStatus={vaccinationStatus}
+                  dewormingStatus={dewormingStatus}
+                  ectoStatus={ectoStatus}
+                  dietStatus={dietStatus}
+                />
+              }
             />
           )}
 
-          {/* ── Score + KPI bento ─────────────────────────────────────────────── */}
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: 'minmax(260px, 1fr) 1.6fr' },
-              gap: 1.5,
-              mb: 1.5,
-              alignItems: 'stretch',
-            }}
-          >
-            <HealthScoreCard
+          {/* ── KPI dlaždice ─────────────────────────────────────────────── */}
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mb: 1 }}>
+              {t('sections.status')}
+            </Typography>
+            <HealthStatusOverview
               vaccinationStatus={vaccinationStatus}
               dewormingStatus={dewormingStatus}
               ectoStatus={ectoStatus}
-              dietStatus={dietStatus}
+              currentDiet={currentDiet}
+              vaccinationNextDate={latestVaccination?.validUntil}
+              vaccinationLastDate={latestVaccination?.dateApplied}
+              dewormingNextDate={latestDeworming?.nextDueDate}
+              dewormingLastDate={latestDeworming?.dateGiven}
+              dewormingIntervalDays={
+                latestDeworming
+                  ? (latestDeworming.intervalDays ??
+                    computeIntervalDaysFromDates(
+                      latestDeworming.dateGiven,
+                      latestDeworming.nextDueDate,
+                      90
+                    ))
+                  : undefined
+              }
+              dewormingPreparation={latestDeworming?.productName}
+              ectoNextDate={latestEcto?.nextDueDate}
+              ectoLastDate={latestEcto?.dateGiven}
+              ectoIntervalDays={
+                latestEcto
+                  ? (latestEcto.intervalDays ??
+                    computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
+                  : undefined
+              }
+              ectoPreparation={latestEcto?.productName}
+              onAddVaccination={() => setWizardOpen(true)}
+              onAddDeworming={() => setWizardOpen(true)}
+              onAddEcto={() => setWizardOpen(true)}
+              onAddDiet={() => setWizardOpen(true)}
+              onOpenVaccination={
+                latestVaccination
+                  ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+                  : undefined
+              }
+              onOpenDeworming={
+                latestDeworming
+                  ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+                  : undefined
+              }
+              onOpenEcto={
+                latestEcto
+                  ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
+                  : undefined
+              }
+              onOpenDiet={
+                currentDiet
+                  ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' })
+                  : undefined
+              }
             />
-            <Box>
-              <Typography sx={{ ...m.type.titleMedium, color: 'text.secondary', mt: 0.5, mb: 1 }}>
-                {t('sections.status')}
-              </Typography>
-              <HealthStatusOverview
-                vaccinationStatus={vaccinationStatus}
-                dewormingStatus={dewormingStatus}
-                ectoStatus={ectoStatus}
-                currentDiet={currentDiet}
-                vaccinationNextDate={latestVaccination?.validUntil}
-                vaccinationLastDate={latestVaccination?.dateApplied}
-                dewormingNextDate={latestDeworming?.nextDueDate}
-                dewormingLastDate={latestDeworming?.dateGiven}
-                dewormingIntervalDays={
-                  latestDeworming
-                    ? (latestDeworming.intervalDays ??
-                      computeIntervalDaysFromDates(
-                        latestDeworming.dateGiven,
-                        latestDeworming.nextDueDate,
-                        90
-                      ))
-                    : undefined
-                }
-                dewormingPreparation={latestDeworming?.productName}
-                ectoNextDate={latestEcto?.nextDueDate}
-                ectoLastDate={latestEcto?.dateGiven}
-                ectoIntervalDays={
-                  latestEcto
-                    ? (latestEcto.intervalDays ??
-                      computeIntervalDaysFromDates(
-                        latestEcto.dateGiven,
-                        latestEcto.nextDueDate,
-                        30
-                      ))
-                    : undefined
-                }
-                ectoPreparation={latestEcto?.productName}
-                onAddVaccination={() => setWizardOpen(true)}
-                onAddDeworming={() => setWizardOpen(true)}
-                onAddEcto={() => setWizardOpen(true)}
-                onAddDiet={() => setWizardOpen(true)}
-                onOpenVaccination={
-                  latestVaccination
-                    ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
-                    : undefined
-                }
-                onOpenDeworming={
-                  latestDeworming
-                    ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
-                    : undefined
-                }
-                onOpenEcto={
-                  latestEcto
-                    ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
-                    : undefined
-                }
-                onOpenDiet={
-                  currentDiet
-                    ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' })
-                    : undefined
-                }
-              />
-            </Box>
           </Box>
 
-          {/* ── Dashboard widgets (bento) ───────────────────────────────────────── */}
+          {/* ── Dashboard widgety ───────────────────────────────────────── */}
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
-              gap: 1.5,
+              gap: 2,
               alignItems: 'start',
             }}
           >

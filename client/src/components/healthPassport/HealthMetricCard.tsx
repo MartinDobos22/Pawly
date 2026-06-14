@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
-  Card,
   LinearProgress,
   Stack,
   Tooltip,
@@ -21,6 +20,7 @@ import {
 import type { ValidityStatus } from '../../types/petHealth';
 import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 import HelpHint from '../HelpHint';
+import DashboardTile from './DashboardTile';
 
 interface Props {
   icon: ReactElement;
@@ -110,7 +110,7 @@ export default function HealthMetricCard({
 
   if (isEmpty) {
     return (
-      <Card
+      <DashboardTile
         onClick={onPrimaryAction || onOpen}
         sx={{
           position: 'relative',
@@ -119,6 +119,7 @@ export default function HealthMetricCard({
           borderStyle: 'dashed',
           borderColor: theme.palette.divider,
           bgcolor: 'transparent',
+          boxShadow: 'none',
           transition: 'border-color 120ms ease, background-color 120ms ease',
           '&:hover':
             onPrimaryAction || onOpen
@@ -132,8 +133,8 @@ export default function HealthMetricCard({
         <Stack direction="row" gap={1.25} alignItems="center">
           <Box
             sx={{
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               borderRadius: 2,
               bgcolor: alpha(theme.palette.text.secondary, 0.08),
               color: 'text.secondary',
@@ -141,7 +142,7 @@ export default function HealthMetricCard({
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              '& svg': { fontSize: 20 },
+              '& svg': { fontSize: 22 },
             }}
           >
             {icon}
@@ -176,12 +177,12 @@ export default function HealthMetricCard({
             </Button>
           )}
         </Stack>
-      </Card>
+      </DashboardTile>
     );
   }
 
   return (
-    <Card
+    <DashboardTile
       onClick={onOpen}
       sx={{
         position: 'relative',
@@ -206,15 +207,15 @@ export default function HealthMetricCard({
           <Stack direction="row" gap={1.25} alignItems="center" sx={{ minWidth: 0 }}>
             <Box
               sx={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: 2,
                 bgcolor: alpha(toneColor, 0.16),
                 color: toneColor,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                '& svg': { fontSize: 20 },
+                '& svg': { fontSize: 24 },
               }}
             >
               {icon}
@@ -290,6 +291,6 @@ export default function HealthMetricCard({
           </Stack>
         )}
       </Stack>
-    </Card>
+    </DashboardTile>
   );
 }
