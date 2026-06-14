@@ -153,7 +153,17 @@ export default function UpcomingTasksCard({
   }
 
   return (
-    <Card sx={{ p: 2 }}>
+    <Card
+      sx={{
+        p: 2,
+        border: 0,
+        borderRadius: 2,
+        boxShadow: `0 2px 12px ${alpha(
+          theme.palette.common.black,
+          theme.palette.mode === 'dark' ? 0.4 : 0.08
+        )}`,
+      }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.75 }}>
         <CalendarIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>

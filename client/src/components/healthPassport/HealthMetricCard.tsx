@@ -234,7 +234,7 @@ export default function HealthMetricCard({
             {isOverdue && <ErrorIcon sx={{ fontSize: 20, color: 'error.main', flexShrink: 0 }} />}
             <Typography
               variant="h3"
-              sx={{ fontSize: '1.4rem', fontWeight: 700, color: headlineColor, lineHeight: 1.2 }}
+              sx={{ fontSize: '1.6rem', fontWeight: 700, color: headlineColor, lineHeight: 1.2 }}
             >
               {headline}
             </Typography>

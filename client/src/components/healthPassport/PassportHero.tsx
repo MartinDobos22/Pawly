@@ -170,21 +170,13 @@ export default function PassportHero({
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 3,
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.12),
-        border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.14),
+        boxShadow: `0 2px 12px ${alpha(
+          theme.palette.common.black,
+          theme.palette.mode === 'dark' ? 0.4 : 0.08
+        )}`,
       }}
     >
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          background: `radial-gradient(circle at 90% 10%, ${alpha(
-            theme.palette.primary.light,
-            0.18
-          )}, transparent 60%)`,
-          pointerEvents: 'none',
-        }}
-      />
       <Box sx={{ position: 'relative', p: { xs: 2, md: 2.5 } }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
