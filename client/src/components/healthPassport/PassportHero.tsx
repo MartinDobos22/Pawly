@@ -2,14 +2,14 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Avatar,
   Box,
   Button,
-  Chip,
   FormControl,
+  IconButton,
   MenuItem,
   Select,
   Stack,
+  Tooltip,
   Typography,
   alpha,
   useTheme,
@@ -17,15 +17,26 @@ import {
 import {
   Add as AddIcon,
   Description as CardIcon,
-  Cake as CakeIcon,
-  Monitor as ChipIcon,
-  Pets as PetsIcon,
+  Memory as ChipIcon,
+  Restaurant as DietIcon,
+  Biotech as DewormIcon,
   Scale as ScaleIcon,
+  Settings as SettingsIcon,
+  Vaccines as VaccinesIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
 import type { ValidityStatus, VetVisitRecord } from '../../types/petHealth';
+import { relativeDate } from '../../utils/relativeDate';
 import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
 import QuickVisitButton from './QuickVisitButton';
+
+interface QuickInfo {
+  key: string;
+  icon: React.ReactElement;
+  label: string;
+  value: string;
+  onClick?: () => void;
+}
 
 interface Props {
   dog: PetProfile;
@@ -36,18 +47,13 @@ interface Props {
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
   dietStatus: ValidityStatus;
+  vaccinationDueDate?: string;
+  dewormingDueDate?: string;
+  dietName?: string;
   onAddRecord: () => void;
   onQuickVisitCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
   onQuickVisitUndo: (id: string) => void;
 }
-
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
 
 const statusToScore = (s: ValidityStatus): number => {
   if (s === 'VALID') return 100;
@@ -63,6 +69,74 @@ const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
   return 'unknown';
 };
 
+function InfoPill({ info, onPhoto }: { info: QuickInfo; onPhoto: boolean }) {
+  const interactive = Boolean(info.onClick);
+  return (
+    <Stack
+      direction="row"
+      alignItems="center"
+      gap={1.25}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={info.onClick}
+      onKeyDown={
+        interactive
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                info.onClick?.();
+              }
+            }
+          : undefined
+      }
+      sx={(theme) => ({
+        px: 1.5,
+        py: 1,
+        borderRadius: 3,
+        bgcolor: 'background.paper',
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: onPhoto ? `0 4px 16px ${alpha(theme.palette.common.black, 0.18)}` : 'none',
+        cursor: interactive ? 'pointer' : 'default',
+        transition: 'transform 120ms ease, border-color 120ms ease',
+        minWidth: { xs: 0, md: 220 },
+        '&:hover': interactive
+          ? { borderColor: alpha(theme.palette.primary.main, 0.4), transform: 'translateY(-1px)' }
+          : undefined,
+        '&:focus-visible': interactive
+          ? { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 }
+          : undefined,
+      })}
+    >
+      <Box
+        sx={(theme) => ({
+          width: 34,
+          height: 34,
+          borderRadius: 2,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: alpha(theme.palette.primary.main, 0.1),
+          color: 'primary.main',
+        })}
+      >
+        {info.icon}
+      </Box>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography
+          variant="caption"
+          sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0, lineHeight: 1.2 }}
+        >
+          {info.label}
+        </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.25 }} noWrap>
+          {info.value}
+        </Typography>
+      </Box>
+    </Stack>
+  );
+}
+
 export default function PassportHero({
   dog,
   dogProfiles,
@@ -72,6 +146,9 @@ export default function PassportHero({
   dewormingStatus,
   ectoStatus,
   dietStatus,
+  vaccinationDueDate,
+  dewormingDueDate,
+  dietName,
   onAddRecord,
   onQuickVisitCreate,
   onQuickVisitUndo,
@@ -79,6 +156,12 @@ export default function PassportHero({
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const hasPhoto = Boolean(dog.photoUrl);
+  const headingColor = hasPhoto ? theme.palette.common.white : theme.palette.text.primary;
+  const subColor = hasPhoto
+    ? alpha(theme.palette.common.white, 0.82)
+    : theme.palette.text.secondary;
 
   const computeAgeLabel = (p: PetProfile): string | null => {
     if (p.dateOfBirth) {
@@ -153,15 +236,51 @@ export default function PassportHero({
   const ageLabel = computeAgeLabel(dog);
   const sex =
     dog.sex === 'MALE' ? t('hero.sexMale') : dog.sex === 'FEMALE' ? t('hero.sexFemale') : null;
+  const metaParts = [dog.breed, ageLabel, sex].filter(Boolean) as string[];
 
-  const chips: { label: string; icon?: React.ReactElement }[] = [];
-  if (dog.breed) chips.push({ label: dog.breed, icon: <PetsIcon sx={{ fontSize: 14 }} /> });
-  if (ageLabel) chips.push({ label: ageLabel, icon: <CakeIcon sx={{ fontSize: 14 }} /> });
-  if (dog.weightKg)
-    chips.push({ label: `${dog.weightKg} kg`, icon: <ScaleIcon sx={{ fontSize: 14 }} /> });
-  if (sex) chips.push({ label: sex });
-  if (dog.microchipNumber)
-    chips.push({ label: dog.microchipNumber, icon: <ChipIcon sx={{ fontSize: 14 }} /> });
+  const quickInfos: QuickInfo[] = [];
+  const vaccRel = vaccinationDueDate ? relativeDate(vaccinationDueDate) : null;
+  if (vaccRel) {
+    quickInfos.push({
+      key: 'vaccination',
+      icon: <VaccinesIcon sx={{ fontSize: 18 }} />,
+      label: t('hero.quickVaccination'),
+      value: vaccRel.text,
+    });
+  }
+  const dewRel = dewormingDueDate ? relativeDate(dewormingDueDate) : null;
+  if (dewRel) {
+    quickInfos.push({
+      key: 'deworming',
+      icon: <DewormIcon sx={{ fontSize: 18 }} />,
+      label: t('hero.quickDeworming'),
+      value: dewRel.text,
+    });
+  }
+  if (typeof dog.weightKg === 'number' && dog.weightKg > 0) {
+    quickInfos.push({
+      key: 'weight',
+      icon: <ScaleIcon sx={{ fontSize: 18 }} />,
+      label: t('hero.quickWeight'),
+      value: `${dog.weightKg} kg`,
+    });
+  }
+  if (dietName) {
+    quickInfos.push({
+      key: 'diet',
+      icon: <DietIcon sx={{ fontSize: 18 }} />,
+      label: t('hero.quickDiet'),
+      value: dietName,
+    });
+  }
+  if (dog.microchipNumber) {
+    quickInfos.push({
+      key: 'chip',
+      icon: <ChipIcon sx={{ fontSize: 18 }} />,
+      label: t('hero.quickChip'),
+      value: dog.microchipNumber,
+    });
+  }
 
   return (
     <Box
@@ -170,56 +289,63 @@ export default function PassportHero({
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 4,
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.12),
         border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.12),
       }}
     >
+      {hasPhoto && (
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url(${dog.photoUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+      )}
       <Box
+        aria-hidden
         sx={{
           position: 'absolute',
           inset: 0,
-          background: `radial-gradient(circle at 90% 10%, ${alpha(
-            theme.palette.primary.light,
-            0.18
-          )}, transparent 60%)`,
+          background: hasPhoto
+            ? `linear-gradient(105deg, ${alpha(theme.palette.common.black, 0.78)} 0%, ${alpha(
+                theme.palette.common.black,
+                0.45
+              )} 45%, ${alpha(theme.palette.common.black, 0.1)} 100%)`
+            : `radial-gradient(circle at 90% 10%, ${alpha(theme.palette.primary.light, 0.18)}, transparent 60%)`,
           pointerEvents: 'none',
         }}
       />
-      <Box sx={{ position: 'relative', p: { xs: 2, md: 2.5 } }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={{ xs: 2, md: 2.5 }}
-        >
-          <Avatar
-            src={dog.photoUrl || undefined}
-            alt={dog.name}
-            sx={{
-              width: { xs: 72, md: 96 },
-              height: { xs: 72, md: 96 },
-              bgcolor: alpha(
-                theme.palette.primary.main,
-                theme.palette.mode === 'light' ? 0.16 : 0.25
-              ),
-              color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
-              fontWeight: 700,
-              fontSize: { xs: '1.5rem', md: '1.9rem' },
-              border: `3px solid ${theme.palette.background.paper}`,
-              boxShadow: '0 2px 8px rgba(15,76,92,0.10)',
-            }}
-          >
-            {initials(dog.name) || <PetsIcon />}
-          </Avatar>
 
-          <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1.25}>
+      <Box sx={{ position: 'relative', p: { xs: 2, md: 3 } }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr auto' },
+            gap: { xs: 2, md: 3 },
+            alignItems: 'start',
+          }}
+        >
+          <Stack spacing={1.5} sx={{ minWidth: 0 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: subColor, textTransform: 'none', letterSpacing: 0 }}
+            >
+              {t('hero.greeting')}
+            </Typography>
+
             <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
               <Typography
                 variant="h1"
                 sx={{
-                  fontSize: { xs: '1.5rem', md: '2rem' },
+                  fontSize: { xs: '1.75rem', md: '2.5rem' },
                   fontWeight: 700,
-                  lineHeight: 1.1,
+                  lineHeight: 1.05,
                   letterSpacing: '-0.02em',
+                  color: headingColor,
                 }}
               >
                 {dog.name}
@@ -234,8 +360,9 @@ export default function PassportHero({
                     renderValue={() => t('hero.switchPet')}
                     sx={{
                       fontSize: '0.85rem',
-                      color: 'text.secondary',
+                      color: subColor,
                       '& .MuiSelect-select': { py: 0.5, pr: 3 },
+                      '& .MuiSelect-icon': { color: subColor },
                     }}
                   >
                     {dogProfiles.map((p) => (
@@ -248,34 +375,40 @@ export default function PassportHero({
               )}
             </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {chips.map((c, idx) => (
-                <Chip
-                  key={`${c.label}-${idx}`}
-                  label={c.label}
-                  icon={c.icon}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    bgcolor: 'background.paper',
-                    borderColor: alpha(theme.palette.primary.main, 0.2),
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    fontSize: '0.78rem',
-                    '& .MuiChip-icon': { color: 'primary.main', ml: 0.75 },
-                  }}
-                />
-              ))}
-            </Stack>
+            {metaParts.length > 0 && (
+              <Typography variant="body2" sx={{ color: subColor, fontWeight: 500 }}>
+                {metaParts.join('  •  ')}
+              </Typography>
+            )}
 
-            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 1 }}>
+            <Box
+              sx={(t2) => ({
+                alignSelf: 'flex-start',
+                mt: 0.5,
+                p: 1.5,
+                borderRadius: 4,
+                bgcolor: hasPhoto ? alpha(t2.palette.background.paper, 0.92) : 'background.paper',
+                boxShadow: hasPhoto ? `0 6px 20px ${alpha(t2.palette.common.black, 0.22)}` : 'none',
+                border: `1px solid ${t2.palette.divider}`,
+              })}
+            >
+              <HealthScoreRing
+                score={score}
+                size={108}
+                label={t('hero.healthScore')}
+                breakdown={scoreBreakdown}
+                incomplete={incomplete}
+              />
+            </Box>
+
+            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 0.5 }}>
               <Button
                 variant="contained"
                 color="primary"
                 startIcon={<AddIcon />}
                 onClick={onAddRecord}
                 size="large"
-                sx={{ boxShadow: '0 4px 14px rgba(15,76,92,0.25)' }}
+                sx={{ borderRadius: 999 }}
               >
                 {t('hero.addRecord')}
               </Button>
@@ -286,31 +419,49 @@ export default function PassportHero({
                 onUndo={onQuickVisitUndo}
               />
               <Button
-                variant="text"
+                variant={hasPhoto ? 'contained' : 'text'}
+                color={hasPhoto ? 'inherit' : 'primary'}
                 startIcon={<CardIcon />}
                 onClick={() => navigate('/karta-pre-veterinara')}
+                sx={
+                  hasPhoto
+                    ? {
+                        borderRadius: 999,
+                        bgcolor: alpha(theme.palette.background.paper, 0.9),
+                        color: 'primary.main',
+                        '&:hover': { bgcolor: theme.palette.background.paper },
+                      }
+                    : { borderRadius: 999 }
+                }
               >
                 {t('hero.vetCard')}
               </Button>
             </Stack>
           </Stack>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignSelf: { xs: 'center', md: 'center' },
-              flexShrink: 0,
-              pl: { md: 2 },
-            }}
-          >
-            <HealthScoreRing
-              score={score}
-              size={96}
-              breakdown={scoreBreakdown}
-              incomplete={incomplete}
-            />
-          </Box>
-        </Stack>
+          <Stack spacing={1} sx={{ width: { xs: '100%', md: 'auto' } }}>
+            {quickInfos.map((info) => (
+              <InfoPill key={info.key} info={info} onPhoto={hasPhoto} />
+            ))}
+            <Tooltip title={t('hero.editProfile')}>
+              <IconButton
+                onClick={() => navigate('/profily')}
+                aria-label={t('hero.editProfile')}
+                sx={(t2) => ({
+                  alignSelf: { xs: 'flex-start', md: 'flex-end' },
+                  border: `1px solid ${t2.palette.divider}`,
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                  boxShadow: hasPhoto
+                    ? `0 4px 16px ${alpha(t2.palette.common.black, 0.18)}`
+                    : 'none',
+                })}
+              >
+                <SettingsIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Box>
       </Box>
     </Box>
   );

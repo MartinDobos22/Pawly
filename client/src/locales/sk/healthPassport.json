@@ -526,19 +526,108 @@
     "vaccShort": "Očk.",
     "dewShort": "Odč.",
     "ectoShort": "Kliešte",
-    "dietShort": "Diéta"
+    "dietShort": "Diéta",
+    "greeting": "Ahoj,",
+    "healthScore": "Zdravotné skóre",
+    "editProfile": "Upraviť profil",
+    "quickVaccination": "Očkovanie",
+    "quickDeworming": "Odčervenie",
+    "quickWeight": "Hmotnosť",
+    "quickDiet": "Diéta",
+    "quickChip": "Mikročip"
   },
   "overview": {
+    "title": "Prehľad zdravia",
     "vaccination": "Očkovanie",
     "deworming": "Odčervenie",
     "ecto": "Kliešte / blchy",
-    "diet": "Aktuálna diéta",
+    "diet": "Diéta",
+    "activity": "Aktivita",
+    "activitySoon": "Sledovanie aktivity pripravujeme — zatiaľ orientačná hodnota.",
     "dietNotSet": "Nie je nastavená",
     "add": "Pridať",
     "schedule": "Naplánovať",
     "renew": "Obnoviť",
     "edit": "Upraviť",
     "setup": "Nastaviť"
+  },
+  "insight": {
+    "title": "Pawly Insight",
+    "headline": {
+      "great": "{{name}} je v skvelej forme!",
+      "attention": "{{name}} potrebuje tvoju pozornosť",
+      "getStarted": "Začni s pasom pre {{name}}"
+    },
+    "itemGetStarted": "Pridaj prvý záznam — očkovanie, návštevu veterinára alebo váženie — a uvidíš tu prehľad zdravia.",
+    "next": {
+      "vaccination_one": "Najbližšie očkovanie o {{count}} deň",
+      "vaccination_few": "Najbližšie očkovanie o {{count}} dni",
+      "vaccination_many": "Najbližšie očkovanie o {{count}} dní",
+      "vaccination_other": "Najbližšie očkovanie o {{count}} dní",
+      "deworming_one": "Najbližšie odčervenie o {{count}} deň",
+      "deworming_few": "Najbližšie odčervenie o {{count}} dni",
+      "deworming_many": "Najbližšie odčervenie o {{count}} dní",
+      "deworming_other": "Najbližšie odčervenie o {{count}} dní",
+      "ecto_one": "Ochrana proti kliešťom o {{count}} deň",
+      "ecto_few": "Ochrana proti kliešťom o {{count}} dni",
+      "ecto_many": "Ochrana proti kliešťom o {{count}} dní",
+      "ecto_other": "Ochrana proti kliešťom o {{count}} dní",
+      "visit_one": "Ďalšia kontrola o {{count}} deň",
+      "visit_few": "Ďalšia kontrola o {{count}} dni",
+      "visit_many": "Ďalšia kontrola o {{count}} dní",
+      "visit_other": "Ďalšia kontrola o {{count}} dní"
+    },
+    "overdue": {
+      "vaccination_one": "Očkovanie je po termíne {{count}} deň",
+      "vaccination_few": "Očkovanie je po termíne {{count}} dni",
+      "vaccination_many": "Očkovanie je po termíne {{count}} dní",
+      "vaccination_other": "Očkovanie je po termíne {{count}} dní",
+      "deworming_one": "Odčervenie je po termíne {{count}} deň",
+      "deworming_few": "Odčervenie je po termíne {{count}} dni",
+      "deworming_many": "Odčervenie je po termíne {{count}} dní",
+      "deworming_other": "Odčervenie je po termíne {{count}} dní",
+      "ecto_one": "Ochrana proti kliešťom je po termíne {{count}} deň",
+      "ecto_few": "Ochrana proti kliešťom je po termíne {{count}} dni",
+      "ecto_many": "Ochrana proti kliešťom je po termíne {{count}} dní",
+      "ecto_other": "Ochrana proti kliešťom je po termíne {{count}} dní",
+      "visit_one": "Kontrola je po termíne {{count}} deň",
+      "visit_few": "Kontrola je po termíne {{count}} dni",
+      "visit_many": "Kontrola je po termíne {{count}} dní",
+      "visit_other": "Kontrola je po termíne {{count}} dní"
+    },
+    "weight": {
+      "flat": "Hmotnosť je stabilná",
+      "up": "Hmotnosť stúpla o {{delta}} kg",
+      "down": "Hmotnosť klesla o {{delta}} kg"
+    },
+    "preventiveOk": "Preventívna starostlivosť je v poriadku",
+    "preventiveCheck": "Skontroluj preventívnu starostlivosť — niečo je po termíne",
+    "allergyAware_one": "V profile je {{count}} alergia, pri analýze krmiva na ňu dávame pozor",
+    "allergyAware_few": "V profile sú {{count}} alergie, pri analýze krmiva na ne dávame pozor",
+    "allergyAware_many": "V profile je {{count}} alergií, pri analýze krmiva na ne dávame pozor",
+    "allergyAware_other": "V profile je {{count}} alergií, pri analýze krmiva na ne dávame pozor"
+  },
+  "journey": {
+    "title": "Zdravotná cesta",
+    "subtitle": "Všetky dôležité udalosti v živote tvojho zvieraťa"
+  },
+  "gallery": {
+    "title": "Galéria spomienok",
+    "subtitle": "Milé momenty a dôležité záznamy",
+    "viewAll": "Zobraziť všetko",
+    "empty": "Zatiaľ tu nie sú žiadne fotky. Pridaj fotku zvieraťa v jeho profile.",
+    "add": "Pridať fotku"
+  },
+  "quickLinks": {
+    "medical": "Zdravotné záznamy",
+    "medicalCaption": "Všetky zdravotné záznamy",
+    "expenses": "Výdavky",
+    "expensesCaption": "Sleduj náklady",
+    "documents": "Dokumenty",
+    "documentsCaption": "Správy a súbory",
+    "insurance": "Poistenie",
+    "insuranceCaption": "Poistka a nároky",
+    "soon": "Čoskoro"
   },
   "upcoming": {
     "title": "Najbližšie úlohy",

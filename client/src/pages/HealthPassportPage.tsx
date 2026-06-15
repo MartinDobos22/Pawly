@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, Card, Snackbar, Stack, Typography } from '@mui/material';
 import { Pets as PetsIcon } from '@mui/icons-material';
@@ -20,7 +20,10 @@ import type { VisitBundle } from '../utils/vetVisitHelper';
 // Sub-components
 import FeatureIntro from '../components/FeatureIntro';
 import PassportHero from '../components/healthPassport/PassportHero';
-import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
+import HealthOverviewRings from '../components/healthPassport/HealthOverviewRings';
+import PawlyInsightCard from '../components/healthPassport/PawlyInsightCard';
+import MemoryGalleryCard from '../components/healthPassport/MemoryGalleryCard';
+import QuickLinksRow from '../components/healthPassport/QuickLinksRow';
 import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
@@ -29,6 +32,7 @@ import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
 import WeightTrendCard from '../components/healthPassport/WeightTrendCard';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
 import type { RecordDetailState } from '../components/healthPassport/TimelineRecordDetailDialog';
+import type { InsightInput, UpcomingDue } from '../components/healthPassport/insight';
 
 // Utilities and types
 import {
@@ -59,6 +63,7 @@ export default function HealthPassportPage() {
     doseLogs,
     dietEntries,
     expenses,
+    weightLogs,
     addVisitBundle,
     addVisit,
     updateVisit,
@@ -202,6 +207,8 @@ export default function HealthPassportPage() {
 
   // ── Wizard / dialog state ──────────────────────────────────────────────────
   const [wizardOpen, setWizardOpen] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const expensesRef = useRef<HTMLDivElement>(null);
   const [selectedVisitId, setSelectedVisitId] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<RecordDetailState | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
@@ -514,6 +521,48 @@ export default function HealthPassportPage() {
     : null;
   const dietStatus: 'VALID' | 'UNKNOWN' = currentDiet ? 'VALID' : 'UNKNOWN';
 
+  // ── Insight (lokálny, pravidlový — žiadne AI volanie) ────────────────────────
+  const weightSeries = [...weightLogs]
+    .filter((l) => l.petId === selectedDogId)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  let weightTrend: InsightInput['weightTrend'] = null;
+  let weightDeltaKg: number | null = null;
+  if (weightSeries.length >= 2) {
+    const delta = weightSeries[weightSeries.length - 1].kg - weightSeries[0].kg;
+    weightDeltaKg = delta;
+    weightTrend = Math.abs(delta) < 0.05 ? 'flat' : delta > 0 ? 'up' : 'down';
+  }
+  const latestVisit = [...dogVisits].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const hasAnyRecord = Boolean(
+    latestVaccination ||
+    latestDeworming ||
+    latestEcto ||
+    dogVisits.length ||
+    dogMeds.length ||
+    currentDiet ||
+    dogExpenses.length
+  );
+  const upcoming: UpcomingDue[] = [
+    { type: 'vaccination', date: latestVaccination?.validUntil },
+    { type: 'deworming', date: latestDeworming?.nextDueDate },
+    { type: 'ecto', date: latestEcto?.nextDueDate },
+    { type: 'visit', date: latestVisit?.nextCheckDate },
+  ];
+  const insightInput: InsightInput = {
+    petName: selectedDog?.name ?? '',
+    hasAnyRecord,
+    vaccinationStatus,
+    dewormingStatus,
+    ectoStatus,
+    upcoming,
+    weightTrend,
+    weightDeltaKg,
+    allergyCount: selectedDog?.allergies?.length ?? 0,
+  };
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement>) =>
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <Box>
@@ -528,79 +577,63 @@ export default function HealthPassportPage() {
           dewormingStatus={dewormingStatus}
           ectoStatus={ectoStatus}
           dietStatus={dietStatus}
+          vaccinationDueDate={latestVaccination?.validUntil}
+          dewormingDueDate={latestDeworming?.nextDueDate}
+          dietName={currentDiet?.foodName}
           onAddRecord={() => setWizardOpen(true)}
           onQuickVisitCreate={handleQuickVisitCreate}
           onQuickVisitUndo={handleQuickVisitUndo}
         />
       )}
 
-      {/* ── Status overview ────────────────────────────────────────────────── */}
-      <HealthStatusOverview
-        vaccinationStatus={vaccinationStatus}
-        dewormingStatus={dewormingStatus}
-        ectoStatus={ectoStatus}
-        currentDiet={currentDiet}
-        vaccinationNextDate={latestVaccination?.validUntil}
-        vaccinationLastDate={latestVaccination?.dateApplied}
-        dewormingNextDate={latestDeworming?.nextDueDate}
-        dewormingLastDate={latestDeworming?.dateGiven}
-        dewormingIntervalDays={
-          latestDeworming
-            ? (latestDeworming.intervalDays ??
-              computeIntervalDaysFromDates(
-                latestDeworming.dateGiven,
-                latestDeworming.nextDueDate,
-                90
-              ))
-            : undefined
-        }
-        dewormingPreparation={latestDeworming?.productName}
-        ectoNextDate={latestEcto?.nextDueDate}
-        ectoLastDate={latestEcto?.dateGiven}
-        ectoIntervalDays={
-          latestEcto
-            ? (latestEcto.intervalDays ??
-              computeIntervalDaysFromDates(latestEcto.dateGiven, latestEcto.nextDueDate, 30))
-            : undefined
-        }
-        ectoPreparation={latestEcto?.productName}
-        onAddVaccination={() => setWizardOpen(true)}
-        onAddDeworming={() => setWizardOpen(true)}
-        onAddEcto={() => setWizardOpen(true)}
-        onAddDiet={() => setWizardOpen(true)}
-        onOpenVaccination={
-          latestVaccination
-            ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
-            : undefined
-        }
-        onOpenDeworming={
-          latestDeworming
-            ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
-            : undefined
-        }
-        onOpenEcto={
-          latestEcto
-            ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
-            : undefined
-        }
-        onOpenDiet={
-          currentDiet ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' }) : undefined
-        }
-      />
-
-      {/* ── Dashboard: timeline (left) + tasks/expenses stack (right) ─────── */}
+      {/* ── Health Overview (rings) + Pawly Insight ─────────────────────────── */}
       <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
           gap: 1.5,
+          mb: 2.5,
         }}
       >
-        <Card sx={{ p: { xs: 1.5, md: 2 } }}>
+        <HealthOverviewRings
+          vaccinationStatus={vaccinationStatus}
+          dewormingStatus={dewormingStatus}
+          currentDiet={currentDiet}
+          onOpenVaccination={
+            latestVaccination
+              ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+              : () => setWizardOpen(true)
+          }
+          onOpenDeworming={
+            latestDeworming
+              ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+              : () => setWizardOpen(true)
+          }
+          onOpenDiet={
+            currentDiet
+              ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' })
+              : () => setWizardOpen(true)
+          }
+        />
+        <PawlyInsightCard input={insightInput} />
+      </Box>
+
+      {/* ── Health Journey (timeline) + tasks/weight/expenses stack ─────────── */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
+          gap: 1.5,
+          mb: 2.5,
+        }}
+      >
+        <Card ref={timelineRef} sx={{ p: { xs: 1.5, md: 2 } }}>
           <HealthTimeline
             timeline={timeline}
             onOpenDetail={handleOpenDetail}
             onExportPdf={handleExportPdf}
+            heading={t('journey.title')}
+            subheading={t('journey.subtitle')}
           />
         </Card>
         <Stack spacing={1.5}>
@@ -615,9 +648,22 @@ export default function HealthPassportPage() {
             }}
           />
           <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
-          <ExpenseSummaryCard expenses={dogExpenses} />
+          <Box ref={expensesRef}>
+            <ExpenseSummaryCard expenses={dogExpenses} />
+          </Box>
         </Stack>
       </Box>
+
+      {/* ── Memory gallery ──────────────────────────────────────────────────── */}
+      <Box sx={{ mb: 2.5 }}>
+        <MemoryGalleryCard petName={selectedDog?.name ?? ''} photoUrl={selectedDog?.photoUrl} />
+      </Box>
+
+      {/* ── Quick links ─────────────────────────────────────────────────────── */}
+      <QuickLinksRow
+        onOpenRecords={() => scrollTo(timelineRef)}
+        onOpenExpenses={() => scrollTo(expensesRef)}
+      />
 
       {/* ── Add record dialog ────────────────────────────────────────────── */}
       <AddRecord

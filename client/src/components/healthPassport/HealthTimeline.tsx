@@ -28,6 +28,8 @@ interface HealthTimelineProps {
   timeline: TimelineEvent[];
   onOpenDetail: (event: TimelineEvent) => void;
   onExportPdf: () => void;
+  heading?: string;
+  subheading?: string;
 }
 
 type SelectableType = TimelineEvent['type'];
@@ -47,6 +49,8 @@ export default function HealthTimeline({
   timeline,
   onOpenDetail,
   onExportPdf,
+  heading,
+  subheading,
 }: HealthTimelineProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation('healthPassport');
@@ -129,10 +133,10 @@ export default function HealthTimeline({
       >
         <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
           <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
-            {t('timeline.title')}
+            {heading ?? t('timeline.title')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t('timeline.chronologicalOverview')}
+            {subheading ?? t('timeline.chronologicalOverview')}
           </Typography>
         </Box>
         <Stack

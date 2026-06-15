@@ -509,19 +509,90 @@
     "vaccShort": "Vacc.",
     "dewShort": "Dew.",
     "ectoShort": "Ticks",
-    "dietShort": "Diet"
+    "dietShort": "Diet",
+    "greeting": "Hey there,",
+    "healthScore": "Health Score",
+    "editProfile": "Edit profile",
+    "quickVaccination": "Vaccination",
+    "quickDeworming": "Deworming",
+    "quickWeight": "Weight",
+    "quickDiet": "Diet",
+    "quickChip": "Microchip"
   },
   "overview": {
+    "title": "Health overview",
     "vaccination": "Vaccination",
     "deworming": "Deworming",
     "ecto": "Ticks / fleas",
-    "diet": "Current diet",
+    "diet": "Diet",
+    "activity": "Activity",
+    "activitySoon": "Activity tracking is coming soon — this is an indicative value for now.",
     "dietNotSet": "Not set",
     "add": "Add",
     "schedule": "Schedule",
     "renew": "Renew",
     "edit": "Edit",
     "setup": "Set up"
+  },
+  "insight": {
+    "title": "Pawly Insight",
+    "headline": {
+      "great": "{{name}} is doing great!",
+      "attention": "{{name}} needs your attention",
+      "getStarted": "Get started with {{name}}'s passport"
+    },
+    "itemGetStarted": "Add your first record — a vaccination, vet visit or weigh-in — and you'll see a health overview here.",
+    "next": {
+      "vaccination_one": "Next vaccination in {{count}} day",
+      "vaccination_other": "Next vaccination in {{count}} days",
+      "deworming_one": "Next deworming in {{count}} day",
+      "deworming_other": "Next deworming in {{count}} days",
+      "ecto_one": "Tick protection in {{count}} day",
+      "ecto_other": "Tick protection in {{count}} days",
+      "visit_one": "Next check-up in {{count}} day",
+      "visit_other": "Next check-up in {{count}} days"
+    },
+    "overdue": {
+      "vaccination_one": "Vaccination overdue by {{count}} day",
+      "vaccination_other": "Vaccination overdue by {{count}} days",
+      "deworming_one": "Deworming overdue by {{count}} day",
+      "deworming_other": "Deworming overdue by {{count}} days",
+      "ecto_one": "Tick protection overdue by {{count}} day",
+      "ecto_other": "Tick protection overdue by {{count}} days",
+      "visit_one": "Check-up overdue by {{count}} day",
+      "visit_other": "Check-up overdue by {{count}} days"
+    },
+    "weight": {
+      "flat": "Weight is stable",
+      "up": "Weight is up by {{delta}} kg",
+      "down": "Weight is down by {{delta}} kg"
+    },
+    "preventiveOk": "Preventive care is up to date",
+    "preventiveCheck": "Check preventive care — something is overdue",
+    "allergyAware_one": "{{count}} allergy on file — we watch for it during food analysis",
+    "allergyAware_other": "{{count}} allergies on file — we watch for them during food analysis"
+  },
+  "journey": {
+    "title": "Health Journey",
+    "subtitle": "All the important events in your pet's life"
+  },
+  "gallery": {
+    "title": "Memory Gallery",
+    "subtitle": "Sweet moments and important records",
+    "viewAll": "View all",
+    "empty": "No photos yet. Add a photo of your pet in their profile.",
+    "add": "Add photo"
+  },
+  "quickLinks": {
+    "medical": "Medical Records",
+    "medicalCaption": "All health records",
+    "expenses": "Expenses",
+    "expensesCaption": "Track spending",
+    "documents": "Documents",
+    "documentsCaption": "Reports & files",
+    "insurance": "Insurance",
+    "insuranceCaption": "Policy & claims",
+    "soon": "Soon"
   },
   "upcoming": {
     "title": "Upcoming tasks",
