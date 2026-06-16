@@ -319,6 +319,7 @@ export default function HealthTimeline({
               sx={{
                 position: 'absolute',
                 left: { xs: 72, sm: 80 },
+                transform: 'translateX(-50%)',
                 top: RAIL_INSET,
                 bottom: RAIL_INSET,
                 width: 2,
