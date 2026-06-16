@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
   Chip,
   IconButton,
   InputAdornment,
+  Popover,
   Stack,
   TextField,
   Tooltip,
@@ -15,10 +16,14 @@ import {
 import {
   Search as SearchIcon,
   PictureAsPdf as PdfIcon,
+  CalendarMonth as CalendarIcon,
   Clear as ClearIcon,
   ChevronRight as ChevronIcon,
+  ChevronLeft as ChevronLeftIcon,
   ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay, type PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/petHealth';
 import {
@@ -38,7 +43,12 @@ interface HealthTimelineProps {
 
 type SelectableType = TimelineEvent['type'];
 
-const INITIAL_VISIBLE = 6;
+const PAGE_SIZE = 8;
+const CARD_MIN_HEIGHT = 76;
+const RAIL_INSET = CARD_MIN_HEIGHT / 2;
+
+const dayKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 const dayDiffFromToday = (iso: string) => {
   const date = new Date(iso);
@@ -58,7 +68,10 @@ export default function HealthTimeline({
   const { t, i18n } = useTranslation('healthPassport');
   const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
-  const [expanded, setExpanded] = useState(false);
+  const [viewAll, setViewAll] = useState(false);
+  const [page, setPage] = useState(1);
+  const [calendarAnchor, setCalendarAnchor] = useState<HTMLElement | null>(null);
+  const [dayFilter, setDayFilter] = useState<string | null>(null);
 
   const lang = localeTag(i18n.language);
 
@@ -83,16 +96,60 @@ export default function HealthTimeline({
     });
   };
 
-  const visible = useMemo(() => {
+  // type + search filtered (drives both the calendar day-markers and the list)
+  const filteredBase = useMemo(() => {
     const q = search.trim().toLowerCase();
     return timeline
       .filter((x) => (selected.size === 0 ? true : selected.has(x.type)))
-      .filter((x) => (q ? `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(q) : true))
-      .sort((a, b) => b.date.localeCompare(a.date));
+      .filter((x) => (q ? `${x.title} ${x.subtitle ?? ''}`.toLowerCase().includes(q) : true));
   }, [timeline, selected, search]);
 
-  const shown = expanded ? visible : visible.slice(0, INITIAL_VISIBLE);
+  const eventDays = useMemo(
+    () => new Set(filteredBase.map((e) => e.date.slice(0, 10))),
+    [filteredBase]
+  );
+
+  const visible = useMemo(() => {
+    const list = dayFilter
+      ? filteredBase.filter((e) => e.date.slice(0, 10) === dayFilter)
+      : filteredBase;
+    return [...list].sort((a, b) => b.date.localeCompare(a.date));
+  }, [filteredBase, dayFilter]);
+
+  // reset to the first page whenever the result set changes
+  useEffect(() => {
+    setPage(1);
+  }, [selected, search, dayFilter]);
+
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const shown = viewAll ? visible : visible.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const isAllActive = selected.size === 0;
+
+  const EventDay = (props: PickersDayProps<Date>) => {
+    const { day, outsideCurrentMonth } = props;
+    const has = !outsideCurrentMonth && eventDays.has(dayKey(day));
+    return (
+      <Box sx={{ position: 'relative', display: 'flex' }}>
+        <PickersDay {...props} />
+        {has && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 4,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 5,
+              height: 5,
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+      </Box>
+    );
+  };
 
   return (
     <Box>
@@ -144,6 +201,20 @@ export default function HealthTimeline({
             }}
             sx={{ flex: 1, minWidth: 0, maxWidth: 280 }}
           />
+          <Tooltip title={t('timeline.openCalendar')}>
+            <IconButton
+              onClick={(e) => setCalendarAnchor(e.currentTarget)}
+              aria-label={t('timeline.openCalendar')}
+              sx={{
+                border: `1px solid ${theme.palette.divider}`,
+                flexShrink: 0,
+                color: dayFilter ? 'primary.main' : undefined,
+                borderColor: dayFilter ? 'primary.main' : theme.palette.divider,
+              }}
+            >
+              <CalendarIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title={t('timeline.exportPdf')}>
             <IconButton
               onClick={onExportPdf}
@@ -155,6 +226,38 @@ export default function HealthTimeline({
           </Tooltip>
         </Stack>
       </Box>
+
+      <Popover
+        open={Boolean(calendarAnchor)}
+        anchorEl={calendarAnchor}
+        onClose={() => setCalendarAnchor(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <DateCalendar
+          value={dayFilter ? new Date(dayFilter) : null}
+          onChange={(value) => {
+            if (value && !Number.isNaN(value.getTime())) {
+              setDayFilter(dayKey(value));
+              setCalendarAnchor(null);
+            }
+          }}
+          slots={{ day: EventDay }}
+        />
+        <Box sx={{ px: 2, pb: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            size="small"
+            startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
+            disabled={!dayFilter}
+            onClick={() => {
+              setDayFilter(null);
+              setCalendarAnchor(null);
+            }}
+          >
+            {t('timeline.calendarClear')}
+          </Button>
+        </Box>
+      </Popover>
 
       <Stack
         direction="row"
@@ -184,6 +287,16 @@ export default function HealthTimeline({
             />
           );
         })}
+        {dayFilter && (
+          <Chip
+            label={t('timeline.filteredByDay', { date: formatDate(dayFilter) })}
+            size="small"
+            color="primary"
+            variant="outlined"
+            onDelete={() => setDayFilter(null)}
+            sx={{ ml: 0.5 }}
+          />
+        )}
       </Stack>
 
       {shown.length === 0 ? (
@@ -200,31 +313,33 @@ export default function HealthTimeline({
         </Box>
       ) : (
         <Box sx={{ position: 'relative' }}>
-          {/* continuous vertical rail */}
-          <Box
-            sx={{
-              position: 'absolute',
-              left: { xs: 70, sm: 80 },
-              top: 24,
-              bottom: 24,
-              width: 2,
-              bgcolor: 'divider',
-            }}
-          />
+          {/* continuous vertical rail through the centered dots */}
+          {shown.length > 1 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                left: { xs: 72, sm: 80 },
+                top: RAIL_INSET,
+                bottom: RAIL_INSET,
+                width: 2,
+                bgcolor: 'divider',
+              }}
+            />
+          )}
           <Stack spacing={1.75}>
             {shown.map((event) => {
               const color = colorFor(TIMELINE_TYPE_META[event.type].color);
               const isToday = dayDiffFromToday(event.date) === 0;
               return (
-                <Stack key={event.id} direction="row" alignItems="flex-start">
+                <Stack key={event.id} direction="row" alignItems="stretch">
                   {/* date / Today column */}
                   <Box
                     sx={{
                       width: { xs: 56, sm: 64 },
                       flexShrink: 0,
                       display: 'flex',
+                      alignItems: 'center',
                       justifyContent: 'flex-end',
-                      pt: 2,
                     }}
                   >
                     {isToday ? (
@@ -254,14 +369,14 @@ export default function HealthTimeline({
                     )}
                   </Box>
 
-                  {/* dot */}
+                  {/* dot (vertically centered on the card) */}
                   <Box
                     sx={{
                       width: 32,
                       flexShrink: 0,
                       display: 'flex',
+                      alignItems: 'center',
                       justifyContent: 'center',
-                      pt: 2.5,
                       position: 'relative',
                       zIndex: 1,
                     }}
@@ -278,7 +393,7 @@ export default function HealthTimeline({
                     />
                   </Box>
 
-                  {/* event card */}
+                  {/* event card (fixed min-height so all rows match) */}
                   <Box
                     role="button"
                     tabIndex={0}
@@ -292,6 +407,7 @@ export default function HealthTimeline({
                     sx={{
                       flex: 1,
                       minWidth: 0,
+                      minHeight: CARD_MIN_HEIGHT,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 1.75,
@@ -360,18 +476,56 @@ export default function HealthTimeline({
         </Box>
       )}
 
-      {visible.length > INITIAL_VISIBLE && (
-        <Stack alignItems="center" sx={{ mt: 2.5 }}>
+      {visible.length > PAGE_SIZE && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          flexWrap="wrap"
+          gap={1.5}
+          sx={{ mt: 2.5 }}
+        >
+          {!viewAll && pageCount > 1 && (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <IconButton
+                size="small"
+                aria-label={t('timeline.prevPage')}
+                disabled={safePage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                sx={{ border: `1px solid ${theme.palette.divider}` }}
+              >
+                <ChevronLeftIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+              <Typography
+                variant="body2"
+                sx={{ color: 'text.secondary', minWidth: 56, textAlign: 'center' }}
+              >
+                {t('timeline.pageIndicator', { page: safePage, total: pageCount })}
+              </Typography>
+              <IconButton
+                size="small"
+                aria-label={t('timeline.nextPage')}
+                disabled={safePage >= pageCount}
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                sx={{ border: `1px solid ${theme.palette.divider}` }}
+              >
+                <ChevronIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Stack>
+          )}
           <Button
             variant="outlined"
             endIcon={
               <ExpandMoreIcon
-                sx={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 120ms ease' }}
+                sx={{
+                  transform: viewAll ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 120ms ease',
+                }}
               />
             }
-            onClick={() => setExpanded((v) => !v)}
+            onClick={() => setViewAll((v) => !v)}
           >
-            {expanded ? t('timeline.showLess') : t('timeline.viewAllEvents')}
+            {viewAll ? t('timeline.showLess') : t('timeline.viewAllEvents')}
           </Button>
         </Stack>
       )}
