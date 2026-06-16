@@ -104,6 +104,11 @@ export default function PassportHero({
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 4,
+        // Bottom corners stay square so the wavy SVG edge melts flat into the
+        // page canvas — rounded bottom corners would clip the wave and expose
+        // a sliver of the teal scrim in each corner.
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
         bgcolor: HERO_SCRIM,
       }}
     >
@@ -195,7 +200,10 @@ export default function PassportHero({
                 <IconButton
                   onClick={onEditProfile}
                   aria-label={t('hero.editProfileAria')}
-                  sx={{ color: alpha(theme.palette.common.white, 0.85), '&:hover': { color: 'common.white' } }}
+                  sx={{
+                    color: alpha(theme.palette.common.white, 0.85),
+                    '&:hover': { color: 'common.white' },
+                  }}
                 >
                   <EditIcon />
                 </IconButton>
