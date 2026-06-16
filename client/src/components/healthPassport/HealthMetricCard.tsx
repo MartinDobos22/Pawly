@@ -1,6 +1,15 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Card, LinearProgress, Stack, Typography, alpha, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  LinearProgress,
+  Stack,
+  Typography,
+  alpha,
+  useTheme,
+} from '@mui/material';
 import type { ValidityStatus } from '../../types/petHealth';
 import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 import HelpHint from '../HelpHint';
@@ -72,6 +81,7 @@ export default function HealthMetricCard({
       sx={{
         p: 2,
         height: '100%',
+        borderRadius: 2,
         cursor: onOpen ? 'pointer' : 'default',
         borderStyle: isEmpty ? 'dashed' : 'solid',
         display: 'flex',

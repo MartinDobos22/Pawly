@@ -276,7 +276,7 @@ export default function PassportHero({
                 }}
                 sx={{
                   bgcolor: 'background.paper',
-                  borderRadius: 3,
+                  borderRadius: 2,
                   px: 1.75,
                   py: 1.5,
                   boxShadow: theme.shadows[6],

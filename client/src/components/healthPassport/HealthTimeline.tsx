@@ -306,7 +306,7 @@ export default function HealthTimeline({
             py: 6,
             color: 'text.secondary',
             border: `1px dashed ${theme.palette.divider}`,
-            borderRadius: 3,
+            borderRadius: 2,
           }}
         >
           <Typography variant="body2">{t('timeline.noRecords')}</Typography>
@@ -413,7 +413,7 @@ export default function HealthTimeline({
                       alignItems: 'center',
                       gap: 1.75,
                       p: 1.5,
-                      borderRadius: 3,
+                      borderRadius: 2,
                       border: `1px solid ${theme.palette.divider}`,
                       bgcolor: 'background.paper',
                       cursor: 'pointer',

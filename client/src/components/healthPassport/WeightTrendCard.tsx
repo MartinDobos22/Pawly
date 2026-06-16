@@ -70,8 +70,7 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
   const trend = useMemo(() => {
     if (series.length < 2) return null;
     const lastMonth = prevMonthKey(monthKey(last.date));
-    const ref =
-      [...series].reverse().find((s) => monthKey(s.date) <= lastMonth) ?? first;
+    const ref = [...series].reverse().find((s) => monthKey(s.date) <= lastMonth) ?? first;
     const diff = last.kg - ref.kg;
     if (Math.abs(diff) < 0.05) return { kg: 0, dir: 'flat' as const };
     return { kg: diff, dir: (diff > 0 ? 'up' : 'down') as 'up' | 'down' };
@@ -124,7 +123,7 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
 
   return (
     <>
-      <Card sx={{ p: { xs: 2, md: 3 }, height: '100%' }}>
+      <Card sx={{ p: { xs: 2, md: 3 }, height: '100%', borderRadius: 4 }}>
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <ScaleIcon sx={{ fontSize: 21, color: 'primary.main' }} />
           <Typography variant="h3" sx={{ fontSize: '1.2rem', fontWeight: 700, flex: 1 }}>
@@ -159,16 +158,27 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
           <>
             <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 0.5 }}>
               <Typography
-                sx={{ fontSize: '2.125rem', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}
+                sx={{
+                  fontSize: '2.125rem',
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  letterSpacing: '-0.02em',
+                }}
               >
                 {last.kg.toFixed(1)}{' '}
-                <Box component="span" sx={{ fontSize: '1.05rem', fontWeight: 600, color: 'text.secondary' }}>
+                <Box
+                  component="span"
+                  sx={{ fontSize: '1.05rem', fontWeight: 600, color: 'text.secondary' }}
+                >
                   kg
                 </Box>
               </Typography>
               {trendChip}
               {trend && (
-                <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                >
                   {t('weightCard.vsLastMonth')}
                 </Typography>
               )}
@@ -180,8 +190,16 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
                   <AreaChart data={series} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
                     <defs>
                       <linearGradient id="weightArea" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity={0.18} />
-                        <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity={0.02} />
+                        <stop
+                          offset="0%"
+                          stopColor={theme.palette.primary.main}
+                          stopOpacity={0.18}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={theme.palette.primary.main}
+                          stopOpacity={0.02}
+                        />
                       </linearGradient>
                     </defs>
                     <CartesianGrid vertical={false} stroke={theme.palette.divider} />
@@ -191,12 +209,20 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
                       axisLine={false}
                       tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
                       tickFormatter={(v) =>
-                        new Date(String(v)).toLocaleDateString(lang, { day: 'numeric', month: 'short' })
+                        new Date(String(v)).toLocaleDateString(lang, {
+                          day: 'numeric',
+                          month: 'short',
+                        })
                       }
                       minTickGap={28}
                     />
-                    <YAxis domain={[minY, maxY]} width={28} tickLine={false} axisLine={false}
-                      tick={{ fontSize: 11, fill: theme.palette.text.secondary }} />
+                    <YAxis
+                      domain={[minY, maxY]}
+                      width={28}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
+                    />
                     <RTooltip
                       cursor={{ stroke: theme.palette.divider }}
                       contentStyle={{
@@ -205,7 +231,10 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
                         fontSize: 12,
                         background: theme.palette.background.paper,
                       }}
-                      formatter={(v) => [`${Number(v).toFixed(1)} kg`, t('weightCard.tooltipLabel')]}
+                      formatter={(v) => [
+                        `${Number(v).toFixed(1)} kg`,
+                        t('weightCard.tooltipLabel'),
+                      ]}
                       labelFormatter={(v) => formatDateShort(String(v))}
                     />
                     <Area
@@ -222,12 +251,20 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
                 </ResponsiveContainer>
               </Box>
             ) : (
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5, mb: 2 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', display: 'block', mt: 0.5, mb: 2 }}
+              >
                 {t('weightCard.lastEntry', { date: formatDateShort(last.date) })}
               </Typography>
             )}
 
-            <Button fullWidth variant="contained" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setOpen(true)}
+            >
               {t('weightCard.addLog')}
             </Button>
           </>

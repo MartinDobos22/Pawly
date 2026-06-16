@@ -753,7 +753,7 @@ export default function HealthPassportPage() {
       />
 
       {/* ── Health Journey ─────────────────────────────────────────────────── */}
-      <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5 }}>
+      <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5, borderRadius: 4 }}>
         <HealthTimeline
           timeline={timeline}
           onOpenDetail={handleOpenDetail}

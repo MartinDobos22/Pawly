@@ -67,8 +67,13 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
   } = props;
 
   return (
-    <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5 }}>
-      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 2.5 }}>
+    <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5, borderRadius: 4 }}>
+      <Stack
+        direction="row"
+        alignItems="flex-start"
+        justifyContent="space-between"
+        sx={{ mb: 2.5 }}
+      >
         <Box>
           <Typography variant="h3" sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
             {t('overviewCard.title')}
