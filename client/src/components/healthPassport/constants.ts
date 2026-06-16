@@ -11,16 +11,23 @@ import {
 } from '@mui/icons-material';
 import { createElement } from 'react';
 
-export type TimelineTypeColor = 'primary' | 'success' | 'warning' | 'error' | 'secondary' | 'info';
+export type TimelineTypeColor =
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'secondary'
+  | 'info'
+  | 'diet';
 
 export const TIMELINE_TYPE_META: Record<TimelineEvent['type'], { color: TimelineTypeColor }> = {
   VACCINATION: { color: 'success' },
   DEWORMING: { color: 'secondary' },
-  ECTOPARASITE: { color: 'warning' },
+  ECTOPARASITE: { color: 'info' },
   VET_VISIT: { color: 'primary' },
   MEDICATION: { color: 'info' },
-  DIET: { color: 'success' },
-  EXPENSE: { color: 'error' },
+  DIET: { color: 'diet' },
+  EXPENSE: { color: 'secondary' },
   NOTE: { color: 'info' },
 };
 

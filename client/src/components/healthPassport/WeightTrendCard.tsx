@@ -19,12 +19,20 @@ import {
 import {
   Add as AddIcon,
   MonitorWeight as ScaleIcon,
-  TrendingUp as UpIcon,
-  TrendingDown as DownIcon,
+  ArrowUpward as UpIcon,
+  ArrowDownward as DownIcon,
   TrendingFlat as FlatIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip as RTooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { useHealthData } from '../../hooks/useHealthData';
 import { formatDateShort } from '../../utils/relativeDate';
 import DateField from '../DateField';
@@ -35,14 +43,21 @@ interface Props {
 }
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
+const monthKey = (iso: string) => iso.slice(0, 7);
+const prevMonthKey = (key: string) => {
+  const d = new Date(`${key}-01`);
+  d.setMonth(d.getMonth() - 1);
+  return d.toISOString().slice(0, 7);
+};
 
 export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
-  const { t } = useTranslation('healthPassport');
+  const { t, i18n } = useTranslation('healthPassport');
   const theme = useTheme();
   const { weightLogs: logs, addWeightLog } = useHealthData();
   const [open, setOpen] = useState(false);
   const [draftKg, setDraftKg] = useState<string>(fallbackWeightKg ? String(fallbackWeightKg) : '');
   const [draftDate, setDraftDate] = useState<string>(todayIso());
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
 
   const series = useMemo(
     () => logs.filter((l) => l.petId === petId).sort((a, b) => a.date.localeCompare(b.date)),
@@ -54,20 +69,22 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
 
   const trend = useMemo(() => {
     if (series.length < 2) return null;
-    const diff = last.kg - first.kg;
+    const lastMonth = prevMonthKey(monthKey(last.date));
+    const ref =
+      [...series].reverse().find((s) => monthKey(s.date) <= lastMonth) ?? first;
+    const diff = last.kg - ref.kg;
     if (Math.abs(diff) < 0.05) return { kg: 0, dir: 'flat' as const };
     return { kg: diff, dir: (diff > 0 ? 'up' : 'down') as 'up' | 'down' };
   }, [series, first, last]);
 
-  const minY = useMemo(() => {
-    if (series.length === 0) return 0;
-    return Math.floor(Math.min(...series.map((s) => s.kg)) * 0.95);
-  }, [series]);
-
-  const maxY = useMemo(() => {
-    if (series.length === 0) return 1;
-    return Math.ceil(Math.max(...series.map((s) => s.kg)) * 1.05);
-  }, [series]);
+  const minY = useMemo(
+    () => (series.length === 0 ? 0 : Math.floor(Math.min(...series.map((s) => s.kg)) * 0.95)),
+    [series]
+  );
+  const maxY = useMemo(
+    () => (series.length === 0 ? 1 : Math.ceil(Math.max(...series.map((s) => s.kg)) * 1.05)),
+    [series]
+  );
 
   const handleSave = async () => {
     const kg = parseFloat(draftKg.replace(',', '.'));
@@ -96,23 +113,10 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
           : `${trend.kg > 0 ? '+' : ''}${trend.kg.toFixed(1)} kg`
       }
       sx={{
-        height: 22,
-        fontSize: '0.72rem',
-        fontWeight: 600,
-        bgcolor: alpha(
-          trend.dir === 'up'
-            ? theme.palette.warning.main
-            : trend.dir === 'down'
-              ? theme.palette.info.main
-              : theme.palette.text.secondary,
-          0.14
-        ),
-        color:
-          trend.dir === 'up'
-            ? theme.palette.warning.dark
-            : trend.dir === 'down'
-              ? theme.palette.info.dark
-              : 'text.secondary',
+        height: 24,
+        fontWeight: 700,
+        bgcolor: alpha(theme.palette.success.main, 0.12),
+        color: theme.palette.success.main,
         '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
       }}
     />
@@ -120,27 +124,16 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
 
   return (
     <>
-      <Card sx={{ p: 2 }}>
+      <Card sx={{ p: { xs: 2, md: 3 }, height: '100%' }}>
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
-          <ScaleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, flex: 1 }}>
+          <ScaleIcon sx={{ fontSize: 21, color: 'primary.main' }} />
+          <Typography variant="h3" sx={{ fontSize: '1.2rem', fontWeight: 700, flex: 1 }}>
             {t('weightCard.title')}
           </Typography>
-          <IconButton
-            size="small"
-            onClick={() => setOpen(true)}
-            aria-label={t('weightCard.addLogAria')}
-            sx={{
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 2,
-            }}
-          >
-            <AddIcon sx={{ fontSize: 16 }} />
-          </IconButton>
         </Stack>
 
         {series.length === 0 ? (
-          <Stack alignItems="center" spacing={1} sx={{ py: 2.5, textAlign: 'center' }}>
+          <Stack alignItems="center" spacing={1.5} sx={{ py: 3, textAlign: 'center' }}>
             <Box
               sx={{
                 width: 44,
@@ -158,60 +151,85 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
             <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 240 }}>
               {t('weightCard.emptyDescription')}
             </Typography>
-            <Button size="small" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
               {t('weightCard.addLog')}
             </Button>
           </Stack>
         ) : (
           <>
-            <Stack direction="row" alignItems="baseline" gap={1.25} sx={{ mb: 1 }}>
-              <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, lineHeight: 1 }}>
-                {last.kg.toFixed(1)}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                kg
+            <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 0.5 }}>
+              <Typography
+                sx={{ fontSize: '2.125rem', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}
+              >
+                {last.kg.toFixed(1)}{' '}
+                <Box component="span" sx={{ fontSize: '1.05rem', fontWeight: 600, color: 'text.secondary' }}>
+                  kg
+                </Box>
               </Typography>
               {trendChip}
+              {trend && (
+                <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}>
+                  {t('weightCard.vsLastMonth')}
+                </Typography>
+              )}
             </Stack>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {t('weightCard.lastEntry', { date: formatDateShort(last.date) })}
-              {series.length > 1
-                ? ` · ${t('weightCard.seriesCount', { count: series.length })}`
-                : ''}
-            </Typography>
 
-            {series.length >= 2 && (
-              <Box sx={{ height: 96, mt: 1.5, mx: -1 }}>
+            {series.length >= 2 ? (
+              <Box sx={{ height: 150, mt: 1.5, mb: 2, mx: -1 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-                    <XAxis dataKey="date" hide />
-                    <YAxis domain={[minY, maxY]} hide />
+                  <AreaChart data={series} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+                    <defs>
+                      <linearGradient id="weightArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity={0.18} />
+                        <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke={theme.palette.divider} />
+                    <XAxis
+                      dataKey="date"
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
+                      tickFormatter={(v) =>
+                        new Date(String(v)).toLocaleDateString(lang, { day: 'numeric', month: 'short' })
+                      }
+                      minTickGap={28}
+                    />
+                    <YAxis domain={[minY, maxY]} width={28} tickLine={false} axisLine={false}
+                      tick={{ fontSize: 11, fill: theme.palette.text.secondary }} />
                     <RTooltip
                       cursor={{ stroke: theme.palette.divider }}
                       contentStyle={{
                         borderRadius: 8,
                         border: `1px solid ${theme.palette.divider}`,
                         fontSize: 12,
+                        background: theme.palette.background.paper,
                       }}
-                      formatter={(v) => [
-                        `${Number(v).toFixed(1)} kg`,
-                        t('weightCard.tooltipLabel'),
-                      ]}
+                      formatter={(v) => [`${Number(v).toFixed(1)} kg`, t('weightCard.tooltipLabel')]}
                       labelFormatter={(v) => formatDateShort(String(v))}
                     />
-                    <Line
+                    <Area
                       type="monotone"
                       dataKey="kg"
                       stroke={theme.palette.primary.main}
-                      strokeWidth={2}
-                      dot={{ fill: theme.palette.primary.main, r: 3 }}
-                      activeDot={{ r: 5 }}
+                      strokeWidth={2.4}
+                      fill="url(#weightArea)"
+                      dot={{ fill: theme.palette.primary.main, r: 3, strokeWidth: 0 }}
+                      activeDot={{ r: 5, stroke: theme.palette.background.paper, strokeWidth: 2 }}
                       isAnimationActive={false}
                     />
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               </Box>
+            ) : (
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5, mb: 2 }}>
+                {t('weightCard.lastEntry', { date: formatDateShort(last.date) })}
+              </Typography>
             )}
+
+            <Button fullWidth variant="contained" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
+              {t('weightCard.addLog')}
+            </Button>
           </>
         )}
       </Card>

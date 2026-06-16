@@ -1,12 +1,9 @@
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Avatar,
   Box,
-  Button,
-  Chip,
   FormControl,
+  IconButton,
   MenuItem,
   Select,
   Stack,
@@ -15,31 +12,39 @@ import {
   useTheme,
 } from '@mui/material';
 import {
-  Add as AddIcon,
-  Description as CardIcon,
-  Cake as CakeIcon,
-  Monitor as ChipIcon,
+  ChevronRight as ChevronIcon,
+  Edit as EditIcon,
+  Favorite as FavoriteIcon,
   Pets as PetsIcon,
-  Scale as ScaleIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
-import type { ValidityStatus, VetVisitRecord } from '../../types/petHealth';
-import HealthScoreRing, { type ScoreBreakdownItem } from './HealthScoreRing';
-import QuickVisitButton from './QuickVisitButton';
+import HealthScoreRing from './HealthScoreRing';
+
+export interface HeroInfoCard {
+  key: string;
+  icon: ReactElement;
+  label: string;
+  value: string;
+  /** Resolved theme color for the tinted icon tile. */
+  accent: string;
+  onClick?: () => void;
+}
 
 interface Props {
   dog: PetProfile;
   dogProfiles: PetProfile[];
   selectedDogId: string;
   onSelectDog: (id: string) => void;
-  vaccinationStatus: ValidityStatus;
-  dewormingStatus: ValidityStatus;
-  ectoStatus: ValidityStatus;
-  dietStatus: ValidityStatus;
-  onAddRecord: () => void;
-  onQuickVisitCreate: (visit: VetVisitRecord) => Promise<VetVisitRecord>;
-  onQuickVisitUndo: (id: string) => void;
+  score: number | null;
+  infoCards: HeroInfoCard[];
+  onEditProfile: () => void;
 }
+
+// Fixed brand scrim/accent over the hero photo. These must stay constant in BOTH light
+// and dark mode so the white hero text stays legible, so they are intentionally not
+// theme-derived (the photo behind them is the same in either mode).
+const HERO_SCRIM = '#0F4C5C';
+const HERO_MINT = '#7FC9A8';
 
 const initials = (name: string) =>
   name
@@ -49,36 +54,17 @@ const initials = (name: string) =>
     .map((p) => p[0]?.toUpperCase() ?? '')
     .join('');
 
-const statusToScore = (s: ValidityStatus): number => {
-  if (s === 'VALID') return 100;
-  if (s === 'EXPIRING_SOON') return 60;
-  if (s === 'EXPIRED') return 10;
-  return 40;
-};
-
-const statusToBreakdown = (s: ValidityStatus): ScoreBreakdownItem['status'] => {
-  if (s === 'VALID') return 'good';
-  if (s === 'EXPIRING_SOON') return 'soon';
-  if (s === 'EXPIRED') return 'bad';
-  return 'unknown';
-};
-
 export default function PassportHero({
   dog,
   dogProfiles,
   selectedDogId,
   onSelectDog,
-  vaccinationStatus,
-  dewormingStatus,
-  ectoStatus,
-  dietStatus,
-  onAddRecord,
-  onQuickVisitCreate,
-  onQuickVisitUndo,
+  score,
+  infoCards,
+  onEditProfile,
 }: Props) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const computeAgeLabel = (p: PetProfile): string | null => {
     if (p.dateOfBirth) {
@@ -104,64 +90,12 @@ export default function PassportHero({
     return null;
   };
 
-  const statusDetail = (s: ValidityStatus): string => {
-    if (s === 'VALID') return t('hero.statusValid');
-    if (s === 'EXPIRING_SOON') return t('hero.statusExpiringSoon');
-    if (s === 'EXPIRED') return t('hero.statusExpired');
-    return t('hero.statusUnknown');
-  };
-
-  const statuses = [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus];
-  const unknownCount = statuses.filter((s) => s === 'UNKNOWN').length;
-  const allUnknown = unknownCount === statuses.length;
-
-  const score = useMemo(() => {
-    if (allUnknown) return null;
-    const values = statuses.map(statusToScore);
-    return values.reduce((a, b) => a + b, 0) / values.length;
-  }, [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus, allUnknown]);
-
-  const incomplete = unknownCount > 0 && !allUnknown;
-
-  const scoreBreakdown: ScoreBreakdownItem[] = [
-    {
-      label: t('hero.vaccLabel'),
-      shortLabel: t('hero.vaccShort'),
-      status: statusToBreakdown(vaccinationStatus),
-      detail: statusDetail(vaccinationStatus),
-    },
-    {
-      label: t('hero.dewLabel'),
-      shortLabel: t('hero.dewShort'),
-      status: statusToBreakdown(dewormingStatus),
-      detail: statusDetail(dewormingStatus),
-    },
-    {
-      label: t('hero.ectoLabel'),
-      shortLabel: t('hero.ectoShort'),
-      status: statusToBreakdown(ectoStatus),
-      detail: statusDetail(ectoStatus),
-    },
-    {
-      label: t('hero.dietLabel'),
-      shortLabel: t('hero.dietShort'),
-      status: statusToBreakdown(dietStatus),
-      detail: statusDetail(dietStatus),
-    },
-  ];
-
   const ageLabel = computeAgeLabel(dog);
   const sex =
     dog.sex === 'MALE' ? t('hero.sexMale') : dog.sex === 'FEMALE' ? t('hero.sexFemale') : null;
+  const subParts = [dog.breed, ageLabel, sex].filter(Boolean) as string[];
 
-  const chips: { label: string; icon?: React.ReactElement }[] = [];
-  if (dog.breed) chips.push({ label: dog.breed, icon: <PetsIcon sx={{ fontSize: 14 }} /> });
-  if (ageLabel) chips.push({ label: ageLabel, icon: <CakeIcon sx={{ fontSize: 14 }} /> });
-  if (dog.weightKg)
-    chips.push({ label: `${dog.weightKg} kg`, icon: <ScaleIcon sx={{ fontSize: 14 }} /> });
-  if (sex) chips.push({ label: sex });
-  if (dog.microchipNumber)
-    chips.push({ label: dog.microchipNumber, icon: <ChipIcon sx={{ fontSize: 14 }} /> });
+  const hasPhoto = Boolean(dog.photoUrl);
 
   return (
     <Box
@@ -170,147 +104,235 @@ export default function PassportHero({
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 4,
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.06 : 0.12),
-        border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+        bgcolor: HERO_SCRIM,
       }}
     >
+      {hasPhoto ? (
+        <Box
+          component="img"
+          src={dog.photoUrl}
+          alt={dog.name}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: '60% 35%',
+          }}
+        />
+      ) : (
+        <Stack
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: `radial-gradient(circle at 70% 20%, ${alpha(HERO_MINT, 0.35)}, ${HERO_SCRIM} 70%)`,
+            color: alpha(theme.palette.common.white, 0.22),
+            fontSize: '12rem',
+            fontWeight: 800,
+            userSelect: 'none',
+          }}
+        >
+          {initials(dog.name) || <PetsIcon sx={{ fontSize: '10rem' }} />}
+        </Stack>
+      )}
+
+      {/* Legibility scrims */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: `radial-gradient(circle at 90% 10%, ${alpha(
-            theme.palette.primary.light,
-            0.18
-          )}, transparent 60%)`,
+          background: `linear-gradient(118deg, ${alpha(HERO_SCRIM, 0.62)} 0%, ${alpha(HERO_SCRIM, 0.3)} 34%, ${alpha(HERO_SCRIM, 0.04)} 56%, ${alpha(HERO_SCRIM, 0)} 72%)`,
           pointerEvents: 'none',
         }}
       />
-      <Box sx={{ position: 'relative', p: { xs: 2, md: 2.5 } }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: `linear-gradient(0deg, ${alpha(HERO_SCRIM, 0.28)} 0%, ${alpha(HERO_SCRIM, 0)} 30%)`,
+          pointerEvents: 'none',
+        }}
+      />
+
+      <Box sx={{ position: 'relative', p: { xs: 2.5, md: 3.5 }, pb: { xs: 6, md: 8 } }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          gap={{ xs: 2, md: 2.5 }}
+          justifyContent="space-between"
+          alignItems="stretch"
+          gap={3}
+          sx={{ minHeight: { md: 400 } }}
         >
-          <Avatar
-            src={dog.photoUrl || undefined}
-            alt={dog.name}
-            sx={{
-              width: { xs: 72, md: 96 },
-              height: { xs: 72, md: 96 },
-              bgcolor: alpha(
-                theme.palette.primary.main,
-                theme.palette.mode === 'light' ? 0.16 : 0.25
-              ),
-              color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
-              fontWeight: 700,
-              fontSize: { xs: '1.5rem', md: '1.9rem' },
-              border: `3px solid ${theme.palette.background.paper}`,
-              boxShadow: '0 2px 8px rgba(15,76,92,0.10)',
-            }}
-          >
-            {initials(dog.name) || <PetsIcon />}
-          </Avatar>
-
-          <Stack sx={{ flex: 1, minWidth: 0 }} spacing={1.25}>
-            <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: { xs: '1.5rem', md: '2rem' },
-                  fontWeight: 700,
-                  lineHeight: 1.1,
-                  letterSpacing: '-0.02em',
-                }}
+          {/* Left column */}
+          <Stack justifyContent="space-between" spacing={4} sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ color: 'common.white' }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={1}
+                sx={{ fontWeight: 500, opacity: 0.92, textShadow: '0 1px 8px rgba(0,0,0,0.25)' }}
               >
-                {dog.name}
-              </Typography>
-              {dogProfiles.length > 1 && (
-                <FormControl size="small">
-                  <Select
-                    value={selectedDogId}
-                    onChange={(e) => onSelectDog(e.target.value)}
-                    variant="standard"
-                    disableUnderline
-                    renderValue={() => t('hero.switchPet')}
-                    sx={{
-                      fontSize: '0.85rem',
-                      color: 'text.secondary',
-                      '& .MuiSelect-select': { py: 0.5, pr: 3 },
-                    }}
-                  >
-                    {dogProfiles.map((p) => (
-                      <MenuItem key={p.id} value={p.id}>
-                        {p.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            </Stack>
+                <Typography sx={{ fontSize: '1.05rem', fontWeight: 500 }}>
+                  {t('hero.greeting')}
+                </Typography>
+                <FavoriteIcon sx={{ fontSize: 18 }} />
+              </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={0.75}>
-              {chips.map((c, idx) => (
-                <Chip
-                  key={`${c.label}-${idx}`}
-                  label={c.label}
-                  icon={c.icon}
-                  size="small"
-                  variant="outlined"
+              <Stack direction="row" alignItems="center" gap={1.5} sx={{ mt: 0.5 }}>
+                <Typography
                   sx={{
-                    bgcolor: 'background.paper',
-                    borderColor: alpha(theme.palette.primary.main, 0.2),
-                    color: 'text.primary',
-                    fontWeight: 500,
-                    fontSize: '0.78rem',
-                    '& .MuiChip-icon': { color: 'primary.main', ml: 0.75 },
+                    fontSize: { xs: '2.75rem', md: '3.5rem' },
+                    fontWeight: 800,
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
+                    textShadow: '0 2px 14px rgba(0,0,0,0.30)',
                   }}
-                />
-              ))}
-            </Stack>
+                >
+                  {dog.name}
+                </Typography>
+                <IconButton
+                  onClick={onEditProfile}
+                  aria-label={t('hero.editProfileAria')}
+                  sx={{ color: alpha(theme.palette.common.white, 0.85), '&:hover': { color: 'common.white' } }}
+                >
+                  <EditIcon />
+                </IconButton>
+                {dogProfiles.length > 1 && (
+                  <FormControl size="small">
+                    <Select
+                      value={selectedDogId}
+                      onChange={(e) => onSelectDog(e.target.value)}
+                      variant="standard"
+                      disableUnderline
+                      renderValue={() => t('hero.switchPet')}
+                      sx={{
+                        fontSize: '0.85rem',
+                        color: alpha(theme.palette.common.white, 0.85),
+                        '& .MuiSelect-select': { py: 0.5, pr: 3 },
+                        '& .MuiSelect-icon': { color: alpha(theme.palette.common.white, 0.85) },
+                      }}
+                    >
+                      {dogProfiles.map((p) => (
+                        <MenuItem key={p.id} value={p.id}>
+                          {p.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mt: 1 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={onAddRecord}
-                size="large"
-                sx={{ boxShadow: '0 4px 14px rgba(15,76,92,0.25)' }}
-              >
-                {t('hero.addRecord')}
-              </Button>
-              <QuickVisitButton
-                petId={selectedDogId}
-                disabled={!selectedDogId}
-                onCreate={onQuickVisitCreate}
-                onUndo={onQuickVisitUndo}
+              {subParts.length > 0 && (
+                <Typography
+                  sx={{
+                    mt: 1.5,
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    color: alpha(theme.palette.common.white, 0.92),
+                    textShadow: '0 1px 8px rgba(0,0,0,0.30)',
+                  }}
+                >
+                  {subParts.join('  •  ')}
+                </Typography>
+              )}
+            </Box>
+
+            <Box sx={{ alignSelf: { xs: 'center', md: 'flex-start' } }}>
+              <HealthScoreRing
+                score={score}
+                size={188}
+                variant="hero"
+                label={t('score.healthScore')}
               />
-              <Button
-                variant="text"
-                startIcon={<CardIcon />}
-                onClick={() => navigate('/karta-pre-veterinara')}
-              >
-                {t('hero.vetCard')}
-              </Button>
-            </Stack>
+            </Box>
           </Stack>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignSelf: { xs: 'center', md: 'center' },
-              flexShrink: 0,
-              pl: { md: 2 },
-            }}
-          >
-            <HealthScoreRing
-              score={score}
-              size={96}
-              breakdown={scoreBreakdown}
-              incomplete={incomplete}
-            />
-          </Box>
+          {/* Right column — info cards */}
+          <Stack spacing={1.5} sx={{ width: { xs: '100%', md: 296 }, flexShrink: 0 }}>
+            {infoCards.map((card) => (
+              <Stack
+                key={card.key}
+                direction="row"
+                alignItems="center"
+                gap={1.5}
+                onClick={card.onClick}
+                role={card.onClick ? 'button' : undefined}
+                tabIndex={card.onClick ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (card.onClick && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    card.onClick();
+                  }
+                }}
+                sx={{
+                  bgcolor: 'background.paper',
+                  borderRadius: 3,
+                  px: 1.75,
+                  py: 1.5,
+                  boxShadow: theme.shadows[6],
+                  cursor: card.onClick ? 'pointer' : 'default',
+                  transition: 'transform 120ms ease, box-shadow 120ms ease',
+                  '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+                  '&:hover': card.onClick
+                    ? { transform: 'translateY(-1px)', boxShadow: theme.shadows[8] }
+                    : undefined,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 2,
+                    bgcolor: alpha(card.accent, 0.12),
+                    color: card.accent,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    '& svg': { fontSize: 22 },
+                  }}
+                >
+                  {card.icon}
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                    noWrap
+                  >
+                    {card.label}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.95rem', fontWeight: 700 }} noWrap>
+                    {card.value}
+                  </Typography>
+                </Box>
+                {card.onClick && <ChevronIcon sx={{ color: 'text.disabled', fontSize: 22 }} />}
+              </Stack>
+            ))}
+          </Stack>
         </Stack>
+      </Box>
+
+      {/* Wavy bottom edge melting into the page canvas */}
+      <Box
+        component="svg"
+        viewBox="0 0 1024 70"
+        preserveAspectRatio="none"
+        sx={{
+          position: 'absolute',
+          bottom: -1,
+          left: 0,
+          width: '100%',
+          height: 62,
+          display: 'block',
+        }}
+      >
+        <path
+          d="M0,34 C85,11 171,11 256,34 C341,57 427,57 512,34 C597,11 683,11 768,34 C853,57 939,57 1024,34 L1024,70 L0,70 Z"
+          fill={theme.palette.background.default}
+        />
       </Box>
     </Box>
   );

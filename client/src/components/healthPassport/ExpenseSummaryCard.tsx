@@ -68,8 +68,8 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
   const palette: Record<CategoryKey, string> = {
     VET_VISIT: theme.palette.primary.main,
     MEDICATION: theme.palette.info.main,
-    FOOD: theme.palette.success.main,
-    OTHER: theme.palette.warning.main,
+    FOOD: theme.palette.secondary.main,
+    OTHER: theme.palette.diet.main,
   };
 
   const slices = useMemo(() => {
@@ -147,10 +147,10 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
   );
 
   return (
-    <Card sx={{ p: 2 }}>
+    <Card sx={{ p: { xs: 2, md: 3 }, height: '100%' }}>
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
-        <ReceiptIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+        <ReceiptIcon sx={{ fontSize: 21, color: 'primary.main' }} />
+        <Typography variant="h3" sx={{ fontSize: '1.2rem', fontWeight: 700 }}>
           {t('expenseCard.title')}
         </Typography>
       </Stack>
@@ -159,15 +159,15 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
         <ExpenseDonut data={slices} total={totalAll} size={140} />
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+          >
             {t('expenseCard.thisMonth')}
           </Typography>
-          <Stack direction="row" alignItems="baseline" gap={1} sx={{ mt: 0.25 }}>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, lineHeight: 1 }}>
-              {thisMonthTotal.toFixed(0)}
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              €
+          <Stack direction="row" alignItems="baseline" gap={0.5} sx={{ mt: 0.25 }}>
+            <Typography sx={{ fontSize: '1.875rem', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em' }}>
+              €{thisMonthTotal.toFixed(2)}
             </Typography>
           </Stack>
           {trendChip && <Box sx={{ mt: 1 }}>{trendChip}</Box>}
@@ -199,7 +199,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
                     {s.label}
                   </Typography>
                   <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                    {s.value.toFixed(0)} €
+                    €{s.value.toFixed(2)}
                   </Typography>
                 </Stack>
               ))}
@@ -241,7 +241,7 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
                   {formatDateShort(e.date)}
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 700, ml: 1 }}>
-                  {e.amount.toFixed(0)} €
+                  €{e.amount.toFixed(2)}
                 </Typography>
               </Stack>
             ))}

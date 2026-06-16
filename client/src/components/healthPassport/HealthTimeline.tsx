@@ -7,6 +7,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
+  Tooltip,
   Typography,
   alpha,
   useTheme,
@@ -16,11 +17,16 @@ import {
   PictureAsPdf as PdfIcon,
   Clear as ClearIcon,
   ChevronRight as ChevronIcon,
-  TuneOutlined as TuneIcon,
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { TimelineEvent } from '../../types/petHealth';
-import { TIMELINE_FILTER_VALUES, TIMELINE_ICON_MAP } from './constants.ts';
+import {
+  TIMELINE_FILTER_VALUES,
+  TIMELINE_ICON_MAP,
+  TIMELINE_TYPE_META,
+  type TimelineTypeColor,
+} from './constants.ts';
 
 const localeTag = (lang: string) => (lang === 'en' ? 'en-US' : 'sk-SK');
 
@@ -32,7 +38,7 @@ interface HealthTimelineProps {
 
 type SelectableType = TimelineEvent['type'];
 
-const dayKey = (iso: string) => iso.slice(0, 10);
+const INITIAL_VISIBLE = 6;
 
 const dayDiffFromToday = (iso: string) => {
   const date = new Date(iso);
@@ -52,29 +58,16 @@ export default function HealthTimeline({
   const { t, i18n } = useTranslation('healthPassport');
   const [selected, setSelected] = useState<Set<SelectableType>>(new Set());
   const [search, setSearch] = useState('');
+  const [expanded, setExpanded] = useState(false);
 
   const lang = localeTag(i18n.language);
 
-  const formatDayHeader = (iso: string) => {
+  const colorFor = (c: TimelineTypeColor) => theme.palette[c].main;
+
+  const formatDate = (iso: string) => {
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return iso;
-    return date.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
-  };
-
-  const weekdayName = (iso: string) => {
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) return '';
-    return date.toLocaleDateString(lang, { weekday: 'long' });
-  };
-
-  const dayMeta = (iso: string) => {
-    const diff = dayDiffFromToday(iso);
-    if (Number.isNaN(diff)) return null;
-    if (diff === 0) return { label: t('timeline.today'), tone: 'today' as const };
-    if (diff === -1) return { label: t('timeline.yesterday'), tone: 'recent' as const };
-    if (diff > 0 && diff < 14)
-      return { label: t('timeline.inDays', { count: diff }), tone: 'future' as const };
-    return null;
+    return date.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   const toggleType = (type: SelectableType | 'ALL') => {
@@ -90,8 +83,6 @@ export default function HealthTimeline({
     });
   };
 
-  const clearFilters = () => setSelected(new Set());
-
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return timeline
@@ -100,25 +91,14 @@ export default function HealthTimeline({
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [timeline, selected, search]);
 
-  const groups = useMemo(() => {
-    const map = new Map<string, TimelineEvent[]>();
-    for (const e of visible) {
-      const k = dayKey(e.date);
-      const list = map.get(k);
-      if (list) list.push(e);
-      else map.set(k, [e]);
-    }
-    return Array.from(map.entries());
-  }, [visible]);
-
+  const shown = expanded ? visible : visible.slice(0, INITIAL_VISIBLE);
   const isAllActive = selected.size === 0;
-  const railColor = alpha(theme.palette.primary.main, 0.18);
 
   return (
     <Box>
       <Box
         sx={{
-          mb: 2,
+          mb: 2.5,
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'flex-end',
@@ -128,7 +108,7 @@ export default function HealthTimeline({
         }}
       >
         <Box sx={{ flex: '1 1 auto', minWidth: 180 }}>
-          <Typography variant="h3" sx={{ fontSize: '1.25rem', fontWeight: 700 }}>
+          <Typography variant="h3" sx={{ fontSize: '1.35rem', fontWeight: 700 }}>
             {t('timeline.title')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -162,17 +142,17 @@ export default function HealthTimeline({
                 </InputAdornment>
               ) : null,
             }}
-            sx={{ flex: 1, minWidth: 0 }}
+            sx={{ flex: 1, minWidth: 0, maxWidth: 280 }}
           />
-          <Button
-            variant="outlined"
-            startIcon={<PdfIcon sx={{ fontSize: 18 }} />}
-            onClick={onExportPdf}
-            aria-label={t('timeline.exportPdfAriaLabel')}
-            sx={{ flexShrink: 0 }}
-          >
-            {t('timeline.exportPdf')}
-          </Button>
+          <Tooltip title={t('timeline.exportPdf')}>
+            <IconButton
+              onClick={onExportPdf}
+              aria-label={t('timeline.exportPdfAriaLabel')}
+              sx={{ border: `1px solid ${theme.palette.divider}`, flexShrink: 0 }}
+            >
+              <PdfIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
         </Stack>
       </Box>
 
@@ -180,15 +160,8 @@ export default function HealthTimeline({
         direction="row"
         alignItems="center"
         gap={0.75}
-        sx={{
-          mb: 2.5,
-          pb: 1.5,
-          borderBottom: `1px solid ${theme.palette.divider}`,
-          flexWrap: 'wrap',
-          rowGap: 0.75,
-        }}
+        sx={{ mb: 3, flexWrap: 'wrap', rowGap: 0.75 }}
       >
-        <TuneIcon sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
         <Chip
           label={t('filter.ALL')}
           size="small"
@@ -211,18 +184,9 @@ export default function HealthTimeline({
             />
           );
         })}
-        {selected.size > 0 && (
-          <Button
-            size="small"
-            onClick={clearFilters}
-            sx={{ ml: 0.5, color: 'text.secondary', minHeight: 28 }}
-          >
-            {t('timeline.clearFilters')}
-          </Button>
-        )}
       </Stack>
 
-      {groups.length === 0 ? (
+      {shown.length === 0 ? (
         <Box
           sx={{
             textAlign: 'center',
@@ -235,162 +199,181 @@ export default function HealthTimeline({
           <Typography variant="body2">{t('timeline.noRecords')}</Typography>
         </Box>
       ) : (
-        <Box
-          sx={{
-            position: 'relative',
-            pl: { xs: 3.25, md: 4 },
-            '&::before': {
-              content: '""',
+        <Box sx={{ position: 'relative' }}>
+          {/* continuous vertical rail */}
+          <Box
+            sx={{
               position: 'absolute',
-              left: { xs: 10, md: 14 },
-              top: 8,
-              bottom: 8,
+              left: { xs: 70, sm: 80 },
+              top: 24,
+              bottom: 24,
               width: 2,
-              bgcolor: railColor,
-              borderRadius: 2,
-            },
-          }}
-        >
-          {groups.map(([day, events]) => {
-            const meta = dayMeta(day);
-            return (
-              <Box key={day} sx={{ position: 'relative', mb: 3 }}>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    left: { xs: -22, md: -27 },
-                    top: 2,
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    bgcolor: 'background.paper',
-                    border: `2px solid ${theme.palette.primary.main}`,
-                    boxShadow:
-                      meta?.tone === 'today'
-                        ? `0 0 0 4px ${alpha(theme.palette.primary.main, 0.18)}`
-                        : 'none',
-                  }}
-                />
-                <Stack direction="row" alignItems="baseline" gap={1} sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                    {formatDayHeader(day)}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {weekdayName(day)}
-                  </Typography>
-                  {meta && (
-                    <Chip
-                      label={meta.label}
-                      size="small"
-                      sx={{
-                        height: 20,
-                        fontSize: '0.7rem',
-                        bgcolor:
-                          meta.tone === 'today'
-                            ? alpha(theme.palette.primary.main, 0.14)
-                            : alpha(theme.palette.text.secondary, 0.08),
-                        color: meta.tone === 'today' ? 'primary.main' : 'text.secondary',
-                        fontWeight: 600,
-                      }}
-                    />
-                  )}
-                </Stack>
-
-                <Stack spacing={1}>
-                  {events.map((event) => {
-                    return (
-                      <Box
-                        key={event.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => onOpenDetail(event)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onOpenDetail(event);
-                          }
-                        }}
+              bgcolor: 'divider',
+            }}
+          />
+          <Stack spacing={1.75}>
+            {shown.map((event) => {
+              const color = colorFor(TIMELINE_TYPE_META[event.type].color);
+              const isToday = dayDiffFromToday(event.date) === 0;
+              return (
+                <Stack key={event.id} direction="row" alignItems="flex-start">
+                  {/* date / Today column */}
+                  <Box
+                    sx={{
+                      width: { xs: 56, sm: 64 },
+                      flexShrink: 0,
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                      pt: 2,
+                    }}
+                  >
+                    {isToday ? (
+                      <Chip
+                        label={t('timeline.today')}
+                        size="small"
                         sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1.5,
-                          p: 1.25,
-                          borderRadius: 2.5,
-                          border: `1px solid ${theme.palette.divider}`,
-                          bgcolor: 'background.paper',
-                          cursor: 'pointer',
-                          transition:
-                            'border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease',
-                          '&:hover': {
-                            borderColor: alpha(theme.palette.primary.main, 0.4),
-                            boxShadow: '0 4px 12px rgba(15,76,92,0.08)',
-                          },
-                          '&:focus-visible': {
-                            outline: `2px solid ${theme.palette.primary.main}`,
-                            outlineOffset: 2,
-                          },
+                          height: 22,
+                          bgcolor: 'success.main',
+                          color: 'success.contrastText',
+                          fontWeight: 700,
+                          fontSize: '0.68rem',
+                        }}
+                      />
+                    ) : (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                          textTransform: 'none',
+                          letterSpacing: 0,
+                          textAlign: 'right',
                         }}
                       >
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 2,
-                            bgcolor: alpha(theme.palette.primary.main, 0.08),
-                            color: 'primary.main',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
+                        {formatDate(event.date)}
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {/* dot */}
+                  <Box
+                    sx={{
+                      width: 32,
+                      flexShrink: 0,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      pt: 2.5,
+                      position: 'relative',
+                      zIndex: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: '50%',
+                        bgcolor: isToday ? color : 'background.paper',
+                        border: isToday ? 'none' : `3px solid ${color}`,
+                        boxShadow: `0 0 0 3px ${theme.palette.background.paper}`,
+                      }}
+                    />
+                  </Box>
+
+                  {/* event card */}
+                  <Box
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onOpenDetail(event)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onOpenDetail(event);
+                      }
+                    }}
+                    sx={{
+                      flex: 1,
+                      minWidth: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.75,
+                      p: 1.5,
+                      borderRadius: 3,
+                      border: `1px solid ${theme.palette.divider}`,
+                      bgcolor: 'background.paper',
+                      cursor: 'pointer',
+                      transition: 'border-color 120ms ease, box-shadow 120ms ease',
+                      '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+                      '&:hover': {
+                        borderColor: alpha(color, 0.5),
+                        boxShadow: theme.shadows[2],
+                      },
+                      '&:focus-visible': {
+                        outline: `2px solid ${color}`,
+                        outlineOffset: 2,
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 2,
+                        bgcolor: alpha(color, 0.12),
+                        color,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {TIMELINE_ICON_MAP[event.type]}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography
+                        variant="overline"
+                        sx={{ color, display: 'block', lineHeight: 1.4 }}
+                      >
+                        {t(`timeline.${event.type}`)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, color: 'text.primary' }}
+                        noWrap
+                      >
+                        {event.title}
+                      </Typography>
+                      {event.subtitle && (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+                          noWrap
                         >
-                          {TIMELINE_ICON_MAP[event.type]}
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Stack direction="row" alignItems="center" gap={0.75} sx={{ mb: 0.25 }}>
-                            <Chip
-                              label={t(`timeline.${event.type}`)}
-                              size="small"
-                              variant="outlined"
-                              sx={{
-                                height: 20,
-                                fontSize: '0.68rem',
-                                fontWeight: 600,
-                                borderColor: alpha(theme.palette.primary.main, 0.25),
-                                color: 'primary.main',
-                              }}
-                            />
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 600, color: 'text.primary' }}
-                              noWrap
-                            >
-                              {event.title}
-                            </Typography>
-                          </Stack>
-                          {event.subtitle && (
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: 'text.secondary',
-                                letterSpacing: 0,
-                                textTransform: 'none',
-                              }}
-                              noWrap
-                            >
-                              {event.subtitle}
-                            </Typography>
-                          )}
-                        </Box>
-                        <ChevronIcon sx={{ color: 'text.disabled', fontSize: 20 }} />
-                      </Box>
-                    );
-                  })}
+                          {event.subtitle}
+                        </Typography>
+                      )}
+                    </Box>
+                    <ChevronIcon sx={{ color: 'text.disabled', fontSize: 22 }} />
+                  </Box>
                 </Stack>
-              </Box>
-            );
-          })}
+              );
+            })}
+          </Stack>
         </Box>
+      )}
+
+      {visible.length > INITIAL_VISIBLE && (
+        <Stack alignItems="center" sx={{ mt: 2.5 }}>
+          <Button
+            variant="outlined"
+            endIcon={
+              <ExpandMoreIcon
+                sx={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 120ms ease' }}
+              />
+            }
+            onClick={() => setExpanded((v) => !v)}
+          >
+            {expanded ? t('timeline.showLess') : t('timeline.viewAllEvents')}
+          </Button>
+        </Stack>
       )}
     </Box>
   );

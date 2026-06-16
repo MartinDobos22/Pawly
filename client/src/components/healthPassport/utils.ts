@@ -74,6 +74,31 @@ export const computeIntervalDaysFromDates = (
   return Math.max(1, days || fallback);
 };
 
+const STATUS_SCORE: Record<ValidityStatus, number | null> = {
+  VALID: 100,
+  EXPIRING_SOON: 60,
+  EXPIRED: 10,
+  UNKNOWN: null,
+};
+
+/**
+ * Heuristic 0–100 pet health score. Averages the known preventive-care/diet
+ * validity statuses (UNKNOWN items are excluded so a brand-new pet shows `null`)
+ * and applies a small penalty for each currently-active health episode.
+ */
+export function computeHealthScore(
+  statuses: ValidityStatus[],
+  activeEpisodeCount = 0
+): number | null {
+  const known = statuses
+    .map((s) => STATUS_SCORE[s])
+    .filter((v): v is number => v !== null);
+  if (known.length === 0) return null;
+  const base = known.reduce((a, b) => a + b, 0) / known.length;
+  const penalty = Math.min(20, activeEpisodeCount * 8);
+  return Math.max(0, Math.min(100, Math.round(base - penalty)));
+}
+
 export function statusByDate(targetDate: string, soonDays: number): ValidityStatus {
   const now = new Date(today());
   const t = new Date(targetDate);
