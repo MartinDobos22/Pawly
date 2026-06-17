@@ -802,6 +802,8 @@ export default function HealthPassportPage() {
           gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
           gap: 2,
           alignItems: 'stretch',
+          // clip the inner cards to the rounded bottom corners so they merge with the frame
+          overflow: 'hidden',
           borderColor: 'divider',
           borderStyle: 'solid',
           borderWidth: 0,
