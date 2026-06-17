@@ -1,6 +1,7 @@
 import type OpenAI from 'openai';
 import { getOpenAIClient } from '../config/openai';
 import { AnalysisResult, FileExtractionResult, Ingredient, PetProfile } from '../types';
+import { speciesLabelSk } from '../constants/animalSpecies';
 import type { ExamAlias } from './examAlias';
 import { EXAM_ALIAS_TO_TYPE } from './examAlias';
 import { EXAM_ALIAS_PROMPTS } from './examAliasPrompts';
@@ -161,7 +162,7 @@ function buildUserMessage(composition: string, petProfile?: PetProfile): string 
   if (petProfile) {
     msg += `\n\n## PROFIL ZVIERAŤA:\n`;
     msg += `- Meno: ${petProfile.name}\n`;
-    msg += `- Typ: ${petProfile.animalType === 'dog' ? 'Pes' : petProfile.animalType === 'cat' ? 'Mačka' : 'Iné zviera'}\n`;
+    msg += `- Typ: ${speciesLabelSk(petProfile.animalType)}\n`;
     if (petProfile.breed) msg += `- Plemeno: ${petProfile.breed}\n`;
     if (petProfile.ageYears !== undefined || petProfile.ageMonths !== undefined) {
       const years = petProfile.ageYears ?? 0;
@@ -1408,7 +1409,7 @@ function generateMockPersonalizedNote(
     explanation = `Krmivo má určité riziká pre ${petProfile.name} vzhľadom na jeho zdravotný stav. Pred podávaním sa poraď s veterinárom.`;
   } else if (score >= 80) {
     verdict = 'VÝBORNÉ';
-    explanation = `Toto krmivo je výbornou voľbou pre ${petProfile.name}. Zloženie je kvalitné a vhodné pre ${petProfile.animalType === 'dog' ? 'psa' : petProfile.animalType === 'cat' ? 'mačku' : 'zviera'} tohto profilu.`;
+    explanation = `Toto krmivo je výbornou voľbou pre ${petProfile.name}. Zloženie je kvalitné a vhodné pre zviera tohto profilu.`;
   } else {
     verdict = 'VHODNÉ';
     explanation = `Krmivo je prijateľné pre ${petProfile.name}, ale existujú kvalitnejšie alternatívy na trhu.`;

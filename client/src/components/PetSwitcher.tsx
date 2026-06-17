@@ -35,7 +35,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
   const { t } = useTranslation('common');
   const theme = useTheme();
   const navigate = useNavigate();
-  const { activePet, selectPet, dogProfiles } = useActivePet();
+  const { activePet, selectPet, petProfiles: dogProfiles } = useActivePet();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
   const open = Boolean(anchor);

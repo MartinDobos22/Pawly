@@ -42,7 +42,7 @@ export default function EpisodeDiaryPage() {
   const navigate = useNavigate();
 
   const {
-    dogProfiles,
+    petProfiles: dogProfiles,
     activePetId: selectedDogId,
     selectPet: setSelectedDogId,
     loading: petsLoading,
