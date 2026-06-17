@@ -779,10 +779,11 @@ export default function HealthPassportPage() {
       <Card
         sx={{
           p: { xs: 2, md: 3 },
-          mb: 0,
+          mb: 2.5,
           borderRadius: 0,
           borderTopWidth: 0,
           borderBottomWidth: 0,
+          bgcolor: 'background.default',
         }}
       >
         <HealthTimeline

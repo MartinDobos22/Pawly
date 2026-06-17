@@ -130,6 +130,7 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
           borderRadius: 0,
           borderTopWidth: 0,
           borderBottomWidth: 0,
+          bgcolor: 'background.default',
         }}
       >
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>

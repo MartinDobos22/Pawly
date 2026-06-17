@@ -20,7 +20,14 @@ export default function PawlyInsightCard({ headline, bullets, footer }: Props) {
 
   return (
     <Card
-      sx={{ p: { xs: 2, md: 3 }, mb: 0, borderRadius: 0, borderTopWidth: 0, borderBottomWidth: 0 }}
+      sx={{
+        p: { xs: 2, md: 3 },
+        mb: 2.5,
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+        bgcolor: 'background.default',
+      }}
     >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 2.5 }}>
         <SparkleIcon sx={{ fontSize: 21, color: 'primary.light' }} />
