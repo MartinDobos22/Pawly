@@ -151,10 +151,9 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
       sx={{
         p: { xs: 2, md: 3 },
         height: '100%',
-        borderRadius: 4,
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
-        borderBottomLeftRadius: 0,
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
       }}
     >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
