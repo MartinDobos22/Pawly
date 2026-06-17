@@ -10,7 +10,10 @@ interface Props {
 export default function ActiveMedicationsCard({ medications }: Props) {
   const { t } = useTranslation('vetCard');
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+    <Card
+      variant="outlined"
+      sx={{ p: { xs: 1.75, md: 2 }, height: '100%', border: 0, borderRadius: 0, bgcolor: 'background.default' }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <MedicationIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>

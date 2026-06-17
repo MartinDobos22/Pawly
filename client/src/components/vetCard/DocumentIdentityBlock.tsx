@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import {
-  Avatar,
   Box,
   FormControl,
   MenuItem,
@@ -13,19 +12,14 @@ import {
 import {
   CalendarMonth as CalendarIcon,
   Memory as ChipIcon,
-  Pets as PetsIcon,
   QrCode2 as PassportIcon,
   WatchLater as WeightIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
 
-const initialsOf = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
+// Fixed brand teal scrim for the slim hero — stays dark in light AND dark mode so the
+// white hero text is legible; intentionally not theme-derived (matches the dashboard hero).
+const HERO_SCRIM = '#0F4C5C';
 
 const ageInYears = (dog: PetProfile): number | null => {
   if (dog.dateOfBirth) {
@@ -104,91 +98,77 @@ export default function DocumentIdentityBlock({
       value: `${dog.weightKg} kg`,
     });
 
+  const onWhite = alpha(theme.palette.common.white, 0.85);
+
   return (
     <Box
       sx={{
         position: 'relative',
         overflow: 'hidden',
+        // rounded top only — caps the monolith below
         borderRadius: 4,
-        bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.05 : 0.1),
-        border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        bgcolor: HERO_SCRIM,
+        color: 'common.white',
         p: { xs: 2, md: 2.5 },
+        // keep window.print() legible (the exported PDF is built separately and unaffected)
+        '@media print': {
+          bgcolor: '#FFFFFF',
+          color: '#000000',
+          border: '1px solid #DDDDDD',
+          '& *': { color: '#000000' },
+        },
       }}
     >
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        alignItems={{ xs: 'flex-start', md: 'center' }}
-        gap={{ xs: 2, md: 2.5 }}
-      >
-        <Avatar
-          src={dog.photoUrl || undefined}
-          alt={dog.name}
-          sx={{
-            width: { xs: 72, md: 88 },
-            height: { xs: 72, md: 88 },
-            bgcolor: alpha(
-              theme.palette.primary.main,
-              theme.palette.mode === 'light' ? 0.16 : 0.25
-            ),
-            color: theme.palette.mode === 'light' ? 'primary.dark' : 'primary.light',
-            fontWeight: 700,
-            fontSize: { xs: '1.4rem', md: '1.7rem' },
-            border: `3px solid ${theme.palette.background.paper}`,
-            boxShadow: '0 2px 8px rgba(15,76,92,0.10)',
-            flexShrink: 0,
-          }}
+      <Stack sx={{ minWidth: 0 }} spacing={0.5}>
+        <Typography
+          variant="caption"
+          sx={{ color: onWhite, fontSize: '0.7rem', letterSpacing: '0.1em' }}
         >
-          {initialsOf(dog.name) || <PetsIcon />}
-        </Avatar>
-
-        <Stack sx={{ flex: 1, minWidth: 0 }} spacing={0.5}>
+          {t('identity.cardCaption')}
+        </Typography>
+        <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
           <Typography
-            variant="caption"
-            sx={{ color: 'text.secondary', fontSize: '0.7rem', letterSpacing: '0.1em' }}
+            variant="h1"
+            sx={{
+              fontSize: { xs: '1.5rem', md: '2rem' },
+              fontWeight: 700,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+            }}
           >
-            {t('identity.cardCaption')}
+            {dog.name}
           </Typography>
-          <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: { xs: '1.5rem', md: '2rem' },
-                fontWeight: 700,
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {dog.name}
-            </Typography>
-            {dogProfiles.length > 1 && (
-              <FormControl size="small">
-                <Select
-                  value={selectedDogId}
-                  onChange={(e) => onSelectDog(e.target.value)}
-                  variant="standard"
-                  disableUnderline
-                  renderValue={() => t('identity.switchPet')}
-                  sx={{
-                    fontSize: '0.85rem',
-                    color: 'text.secondary',
-                    '& .MuiSelect-select': { py: 0.5, pr: 3 },
-                  }}
-                >
-                  {dogProfiles.map((p) => (
-                    <MenuItem key={p.id} value={p.id}>
-                      {p.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          </Stack>
-          {subtitleParts.length > 0 && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {subtitleParts.join(' · ')}
-            </Typography>
+          {dogProfiles.length > 1 && (
+            <FormControl size="small">
+              <Select
+                value={selectedDogId}
+                onChange={(e) => onSelectDog(e.target.value)}
+                variant="standard"
+                disableUnderline
+                renderValue={() => t('identity.switchPet')}
+                sx={{
+                  fontSize: '0.85rem',
+                  color: onWhite,
+                  '& .MuiSelect-select': { py: 0.5, pr: 3 },
+                  '& .MuiSelect-icon': { color: onWhite },
+                }}
+              >
+                {dogProfiles.map((p) => (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           )}
         </Stack>
+        {subtitleParts.length > 0 && (
+          <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.92) }}>
+            {subtitleParts.join(' · ')}
+          </Typography>
+        )}
       </Stack>
 
       {identifiers.length > 0 && (
@@ -203,7 +183,7 @@ export default function DocumentIdentityBlock({
             },
             gap: 1,
             pt: 1.5,
-            borderTop: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+            borderTop: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
           }}
         >
           {identifiers.map((id) => (
@@ -213,8 +193,8 @@ export default function DocumentIdentityBlock({
                   width: 28,
                   height: 28,
                   borderRadius: 1.5,
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                  color: 'primary.main',
+                  bgcolor: alpha(theme.palette.common.white, 0.15),
+                  color: 'common.white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -227,7 +207,7 @@ export default function DocumentIdentityBlock({
               <Stack sx={{ minWidth: 0 }} spacing={0}>
                 <Typography
                   variant="caption"
-                  sx={{ color: 'text.secondary', fontSize: '0.65rem', lineHeight: 1.2 }}
+                  sx={{ color: onWhite, fontSize: '0.65rem', lineHeight: 1.2 }}
                 >
                   {id.label}
                 </Typography>

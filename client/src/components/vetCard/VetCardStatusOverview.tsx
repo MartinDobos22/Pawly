@@ -21,7 +21,16 @@ interface Props {
 export default function VetCardStatusOverview({ rabies, combined, deworming, ecto }: Props) {
   const { t } = useTranslation('vetCard');
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+    <Card
+      variant="outlined"
+      sx={{
+        p: { xs: 1.75, md: 2 },
+        bgcolor: 'background.default',
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+      }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <ShieldIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
