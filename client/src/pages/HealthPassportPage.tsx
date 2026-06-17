@@ -43,7 +43,7 @@ export default function HealthPassportPage() {
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const {
-    dogProfiles,
+    petProfiles: dogProfiles,
     activePetId: selectedDogId,
     selectPet: setSelectedDogId,
     loading: petsLoading,

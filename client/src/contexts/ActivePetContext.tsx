@@ -28,7 +28,7 @@ export interface ActivePetContextValue {
   activePet: PetProfile | null;
   activePetId: string;
   selectPet: (id: string) => void;
-  dogProfiles: PetProfile[];
+  petProfiles: PetProfile[];
   allProfiles: PetProfile[];
   loading: boolean;
 }
@@ -39,17 +39,15 @@ export function ActivePetProvider({ children }: { children: ReactNode }) {
   const { profiles, loading } = usePetProfiles();
   const [activePetId, setActivePetIdState] = useState<string>(readInitialActivePetId);
 
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
-
   useEffect(() => {
-    if (!dogProfiles.length) return;
-    const exists = dogProfiles.some((d) => d.id === activePetId);
+    if (!profiles.length) return;
+    const exists = profiles.some((p) => p.id === activePetId);
     if (!exists) {
-      const nextId = dogProfiles[0].id;
+      const nextId = profiles[0].id;
       setActivePetIdState(nextId);
       writeActivePetId(nextId);
     }
-  }, [dogProfiles, activePetId]);
+  }, [profiles, activePetId]);
 
   const selectPet = useCallback((id: string) => {
     setActivePetIdState(id);
@@ -57,8 +55,8 @@ export function ActivePetProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const activePet = useMemo(
-    () => dogProfiles.find((d) => d.id === activePetId) ?? null,
-    [dogProfiles, activePetId]
+    () => profiles.find((p) => p.id === activePetId) ?? null,
+    [profiles, activePetId]
   );
 
   const value = useMemo<ActivePetContextValue>(
@@ -66,11 +64,11 @@ export function ActivePetProvider({ children }: { children: ReactNode }) {
       activePet,
       activePetId,
       selectPet,
-      dogProfiles,
+      petProfiles: profiles,
       allProfiles: profiles,
       loading,
     }),
-    [activePet, activePetId, selectPet, dogProfiles, profiles, loading]
+    [activePet, activePetId, selectPet, profiles, loading]
   );
 
   return <ActivePetContext.Provider value={value}>{children}</ActivePetContext.Provider>;

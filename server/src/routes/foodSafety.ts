@@ -3,6 +3,7 @@ import { askFoodSafety } from '../services/foodSafetyService';
 import type { PetProfile } from '../types';
 import type { FoodSafetyRequest } from '../types/foodSafety';
 import { logger } from '../utils/logger';
+import { isAnimalType } from '../constants/animalSpecies';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ function validatePetProfile(profile: unknown): PetProfile | undefined {
   if (!profile || typeof profile !== 'object') return undefined;
   const p = profile as Record<string, unknown>;
   if (typeof p.name !== 'string' || !p.name.trim()) return undefined;
-  if (!['dog', 'cat', 'other'].includes(p.animalType as string)) return undefined;
+  if (!isAnimalType(p.animalType)) return undefined;
 
   return {
     id: typeof p.id === 'string' ? p.id : '',

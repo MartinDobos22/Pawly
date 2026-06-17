@@ -1,4 +1,5 @@
-export type AnimalType = 'dog' | 'cat' | 'other';
+export type { AnimalType } from '../constants/animalSpecies';
+import type { AnimalType } from '../constants/animalSpecies';
 export type AnimalSize = 'mini' | 'small' | 'medium' | 'large' | 'giant';
 export type AnimalLifeStage = 'puppy' | 'junior' | 'adult' | 'senior';
 export type ActivityLevel = 'low' | 'moderate' | 'high' | 'working';

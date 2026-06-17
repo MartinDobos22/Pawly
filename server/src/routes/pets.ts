@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { createPet, deletePet, getPet, listPets, updatePet } from '../services/petsService';
+import { isAnimalType } from '../constants/animalSpecies';
 
 const router = Router();
 
@@ -28,6 +29,10 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       res
         .status(400)
         .json({ error: { message: 'Chýba meno alebo typ zvieraťa.', code: 'INVALID_INPUT' } });
+      return;
+    }
+    if (!isAnimalType(req.body.animalType)) {
+      res.status(400).json({ error: { message: 'Neznámy typ zvieraťa.', code: 'INVALID_INPUT' } });
       return;
     }
     res.status(201).json(await createPet(requireUserId(req), req.body));
