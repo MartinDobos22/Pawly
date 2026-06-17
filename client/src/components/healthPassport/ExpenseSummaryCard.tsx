@@ -147,7 +147,16 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
   );
 
   return (
-    <Card sx={{ p: { xs: 2, md: 3 }, height: '100%', borderRadius: 4 }}>
+    <Card
+      sx={{
+        p: { xs: 2, md: 3 },
+        height: '100%',
+        borderRadius: 4,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        borderBottomLeftRadius: 0,
+      }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <ReceiptIcon sx={{ fontSize: 21, color: 'primary.main' }} />
         <Typography variant="h3" sx={{ fontSize: '1.2rem', fontWeight: 700 }}>

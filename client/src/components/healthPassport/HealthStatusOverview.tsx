@@ -67,7 +67,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
   } = props;
 
   return (
-    <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5, borderRadius: 4 }}>
+    <Card sx={{ p: { xs: 2, md: 3 }, mb: 2.5, borderRadius: 0 }}>
       <Stack
         direction="row"
         alignItems="flex-start"
