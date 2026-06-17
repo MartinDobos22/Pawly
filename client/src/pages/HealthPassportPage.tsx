@@ -794,12 +794,23 @@ export default function HealthPassportPage() {
       </Card>
 
       {/* ── Weight trend + expenses ────────────────────────────────────────── */}
+      {/* Wrapper draws one continuous bottom line + rounded bottom corners across the
+          whole row (incl. the gap), closing the monolith. The inner cards are borderless. */}
       <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
           gap: 2,
-          alignItems: 'start',
+          alignItems: 'stretch',
+          borderColor: 'divider',
+          borderStyle: 'solid',
+          borderWidth: 0,
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+          borderRadius: 4,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
         }}
       >
         <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />

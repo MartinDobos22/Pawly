@@ -151,13 +151,9 @@ export default function ExpenseSummaryCard({ expenses }: ExpenseSummaryCardProps
       sx={{
         p: { xs: 2, md: 3 },
         height: '100%',
-        // close the bottom of the monolith: keep left/right/bottom borders, drop top,
-        // round only the outer bottom-right corner (mirrors the hero's rounded top).
-        borderRadius: 4,
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
-        borderBottomLeftRadius: 0,
-        borderTopWidth: 0,
+        // Borderless — the page wrapper draws the monolith's side + bottom frame.
+        border: 0,
+        borderRadius: 0,
         bgcolor: 'background.default',
       }}
     >
