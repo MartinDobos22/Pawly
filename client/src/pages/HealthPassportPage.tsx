@@ -24,6 +24,8 @@ import type {
 
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import { usePetProfiles } from '../hooks/usePetProfiles';
+import { usePetPhotoUpload } from '../hooks/usePetPhotoUpload';
 import { useConfirm } from '../hooks/useConfirm';
 import { relativeDate } from '../utils/relativeDate';
 import type { VisitBundle } from '../utils/vetVisitHelper';
@@ -93,6 +95,8 @@ export default function HealthPassportPage() {
     removeMedication,
   } = useHealthData();
   const { confirm, dialog: confirmDialog } = useConfirm();
+  const { updateProfile } = usePetProfiles();
+  const { upload: uploadPhoto, uploading: photoUploading } = usePetPhotoUpload();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
   const dogVaccinations = vaccinations.filter((v) => v.petId === selectedDogId);
@@ -238,6 +242,23 @@ export default function HealthPassportPage() {
     [addVisit]
   );
   const handleQuickVisitUndo = useCallback((id: string) => removeVisit(id), [removeVisit]);
+
+  const handleHeroPhoto = useCallback(
+    async (file: File) => {
+      const url = await uploadPhoto(file);
+      if (!url) {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+        return;
+      }
+      try {
+        await updateProfile(selectedDogId, { photoUrl: url });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
+    },
+    [uploadPhoto, updateProfile, selectedDogId, tCommon]
+  );
 
   // ── Timeline open detail ────────────────────────────────────────────────────
   const handleOpenDetail = useCallback((event: TimelineEvent) => {
@@ -653,6 +674,8 @@ export default function HealthPassportPage() {
           score={healthScore}
           infoCards={heroInfoCards}
           onEditProfile={() => navigate('/profily')}
+          onPhotoSelected={handleHeroPhoto}
+          photoUploading={photoUploading}
         />
       )}
 

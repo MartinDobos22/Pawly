@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { createPet, deletePet, getPet, listPets, updatePet } from '../services/petsService';
+import { uploadPetPhoto } from '../services/petPhotoService';
 
 const router = Router();
 
@@ -31,6 +32,14 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       return;
     }
     res.status(201).json(await createPet(requireUserId(req), req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/photo', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await uploadPetPhoto(requireUserId(req), req.body));
   } catch (err) {
     next(err);
   }

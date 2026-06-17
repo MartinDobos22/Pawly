@@ -30,6 +30,7 @@ import {
   Pets as PetsIcon,
 } from '@mui/icons-material';
 import HelpHint from '../components/HelpHint';
+import PetPhotoField from '../components/PetPhotoField';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
@@ -507,11 +508,9 @@ export default function PetProfilePage() {
                 }
                 fullWidth
               />
-              <TextField
-                label={t('profiles.photoUrl')}
-                value={form.photoUrl ?? ''}
-                onChange={(e) => setForm({ ...form, photoUrl: e.target.value })}
-                fullWidth
+              <PetPhotoField
+                value={form.photoUrl || undefined}
+                onChange={(url) => setForm({ ...form, photoUrl: url ?? '' })}
               />
               <TextField
                 label={t('profiles.microchip')}

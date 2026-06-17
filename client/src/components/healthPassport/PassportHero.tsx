@@ -1,7 +1,8 @@
-import type { ReactElement } from 'react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
+  CircularProgress,
   FormControl,
   IconButton,
   MenuItem,
@@ -15,9 +16,10 @@ import {
   ChevronRight as ChevronIcon,
   Edit as EditIcon,
   Favorite as FavoriteIcon,
-  Pets as PetsIcon,
+  PhotoCamera as PhotoCameraIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
+import { petPhotoStock, petPhotoSvg } from '../../utils/petPhotoDefaults';
 import HealthScoreRing from './HealthScoreRing';
 
 export interface HeroInfoCard {
@@ -38,21 +40,14 @@ interface Props {
   score: number | null;
   infoCards: HeroInfoCard[];
   onEditProfile: () => void;
+  onPhotoSelected?: (file: File) => void;
+  photoUploading?: boolean;
 }
 
-// Fixed brand scrim/accent over the hero photo. These must stay constant in BOTH light
-// and dark mode so the white hero text stays legible, so they are intentionally not
-// theme-derived (the photo behind them is the same in either mode).
+// Fixed brand scrim over the hero photo. It must stay constant in BOTH light and dark
+// mode so the white hero text stays legible, so it is intentionally not theme-derived
+// (the photo behind it is the same in either mode).
 const HERO_SCRIM = '#0F4C5C';
-const HERO_MINT = '#7FC9A8';
-
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('');
 
 export default function PassportHero({
   dog,
@@ -62,9 +57,22 @@ export default function PassportHero({
   score,
   infoCards,
   onEditProfile,
+  onPhotoSelected,
+  photoUploading = false,
 }: Props) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Photo source: user's own photo → species stock photo → local SVG (offline fallback).
+  const fallbackSvg = petPhotoSvg(dog.animalType);
+  const [imgSrc, setImgSrc] = useState(dog.photoUrl || petPhotoStock(dog.animalType));
+  useEffect(() => {
+    setImgSrc(dog.photoUrl || petPhotoStock(dog.animalType));
+  }, [dog.photoUrl, dog.animalType]);
+  const handleImgError = () => {
+    if (imgSrc !== fallbackSvg) setImgSrc(fallbackSvg);
+  };
 
   const computeAgeLabel = (p: PetProfile): string | null => {
     if (p.dateOfBirth) {
@@ -95,8 +103,6 @@ export default function PassportHero({
     dog.sex === 'MALE' ? t('hero.sexMale') : dog.sex === 'FEMALE' ? t('hero.sexFemale') : null;
   const subParts = [dog.breed, ageLabel, sex].filter(Boolean) as string[];
 
-  const hasPhoto = Boolean(dog.photoUrl);
-
   return (
     <Box
       sx={{
@@ -112,37 +118,20 @@ export default function PassportHero({
         bgcolor: HERO_SCRIM,
       }}
     >
-      {hasPhoto ? (
-        <Box
-          component="img"
-          src={dog.photoUrl}
-          alt={dog.name}
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: '60% 35%',
-          }}
-        />
-      ) : (
-        <Stack
-          alignItems="center"
-          justifyContent="center"
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(circle at 70% 20%, ${alpha(HERO_MINT, 0.35)}, ${HERO_SCRIM} 70%)`,
-            color: alpha(theme.palette.common.white, 0.22),
-            fontSize: '12rem',
-            fontWeight: 800,
-            userSelect: 'none',
-          }}
-        >
-          {initials(dog.name) || <PetsIcon sx={{ fontSize: '10rem' }} />}
-        </Stack>
-      )}
+      <Box
+        component="img"
+        src={imgSrc}
+        onError={handleImgError}
+        alt={dog.name}
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: '60% 35%',
+        }}
+      />
 
       {/* Legibility scrims */}
       <Box
@@ -207,6 +196,37 @@ export default function PassportHero({
                 >
                   <EditIcon />
                 </IconButton>
+                {onPhotoSelected && (
+                  <>
+                    <IconButton
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={photoUploading}
+                      aria-label={t('hero.changePhoto')}
+                      sx={{
+                        color: alpha(theme.palette.common.white, 0.85),
+                        '&:hover': { color: 'common.white' },
+                      }}
+                    >
+                      {photoUploading ? (
+                        <CircularProgress size={20} sx={{ color: 'common.white' }} />
+                      ) : (
+                        <PhotoCameraIcon />
+                      )}
+                    </IconButton>
+                    <Box
+                      component="input"
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      sx={{ display: 'none' }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const file = e.target.files?.[0];
+                        if (file) onPhotoSelected(file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </>
+                )}
                 {dogProfiles.length > 1 && (
                   <FormControl size="small">
                     <Select
