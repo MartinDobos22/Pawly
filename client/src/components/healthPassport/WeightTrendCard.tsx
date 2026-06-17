@@ -127,9 +127,13 @@ export default function WeightTrendCard({ petId, fallbackWeightKg }: Props) {
         sx={{
           p: { xs: 2, md: 3 },
           height: '100%',
-          borderRadius: 0,
+          // close the bottom of the monolith: keep left/right/bottom borders, drop top,
+          // round only the outer bottom-left corner (mirrors the hero's rounded top).
+          borderRadius: 4,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
           borderTopWidth: 0,
-          borderBottomWidth: 0,
           bgcolor: 'background.default',
         }}
       >
