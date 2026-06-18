@@ -367,7 +367,7 @@ export default function VetCardPage() {
     return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
   };
   const {
-    dogProfiles,
+    petProfiles: dogProfiles,
     activePetId: selectedDogId,
     selectPet: setSelectedDogId,
     loading: petsLoading,

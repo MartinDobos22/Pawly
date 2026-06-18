@@ -60,7 +60,7 @@ export default function HealthPassportPage() {
   const navigate = useNavigate();
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const {
-    dogProfiles,
+    petProfiles: dogProfiles,
     activePetId: selectedDogId,
     selectPet: setSelectedDogId,
     loading: petsLoading,

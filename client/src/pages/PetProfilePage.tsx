@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -33,9 +33,10 @@ import {
 import HelpHint from '../components/HelpHint';
 import PetPhotoField from '../components/PetPhotoField';
 import FeatureIntro from '../components/FeatureIntro';
+import SpeciesSelect from '../components/SpeciesSelect';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
-import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
+import type { PetProfile, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
 import { forgetQuickVisitClinicSuggestion } from '../utils/quickVisitClinicMemory';
 
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
@@ -155,8 +156,6 @@ export default function PetProfilePage() {
       severity: 'success',
     }
   );
-
-  const dogProfiles = useMemo(() => profiles.filter((p) => p.animalType === 'dog'), [profiles]);
 
   const openNew = () => {
     setEditingId(null);
@@ -282,7 +281,7 @@ export default function PetProfilePage() {
         </Stack>
       </Box>
 
-      {!petsLoading && dogProfiles.length === 0 && (
+      {!petsLoading && profiles.length === 0 && (
         <Card
           sx={{
             p: 4,
@@ -322,7 +321,7 @@ export default function PetProfilePage() {
       )}
 
       <Stack spacing={2}>
-        {dogProfiles.map((profile) => (
+        {profiles.map((profile) => (
           <Card key={profile.id} sx={{ borderRadius: 3 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {profile.photoUrl ? (
@@ -392,18 +391,11 @@ export default function PetProfilePage() {
             <Box
               sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}
             >
-              <FormControl fullWidth>
-                <InputLabel>{t('profiles.animalType')}</InputLabel>
-                <Select
-                  value={form.animalType}
-                  label={t('profiles.animalType')}
-                  onChange={(e) => setForm({ ...form, animalType: e.target.value as AnimalType })}
-                >
-                  <MenuItem value="dog">{t('profiles.animalDog')}</MenuItem>
-                  <MenuItem value="cat">{t('profiles.animalCat')}</MenuItem>
-                  <MenuItem value="other">{t('profiles.animalOther')}</MenuItem>
-                </Select>
-              </FormControl>
+              <SpeciesSelect
+                value={form.animalType}
+                onChange={(v) => setForm({ ...form, animalType: v })}
+                label={t('profiles.animalType')}
+              />
               <TextField
                 label={t('profiles.breed')}
                 value={form.breed ?? ''}
