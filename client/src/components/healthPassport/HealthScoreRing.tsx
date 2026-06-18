@@ -1,5 +1,7 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
+import { Favorite as FavoriteIcon } from '@mui/icons-material';
 
 export interface ScoreBreakdownItem {
   label: string;
@@ -14,6 +16,8 @@ interface Props {
   label?: string;
   breakdown?: ScoreBreakdownItem[];
   incomplete?: boolean;
+  /** 'hero' renders white text on a green→teal gradient stroke for use over the photo hero. */
+  variant?: 'default' | 'hero';
 }
 
 const statusDot: Record<ScoreBreakdownItem['status'], string> = {
@@ -29,9 +33,11 @@ export default function HealthScoreRing({
   label,
   breakdown,
   incomplete = false,
+  variant = 'default',
 }: Props) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
+  const gradientId = `scoreGrad-${useId().replace(/:/g, '')}`;
   const stroke = Math.max(8, Math.round(size * 0.1));
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -47,6 +53,87 @@ export default function HealthScoreRing({
 
   const hasScore = score !== null && !Number.isNaN(score);
   const value = hasScore ? Math.max(0, Math.min(100, score!)) : 0;
+
+  if (variant === 'hero') {
+    const center = size / 2;
+    const dash = (value / 100) * circumference;
+    return (
+      <Box sx={{ position: 'relative', width: size, height: size }}>
+        <svg
+          width={size}
+          height={size}
+          role="img"
+          aria-label={t('score.aria', { value: hasScore ? Math.round(value) : '—' })}
+        >
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#7FC9A8" />
+              <stop offset="100%" stopColor="#0F4C5C" />
+            </linearGradient>
+          </defs>
+          <circle
+            cx={center}
+            cy={center}
+            r={radius}
+            fill="none"
+            stroke="rgba(255,255,255,0.30)"
+            strokeWidth={stroke}
+          />
+          {hasScore && (
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke={`url(#${gradientId})`}
+              strokeWidth={stroke}
+              strokeLinecap="round"
+              strokeDasharray={`${dash} ${circumference - dash}`}
+              transform={`rotate(-90 ${center} ${center})`}
+              style={{ transition: 'stroke-dasharray 400ms ease' }}
+            />
+          )}
+        </svg>
+        <Stack
+          alignItems="center"
+          justifyContent="center"
+          spacing={0}
+          sx={{ position: 'absolute', inset: 0, color: 'common.white' }}
+        >
+          <FavoriteIcon sx={{ fontSize: size * 0.12, mb: 0.25, filter: 'drop-shadow(0 1px 6px rgba(0,0,0,0.3))' }} />
+          <Typography
+            sx={{
+              fontSize: size * 0.28,
+              fontWeight: 800,
+              lineHeight: 1,
+              letterSpacing: '-0.02em',
+              textShadow: '0 2px 10px rgba(0,0,0,0.28)',
+            }}
+          >
+            {hasScore ? Math.round(value) : '—'}
+          </Typography>
+          {hasScore && (
+            <Typography
+              sx={{ fontSize: size * 0.08, fontWeight: 700, mt: 0.4, textShadow: '0 1px 6px rgba(0,0,0,0.28)' }}
+            >
+              {labelForScore(value)}
+            </Typography>
+          )}
+          <Typography
+            sx={{
+              fontSize: size * 0.065,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.85)',
+              textTransform: 'none',
+              letterSpacing: 0,
+            }}
+          >
+            {resolvedLabel}
+          </Typography>
+        </Stack>
+      </Box>
+    );
+  }
 
   const color = !hasScore
     ? theme.palette.divider

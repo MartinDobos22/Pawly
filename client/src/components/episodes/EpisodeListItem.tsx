@@ -11,6 +11,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  alpha,
   useTheme,
 } from '@mui/material';
 import {
@@ -248,8 +249,8 @@ export default function EpisodeListItem({
             sx={{
               p: 2,
               borderRadius: 2,
-              backgroundColor: theme.palette.primary.main + '0F',
-              border: `1px solid ${theme.palette.primary.main}33`,
+              backgroundColor: alpha(theme.palette.primary.main, 0.06),
+              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
             <Typography

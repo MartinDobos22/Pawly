@@ -1,30 +1,44 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Alert, Box, Button, Card, Snackbar, Stack, Typography } from '@mui/material';
-import { Pets as PetsIcon } from '@mui/icons-material';
+import { Alert, Box, Button, Card, Snackbar, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Add as AddIcon,
+  Badge as BadgeIcon,
+  HealthAndSafety as VaccinationIcon,
+  MonitorWeight as WeightIcon,
+  Pets as PetsIcon,
+  PestControl as DewormingIcon,
+  RamenDining as DietIcon,
+} from '@mui/icons-material';
 
 import type {
   DietEntry,
   EctoparasiteRecord,
   ExpenseCategory,
   TimelineEvent,
+  ValidityStatus,
   VaccinationRecord,
   VetVisitRecord,
 } from '../types/petHealth';
 
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import { usePetProfiles } from '../hooks/usePetProfiles';
+import { usePetPhotoUpload } from '../hooks/usePetPhotoUpload';
 import { useConfirm } from '../hooks/useConfirm';
+import { relativeDate } from '../utils/relativeDate';
 import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
 import FeatureIntro from '../components/FeatureIntro';
-import PassportHero from '../components/healthPassport/PassportHero';
+import PassportHero, { type HeroInfoCard } from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
-import UpcomingTasksCard from '../components/healthPassport/UpcomingTasksCard.tsx';
+import PawlyInsightCard from '../components/healthPassport/PawlyInsightCard';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
+import QuickVisitButton from '../components/healthPassport/QuickVisitButton';
 import VisitDetailDialog from '../components/healthPassport/VisitDetailDialog';
 import WeightTrendCard from '../components/healthPassport/WeightTrendCard';
 import TimelineRecordDetailDialog from '../components/healthPassport/TimelineRecordDetailDialog';
@@ -33,6 +47,7 @@ import type { RecordDetailState } from '../components/healthPassport/TimelineRec
 // Utilities and types
 import {
   statusByDate,
+  computeHealthScore,
   computeIntervalDaysFromDates,
   escapeHtml,
 } from '../components/healthPassport/utils';
@@ -41,6 +56,8 @@ export default function HealthPassportPage() {
   const { t, i18n } = useTranslation('healthPassport');
   const { t: tCommon } = useTranslation('common');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
+  const theme = useTheme();
+  const navigate = useNavigate();
   // ── Dog selection (shared via useActivePet) ────────────────────────────────
   const {
     petProfiles: dogProfiles,
@@ -56,9 +73,10 @@ export default function HealthPassportPage() {
     ectos,
     visits,
     medications,
-    doseLogs,
     dietEntries,
     expenses,
+    episodes,
+    weightLogs,
     addVisitBundle,
     addVisit,
     updateVisit,
@@ -75,9 +93,10 @@ export default function HealthPassportPage() {
     removeDietEntry,
     removeExpense,
     removeMedication,
-    toggleDose,
   } = useHealthData();
   const { confirm, dialog: confirmDialog } = useConfirm();
+  const { updateProfile } = usePetProfiles();
+  const { upload: uploadPhoto, uploading: photoUploading } = usePetPhotoUpload();
 
   // ── Filtered by dog ────────────────────────────────────────────────────────
   const dogVaccinations = vaccinations.filter((v) => v.petId === selectedDogId);
@@ -85,7 +104,6 @@ export default function HealthPassportPage() {
   const dogEctos = ectos.filter((v) => v.petId === selectedDogId);
   const dogVisits = visits.filter((v) => v.petId === selectedDogId);
   const dogMeds = medications.filter((v) => v.petId === selectedDogId);
-  const dogDoseLogs = doseLogs.filter((v) => v.petId === selectedDogId);
   const dogDiet = dietEntries.filter((v) => v.petId === selectedDogId);
   const dogExpenses = expenses.filter((v) => v.petId === selectedDogId);
 
@@ -224,6 +242,23 @@ export default function HealthPassportPage() {
     [addVisit]
   );
   const handleQuickVisitUndo = useCallback((id: string) => removeVisit(id), [removeVisit]);
+
+  const handleHeroPhoto = useCallback(
+    async (file: File) => {
+      const url = await uploadPhoto(file);
+      if (!url) {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+        return;
+      }
+      try {
+        await updateProfile(selectedDogId, { photoUrl: url });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
+    },
+    [uploadPhoto, updateProfile, selectedDogId, tCommon]
+  );
 
   // ── Timeline open detail ────────────────────────────────────────────────────
   const handleOpenDetail = useCallback((event: TimelineEvent) => {
@@ -512,11 +547,123 @@ export default function HealthPassportPage() {
   const selectedVisit = selectedVisitId
     ? (dogVisits.find((v) => v.id === selectedVisitId) ?? null)
     : null;
-  const dietStatus: 'VALID' | 'UNKNOWN' = currentDiet ? 'VALID' : 'UNKNOWN';
+  const dietStatus: ValidityStatus = currentDiet ? 'VALID' : 'UNKNOWN';
+
+  // ── Derived dashboard data ──────────────────────────────────────────────────
+  const activeEpisodeCount = episodes.filter(
+    (e) => e.petId === selectedDogId && (e.outcome === 'ongoing' || e.outcome === 'recurring')
+  ).length;
+
+  const healthScore = computeHealthScore(
+    [vaccinationStatus, dewormingStatus, ectoStatus, dietStatus],
+    activeEpisodeCount
+  );
+
+  const dogWeightLogs = [...weightLogs]
+    .filter((w) => w.petId === selectedDogId)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const latestWeight = dogWeightLogs[dogWeightLogs.length - 1]?.kg ?? selectedDog?.weightKg;
+
+  const valueOrNotSet = (date?: string) => {
+    const rel = date ? relativeDate(date) : null;
+    return rel ? rel.text : t('hero.infoNotSet');
+  };
+
+  const heroInfoCards: HeroInfoCard[] = [
+    {
+      key: 'vaccination',
+      icon: <VaccinationIcon />,
+      label: t('overview.vaccination'),
+      value: valueOrNotSet(latestVaccination?.validUntil),
+      accent: theme.palette.success.main,
+      onClick: latestVaccination
+        ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+        : () => setWizardOpen(true),
+    },
+    {
+      key: 'deworming',
+      icon: <DewormingIcon />,
+      label: t('overview.deworming'),
+      value: valueOrNotSet(latestDeworming?.nextDueDate),
+      accent: theme.palette.secondary.main,
+      onClick: latestDeworming
+        ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
+        : () => setWizardOpen(true),
+    },
+    {
+      key: 'weight',
+      icon: <WeightIcon />,
+      label: t('hero.infoWeight'),
+      value: latestWeight != null ? `${latestWeight} kg` : t('hero.infoNotSet'),
+      accent: theme.palette.info.main,
+    },
+    {
+      key: 'diet',
+      icon: <DietIcon />,
+      label: t('overview.diet'),
+      value: currentDiet?.foodName ?? t('hero.infoNotSet'),
+      accent: theme.palette.diet.main,
+      onClick: currentDiet
+        ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' })
+        : () => setWizardOpen(true),
+    },
+  ];
+
+  // ── Pawly Insight (heuristic, no AI call) ────────────────────────────────────
+  const upcomingEvents: { label: string; days: number }[] = [
+    { label: t('overview.vaccination'), date: latestVaccination?.validUntil },
+    { label: t('overview.deworming'), date: latestDeworming?.nextDueDate },
+    { label: t('overview.ecto'), date: latestEcto?.nextDueDate },
+  ]
+    .map((e) => {
+      const rel = e.date ? relativeDate(e.date) : null;
+      return rel && rel.diffDays >= 0 ? { label: e.label, days: rel.diffDays } : null;
+    })
+    .filter((e): e is { label: string; days: number } => e !== null)
+    .sort((a, b) => a.days - b.days);
+
+  const overdueItem = [
+    { label: t('overview.vaccination'), status: vaccinationStatus },
+    { label: t('overview.deworming'), status: dewormingStatus },
+    { label: t('overview.ecto'), status: ectoStatus },
+  ].find((e) => e.status === 'EXPIRED');
+
+  const allPreventiveValid =
+    vaccinationStatus === 'VALID' && dewormingStatus === 'VALID' && ectoStatus === 'VALID';
+
+  const insightBullets: string[] = [];
+  if (overdueItem) insightBullets.push(t('insight.bulletOverdue', { item: overdueItem.label }));
+  if (upcomingEvents[0]) {
+    insightBullets.push(
+      t('insight.bulletNextEvent', {
+        event: upcomingEvents[0].label,
+        count: upcomingEvents[0].days,
+      })
+    );
+  } else if (!overdueItem) {
+    insightBullets.push(t('insight.bulletNoUpcoming'));
+  }
+  if (dogWeightLogs.length >= 2) {
+    const delta = dogWeightLogs[dogWeightLogs.length - 1].kg - dogWeightLogs[0].kg;
+    insightBullets.push(
+      Math.abs(delta) < 1
+        ? t('insight.bulletWeightStable')
+        : t('insight.bulletWeightChanged', { delta: delta.toFixed(1) })
+    );
+  } else {
+    insightBullets.push(t('insight.bulletWeightNoData'));
+  }
+  if (allPreventiveValid) insightBullets.push(t('insight.bulletPreventiveUpToDate'));
+
+  const insightPositive = !overdueItem && (healthScore == null || healthScore >= 70);
+  const insightHeadline = insightPositive
+    ? t('insight.headlineGreat', { name: selectedDog?.name ?? '' })
+    : t('insight.headlineAttention', { name: selectedDog?.name ?? '' });
+  const insightFooter = insightPositive ? t('insight.footer') : t('insight.footerAttention');
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
       <FeatureIntro featureKey="passport" icon={<PetsIcon />} />
       {selectedDog && (
         <PassportHero
@@ -524,15 +671,38 @@ export default function HealthPassportPage() {
           dogProfiles={dogProfiles}
           selectedDogId={selectedDogId}
           onSelectDog={setSelectedDogId}
-          vaccinationStatus={vaccinationStatus}
-          dewormingStatus={dewormingStatus}
-          ectoStatus={ectoStatus}
-          dietStatus={dietStatus}
-          onAddRecord={() => setWizardOpen(true)}
-          onQuickVisitCreate={handleQuickVisitCreate}
-          onQuickVisitUndo={handleQuickVisitUndo}
+          score={healthScore}
+          infoCards={heroInfoCards}
+          onEditProfile={() => navigate('/profily')}
+          onPhotoSelected={handleHeroPhoto}
+          photoUploading={photoUploading}
         />
       )}
+
+      {/* ── Action buttons ─────────────────────────────────────────────────── */}
+      <Stack direction="row" flexWrap="wrap" gap={1.5} sx={{ mb: 2.5 }}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setWizardOpen(true)}
+          sx={{ boxShadow: theme.shadows[4] }}
+        >
+          {t('hero.addRecord')}
+        </Button>
+        <QuickVisitButton
+          petId={selectedDogId}
+          disabled={!selectedDogId}
+          onCreate={handleQuickVisitCreate}
+          onUndo={handleQuickVisitUndo}
+        />
+        <Button
+          variant="outlined"
+          startIcon={<BadgeIcon />}
+          onClick={() => navigate('/karta-pre-veterinara')}
+        >
+          {t('hero.vetCard')}
+        </Button>
+      </Stack>
 
       {/* ── Status overview ────────────────────────────────────────────────── */}
       <HealthStatusOverview
@@ -542,6 +712,16 @@ export default function HealthPassportPage() {
         currentDiet={currentDiet}
         vaccinationNextDate={latestVaccination?.validUntil}
         vaccinationLastDate={latestVaccination?.dateApplied}
+        vaccinationDetail={latestVaccination?.name}
+        vaccinationIntervalDays={
+          latestVaccination
+            ? computeIntervalDaysFromDates(
+                latestVaccination.dateApplied,
+                latestVaccination.validUntil,
+                365
+              )
+            : undefined
+        }
         dewormingNextDate={latestDeworming?.nextDueDate}
         dewormingLastDate={latestDeworming?.dateGiven}
         dewormingIntervalDays={
@@ -588,35 +768,55 @@ export default function HealthPassportPage() {
         }
       />
 
-      {/* ── Dashboard: timeline (left) + tasks/expenses stack (right) ─────── */}
+      {/* ── Pawly Insight ──────────────────────────────────────────────────── */}
+      <PawlyInsightCard
+        headline={insightHeadline}
+        bullets={insightBullets.slice(0, 3)}
+        footer={insightFooter}
+      />
+
+      {/* ── Health Journey ─────────────────────────────────────────────────── */}
+      <Card
+        sx={{
+          p: { xs: 2, md: 3 },
+          mb: 2.5,
+          borderRadius: 0,
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
+          bgcolor: 'background.default',
+        }}
+      >
+        <HealthTimeline
+          timeline={timeline}
+          onOpenDetail={handleOpenDetail}
+          onExportPdf={handleExportPdf}
+        />
+      </Card>
+
+      {/* ── Weight trend + expenses ────────────────────────────────────────── */}
+      {/* Wrapper draws one continuous bottom line + rounded bottom corners across the
+          whole row (incl. the gap), closing the monolith. The inner cards are borderless. */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
-          gap: 1.5,
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: 2,
+          alignItems: 'stretch',
+          // clip the inner cards to the rounded bottom corners so they merge with the frame
+          overflow: 'hidden',
+          borderColor: 'divider',
+          borderStyle: 'solid',
+          borderWidth: 0,
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderBottomWidth: 1,
+          borderRadius: 4,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
         }}
       >
-        <Card sx={{ p: { xs: 1.5, md: 2 } }}>
-          <HealthTimeline
-            timeline={timeline}
-            onOpenDetail={handleOpenDetail}
-            onExportPdf={handleExportPdf}
-          />
-        </Card>
-        <Stack spacing={1.5}>
-          <UpcomingTasksCard
-            vetVisits={dogVisits}
-            dewormings={dogDewormings}
-            ectos={dogEctos}
-            medications={dogMeds}
-            doseLogs={dogDoseLogs}
-            onToggleDose={(logId) => {
-              void toggleDose(logId);
-            }}
-          />
-          <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
-          <ExpenseSummaryCard expenses={dogExpenses} />
-        </Stack>
+        <WeightTrendCard petId={selectedDogId} fallbackWeightKg={selectedDog?.weightKg} />
+        <ExpenseSummaryCard expenses={dogExpenses} />
       </Box>
 
       {/* ── Add record dialog ────────────────────────────────────────────── */}

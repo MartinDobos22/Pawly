@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../components/ConfirmDialog';
 import {
   Box,
-  Container,
   List,
   ListItemButton,
   ListItemIcon,
@@ -118,7 +117,7 @@ export default function SettingsPage({ darkMode, onToggleTheme }: Props) {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: { xs: 1, md: 2 } }}>
+    <Box sx={{ maxWidth: 600, mx: 'auto', py: { xs: 1, md: 2 } }}>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
         {t('settings.title')}
       </Typography>
@@ -245,6 +244,6 @@ export default function SettingsPage({ darkMode, onToggleTheme }: Props) {
         onCancel={() => setDeleteOpen(false)}
       />
       {deleteError && null}
-    </Container>
+    </Box>
   );
 }

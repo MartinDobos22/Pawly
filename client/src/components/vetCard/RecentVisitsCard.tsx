@@ -67,7 +67,16 @@ export default function RecentVisitsCard({ visits }: Props) {
   const rangeEnd = Math.min(page * pageSize, visits.length);
 
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+    <Card
+      variant="outlined"
+      sx={{
+        p: { xs: 1.75, md: 2 },
+        bgcolor: 'background.default',
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+      }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <HospitalIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>

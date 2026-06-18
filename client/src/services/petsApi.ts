@@ -52,3 +52,13 @@ export function updatePet(id: string, payload: Partial<PetProfile>): Promise<Pet
 export function deletePet(id: string): Promise<void> {
   return request<void>(`/${id}`, { method: 'DELETE' });
 }
+
+export function uploadPetPhoto(payload: {
+  mimeType: string;
+  base64Data: string;
+}): Promise<{ url: string; objectPath: string }> {
+  return request<{ url: string; objectPath: string }>('/photo', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

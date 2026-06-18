@@ -69,11 +69,15 @@ export default function ExpenseDonut({ data, total, currency = '€', size = 160
           pointerEvents: 'none',
         }}
       >
-        <Typography sx={{ fontSize: size * 0.18, fontWeight: 700, lineHeight: 1 }}>
-          {total.toFixed(0)}
+        <Typography sx={{ fontSize: size * 0.13, fontWeight: 800, lineHeight: 1 }}>
+          {currency}
+          {total.toFixed(2)}
         </Typography>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          {currency} {t('expenseCard.totalSuffix')}
+        <Typography
+          variant="caption"
+          sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+        >
+          {t('expenseCard.totalSuffix')}
         </Typography>
       </Stack>
     </Box>

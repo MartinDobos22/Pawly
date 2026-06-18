@@ -192,7 +192,7 @@ export default function AnalyzePage() {
   const recentAnalyses = savedAnalyses.slice(0, 3);
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
       <FeatureIntro featureKey="analyze" icon={<ScienceIcon />} />
       <AnalyzeHero />
 

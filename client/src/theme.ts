@@ -1,5 +1,23 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
 
+// Custom "diet" palette colour (purple) used by the health-passport dashboard.
+// Not part of MUI's default palette — declared here so it is available as both
+// `theme.palette.diet` and a `color="diet"` prop on Chip.
+declare module '@mui/material/styles' {
+  interface Palette {
+    diet: Palette['primary'];
+  }
+  interface PaletteOptions {
+    diet?: PaletteOptions['primary'];
+  }
+}
+
+declare module '@mui/material/Chip' {
+  interface ChipPropsColorOverrides {
+    diet: true;
+  }
+}
+
 const fontStack =
   '"Inter", "Roboto", "Roboto Flex", system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
 
@@ -299,6 +317,12 @@ export const lightTheme = createTheme({
       dark: '#1F5662',
       contrastText: '#FFFFFF',
     },
+    diet: {
+      main: '#7C5CC4',
+      light: '#A88FD8',
+      dark: '#5A4395',
+      contrastText: '#FFFFFF',
+    },
   },
 });
 
@@ -351,6 +375,12 @@ export const darkTheme = createTheme({
       light: '#B5DCE5',
       dark: '#4D8A98',
       contrastText: '#06212A',
+    },
+    diet: {
+      main: '#A88FD8',
+      light: '#C4B2E5',
+      dark: '#7C5CC4',
+      contrastText: '#160C28',
     },
   },
 });

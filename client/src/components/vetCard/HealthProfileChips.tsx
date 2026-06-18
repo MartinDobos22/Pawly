@@ -87,7 +87,16 @@ export default function HealthProfileChips({ dog }: Props) {
 
   if (!hasContent) {
     return (
-      <Card variant="outlined" sx={{ p: 1.5 }}>
+      <Card
+        variant="outlined"
+        sx={{
+          p: 1.5,
+          bgcolor: 'background.default',
+          borderRadius: 0,
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
+        }}
+      >
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           alignItems={{ xs: 'flex-start', sm: 'center' }}
@@ -117,7 +126,16 @@ export default function HealthProfileChips({ dog }: Props) {
   }
 
   return (
-    <Card variant="outlined" sx={{ p: { xs: 1.75, md: 2 } }}>
+    <Card
+      variant="outlined"
+      sx={{
+        p: { xs: 1.75, md: 2 },
+        bgcolor: 'background.default',
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+      }}
+    >
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
         <HealthIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>

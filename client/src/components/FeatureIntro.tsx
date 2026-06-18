@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography, alpha } from '@mui/material';
 import {
   Close as CloseIcon,
   LightbulbOutlined as LightbulbOutlinedIcon,
 } from '@mui/icons-material';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
-type FeatureKey = 'diary' | 'passport' | 'vetCard' | 'analyze';
+type FeatureKey = 'diary' | 'passport' | 'vetCard' | 'analyze' | 'history' | 'profiles';
 
 interface FeatureIntroProps {
   featureKey: FeatureKey;
@@ -31,10 +31,8 @@ export default function FeatureIntro({ featureKey, icon, hideOnPrint = false }: 
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 4,
-        bgcolor: (theme) =>
-          theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
-        border: (theme) =>
-          `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
+        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06),
+        border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
         p: { xs: 2, md: 2.5 },
         ...(hideOnPrint && { '@media print': { display: 'none' } }),
       }}

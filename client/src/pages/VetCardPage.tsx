@@ -1201,7 +1201,14 @@ export default function VetCardPage() {
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
             gap: 1.5,
-            alignItems: 'start',
+            alignItems: 'stretch',
+            // outer side rails for the 2-col row; inner cards are borderless
+            overflow: 'hidden',
+            borderColor: 'divider',
+            borderStyle: 'solid',
+            borderWidth: 0,
+            borderLeftWidth: 1,
+            borderRightWidth: 1,
           }}
         >
           <PreventiveCareCard items={preventiveItems} />
@@ -1210,7 +1217,19 @@ export default function VetCardPage() {
 
         <RecentVisitsCard visits={data.significantVisits} />
 
-        <Card variant="outlined" sx={{ p: { xs: 1.5, md: 2 } }}>
+        <Card
+          variant="outlined"
+          sx={{
+            p: { xs: 1.5, md: 2 },
+            // closes the monolith: keep left/right/bottom borders, round the bottom corners
+            bgcolor: 'background.default',
+            borderTopWidth: 0,
+            borderRadius: 4,
+            borderTopLeftRadius: 0,
+            borderTopRightRadius: 0,
+            overflow: 'hidden',
+          }}
+        >
           <ClinicalHistory timeline={data.timeline} />
         </Card>
 
