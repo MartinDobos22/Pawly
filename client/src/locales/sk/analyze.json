@@ -52,7 +52,7 @@
   },
   "foodSafety": {
     "title": "Môže môj miláčik jesť…?",
-    "placeholder": "napr. čokoláda, kuracie kosti, jablko…",
+    "placeholder": "napr. čokoláda, jablko, paralen, izbová rastlina…",
     "ask": "Spýtať",
     "recentQuestions": "Posledné otázky",
     "watchOut": "Pozor na:",
@@ -63,7 +63,7 @@
       "SAFE": "Bezpečné",
       "CAUTION": "Opatrne",
       "UNSAFE": "Nedávaj",
-      "INVALID": "Nie je potravina"
+      "INVALID": "Neplatný vstup"
     }
   },
   "history": {
