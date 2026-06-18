@@ -46,7 +46,7 @@ import HelpFab from './HelpFab';
 
 const DRAWER_WIDTH = 272;
 
-type NavItem = { label: string; icon: ReactNode; path: string };
+type NavItem = { label: string; shortLabel?: string; icon: ReactNode; path: string };
 type NavSection = { id: string; label: string; items: NavItem[] };
 
 interface LayoutProps {
@@ -74,8 +74,18 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       id: 'health',
       label: t('nav.sectionMain'),
       items: [
-        { label: t('nav.healthPassport'), icon: <HealthAndSafetyIcon />, path: '/zdravotny-pas' },
-        { label: t('nav.vetCard'), icon: <DescriptionIcon />, path: '/karta-pre-veterinara' },
+        {
+          label: t('nav.healthPassport'),
+          shortLabel: t('nav.healthPassportShort'),
+          icon: <HealthAndSafetyIcon />,
+          path: '/zdravotny-pas',
+        },
+        {
+          label: t('nav.vetCard'),
+          shortLabel: t('nav.vetCardShort'),
+          icon: <DescriptionIcon />,
+          path: '/karta-pre-veterinara',
+        },
         { label: t('nav.diary'), icon: <MenuBookIcon />, path: '/dennik' },
       ],
     },
@@ -432,12 +442,21 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
                 '& .Mui-selected': {
                   color: `${theme.palette.primary.main} !important`,
                 },
-                '& .MuiBottomNavigationAction-label': { fontSize: '0.82rem' },
-                '& .MuiBottomNavigationAction-root svg': { fontSize: 28 },
+                '& .MuiBottomNavigationAction-root': { minWidth: 0, px: 0.5 },
+                '& .MuiBottomNavigationAction-label': {
+                  fontSize: '0.68rem',
+                  whiteSpace: 'nowrap',
+                  '&.Mui-selected': { fontSize: '0.68rem' },
+                },
+                '& .MuiBottomNavigationAction-root svg': { fontSize: 24 },
               }}
             >
               {MOBILE_NAV.map((item) => (
-                <BottomNavigationAction key={item.path} label={item.label} icon={item.icon} />
+                <BottomNavigationAction
+                  key={item.path}
+                  label={item.shortLabel ?? item.label}
+                  icon={item.icon}
+                />
               ))}
               <BottomNavigationAction label={t('nav.more')} icon={<MoreHorizIcon />} />
             </BottomNavigation>
