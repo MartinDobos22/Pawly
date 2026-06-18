@@ -32,6 +32,16 @@
       "title": "Na čo slúži Analýza",
       "body": "Odfoť alebo vlož zloženie krmiva a AI ti povie, či sedí tvojmu zvieraťu.",
       "example": "Napr. upozornenie na alergén kura pri psovi s potravinovou alergiou."
+    },
+    "history": {
+      "title": "Na čo slúži História",
+      "body": "Všetky tvoje minulé analýzy krmív na jednom mieste — porovnávaj krmivá a vracaj sa k výsledkom.",
+      "example": "Napr. porovnaj skóre dvoch granúl, medzi ktorými sa rozhoduješ."
+    },
+    "profiles": {
+      "title": "Na čo slúžia Profily zvierat",
+      "body": "Maj tu plemeno, vek, alergie a stavy každého zvieraťa — využíva ich analýza aj pas.",
+      "example": "Napr. pridaj alergiu na kura a analýza ťa automaticky upozorní."
     }
   },
   "onboarding": {

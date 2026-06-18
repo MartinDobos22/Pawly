@@ -32,6 +32,16 @@
       "title": "What the Analysis is for",
       "body": "Snap or paste a food's ingredients and AI tells you whether it suits your pet.",
       "example": "e.g. a chicken allergen warning for a dog with a food allergy."
+    },
+    "history": {
+      "title": "What the History is for",
+      "body": "All your past food analyses in one place, so you can compare foods and revisit results.",
+      "example": "e.g. compare the scores of two kibbles you're choosing between."
+    },
+    "profiles": {
+      "title": "What Pet Profiles are for",
+      "body": "Keep each pet's breed, age, allergies and conditions here — analyses and the passport use them.",
+      "example": "e.g. add a chicken allergy so food analysis warns you automatically."
     }
   },
   "onboarding": {

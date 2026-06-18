@@ -16,6 +16,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   Delete as DeleteIcon,
   HistoryToggleOff as EmptyIcon,
+  History as HistoryIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useHealthData } from '../hooks/useHealthData';
@@ -23,6 +24,8 @@ import ScoreCard from '../components/ScoreCard';
 import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
 import EmptyState from '../components/EmptyState';
+import FeatureIntro from '../components/FeatureIntro';
+import { scoreColor } from '../utils/scoreColor';
 
 export default function HistoryPage() {
   const { t } = useTranslation('analyze');
@@ -54,7 +57,7 @@ export default function HistoryPage() {
 
   if (loading && savedAnalyses.length === 0) {
     return (
-      <Box>
+      <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Skeleton variant="text" width={180} height={40} />
           <Skeleton variant="rounded" width={88} height={28} />
@@ -82,7 +85,8 @@ export default function HistoryPage() {
   }
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+      <FeatureIntro featureKey="history" icon={<HistoryIcon />} />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           {t('history.title')}
@@ -117,15 +121,8 @@ export default function HistoryPage() {
                   fontWeight: 800,
                   fontSize: '0.85rem',
                   flexShrink: 0,
-                  color: '#fff',
-                  backgroundColor:
-                    item.result.score <= 30
-                      ? '#D32F2F'
-                      : item.result.score <= 60
-                        ? '#F57C00'
-                        : item.result.score <= 80
-                          ? '#388E3C'
-                          : '#1B5E20',
+                  color: 'common.white',
+                  backgroundColor: scoreColor(item.result.score, theme),
                 }}
               >
                 {item.result.score}

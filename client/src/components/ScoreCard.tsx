@@ -5,27 +5,22 @@ import {
   CircularProgress,
   Stack,
   Typography,
+  alpha,
   useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import HelpHint from './HelpHint';
+import { scoreColor } from '../utils/scoreColor';
 
 interface ScoreCardProps {
   score: number;
   summary: string;
 }
 
-function getScoreColor(score: number): string {
-  if (score <= 30) return '#D32F2F';
-  if (score <= 60) return '#F57C00';
-  if (score <= 80) return '#388E3C';
-  return '#1B5E20';
-}
-
 export default function ScoreCard({ score, summary }: ScoreCardProps) {
   const theme = useTheme();
   const { t } = useTranslation('analyze');
-  const color = getScoreColor(score);
+  const color = scoreColor(score, theme);
 
   const getScoreLabel = (s: number): string => {
     if (s <= 30) return t('score.poor');
@@ -38,10 +33,10 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
     <Card
       sx={{
         textAlign: 'center',
-        background:
-          theme.palette.mode === 'dark'
-            ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${color}15 100%)`
-            : `linear-gradient(135deg, #FFFFFF 0%, ${color}10 100%)`,
+        background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
+          color,
+          theme.palette.mode === 'dark' ? 0.08 : 0.06
+        )} 100%)`,
       }}
     >
       <CardContent sx={{ py: 4 }}>

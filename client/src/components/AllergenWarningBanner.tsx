@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, alpha, useTheme } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { AllergenWarning, HealthWarning } from '../types';
@@ -13,6 +13,7 @@ export default function AllergenWarningBanner({
   healthWarnings,
 }: AllergenWarningBannerProps) {
   const { t } = useTranslation('analyze');
+  const theme = useTheme();
   const criticalAllergens = allergenWarnings.filter(
     (w) => w.severity === 'critical' || w.severity === 'high'
   );
@@ -24,16 +25,17 @@ export default function AllergenWarningBanner({
       {allAllergens.length > 0 && (
         <Box
           sx={{
-            backgroundColor: '#D32F2F',
-            color: '#fff',
-            border: '2px solid #B71C1C',
+            backgroundColor: 'error.main',
+            color: 'error.contrastText',
+            border: `2px solid ${theme.palette.error.dark}`,
             borderRadius: 4,
             p: 3,
             mb: 3,
             animation: 'pulse-border 2s ease-in-out infinite',
+            '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
             '@keyframes pulse-border': {
-              '0%, 100%': { boxShadow: '0 0 0 0 rgba(211, 47, 47, 0.4)' },
-              '50%': { boxShadow: '0 0 0 8px rgba(211, 47, 47, 0)' },
+              '0%, 100%': { boxShadow: `0 0 0 0 ${alpha(theme.palette.error.main, 0.4)}` },
+              '50%': { boxShadow: `0 0 0 8px ${alpha(theme.palette.error.main, 0)}` },
             },
           }}
         >
@@ -73,9 +75,9 @@ export default function AllergenWarningBanner({
       {healthWarnings.length > 0 && (
         <Box
           sx={{
-            backgroundColor: '#F57C00',
-            color: '#fff',
-            border: '2px solid #E65100',
+            backgroundColor: 'warning.main',
+            color: 'warning.contrastText',
+            border: `2px solid ${theme.palette.warning.dark}`,
             borderRadius: 4,
             p: 3,
             mb: 3,

@@ -1,12 +1,13 @@
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { PersonalizedNote } from '../types';
 
-const VERDICT_COLORS: Record<string, { bg: string; color: string }> = {
-  NEBEZPEČNÉ: { bg: '#D32F2F', color: '#fff' },
-  'S VÝHRADAMI': { bg: '#F57C00', color: '#fff' },
-  VHODNÉ: { bg: '#388E3C', color: '#fff' },
-  VÝBORNÉ: { bg: '#1B5E20', color: '#fff' },
+// Verdict → theme palette key (severity scale, mirrors the score colours).
+const VERDICT_PALETTE: Record<string, 'error' | 'warning' | 'success'> = {
+  NEBEZPEČNÉ: 'error',
+  'S VÝHRADAMI': 'warning',
+  VHODNÉ: 'success',
+  VÝBORNÉ: 'success',
 };
 
 interface PersonalizedVerdictCardProps {
@@ -15,7 +16,15 @@ interface PersonalizedVerdictCardProps {
 
 export default function PersonalizedVerdictCard({ note }: PersonalizedVerdictCardProps) {
   const { t } = useTranslation('analyze');
-  const verdictStyle = VERDICT_COLORS[note.overallVerdict] ?? VERDICT_COLORS['S VÝHRADAMI'];
+  const theme = useTheme();
+  const paletteKey = VERDICT_PALETTE[note.overallVerdict] ?? 'warning';
+  const verdictStyle = {
+    bg:
+      note.overallVerdict === 'VÝBORNÉ'
+        ? theme.palette.success.dark
+        : theme.palette[paletteKey].main,
+    color: theme.palette[paletteKey].contrastText,
+  };
 
   return (
     <Card sx={{ borderRadius: 4, overflow: 'hidden' }}>

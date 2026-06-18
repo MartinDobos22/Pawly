@@ -22,6 +22,7 @@ import {
   Stack,
   TextField,
   Typography,
+  alpha,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -31,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import HelpHint from '../components/HelpHint';
 import PetPhotoField from '../components/PetPhotoField';
+import FeatureIntro from '../components/FeatureIntro';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import type { PetProfile, AnimalType, AnimalSize, AnimalLifeStage, ActivityLevel } from '../types';
@@ -224,17 +226,16 @@ export default function PetProfilePage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+      <FeatureIntro featureKey="profiles" icon={<PetsIcon />} />
       <Box
         sx={{
           mb: 2.5,
           position: 'relative',
           overflow: 'hidden',
           borderRadius: 4,
-          bgcolor: (theme) =>
-            theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.05)' : 'rgba(111, 190, 209, 0.10)',
-          border: (theme) =>
-            `1px solid ${theme.palette.mode === 'light' ? 'rgba(15, 76, 92, 0.12)' : 'rgba(111, 190, 209, 0.18)'}`,
+          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06),
+          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
           p: { xs: 2, md: 2.5 },
         }}
       >
