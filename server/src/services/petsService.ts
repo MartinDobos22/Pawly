@@ -14,6 +14,7 @@ interface PetRow {
   id: string;
   name: string;
   animal_type: PetProfile['animalType'];
+  custom_species: string | null;
   breed: string | null;
   date_of_birth: string | null;
   date_of_birth_precision: PetProfile['dateOfBirthPrecision'] | null;
@@ -42,6 +43,7 @@ function rowToProfile(row: PetRow): PetProfile {
     id: row.id,
     name: row.name,
     animalType: row.animal_type,
+    customSpecies: row.custom_species ?? undefined,
     breed: row.breed ?? undefined,
     dateOfBirth: row.date_of_birth ?? undefined,
     dateOfBirthPrecision: row.date_of_birth_precision ?? undefined,
@@ -73,6 +75,7 @@ function profileToRow(payload: Partial<PetProfile>): Record<string, unknown> {
   };
   set('name', payload.name);
   set('animal_type', payload.animalType);
+  set('custom_species', payload.customSpecies);
   set('breed', payload.breed);
   const normalizedDob =
     typeof payload.dateOfBirth === 'string' && payload.dateOfBirth.trim() === ''

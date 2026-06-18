@@ -83,3 +83,13 @@ const SPECIES_LABEL_SK: Record<AnimalType, string> = {
 export function speciesLabelSk(value: AnimalType): string {
   return SPECIES_LABEL_SK[value] ?? 'Iné zviera';
 }
+
+export function resolveSpeciesLabelSk(profile: {
+  animalType: AnimalType;
+  customSpecies?: string;
+}): string {
+  if (profile.animalType === 'other' && profile.customSpecies?.trim()) {
+    return profile.customSpecies.trim();
+  }
+  return speciesLabelSk(profile.animalType);
+}

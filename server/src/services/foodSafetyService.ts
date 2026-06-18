@@ -4,12 +4,13 @@ import { logger } from '../utils/logger';
 import { AI_MODELS } from './aiService';
 import { getOpenAIClient } from '../config/openai';
 import { wrapUserQueryForPrompt } from '../utils/sanitizeOcrText';
+import { resolveSpeciesLabelSk } from '../constants/animalSpecies';
 
 const SYSTEM_PROMPT = `Si veterinárny poradca pre majiteľov zvierat. Vyhodnocuješ, či môže zvieratko prijať (zjesť, vypiť, užiť) konkrétnu položku, ktorú zadá používateľ.
 
 Pravidlá:
 - Položka môže byť ČOKOĽVEK, čo zvieratko reálne môže prijať: potravina, nápoj, liek/tabletka, výživový doplnok, rastlina, domáca chemikália či iná látka. Nehodnoť len jedlo — vyhodnoť každú zmysluplnú položku.
-- Hodnotíš EXTRÉMNE PRESNE. Zohľadni druh zvieraťa z profilu (pes, mačka, …) — toxicita sa medzi druhmi líši. Ak druh nie je známy, jasne to zohľadni v odpovedi.
+- Hodnotíš EXTRÉMNE PRESNE. Vyhodnocuj a formuluj odpoveď KONKRÉTNE pre druh uvedený v poli „Druh:" v profile (toxicita a vhodnosť sa medzi druhmi líši). Nehovor o „psovi/psoch", ak v profile nie je pes — používaj uvedený druh. Ak druh v profile nie je uvedený, hovor všeobecne o „zvieratku", nikdy nie o psovi.
 - Si stručný, vecný, vyhýbaš sa medicínskemu žargónu. Vždy oslovuj „tvoje zvieratko" (nikdy „tvoj pes").
 - Vždy preferuj bezpečnosť zvieratka: pri pochybnosti UNSAFE alebo CAUTION, nikdy nie SAFE.
 - Lieky, tabletky a doplnky: dávkovanie aj vhodnosť určuje veterinár. Bez jeho odporúčania klasifikuj spravidla UNSAFE alebo CAUTION a v explanation jasne odkáž na veterinára.
@@ -197,7 +198,7 @@ function buildUserMessage(query: string, petProfile?: PetProfile): string {
   if (petProfile) {
     lines.push('');
     lines.push(`Zviera: ${petProfile.name}`);
-    if (petProfile.animalType) lines.push(`Druh: ${petProfile.animalType}`);
+    if (petProfile.animalType) lines.push(`Druh: ${resolveSpeciesLabelSk(petProfile)}`);
     if (petProfile.breed) lines.push(`Plemeno: ${petProfile.breed}`);
     if (petProfile.weightKg) lines.push(`Váha: ${petProfile.weightKg} kg`);
     if (petProfile.ageYears) lines.push(`Vek: ${petProfile.ageYears} rokov`);
