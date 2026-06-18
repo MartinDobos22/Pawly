@@ -18,6 +18,7 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { useActivePet } from '../hooks/useActivePet';
+import type { PetProfile } from '../types';
 
 interface Props {
   variant?: 'sidebar' | 'compact';
@@ -32,7 +33,7 @@ const initialsOf = (name: string) =>
     .join('');
 
 export default function PetSwitcher({ variant = 'sidebar' }: Props) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'healthPassport']);
   const theme = useTheme();
   const navigate = useNavigate();
   const { activePet, selectPet, petProfiles: dogProfiles } = useActivePet();
@@ -55,9 +56,16 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
   const isCompact = variant === 'compact';
   const avatarSize = isCompact ? 36 : 44;
 
+  const speciesLabel = (pet: PetProfile) => {
+    if (pet.animalType === 'other' && pet.customSpecies?.trim()) {
+      return pet.customSpecies.trim();
+    }
+    return t(`profiles.species.${pet.animalType}`, { ns: 'healthPassport' });
+  };
+
   const empty = !activePet;
   const subtitle = activePet
-    ? [activePet.breed, activePet.weightKg ? `${activePet.weightKg} kg` : null]
+    ? [activePet.breed || speciesLabel(activePet), activePet.weightKg ? `${activePet.weightKg} kg` : null]
         .filter(Boolean)
         .join(' · ')
     : t('petSwitcher.noProfile');
@@ -180,7 +188,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
                 sx={{ textTransform: 'none', letterSpacing: 0 }}
                 noWrap
               >
-                {dog.breed || t('petSwitcher.defaultBreed')}
+                {dog.breed || speciesLabel(dog)}
               </Typography>
             </Stack>
           </MenuItem>

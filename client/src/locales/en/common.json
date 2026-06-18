@@ -167,7 +167,6 @@
     "aria": "Switch active pet",
     "addPet": "Add a pet",
     "noProfiles": "No pet profiles",
-    "defaultBreed": "Dog",
     "manage": "Manage profiles"
   },
   "errors": {
