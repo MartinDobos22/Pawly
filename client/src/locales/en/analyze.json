@@ -52,7 +52,7 @@
   },
   "foodSafety": {
     "title": "Can my dog eat…?",
-    "placeholder": "e.g. chocolate, chicken bones, apple…",
+    "placeholder": "e.g. chocolate, apple, ibuprofen, houseplant…",
     "ask": "Ask",
     "recentQuestions": "Recent questions",
     "watchOut": "Watch out for:",
@@ -63,7 +63,7 @@
       "SAFE": "Safe",
       "CAUTION": "Caution",
       "UNSAFE": "Avoid",
-      "INVALID": "Not a food"
+      "INVALID": "Invalid input"
     }
   },
   "history": {
