@@ -39,6 +39,7 @@ import { forgetQuickVisitClinicSuggestion } from '../utils/quickVisitClinicMemor
 const EMPTY_PROFILE: Omit<PetProfile, 'id'> = {
   name: '',
   animalType: 'dog',
+  customSpecies: '',
   breed: '',
   dateOfBirth: '',
   dateOfBirthPrecision: 'full',
@@ -144,6 +145,7 @@ export default function PetProfilePage() {
   const [form, setForm] = useState<Omit<PetProfile, 'id'>>(EMPTY_PROFILE);
   const [dobError, setDobError] = useState('');
   const [nameError, setNameError] = useState('');
+  const [customSpeciesError, setCustomSpeciesError] = useState('');
   const [conditionDraft, setConditionDraft] = useState('');
   const [procedureDraft, setProcedureDraft] = useState('');
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
@@ -161,6 +163,7 @@ export default function PetProfilePage() {
     setProcedureDraft('');
     setDobError('');
     setNameError('');
+    setCustomSpeciesError('');
     setDialogOpen(true);
   };
 
@@ -177,6 +180,7 @@ export default function PetProfilePage() {
     });
     setDobError('');
     setNameError('');
+    setCustomSpeciesError('');
     setDialogOpen(true);
   };
 
@@ -186,6 +190,11 @@ export default function PetProfilePage() {
       return;
     }
     setNameError('');
+    if (form.animalType === 'other' && !form.customSpecies?.trim()) {
+      setCustomSpeciesError(t('profiles.customSpeciesRequired'));
+      return;
+    }
+    setCustomSpeciesError('');
     const hasFullDate = Boolean(form.dateOfBirth);
     const hasYear = typeof form.birthYear === 'number';
     if (!hasFullDate && !hasYear) {
@@ -391,9 +400,27 @@ export default function PetProfilePage() {
             >
               <SpeciesSelect
                 value={form.animalType}
-                onChange={(v) => setForm({ ...form, animalType: v })}
+                onChange={(v) => {
+                  setForm({ ...form, animalType: v });
+                  if (v !== 'other') setCustomSpeciesError('');
+                }}
                 label={t('profiles.animalType')}
               />
+              {form.animalType === 'other' && (
+                <TextField
+                  label={t('profiles.customSpecies')}
+                  value={form.customSpecies ?? ''}
+                  onChange={(e) => {
+                    setForm({ ...form, customSpecies: e.target.value });
+                    if (e.target.value.trim()) setCustomSpeciesError('');
+                  }}
+                  error={Boolean(customSpeciesError)}
+                  helperText={customSpeciesError || t('profiles.customSpeciesHint')}
+                  required
+                  fullWidth
+                  sx={{ gridColumn: { md: '1 / -1' } }}
+                />
+              )}
               <TextField
                 label={t('profiles.breed')}
                 value={form.breed ?? ''}

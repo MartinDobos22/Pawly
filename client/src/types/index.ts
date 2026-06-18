@@ -8,6 +8,7 @@ export interface PetProfile {
   id: string;
   name: string;
   animalType: AnimalType;
+  customSpecies?: string;
   breed?: string;
   dateOfBirth?: string;
   dateOfBirthPrecision?: 'year' | 'year-month' | 'full';

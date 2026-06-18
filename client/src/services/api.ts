@@ -22,6 +22,7 @@ function sanitizePetProfileForAnalyze(petProfile?: PetProfile): PetProfile | und
     id: petProfile.id,
     name: petProfile.name,
     animalType: petProfile.animalType,
+    customSpecies: petProfile.customSpecies,
     breed: petProfile.breed,
     dateOfBirth: petProfile.dateOfBirth,
     sex: petProfile.sex,

@@ -1,7 +1,7 @@
 import type OpenAI from 'openai';
 import { getOpenAIClient } from '../config/openai';
 import { AnalysisResult, FileExtractionResult, Ingredient, PetProfile } from '../types';
-import { speciesLabelSk } from '../constants/animalSpecies';
+import { resolveSpeciesLabelSk } from '../constants/animalSpecies';
 import type { ExamAlias } from './examAlias';
 import { EXAM_ALIAS_TO_TYPE } from './examAlias';
 import { EXAM_ALIAS_PROMPTS } from './examAliasPrompts';
@@ -162,7 +162,7 @@ function buildUserMessage(composition: string, petProfile?: PetProfile): string 
   if (petProfile) {
     msg += `\n\n## PROFIL ZVIERAŤA:\n`;
     msg += `- Meno: ${petProfile.name}\n`;
-    msg += `- Typ: ${speciesLabelSk(petProfile.animalType)}\n`;
+    msg += `- Typ: ${resolveSpeciesLabelSk(petProfile)}\n`;
     if (petProfile.breed) msg += `- Plemeno: ${petProfile.breed}\n`;
     if (petProfile.ageYears !== undefined || petProfile.ageMonths !== undefined) {
       const years = petProfile.ageYears ?? 0;

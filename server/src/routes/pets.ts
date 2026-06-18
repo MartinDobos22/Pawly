@@ -35,6 +35,17 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       res.status(400).json({ error: { message: 'Neznámy typ zvieraťa.', code: 'INVALID_INPUT' } });
       return;
     }
+    if (req.body.animalType === 'other' && !String(req.body.customSpecies ?? '').trim()) {
+      res
+        .status(400)
+        .json({
+          error: {
+            message: 'Pri druhu „Iné zviera" zadaj, aké zviera to je.',
+            code: 'INVALID_INPUT',
+          },
+        });
+      return;
+    }
     res.status(201).json(await createPet(requireUserId(req), req.body));
   } catch (err) {
     next(err);
