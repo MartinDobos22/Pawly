@@ -7,6 +7,7 @@ interface Props {
   description?: string;
   path?: string;
   noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
@@ -29,7 +30,7 @@ function upsertLink(rel: string, href: string) {
   el.setAttribute('href', href);
 }
 
-export default function Seo({ title, description, path, noindex }: Props) {
+export default function Seo({ title, description, path, noindex, jsonLd }: Props) {
   useEffect(() => {
     document.title = title;
     upsertMeta('property', 'og:title', title);
@@ -47,6 +48,21 @@ export default function Seo({ title, description, path, noindex }: Props) {
 
     upsertMeta('name', 'robots', noindex ? 'noindex,nofollow' : 'index,follow');
   }, [title, description, path, noindex]);
+
+  useEffect(() => {
+    if (!jsonLd) return;
+    const schemas = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
+    const scripts = schemas.map((schema) => {
+      const el = document.createElement('script');
+      el.type = 'application/ld+json';
+      el.text = JSON.stringify(schema);
+      document.head.appendChild(el);
+      return el;
+    });
+    return () => {
+      scripts.forEach((el) => el.remove());
+    };
+  }, [jsonLd]);
 
   return null;
 }

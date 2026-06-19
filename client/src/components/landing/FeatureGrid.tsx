@@ -8,6 +8,7 @@ import {
   MenuBook as DiaryIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 
 type FeatureTone = 'primary' | 'success' | 'warning' | 'info' | 'secondary' | 'error';
 const FEATURE_ICONS: Array<{ icon: React.ElementType; tone: FeatureTone }> = [
@@ -118,6 +119,24 @@ export default function FeatureGrid() {
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                   {feature.text}
                 </Typography>
+                {idx === 4 && (
+                  <Typography
+                    component={RouterLink}
+                    to="/moze-pes-jest"
+                    variant="body2"
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      mt: 1.5,
+                      color,
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {t('features.foodSafetyCta')}
+                  </Typography>
+                )}
               </Box>
             );
           })}

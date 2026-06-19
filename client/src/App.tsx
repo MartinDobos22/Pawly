@@ -10,10 +10,16 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import { FOOD_SAFETY_ARTICLES, buildFoodSafetyPath } from './content/foodSafety';
+import { GUIDE_ARTICLES, buildGuidePath } from './content/guides';
 
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const PrivacyPolicyRoute = lazy(() => import('./pages/PrivacyPolicyRoute'));
+const FoodSafetyHubPage = lazy(() => import('./pages/FoodSafetyHubPage'));
+const FoodSafetyArticlePage = lazy(() => import('./pages/FoodSafetyArticlePage'));
+const GuideHubPage = lazy(() => import('./pages/GuideHubPage'));
+const GuideArticlePage = lazy(() => import('./pages/GuideArticlePage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
 export default function App() {
@@ -69,6 +75,34 @@ export default function App() {
                 path="/ochrana-sukromia"
                 element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
               />
+              <Route
+                path="/moze-pes-jest"
+                element={<FoodSafetyHubPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/moze-macka-jest"
+                element={<FoodSafetyHubPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/rady-pre-majitelov"
+                element={<GuideHubPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              {FOOD_SAFETY_ARTICLES.map((article) => (
+                <Route
+                  key={article.slug}
+                  path={buildFoodSafetyPath(article)}
+                  element={
+                    <FoodSafetyArticlePage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                  }
+                />
+              ))}
+              {GUIDE_ARTICLES.map((guide) => (
+                <Route
+                  key={guide.slug}
+                  path={buildGuidePath(guide)}
+                  element={<GuideArticlePage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                />
+              ))}
               <Route
                 path="/*"
                 element={

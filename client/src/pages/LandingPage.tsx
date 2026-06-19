@@ -1,13 +1,4 @@
-import { alpha, AppBar, Box, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
-import {
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-  ArrowForward as ArrowIcon,
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/useAuth';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import { alpha, Box, useTheme } from '@mui/material';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
@@ -20,7 +11,7 @@ import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
-import PawlyLogo from '../components/PawlyLogo';
+import PublicContentHeader from '../components/content/PublicContentHeader';
 import Seo from '../components/Seo';
 
 interface Props {
@@ -30,10 +21,6 @@ interface Props {
 
 export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
-  const navigate = useNavigate();
-  const { user, loading } = useAuth();
-  const { t } = useTranslation('common');
-  const { t: tLanding } = useTranslation('landing');
 
   return (
     <>
@@ -66,71 +53,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         }}
       >
         <PawTrail />
-        <AppBar
-          position="sticky"
-          elevation={0}
-          sx={{
-            bgcolor:
-              theme.palette.mode === 'light' ? 'rgba(250,247,242,0.7)' : 'rgba(26,31,34,0.7)',
-            backdropFilter: 'saturate(180%) blur(14px)',
-            WebkitBackdropFilter: 'saturate(180%) blur(14px)',
-            color: 'text.primary',
-            borderBottom: 'none',
-          }}
-        >
-          <Toolbar
-            sx={{
-              maxWidth: 1200,
-              width: '100%',
-              mx: 'auto',
-              px: { xs: 2.5, md: 4 },
-              gap: 1,
-            }}
-          >
-            <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
-              <PawlyLogo size="md" glow onClick={() => navigate('/')} />
-            </Stack>
-            <LanguageSwitcher variant="compact" />
-            <IconButton
-              onClick={onToggleTheme}
-              color="inherit"
-              aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
-            >
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {!loading &&
-              (user ? (
-                <Button
-                  variant="contained"
-                  size="small"
-                  endIcon={<ArrowIcon />}
-                  onClick={() => navigate('/zdravotny-pas')}
-                  sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
-                >
-                  {tLanding('hero.navEnter')}
-                </Button>
-              ) : (
-                <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} sx={{ flexShrink: 0 }}>
-                  <Button
-                    variant="text"
-                    size="small"
-                    onClick={() => navigate('/login')}
-                    sx={{ whiteSpace: 'nowrap', flexShrink: 0, px: { xs: 1, sm: 1.5 } }}
-                  >
-                    {tLanding('hero.navLogin')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => navigate('/register')}
-                    sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
-                  >
-                    {tLanding('hero.navRegister')}
-                  </Button>
-                </Stack>
-              ))}
-          </Toolbar>
-        </AppBar>
+        <PublicContentHeader darkMode={darkMode} onToggleTheme={onToggleTheme} />
 
         <LandingHero />
         <RevealOnScroll>

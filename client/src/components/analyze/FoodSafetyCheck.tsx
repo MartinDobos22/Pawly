@@ -14,31 +14,29 @@ import {
   useTheme,
 } from '@mui/material';
 import {
-  CheckCircle as SafeIcon,
   Close as CloseIcon,
-  ErrorOutline as UnsafeIcon,
   HelpOutline as QAIcon,
   InfoOutlined as InvalidIcon,
   Search as SearchIcon,
-  WarningAmber as CautionIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../../hooks/useActivePet';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { askFoodSafety } from '../../services/api';
+import {
+  VERDICT_ICON as BASE_VERDICT_ICON,
+  VERDICT_TONE as BASE_VERDICT_TONE,
+  type VerdictIconType,
+} from '../content/VerdictBadge';
 import type { FoodSafetyResult, FoodSafetyVerdict } from '../../types';
 
-const VERDICT_ICON: Record<FoodSafetyVerdict, typeof SafeIcon> = {
-  SAFE: SafeIcon,
-  CAUTION: CautionIcon,
-  UNSAFE: UnsafeIcon,
+const VERDICT_ICON: Record<FoodSafetyVerdict, VerdictIconType> = {
+  ...BASE_VERDICT_ICON,
   INVALID: InvalidIcon,
 };
 
 const VERDICT_TONE: Record<FoodSafetyVerdict, 'success' | 'warning' | 'error' | 'info'> = {
-  SAFE: 'success',
-  CAUTION: 'warning',
-  UNSAFE: 'error',
+  ...BASE_VERDICT_TONE,
   INVALID: 'info',
 };
 

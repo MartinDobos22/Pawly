@@ -53,6 +53,20 @@ export default function LandingFooter() {
             >
               {t('footer.start')}
             </Link>
+            <Link
+              href="/moze-pes-jest"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              {t('footer.foodSafety')}
+            </Link>
+            <Link
+              href="/rady-pre-majitelov"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              {t('footer.guides')}
+            </Link>
             <SocialLinks size="sm" />
           </Stack>
         </Stack>
