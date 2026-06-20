@@ -35,6 +35,7 @@ import {
   MenuBook as MenuBookIcon,
   NotificationsActive as NotificationsActiveIcon,
   FactCheck as FactCheckIcon,
+  Restaurant as RestaurantIcon,
   Settings as SettingsIcon,
   MailOutline as MailOutlineIcon,
   VolunteerActivism as VolunteerActivismIcon,
@@ -102,6 +103,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       label: t('nav.sectionOther'),
       items: [
         { label: t('checkIn.nav'), icon: <FactCheckIcon />, path: '/check-in' },
+        { label: t('nav.food'), icon: <RestaurantIcon />, path: '/krmivo' },
         { label: t('nav.analyze'), icon: <ScienceIcon />, path: '/analyza' },
         { label: t('nav.history'), icon: <HistoryIcon />, path: '/historia' },
       ],

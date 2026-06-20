@@ -18,12 +18,14 @@ import {
   Save as SaveIcon,
   PhotoCamera as PhotoCameraIcon,
   History as HistoryIcon,
+  Restaurant as RestaurantIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import type { Theme } from '@mui/material/styles';
 import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import { useSetCurrentFood } from '../hooks/useSetCurrentFood';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
 import FeatureIntro from '../components/FeatureIntro';
 import HelpHint from '../components/HelpHint';
@@ -91,7 +93,8 @@ export default function AnalyzePage() {
   } = useAnalyze();
   const { t: tCommon } = useTranslation();
   const { activePet } = useActivePet();
-  const { savedAnalyses, addSavedAnalysis, addDietEntry } = useHealthData();
+  const { savedAnalyses, addSavedAnalysis } = useHealthData();
+  const setCurrentFood = useSetCurrentFood();
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
   const [scanInfo, setScanInfo] = useState<string | null>(null);
@@ -156,24 +159,25 @@ export default function AnalyzePage() {
       petProfileId: activePet?.id,
       petProfileName: activePet?.name,
     });
+    setSnackMessage(t('snack.saved'));
+    setSnackOpen(true);
+  };
 
-    if (activePet) {
-      const suitability = deriveSuitability(displayResult);
-      await addDietEntry({
-        petId: activePet.id,
-        foodName: sourceLabel || t('foodFromAnalysis'),
-        startedAt: today(),
-        reactionNotes: displayResult.summary,
-        suitabilityStatus: suitability,
-        suitabilityReasons:
-          suitability === 'SUITABLE'
-            ? [t('suitabilityReasonNoAllergens')]
-            : (displayResult.recommendation?.notRecommendedFor ?? []),
-      });
-      setSnackMessage(t('snack.savedWithPet', { petName: activePet.name }));
-    } else {
-      setSnackMessage(t('snack.saved'));
-    }
+  const handleSetCurrentFood = async () => {
+    if (!displayResult || !activePet) return;
+    const suitability = deriveSuitability(displayResult);
+    await setCurrentFood({
+      petId: activePet.id,
+      foodName: sourceLabel || t('foodFromAnalysis'),
+      startedAt: today(),
+      note: displayResult.summary,
+      suitabilityStatus: suitability,
+      suitabilityReasons:
+        suitability === 'SUITABLE'
+          ? [t('suitabilityReasonNoAllergens')]
+          : (displayResult.recommendation?.notRecommendedFor ?? []),
+    });
+    setSnackMessage(t('snack.savedWithPet', { petName: activePet.name }));
     setSnackOpen(true);
   };
 
@@ -344,14 +348,21 @@ export default function AnalyzePage() {
           <ProsConsCard pros={displayResult.pros} cons={displayResult.cons} />
           <RecommendationChip recommendation={displayResult.recommendation} />
 
-          <Button
-            variant="outlined"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            sx={{ alignSelf: 'center', px: 4 }}
-          >
-            {t('form.saveRating')}
-          </Button>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ alignSelf: 'center' }}>
+            <Button variant="outlined" startIcon={<SaveIcon />} onClick={handleSave} sx={{ px: 4 }}>
+              {t('form.saveRating')}
+            </Button>
+            {activePet && (
+              <Button
+                variant="contained"
+                startIcon={<RestaurantIcon />}
+                onClick={handleSetCurrentFood}
+                sx={{ px: 4 }}
+              >
+                {tCommon('food.setAsCurrent')}
+              </Button>
+            )}
+          </Stack>
         </Box>
       )}
 

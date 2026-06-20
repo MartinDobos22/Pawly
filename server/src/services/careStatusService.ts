@@ -151,7 +151,7 @@ export async function computeCareStatus(appUserId: string): Promise<PetCareStatu
       signals.push({
         level: 'red',
         reason: 'Aktuálne krmivo je označené ako nevhodné.',
-        action: { label: 'Skontroluj krmivo', route: '/zdravotny-pas' },
+        action: { label: 'Skontroluj krmivo', route: '/krmivo' },
       });
     }
 
@@ -162,14 +162,14 @@ export async function computeCareStatus(appUserId: string): Promise<PetCareStatu
       signals.push({
         level: 'orange',
         reason: 'Aktuálne krmivo má upozornenie.',
-        action: { label: 'Skontroluj krmivo', route: '/zdravotny-pas' },
+        action: { label: 'Skontroluj krmivo', route: '/krmivo' },
       });
     }
     if (!hasCurrentDiet.has(petId)) {
       signals.push({
         level: 'orange',
         reason: 'Nemáš nastavené aktuálne krmivo.',
-        action: { label: 'Nastav aktuálne krmivo', route: '/zdravotny-pas' },
+        action: { label: 'Nastav aktuálne krmivo', route: '/krmivo' },
       });
     }
     if (!weightByPet.has(petId)) {
