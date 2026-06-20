@@ -120,6 +120,68 @@
     "emptySubtitle": "Add your pet and Pawly will help you keep its care under control.",
     "emptyAction": "Add pet"
   },
+  "checkIn": {
+    "title": "Weekly check-in",
+    "subtitle": "A quick check on how your pet has been this week.",
+    "selectPet": "Which pet do you want to check in?",
+    "question": "How was {{name}} this week?",
+    "optionOk": "Everything was fine",
+    "optionChanged": "Something changed",
+    "optionUnsure": "I'm not sure",
+    "addOptional": "Want to add weight or a note?",
+    "finishNow": "Finish",
+    "addDetails": "Add details",
+    "back": "Back",
+    "save": "Save check-in",
+    "saving": "Saving…",
+    "weight": "Weight (kg)",
+    "note": "Note",
+    "notePlaceholder": "Anything you noticed…",
+    "groupAppetite": "Appetite",
+    "groupEnergy": "Energy",
+    "groupStool": "Stool",
+    "groupSkinCoat": "Skin & coat",
+    "groupBehavior": "Behavior",
+    "appetite": {
+      "normal": "Normal",
+      "less": "Less",
+      "more": "More",
+      "refuses": "Refuses to eat"
+    },
+    "energy": {
+      "normal": "Normal",
+      "lower": "Lower",
+      "higher": "Higher / restless",
+      "very_low": "Very low"
+    },
+    "stool": {
+      "normal": "Normal",
+      "soft": "Soft",
+      "diarrhea": "Diarrhea",
+      "constipation": "Constipation",
+      "blood_mucus": "Blood / mucus"
+    },
+    "skinCoat": {
+      "normal": "No change",
+      "itching": "Itching",
+      "redness": "Redness",
+      "dandruff": "Dandruff",
+      "hair_loss": "Hair loss"
+    },
+    "behavior": {
+      "normal": "Normal",
+      "apathetic": "Apathetic",
+      "nervous": "Nervous",
+      "aggressive": "More aggressive",
+      "pain": "Signs of pain"
+    },
+    "resultTitle": "Done",
+    "resultNone": "Great, {{name}} is doing fine this week.",
+    "resultMild": "We noted a mild change. If it recurs, Pawly will help you create a health episode.",
+    "resultAttention": "Some symptoms may need attention. If they persist or worsen, contact your vet.",
+    "resultDone": "Back to overview",
+    "nav": "Check-in"
+  },
   "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
   "supportEmail": "support@pawly.sk",
   "actions": {

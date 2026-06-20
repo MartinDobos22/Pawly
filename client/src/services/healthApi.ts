@@ -1,5 +1,6 @@
 import type {
   AttachmentRef,
+  CheckIn,
   DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
@@ -77,6 +78,7 @@ export const dietEntriesApi = crudApi<DietEntry>('diet-entries');
 export const expensesApi = crudApi<ExpenseRecord>('expenses');
 export const episodesApi = crudApi<HealthEpisodeRecord>('episodes');
 export const weightLogsApi = crudApi<WeightLog>('weight-logs');
+export const checkInsApi = crudApi<CheckIn>('check-ins');
 
 export function createVisitBundle(bundle: VisitBundle): Promise<VisitBundle> {
   return request<VisitBundle>('/visit-bundle', { method: 'POST', body: JSON.stringify(bundle) });

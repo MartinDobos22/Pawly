@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { makeCrud, type Crud } from '../services/healthCrud';
 import {
+  checkInMapper,
   dewormingMapper,
   dietEntryMapper,
   doseLogMapper,
@@ -183,6 +184,7 @@ registerCrud('diet-entries', makeCrud(dietEntryMapper));
 registerCrud('expenses', makeCrud(expenseMapper));
 registerCrud('episodes', makeCrud(episodeMapper));
 registerCrud('weight-logs', makeCrud(weightLogMapper));
+registerCrud('check-ins', makeCrud(checkInMapper));
 
 router.delete('/medications/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {

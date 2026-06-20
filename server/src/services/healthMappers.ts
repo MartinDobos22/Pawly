@@ -1,4 +1,5 @@
 import type {
+  CheckIn,
   DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
@@ -241,6 +242,39 @@ export const weightLogMapper: EntityMapper<WeightLog> = {
     petId: String(r.pet_id),
     date: str(r.date) ?? '',
     kg: Number(r.kg ?? 0),
+  }),
+};
+
+export const checkInMapper: EntityMapper<CheckIn> = {
+  table: 'check_ins',
+  toRow: (d) =>
+    build([
+      ['date', d.date],
+      ['overall_status', d.overallStatus],
+      ['appetite', d.appetite],
+      ['energy', d.energy],
+      ['stool', d.stool],
+      ['skin_coat', d.skinCoat],
+      ['behavior', d.behavior],
+      ['weight_kg', d.weightKg],
+      ['note', d.note],
+      ['severity', d.severity],
+      ['attachments', d.attachments],
+    ]),
+  toDto: (r) => ({
+    id: String(r.id),
+    petId: String(r.pet_id),
+    date: str(r.date) ?? '',
+    overallStatus: r.overall_status as CheckIn['overallStatus'],
+    appetite: r.appetite ? (String(r.appetite) as CheckIn['appetite']) : undefined,
+    energy: r.energy ? (String(r.energy) as CheckIn['energy']) : undefined,
+    stool: r.stool ? (String(r.stool) as CheckIn['stool']) : undefined,
+    skinCoat: r.skin_coat ? (String(r.skin_coat) as CheckIn['skinCoat']) : undefined,
+    behavior: r.behavior ? (String(r.behavior) as CheckIn['behavior']) : undefined,
+    weightKg: num(r.weight_kg),
+    note: str(r.note),
+    severity: (r.severity as CheckIn['severity']) ?? 'none',
+    attachments: (r.attachments as CheckIn['attachments']) ?? [],
   }),
 };
 

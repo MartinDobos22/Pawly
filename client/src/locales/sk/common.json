@@ -120,6 +120,68 @@
     "emptySubtitle": "Pridaj svoje zviera a Pawly ti pomôže mať jeho starostlivosť pod kontrolou.",
     "emptyAction": "Pridať zviera"
   },
+  "checkIn": {
+    "title": "Týždenný check-in",
+    "subtitle": "Rýchla kontrola, ako sa tento týždeň malo tvoje zviera.",
+    "selectPet": "Pre ktoré zviera chceš vyplniť check-in?",
+    "question": "Ako sa mal {{name}} tento týždeň?",
+    "optionOk": "Všetko bolo v poriadku",
+    "optionChanged": "Niečo sa zmenilo",
+    "optionUnsure": "Nie som si istý/á",
+    "addOptional": "Chceš doplniť váhu alebo poznámku?",
+    "finishNow": "Dokončiť",
+    "addDetails": "Doplniť detaily",
+    "back": "Späť",
+    "save": "Uložiť check-in",
+    "saving": "Ukladám…",
+    "weight": "Váha (kg)",
+    "note": "Poznámka",
+    "notePlaceholder": "Čokoľvek, čo si všimol/a…",
+    "groupAppetite": "Apetít",
+    "groupEnergy": "Energia",
+    "groupStool": "Stolica",
+    "groupSkinCoat": "Koža a srsť",
+    "groupBehavior": "Správanie",
+    "appetite": {
+      "normal": "Normálny",
+      "less": "Menší",
+      "more": "Väčší",
+      "refuses": "Nechce jesť"
+    },
+    "energy": {
+      "normal": "Normálna",
+      "lower": "Nižšia",
+      "higher": "Vyššia / nepokoj",
+      "very_low": "Výrazne nízka"
+    },
+    "stool": {
+      "normal": "Normálna",
+      "soft": "Mäkká",
+      "diarrhea": "Hnačka",
+      "constipation": "Zápcha",
+      "blood_mucus": "Krv / hlien"
+    },
+    "skinCoat": {
+      "normal": "Bez zmeny",
+      "itching": "Svrbenie",
+      "redness": "Začervenanie",
+      "dandruff": "Lupiny",
+      "hair_loss": "Vypadávanie srsti"
+    },
+    "behavior": {
+      "normal": "Normálne",
+      "apathetic": "Apatické",
+      "nervous": "Nervózne",
+      "aggressive": "Agresívnejšie",
+      "pain": "Bolestivé prejavy"
+    },
+    "resultTitle": "Hotovo",
+    "resultNone": "Super, {{name}} má tento týždeň všetko v poriadku.",
+    "resultMild": "Zaznamenali sme miernu zmenu. Ak sa bude opakovať, Pawly ti pomôže vytvoriť zdravotnú epizódu.",
+    "resultAttention": "Niektoré príznaky môžu vyžadovať pozornosť. Ak pretrvávajú alebo sa zhoršujú, kontaktuj veterinára.",
+    "resultDone": "Späť na prehľad",
+    "nav": "Check-in"
+  },
   "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
   "supportEmail": "support@pawly.sk",
   "actions": {

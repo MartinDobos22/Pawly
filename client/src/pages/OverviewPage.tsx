@@ -11,7 +11,11 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Add as AddIcon, ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  ArrowForward as ArrowForwardIcon,
+  FactCheck as FactCheckIcon,
+} from '@mui/icons-material';
 import Seo from '../components/Seo';
 import PetStatusCard from '../components/overview/PetStatusCard';
 import CareStatusChip from '../components/overview/CareStatusChip';
@@ -92,9 +96,20 @@ export default function OverviewPage() {
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
         {t('overview.title')}
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(3) }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
         {t('overview.subtitle')}
       </Typography>
+
+      {profiles.length > 0 && (
+        <Button
+          variant="outlined"
+          startIcon={<FactCheckIcon />}
+          onClick={() => navigate('/check-in')}
+          sx={{ mb: theme.spacing(3) }}
+        >
+          {t('checkIn.title')}
+        </Button>
+      )}
 
       {error && (
         <Alert severity="error" sx={{ mb: theme.spacing(2) }}>

@@ -159,3 +159,27 @@ export interface PetCareStatus {
   reasons: string[];
   recommendedAction?: CareStatusAction;
 }
+
+export type CheckInOverallStatus = 'ok' | 'changed' | 'unsure';
+export type CheckInAppetite = 'normal' | 'less' | 'more' | 'refuses';
+export type CheckInEnergy = 'normal' | 'lower' | 'higher' | 'very_low';
+export type CheckInStool = 'normal' | 'soft' | 'diarrhea' | 'constipation' | 'blood_mucus';
+export type CheckInSkinCoat = 'normal' | 'itching' | 'redness' | 'dandruff' | 'hair_loss';
+export type CheckInBehavior = 'normal' | 'apathetic' | 'nervous' | 'aggressive' | 'pain';
+export type CheckInSeverity = 'none' | 'mild' | 'attention';
+
+export interface CheckIn {
+  id: string;
+  petId: string;
+  date: string;
+  overallStatus: CheckInOverallStatus;
+  appetite?: CheckInAppetite;
+  energy?: CheckInEnergy;
+  stool?: CheckInStool;
+  skinCoat?: CheckInSkinCoat;
+  behavior?: CheckInBehavior;
+  weightKg?: number;
+  note?: string;
+  severity: CheckInSeverity;
+  attachments?: AttachmentRef[];
+}
