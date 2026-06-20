@@ -232,7 +232,13 @@
     "treatsTitle": "Treats & supplements",
     "treatsEmpty": "No treats or supplements yet.",
     "addTreat": "Add",
-    "remove": "Remove"
+    "remove": "Remove",
+    "insightsTitle": "Potential connections",
+    "insightsEmpty": "Not enough data yet — keep filling in check-ins and Pawly will start spotting patterns.",
+    "insightsDisclaimer": "These are indicative observations, not a diagnosis. If symptoms persist, contact your vet.",
+    "insightAppeared": "After switching to \"{{food}}\", changes appeared in: {{area}}. It may not be the cause, but it's worth watching.",
+    "insightImproved": "After switching to \"{{food}}\", {{area}} improved.",
+    "insightNoReaction": "\"{{food}}\" has had no recorded negative reaction so far."
   },
   "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
   "supportEmail": "support@pawly.sk",

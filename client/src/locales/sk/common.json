@@ -232,7 +232,13 @@
     "treatsTitle": "Pamlsky a doplnky",
     "treatsEmpty": "Zatiaľ žiadne pamlsky ani doplnky.",
     "addTreat": "Pridať",
-    "remove": "Odstrániť"
+    "remove": "Odstrániť",
+    "insightsTitle": "Potenciálne súvislosti",
+    "insightsEmpty": "Zatiaľ nemáme dosť dát na súvislosti — vypĺňaj check-iny a Pawly začne hľadať vzory.",
+    "insightsDisclaimer": "Toto sú orientačné pozorovania, nie diagnóza. Pri pretrvávajúcich príznakoch kontaktuj veterinára.",
+    "insightAppeared": "Po zmene krmiva na „{{food}}\" sa objavili zmeny: {{area}}. Nemusí to byť príčina, ale oplatí sa to sledovať.",
+    "insightImproved": "Po zmene krmiva na „{{food}}\" sa zlepšila oblasť: {{area}}.",
+    "insightNoReaction": "Krmivo „{{food}}\" je zatiaľ bez zaznamenanej negatívnej reakcie."
   },
   "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
   "supportEmail": "support@pawly.sk",

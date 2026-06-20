@@ -17,6 +17,7 @@ import { Add as AddIcon, Science as ScienceIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
 import CurrentFoodCard from '../components/food/CurrentFoodCard';
 import TreatsList from '../components/food/TreatsList';
+import FoodInsightsCard from '../components/food/FoodInsightsCard';
 import FoodHistoryList from '../components/food/FoodHistoryList';
 import SetCurrentFoodDialog from '../components/food/SetCurrentFoodDialog';
 import { useActivePet } from '../hooks/useActivePet';
@@ -29,7 +30,7 @@ export default function FoodPage() {
   const navigate = useNavigate();
 
   const { petProfiles, activePetId } = useActivePet();
-  const { dietEntries } = useHealthData();
+  const { dietEntries, checkIns } = useHealthData();
 
   const [selectedPetId, setSelectedPetId] = useState<string>(
     activePetId || petProfiles[0]?.id || ''
@@ -40,6 +41,10 @@ export default function FoodPage() {
   const petEntries = useMemo(
     () => dietEntries.filter((d) => d.petId === selectedPetId),
     [dietEntries, selectedPetId]
+  );
+  const petCheckIns = useMemo(
+    () => checkIns.filter((c) => c.petId === selectedPetId),
+    [checkIns, selectedPetId]
   );
   const current = useMemo(
     () =>
@@ -115,6 +120,7 @@ export default function FoodPage() {
       <Stack spacing={theme.spacing(2)}>
         <CurrentFoodCard current={current} onSetFood={() => openDialog('main')} />
         <TreatsList entries={petEntries} onAdd={() => openDialog('treats')} />
+        <FoodInsightsCard dietEntries={petEntries} checkIns={petCheckIns} />
         <FoodHistoryList entries={petEntries} />
       </Stack>
 
