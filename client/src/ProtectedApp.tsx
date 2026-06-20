@@ -10,6 +10,7 @@ import { ActivePetProvider } from './contexts/ActivePetContext';
 import { HealthDataProvider } from './contexts/HealthDataContext';
 import Layout from './components/Layout';
 
+const OverviewPage = lazy(() => import('./pages/OverviewPage'));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
 const PetProfilePage = lazy(() => import('./pages/PetProfilePage'));
 const HistoryPage = lazy(() => import('./pages/HistoryPage'));
@@ -53,6 +54,7 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
             <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
               <Suspense fallback={fallback}>
                 <Routes>
+                  <Route path="/prehlad" element={<OverviewPage />} />
                   <Route path="/analyza" element={<AnalyzePage />} />
                   <Route path="/profily" element={<PetProfilePage />} />
                   <Route path="/historia" element={<HistoryPage />} />

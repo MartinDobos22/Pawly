@@ -70,6 +70,8 @@
     }
   },
   "nav": {
+    "overview": "Overview",
+    "overviewShort": "Overview",
     "sectionMain": "Main",
     "sectionOther": "Other",
     "sectionSettings": "Settings",
@@ -99,6 +101,24 @@
     "appearance": "Appearance",
     "account": "Account",
     "support": "Support"
+  },
+  "overview": {
+    "title": "Overview",
+    "subtitle": "Today in Pawly",
+    "nextAction": "Recommended action",
+    "statusGreen": "All up to date",
+    "statusOrange": "Worth a check",
+    "statusRed": "Needs attention",
+    "currentFood": "Current food",
+    "noCurrentFood": "Not set",
+    "nextReminder": "Next reminder",
+    "noReminders": "No reminders",
+    "today": "today",
+    "inDays": "in {{days}} days",
+    "overdue": "overdue ({{days}} days)",
+    "emptyTitle": "No pet added yet",
+    "emptySubtitle": "Add your pet and Pawly will help you keep its care under control.",
+    "emptyAction": "Add pet"
   },
   "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
   "supportEmail": "support@pawly.sk",

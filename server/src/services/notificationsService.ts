@@ -47,6 +47,7 @@ export interface UpcomingItem {
   recordId: string;
   type: NotificationRecordType;
   typeLabel: string;
+  petId: string;
   petName: string;
   label: string;
   dueDate: string;
@@ -228,6 +229,7 @@ export async function computeUpcoming(appUserId: string, petId?: string): Promis
         recordId: String(row.id),
         type: source.type,
         typeLabel: source.typeLabel,
+        petId: String(row.pet_id),
         petName: petNames.get(String(row.pet_id)) ?? 'Zviera',
         label: String(row[source.labelCol] ?? source.typeLabel),
         dueDate,
@@ -332,6 +334,7 @@ export async function runSweep(): Promise<SweepSummary> {
           recordId: String(row.id),
           type: source.type,
           typeLabel: source.typeLabel,
+          petId: String(row.pet_id),
           petName: info.petName,
           label: String(row[source.labelCol] ?? source.typeLabel),
           dueDate,

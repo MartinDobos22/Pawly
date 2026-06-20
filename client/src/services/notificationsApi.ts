@@ -24,6 +24,7 @@ export interface UpcomingItem {
   recordId: string;
   type: NotificationRecordType;
   typeLabel: string;
+  petId: string;
   petName: string;
   label: string;
   dueDate: string;

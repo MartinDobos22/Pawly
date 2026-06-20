@@ -145,3 +145,17 @@ export interface WeightLog {
   date: string;
   kg: number;
 }
+
+export type CareStatusLevel = 'green' | 'orange' | 'red';
+
+export interface CareStatusAction {
+  label: string;
+  route: string;
+}
+
+export interface PetCareStatus {
+  petId: string;
+  status: CareStatusLevel;
+  reasons: string[];
+  recommendedAction?: CareStatusAction;
+}

@@ -70,6 +70,8 @@
     }
   },
   "nav": {
+    "overview": "Prehľad",
+    "overviewShort": "Prehľad",
     "sectionMain": "Hlavné",
     "sectionOther": "Ostatné",
     "sectionSettings": "Nastavenia",
@@ -99,6 +101,24 @@
     "appearance": "Vzhľad",
     "account": "Účet",
     "support": "Podpora"
+  },
+  "overview": {
+    "title": "Prehľad",
+    "subtitle": "Dnes v Pawly",
+    "nextAction": "Odporúčaná akcia",
+    "statusGreen": "Všetko je aktuálne",
+    "statusOrange": "Niečo si skontroluj",
+    "statusRed": "Vyžaduje pozornosť",
+    "currentFood": "Aktuálne krmivo",
+    "noCurrentFood": "Nezadané",
+    "nextReminder": "Najbližšia pripomienka",
+    "noReminders": "Žiadne pripomienky",
+    "today": "dnes",
+    "inDays": "o {{days}} dní",
+    "overdue": "po termíne ({{days}} dní)",
+    "emptyTitle": "Zatiaľ nemáš pridané zviera",
+    "emptySubtitle": "Pridaj svoje zviera a Pawly ti pomôže mať jeho starostlivosť pod kontrolou.",
+    "emptyAction": "Pridať zviera"
   },
   "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
   "supportEmail": "support@pawly.sk",

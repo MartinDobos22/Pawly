@@ -52,7 +52,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     if (!user.emailVerified && !isGoogleUser(user)) {
       navigate('/overenie-emailu', { replace: true });
     } else {
-      navigate('/zdravotny-pas', { replace: true });
+      navigate('/prehlad', { replace: true });
     }
   }, [user, navigate]);
 
@@ -94,7 +94,7 @@ export default function RegisterPage({ darkMode, onToggleTheme }: Props) {
     setSubmitting(true);
     try {
       await loginWithGoogle();
-      navigate('/zdravotny-pas', { replace: true });
+      navigate('/prehlad', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('register.registrationFailed'));
     } finally {

@@ -23,6 +23,7 @@ import {
 import {
   Science as ScienceIcon,
   History as HistoryIcon,
+  Dashboard as DashboardIcon,
   HealthAndSafety as HealthAndSafetyIcon,
   Description as DescriptionIcon,
   Info as InfoIcon,
@@ -74,6 +75,12 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       id: 'health',
       label: t('nav.sectionMain'),
       items: [
+        {
+          label: t('nav.overview'),
+          shortLabel: t('nav.overviewShort'),
+          icon: <DashboardIcon />,
+          path: '/prehlad',
+        },
         {
           label: t('nav.healthPassport'),
           shortLabel: t('nav.healthPassportShort'),
@@ -179,7 +186,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              handleNav('/');
+              handleNav('/prehlad');
             }
           }}
           sx={{

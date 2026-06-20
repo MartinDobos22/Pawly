@@ -12,6 +12,7 @@ import {
   vetVisitMapper,
   weightLogMapper,
 } from '../services/healthMappers';
+import { computeCareStatus } from '../services/careStatusService';
 import { removeMedicationCascade } from '../services/medicationsService';
 import { createVisitBundle } from '../services/visitBundleService';
 import {
@@ -195,6 +196,14 @@ router.delete('/medications/:id', async (req: Request, res: Response, next: Next
 router.post('/visit-bundle', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.status(201).json(await createVisitBundle(requireUserId(req), req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/care-status', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ items: await computeCareStatus(requireUserId(req)) });
   } catch (err) {
     next(err);
   }

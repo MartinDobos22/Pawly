@@ -6,6 +6,7 @@ import type {
   ExpenseRecord,
   MedicationDoseLog,
   MedicationRecord,
+  PetCareStatus,
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
@@ -80,6 +81,10 @@ export const weightLogsApi = crudApi<WeightLog>('weight-logs');
 export function createVisitBundle(bundle: VisitBundle): Promise<VisitBundle> {
   return request<VisitBundle>('/visit-bundle', { method: 'POST', body: JSON.stringify(bundle) });
 }
+
+export const careStatusApi = {
+  get: () => request<{ items: PetCareStatus[] }>('/care-status'),
+};
 
 export const savedAnalysesApi = {
   list: () => request<SavedAnalysis[]>('/saved-analyses'),
