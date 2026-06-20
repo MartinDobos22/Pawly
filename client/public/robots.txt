@@ -11,8 +11,6 @@ Disallow: /karta-pre-veterinara
 Disallow: /dennik
 Disallow: /notifikacie
 Disallow: /nastavenia
-Disallow: /info
-Disallow: /kontakt
 Disallow: /podpora
 Disallow: /dakujeme
 Disallow: /overenie-emailu

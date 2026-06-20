@@ -47,6 +47,34 @@ export default function LandingFooter() {
               Zdravotný pas
             </Link>
             <Link
+              href="/ockovanie-psa"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Očkovanie
+            </Link>
+            <Link
+              href="/odcervenie-psa"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Odčervenie
+            </Link>
+            <Link
+              href="/alergia-na-krmivo-u-psa"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Alergie na krmivo
+            </Link>
+            <Link
+              href="/co-nesmie-pes-jest"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Čo nesmie pes jesť
+            </Link>
+            <Link
               href="/info?tab=about"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -16,8 +16,6 @@ const FoodPage = lazy(() => import('./pages/FoodPage'));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
 const PetProfilePage = lazy(() => import('./pages/PetProfilePage'));
 const HistoryPage = lazy(() => import('./pages/HistoryPage'));
-const InfoPage = lazy(() => import('./pages/InfoPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
 const SupportProjectPage = lazy(() => import('./pages/SupportProjectPage'));
 const HealthPassportPage = lazy(() => import('./pages/HealthPassportPage'));
 const VetCardPage = lazy(() => import('./pages/VetCardPage'));
@@ -69,12 +67,8 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
                   <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
                   <Route path="/dennik" element={<EpisodeDiaryPage />} />
                   <Route path="/notifikacie" element={<NotificationsPage />} />
-                  <Route path="/info" element={<InfoPage />} />
-                  <Route path="/kontakt" element={<ContactPage />} />
                   <Route path="/podpora" element={<SupportProjectPage />} />
                   <Route path="/dakujeme" element={<DonateThanksPage />} />
-                  <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
-                  <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
                   <Route
                     path="/nastavenia"
                     element={<SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}

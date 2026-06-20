@@ -1,6 +1,6 @@
 import { Suspense, useMemo } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { lightTheme, darkTheme } from './theme';
@@ -16,6 +16,12 @@ const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const PrivacyPolicyRoute = lazy(() => import('./pages/PrivacyPolicyRoute'));
 const FoodAnalysisLandingPage = lazy(() => import('./pages/public/FoodAnalysisLandingPage'));
 const HealthPassportLandingPage = lazy(() => import('./pages/public/HealthPassportLandingPage'));
+const VaccinationLandingPage = lazy(() => import('./pages/public/VaccinationLandingPage'));
+const DewormingLandingPage = lazy(() => import('./pages/public/DewormingLandingPage'));
+const FoodAllergyLandingPage = lazy(() => import('./pages/public/FoodAllergyLandingPage'));
+const ForbiddenFoodsLandingPage = lazy(() => import('./pages/public/ForbiddenFoodsLandingPage'));
+const InfoPublicPage = lazy(() => import('./pages/public/InfoPublicPage'));
+const ContactPublicPage = lazy(() => import('./pages/public/ContactPublicPage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
 export default function App() {
@@ -81,6 +87,34 @@ export default function App() {
                   <HealthPassportLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
                 }
               />
+              <Route
+                path="/ockovanie-psa"
+                element={<VaccinationLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/odcervenie-psa"
+                element={<DewormingLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/alergia-na-krmivo-u-psa"
+                element={<FoodAllergyLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/co-nesmie-pes-jest"
+                element={
+                  <ForbiddenFoodsLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                }
+              />
+              <Route
+                path="/info"
+                element={<InfoPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/kontakt"
+                element={<ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
+              <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
               <Route
                 path="/*"
                 element={
