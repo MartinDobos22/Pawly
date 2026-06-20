@@ -51,11 +51,11 @@ export async function computeCareStatus(appUserId: string): Promise<PetCareStatu
   const [dietRes, weightRes, episodeRes, checkInRes, upcoming] = await Promise.all([
     supabase
       .from('diet_entries')
-      .select('pet_id, ended_at, suitability_status')
+      .select('pet_id, ended_at, suitability_status, food_type, started_at, created_at')
       .in('pet_id', petIds),
     supabase.from('weight_logs').select('pet_id').in('pet_id', petIds),
     supabase.from('health_episodes').select('pet_id, outcome').in('pet_id', petIds),
-    supabase.from('check_ins').select('pet_id, date, severity').in('pet_id', petIds),
+    supabase.from('check_ins').select('pet_id, date, severity, created_at').in('pet_id', petIds),
     computeUpcoming(appUserId),
   ]);
   if (dietRes.error) throw dietRes.error;
@@ -79,29 +79,50 @@ export async function computeCareStatus(appUserId: string): Promise<PetCareStatu
       .map((r) => String(r.pet_id))
   );
 
-  // Posledný check-in na zviera (podľa date).
-  const latestCheckIn = new Map<string, { date: string; severity: string }>();
+  // Posledný check-in na zviera (tiebreak cez created_at, aby pri rovnakom dni
+  // vyhral skutočne najnovší záznam).
+  const latestCheckIn = new Map<string, { date: string; createdAt: string; severity: string }>();
   for (const r of checkInRes.data as Row[]) {
     const date = typeof r.date === 'string' ? r.date : '';
     if (!date) continue;
     const petId = String(r.pet_id);
+    const createdAt = String(r.created_at ?? '');
     const prev = latestCheckIn.get(petId);
-    if (!prev || date > prev.date) {
-      latestCheckIn.set(petId, { date, severity: String(r.severity ?? 'none') });
+    const isNewer = !prev || date > prev.date || (date === prev.date && createdAt > prev.createdAt);
+    if (isNewer) {
+      latestCheckIn.set(petId, { date, createdAt, severity: String(r.severity ?? 'none') });
     }
   }
 
-  const hasCurrentDiet = new Set<string>();
-  const currentDietSuitability = new Map<string, string | undefined>();
+  // „Aktuálne krmivo" = otvorený hlavný (main) diétny záznam; pri viacerých vyhrá
+  // najnovší (started_at, created_at). Pamlsky/doplnky sa do care statusu nerátajú.
+  const currentMain = new Map<
+    string,
+    { startedAt: string; createdAt: string; suitability?: string }
+  >();
   for (const r of dietRes.data as Row[]) {
     if (!isCurrent(r.ended_at)) continue;
+    if (String(r.food_type ?? 'main') !== 'main') continue;
     const petId = String(r.pet_id);
-    hasCurrentDiet.add(petId);
-    currentDietSuitability.set(
-      petId,
-      r.suitability_status ? String(r.suitability_status) : undefined
-    );
+    const startedAt = String(r.started_at ?? '');
+    const createdAt = String(r.created_at ?? '');
+    const prev = currentMain.get(petId);
+    const isNewer =
+      !prev ||
+      startedAt > prev.startedAt ||
+      (startedAt === prev.startedAt && createdAt > prev.createdAt);
+    if (isNewer) {
+      currentMain.set(petId, {
+        startedAt,
+        createdAt,
+        suitability: r.suitability_status ? String(r.suitability_status) : undefined,
+      });
+    }
   }
+  const hasCurrentDiet = new Set(currentMain.keys());
+  const currentDietSuitability = new Map(
+    [...currentMain.entries()].map(([petId, v]) => [petId, v.suitability])
+  );
 
   const REMINDER_ACTION: CareStatusAction = {
     label: 'Skontroluj pripomienky',

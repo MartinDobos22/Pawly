@@ -25,7 +25,7 @@ import type { Theme } from '@mui/material/styles';
 import { useAnalyze } from '../hooks/useAnalyze';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
-import { useSetCurrentFood } from '../hooks/useSetCurrentFood';
+import SetCurrentFoodDialog from '../components/food/SetCurrentFoodDialog';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
 import FeatureIntro from '../components/FeatureIntro';
 import HelpHint from '../components/HelpHint';
@@ -37,7 +37,6 @@ import AllergenWarningBanner from '../components/AllergenWarningBanner';
 import PersonalizedVerdictCard from '../components/PersonalizedVerdictCard';
 import AiDisclaimer from '../components/AiDisclaimer';
 import { MAX_FILE_SIZE_BYTES, SUPPORTED_FILE_TYPES } from '../components/healthPassport/constants';
-import { today } from '../components/healthPassport/utils';
 import { formatDateShort } from '../utils/relativeDate';
 import type { AnalysisResult } from '../types';
 import type { DietEntry } from '../types/petHealth';
@@ -94,7 +93,7 @@ export default function AnalyzePage() {
   const { t: tCommon } = useTranslation();
   const { activePet } = useActivePet();
   const { savedAnalyses, addSavedAnalysis } = useHealthData();
-  const setCurrentFood = useSetCurrentFood();
+  const [foodDialogOpen, setFoodDialogOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
   const [scanInfo, setScanInfo] = useState<string | null>(null);
@@ -163,23 +162,11 @@ export default function AnalyzePage() {
     setSnackOpen(true);
   };
 
-  const handleSetCurrentFood = async () => {
-    if (!displayResult || !activePet) return;
-    const suitability = deriveSuitability(displayResult);
-    await setCurrentFood({
-      petId: activePet.id,
-      foodName: sourceLabel || t('foodFromAnalysis'),
-      startedAt: today(),
-      note: displayResult.summary,
-      suitabilityStatus: suitability,
-      suitabilityReasons:
-        suitability === 'SUITABLE'
-          ? [t('suitabilityReasonNoAllergens')]
-          : (displayResult.recommendation?.notRecommendedFor ?? []),
-    });
-    setSnackMessage(t('snack.savedWithPet', { petName: activePet.name }));
-    setSnackOpen(true);
-  };
+  const suitabilityReasons = displayResult
+    ? deriveSuitability(displayResult) === 'SUITABLE'
+      ? [t('suitabilityReasonNoAllergens')]
+      : (displayResult.recommendation?.notRecommendedFor ?? [])
+    : [];
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
@@ -356,7 +343,7 @@ export default function AnalyzePage() {
               <Button
                 variant="contained"
                 startIcon={<RestaurantIcon />}
-                onClick={handleSetCurrentFood}
+                onClick={() => setFoodDialogOpen(true)}
                 sx={{ px: 4 }}
               >
                 {tCommon('food.setAsCurrent')}
@@ -441,6 +428,22 @@ export default function AnalyzePage() {
           </Stack>
         )}
       </Card>
+
+      {activePet && displayResult && (
+        <SetCurrentFoodDialog
+          open={foodDialogOpen}
+          onClose={() => setFoodDialogOpen(false)}
+          petId={activePet.id}
+          defaultName={sourceLabel || t('foodFromAnalysis')}
+          defaultType="main"
+          suitabilityStatus={deriveSuitability(displayResult)}
+          suitabilityReasons={suitabilityReasons}
+          onSaved={() => {
+            setSnackMessage(t('snack.savedWithPet', { petName: activePet.name }));
+            setSnackOpen(true);
+          }}
+        />
+      )}
 
       <Snackbar
         open={snackOpen}

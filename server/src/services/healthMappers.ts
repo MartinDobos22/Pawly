@@ -186,6 +186,7 @@ export const dietEntryMapper: EntityMapper<DietEntry> = {
     build([
       ['food_id', d.foodId],
       ['food_name', d.foodName],
+      ['food_type', d.foodType],
       ['started_at', d.startedAt],
       ['ended_at', d.endedAt],
       ['reaction_notes', d.reactionNotes],
@@ -197,11 +198,13 @@ export const dietEntryMapper: EntityMapper<DietEntry> = {
     petId: String(r.pet_id),
     foodId: str(r.food_id),
     foodName: String(r.food_name),
+    foodType: (r.food_type as DietEntry['foodType']) ?? 'main',
     startedAt: str(r.started_at) ?? '',
     endedAt: str(r.ended_at),
     reactionNotes: str(r.reaction_notes),
     suitabilityStatus: r.suitability_status as DietEntry['suitabilityStatus'],
     suitabilityReasons: (r.suitability_reasons as string[]) ?? undefined,
+    createdAt: str(r.created_at),
   }),
 };
 
@@ -275,6 +278,7 @@ export const checkInMapper: EntityMapper<CheckIn> = {
     note: str(r.note),
     severity: (r.severity as CheckIn['severity']) ?? 'none',
     attachments: (r.attachments as CheckIn['attachments']) ?? [],
+    createdAt: str(r.created_at),
   }),
 };
 

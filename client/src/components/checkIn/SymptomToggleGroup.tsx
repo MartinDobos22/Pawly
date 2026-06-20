@@ -24,10 +24,26 @@ export default function SymptomToggleGroup({ label, value, options, onChange }: 
         exclusive
         onChange={(_e, next: string | null) => onChange(next ?? undefined)}
         size="small"
-        sx={{ flexWrap: 'wrap', gap: theme.spacing(1), '& .MuiToggleButton-root': { borderRadius: 2 } }}
+        sx={{
+          flexWrap: 'wrap',
+          gap: theme.spacing(1),
+          '& .MuiToggleButton-root': {
+            borderRadius: 2,
+            border: `1px solid ${theme.palette.divider}`,
+            textTransform: 'none',
+            px: theme.spacing(1.5),
+          },
+          '& .MuiToggleButton-root.Mui-selected': {
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+            borderColor: 'primary.main',
+            fontWeight: 600,
+            '&:hover': { backgroundColor: 'primary.dark' },
+          },
+        }}
       >
         {options.map((opt) => (
-          <ToggleButton key={opt.value} value={opt.value} sx={{ textTransform: 'none' }}>
+          <ToggleButton key={opt.value} value={opt.value}>
             {opt.label}
           </ToggleButton>
         ))}

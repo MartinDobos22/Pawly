@@ -17,6 +17,15 @@ export default function FoodHistoryList({ entries }: Props) {
     [entries]
   );
 
+  const typeLabel = (ty?: DietEntry['foodType']): string =>
+    ty === 'wet'
+      ? t('food.typeWet')
+      : ty === 'treats'
+        ? t('food.typeTreats')
+        : ty === 'supplement'
+          ? t('food.typeSupplement')
+          : t('food.typeMain');
+
   return (
     <Card sx={{ p: theme.spacing(2.5) }}>
       <Typography variant="h6" sx={{ mb: theme.spacing(1.5) }}>
@@ -41,7 +50,7 @@ export default function FoodHistoryList({ entries }: Props) {
                   {d.foodName}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {d.startedAt} → {d.endedAt ?? t('food.ongoing')}
+                  {typeLabel(d.foodType)} · {d.startedAt} → {d.endedAt ?? t('food.ongoing')}
                 </Typography>
               </Stack>
               <FoodSuitabilityChip status={d.suitabilityStatus} />

@@ -111,11 +111,13 @@ export interface DietEntry {
   petId: string;
   foodId?: string;
   foodName: string;
+  foodType?: 'main' | 'wet' | 'treats' | 'supplement';
   startedAt: string;
   endedAt?: string;
   reactionNotes?: string;
   suitabilityStatus?: 'SUITABLE' | 'RISKY' | 'UNSUITABLE';
   suitabilityReasons?: string[];
+  createdAt?: string;
 }
 
 export interface ExpenseRecord {
@@ -168,4 +170,5 @@ export interface CheckIn {
   note?: string;
   severity: CheckInSeverity;
   attachments?: AttachmentRef[];
+  createdAt?: string;
 }

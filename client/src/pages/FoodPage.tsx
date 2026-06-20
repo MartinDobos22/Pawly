@@ -13,13 +13,15 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Science as ScienceIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
 import CurrentFoodCard from '../components/food/CurrentFoodCard';
+import TreatsList from '../components/food/TreatsList';
 import FoodHistoryList from '../components/food/FoodHistoryList';
 import SetCurrentFoodDialog from '../components/food/SetCurrentFoodDialog';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
+import type { FoodType } from '../types/petHealth';
 
 export default function FoodPage() {
   const { t } = useTranslation();
@@ -33,6 +35,7 @@ export default function FoodPage() {
     activePetId || petProfiles[0]?.id || ''
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState<FoodType>('main');
 
   const petEntries = useMemo(
     () => dietEntries.filter((d) => d.petId === selectedPetId),
@@ -41,10 +44,19 @@ export default function FoodPage() {
   const current = useMemo(
     () =>
       petEntries
-        .filter((d) => !d.endedAt)
-        .sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0],
+        .filter((d) => (d.foodType ?? 'main') === 'main' && !d.endedAt)
+        .sort(
+          (a, b) =>
+            b.startedAt.localeCompare(a.startedAt) ||
+            (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
+        )[0],
     [petEntries]
   );
+
+  const openDialog = (type: FoodType) => {
+    setDialogType(type);
+    setDialogOpen(true);
+  };
 
   if (petProfiles.length === 0) {
     return (
@@ -69,9 +81,18 @@ export default function FoodPage() {
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
         {t('food.title')}
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(3) }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
         {t('food.subtitle')}
       </Typography>
+
+      <Button
+        variant="outlined"
+        startIcon={<ScienceIcon />}
+        onClick={() => navigate('/analyza')}
+        sx={{ mb: theme.spacing(3) }}
+      >
+        {t('food.analyzeCta')}
+      </Button>
 
       {petProfiles.length > 1 && (
         <FormControl fullWidth sx={{ mb: theme.spacing(3) }}>
@@ -92,7 +113,8 @@ export default function FoodPage() {
       )}
 
       <Stack spacing={theme.spacing(2)}>
-        <CurrentFoodCard current={current} onSetFood={() => setDialogOpen(true)} />
+        <CurrentFoodCard current={current} onSetFood={() => openDialog('main')} />
+        <TreatsList entries={petEntries} onAdd={() => openDialog('treats')} />
         <FoodHistoryList entries={petEntries} />
       </Stack>
 
@@ -100,6 +122,7 @@ export default function FoodPage() {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         petId={selectedPetId}
+        defaultType={dialogType}
       />
     </Box>
   );

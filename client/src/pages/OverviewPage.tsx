@@ -8,10 +8,15 @@ import {
   Card,
   CircularProgress,
   Stack,
+  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material';
-import { Add as AddIcon, FactCheck as FactCheckIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  FactCheck as FactCheckIcon,
+  InfoOutlined as InfoOutlinedIcon,
+} from '@mui/icons-material';
 import Seo from '../components/Seo';
 import PetStatusCard from '../components/overview/PetStatusCard';
 import CareStatusChip from '../components/overview/CareStatusChip';
@@ -64,7 +69,11 @@ export default function OverviewPage() {
     const map = new Map<string, CheckIn>();
     for (const c of checkIns) {
       const prev = map.get(c.petId);
-      if (!prev || c.date > prev.date) map.set(c.petId, c);
+      const isNewer =
+        !prev ||
+        c.date > prev.date ||
+        (c.date === prev.date && (c.createdAt ?? '') > (prev.createdAt ?? ''));
+      if (isNewer) map.set(c.petId, c);
     }
     return map;
   }, [checkIns]);
@@ -143,7 +152,12 @@ export default function OverviewPage() {
               justifyContent="space-between"
             >
               <Box>
-                <CareStatusChip level={aggregateLevel} />
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <CareStatusChip level={aggregateLevel} />
+                  <Tooltip title={t('overview.whatChecked')} enterTouchDelay={0} arrow>
+                    <InfoOutlinedIcon fontSize="small" sx={{ opacity: 0.85, cursor: 'help' }} />
+                  </Tooltip>
+                </Stack>
                 <Typography variant="h6" sx={{ mt: theme.spacing(1) }}>
                   {summaryText}
                 </Typography>
