@@ -53,7 +53,7 @@ export default function DonateThanksPage() {
       >
         <Button
           component={RouterLink}
-          to="/zdravotny-pas"
+          to="/prehlad"
           variant="contained"
           startIcon={<PetsOutlinedIcon />}
         >

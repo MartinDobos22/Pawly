@@ -54,7 +54,7 @@ export default function NotFoundPage() {
       >
         <Button
           component={RouterLink}
-          to="/zdravotny-pas"
+          to="/prehlad"
           variant="contained"
           startIcon={<PetsOutlinedIcon />}
         >

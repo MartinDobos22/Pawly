@@ -10,9 +10,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Pets as PetsIcon, Restaurant as FoodIcon, Event as EventIcon } from '@mui/icons-material';
+import {
+  Pets as PetsIcon,
+  Restaurant as FoodIcon,
+  Event as EventIcon,
+  FactCheck as CheckInIcon,
+} from '@mui/icons-material';
 import type { PetProfile } from '../../types';
-import type { DietEntry, PetCareStatus } from '../../types/petHealth';
+import type { CheckIn, DietEntry, PetCareStatus } from '../../types/petHealth';
 import type { UpcomingItem } from '../../services/notificationsApi';
 import CareStatusChip from './CareStatusChip';
 
@@ -21,9 +26,16 @@ interface Props {
   status?: PetCareStatus;
   currentFood?: DietEntry;
   nextReminder?: UpcomingItem;
+  lastCheckIn?: CheckIn;
 }
 
-export default function PetStatusCard({ pet, status, currentFood, nextReminder }: Props) {
+export default function PetStatusCard({
+  pet,
+  status,
+  currentFood,
+  nextReminder,
+  lastCheckIn,
+}: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -85,6 +97,16 @@ export default function PetStatusCard({ pet, status, currentFood, nextReminder }
           {nextReminder
             ? `${nextReminder.typeLabel} — ${formatDays(nextReminder.daysUntil)}`
             : t('overview.noReminders')}
+        </Typography>
+      </Stack>
+
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <CheckInIcon fontSize="small" color="action" />
+        <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
+          {t('overview.lastCheckIn')}:
+        </Typography>
+        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+          {lastCheckIn ? lastCheckIn.date : t('overview.noCheckIn')}
         </Typography>
       </Stack>
 

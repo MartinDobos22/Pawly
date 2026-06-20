@@ -11,11 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  ArrowForward as ArrowForwardIcon,
-  FactCheck as FactCheckIcon,
-} from '@mui/icons-material';
+import { Add as AddIcon, FactCheck as FactCheckIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
 import PetStatusCard from '../components/overview/PetStatusCard';
 import CareStatusChip from '../components/overview/CareStatusChip';
@@ -23,7 +19,7 @@ import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import { useCareStatus } from '../hooks/useCareStatus';
 import { notificationsApi, type UpcomingItem } from '../services/notificationsApi';
-import type { CareStatusLevel } from '../types/petHealth';
+import type { CareStatusLevel, CheckIn } from '../types/petHealth';
 
 const LEVEL_PRIORITY: Record<CareStatusLevel, number> = { red: 0, orange: 1, green: 2 };
 
@@ -33,7 +29,7 @@ export default function OverviewPage() {
   const navigate = useNavigate();
 
   const { profiles, loading: profilesLoading } = usePetProfiles();
-  const { dietEntries } = useHealthData();
+  const { dietEntries, checkIns } = useHealthData();
   const { statuses, loading: statusLoading, error } = useCareStatus();
   const [upcoming, setUpcoming] = useState<UpcomingItem[]>([]);
 
@@ -52,10 +48,7 @@ export default function OverviewPage() {
     };
   }, []);
 
-  const statusByPet = useMemo(
-    () => new Map(statuses.map((s) => [s.petId, s])),
-    [statuses]
-  );
+  const statusByPet = useMemo(() => new Map(statuses.map((s) => [s.petId, s])), [statuses]);
 
   const currentFoodByPet = useMemo(() => {
     const map = new Map<string, (typeof dietEntries)[number]>();
@@ -67,6 +60,15 @@ export default function OverviewPage() {
     return map;
   }, [dietEntries]);
 
+  const lastCheckInByPet = useMemo(() => {
+    const map = new Map<string, CheckIn>();
+    for (const c of checkIns) {
+      const prev = map.get(c.petId);
+      if (!prev || c.date > prev.date) map.set(c.petId, c);
+    }
+    return map;
+  }, [checkIns]);
+
   const nextReminderByPet = useMemo(() => {
     const map = new Map<string, UpcomingItem>();
     for (const item of upcoming) {
@@ -76,16 +78,19 @@ export default function OverviewPage() {
     return map;
   }, [upcoming]);
 
-  const topAction = useMemo(() => {
-    const withAction = statuses
-      .filter((s) => s.recommendedAction)
-      .sort((a, b) => LEVEL_PRIORITY[a.status] - LEVEL_PRIORITY[b.status]);
-    const top = withAction[0];
-    if (!top) return null;
-    const pet = profiles.find((p) => p.id === top.petId);
-    if (!pet) return null;
-    return { pet, status: top };
-  }, [statuses, profiles]);
+  const aggregateLevel = useMemo<CareStatusLevel>(() => {
+    if (statuses.length === 0) return 'green';
+    return statuses
+      .map((s) => s.status)
+      .sort((a, b) => LEVEL_PRIORITY[a] - LEVEL_PRIORITY[b])[0];
+  }, [statuses]);
+
+  const summaryText =
+    aggregateLevel === 'red'
+      ? t('overview.summaryRed')
+      : aggregateLevel === 'orange'
+        ? t('overview.summaryOrange')
+        : t('overview.summaryGreen');
 
   const loading = profilesLoading || statusLoading;
 
@@ -96,20 +101,9 @@ export default function OverviewPage() {
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
         {t('overview.title')}
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(3) }}>
         {t('overview.subtitle')}
       </Typography>
-
-      {profiles.length > 0 && (
-        <Button
-          variant="outlined"
-          startIcon={<FactCheckIcon />}
-          onClick={() => navigate('/check-in')}
-          sx={{ mb: theme.spacing(3) }}
-        >
-          {t('checkIn.title')}
-        </Button>
-      )}
 
       {error && (
         <Alert severity="error" sx={{ mb: theme.spacing(2) }}>
@@ -135,31 +129,36 @@ export default function OverviewPage() {
         </Card>
       ) : (
         <Stack spacing={theme.spacing(2)}>
-          {topAction?.status.recommendedAction && (
-            <Card
-              sx={{
-                p: theme.spacing(2.5),
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-              }}
+          <Card
+            sx={{
+              p: theme.spacing(3),
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={theme.spacing(2)}
+              alignItems={{ xs: 'flex-start', sm: 'center' }}
+              justifyContent="space-between"
             >
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(1) }}>
-                <CareStatusChip level={topAction.status.status} />
-                <Typography variant="overline">{t('overview.nextAction')}</Typography>
-              </Stack>
-              <Typography variant="h6" sx={{ mb: theme.spacing(1.5) }}>
-                {topAction.pet.name}: {topAction.status.reasons[0]}
-              </Typography>
+              <Box>
+                <CareStatusChip level={aggregateLevel} />
+                <Typography variant="h6" sx={{ mt: theme.spacing(1) }}>
+                  {summaryText}
+                </Typography>
+              </Box>
               <Button
                 variant="contained"
                 color="secondary"
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate(topAction.status.recommendedAction!.route)}
+                startIcon={<FactCheckIcon />}
+                onClick={() => navigate('/check-in')}
+                sx={{ flexShrink: 0 }}
               >
-                {topAction.status.recommendedAction.label}
+                {t('checkIn.title')}
               </Button>
-            </Card>
-          )}
+            </Stack>
+          </Card>
 
           {profiles.map((pet) => (
             <PetStatusCard
@@ -168,6 +167,7 @@ export default function OverviewPage() {
               status={statusByPet.get(pet.id)}
               currentFood={currentFoodByPet.get(pet.id)}
               nextReminder={nextReminderByPet.get(pet.id)}
+              lastCheckIn={lastCheckInByPet.get(pet.id)}
             />
           ))}
         </Stack>

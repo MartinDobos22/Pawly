@@ -104,7 +104,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                   variant="contained"
                   size="small"
                   endIcon={<ArrowIcon />}
-                  onClick={() => navigate('/zdravotny-pas')}
+                  onClick={() => navigate('/prehlad')}
                   sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
                   {tLanding('hero.navEnter')}
