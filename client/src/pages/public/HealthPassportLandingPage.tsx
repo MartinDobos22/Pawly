@@ -33,28 +33,37 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Digitálny zdravotný pas pre psa online | Pawly',
+  description:
+    'Maj očkovania, odčervenia, vyšetrenia a alergie psa na jednom mieste. Digitálny zdravotný preukaz psa s pripomienkami a kartou pre veterinára. Zadarmo.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Digitálny zdravotný pas pre psa', path: PATH },
+    ],
+  }),
+};
+
 export default function HealthPassportLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Digitálny zdravotný pas pre psa online | Pawly"
-        description="Maj očkovania, odčervenia, vyšetrenia a alergie psa na jednom mieste. Digitálny zdravotný preukaz psa s pripomienkami a kartou pre veterinára. Zadarmo."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Digitálny zdravotný pas pre psa', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Digitálny zdravotný pas pre psa
       </Typography>
-      <Typography variant="h6" component="p" color="text.secondary" sx={{ mb: theme.spacing(4), fontWeight: 400 }}>
-        Očkovania, odčervenia, vyšetrenia aj alergie tvojho psa prehľadne na jednom mieste — vždy po ruke.
+      <Typography
+        variant="h6"
+        component="p"
+        color="text.secondary"
+        sx={{ mb: theme.spacing(4), fontWeight: 400 }}
+      >
+        Očkovania, odčervenia, vyšetrenia aj alergie tvojho psa prehľadne na jednom mieste — vždy po
+        ruke.
       </Typography>
 
       <LandingSection title="Čo si v ňom vieš viesť">
@@ -68,15 +77,15 @@ export default function HealthPassportLandingPage({ darkMode, onToggleTheme }: P
 
       <LandingSection title="Import zo starého preukazu cez AI">
         <Typography variant="body1" color="text.secondary">
-          Nemusíš nič prepisovať ručne. Odfoť stránku očkovacieho preukazu a Pawly z nej vytiahne údaje, ktoré
-          už len potvrdíš.
+          Nemusíš nič prepisovať ručne. Odfoť stránku očkovacieho preukazu a Pawly z nej vytiahne
+          údaje, ktoré už len potvrdíš.
         </Typography>
       </LandingSection>
 
       <LandingSection title="Pripomienky a karta pre veterinára">
         <Typography variant="body1" color="text.secondary">
-          Pawly ťa upozorní pred termínom očkovania či odčervenia a pred návštevou veterinára pripraví prehľadnú
-          kartu so súhrnom dôležitých údajov.
+          Pawly ťa upozorní pred termínom očkovania či odčervenia a pred návštevou veterinára
+          pripraví prehľadnú kartu so súhrnom dôležitých údajov.
         </Typography>
       </LandingSection>
 

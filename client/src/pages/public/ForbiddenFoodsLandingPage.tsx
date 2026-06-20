@@ -33,22 +33,25 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Čo nesmie pes jesť — zoznam toxických potravín | Pawly',
+  description:
+    'Zoznam potravín nebezpečných pre psa: čokoláda, hrozno, cibuľa, cesnak, xylitol a ďalšie. Čo robiť pri otrave a ako predísť rizikovým zložkám v krmive.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Čo nesmie pes jesť', path: PATH },
+    ],
+  }),
+};
+
 export default function ForbiddenFoodsLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Čo nesmie pes jesť — zoznam toxických potravín | Pawly"
-        description="Zoznam potravín nebezpečných pre psa: čokoláda, hrozno, cibuľa, cesnak, xylitol a ďalšie. Čo robiť pri otrave a ako predísť rizikovým zložkám v krmive."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Čo nesmie pes jesť', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Čo nesmie pes jesť

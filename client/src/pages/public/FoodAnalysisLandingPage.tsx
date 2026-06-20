@@ -33,35 +33,44 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Analýza krmiva pre psa — zloženie a alergény | Pawly',
+  description:
+    'Zisti, či je krmivo pre tvojho psa vhodné. Pawly rozanalyzuje zloženie granúl, upozorní na alergény a porovná ich s profilom tvojho psa. Zadarmo.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Analýza krmiva pre psa', path: PATH },
+    ],
+  }),
+};
+
 export default function FoodAnalysisLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Analýza krmiva pre psa — zloženie a alergény | Pawly"
-        description="Zisti, či je krmivo pre tvojho psa vhodné. Pawly rozanalyzuje zloženie granúl, upozorní na alergény a porovná ich s profilom tvojho psa. Zadarmo."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Analýza krmiva pre psa', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Analýza krmiva pre psa
       </Typography>
-      <Typography variant="h6" component="p" color="text.secondary" sx={{ mb: theme.spacing(4), fontWeight: 400 }}>
-        Skontroluj zloženie granúl, odhaľ alergény a zisti, či krmivo sedí tvojmu psovi — za pár sekúnd.
+      <Typography
+        variant="h6"
+        component="p"
+        color="text.secondary"
+        sx={{ mb: theme.spacing(4), fontWeight: 400 }}
+      >
+        Skontroluj zloženie granúl, odhaľ alergény a zisti, či krmivo sedí tvojmu psovi — za pár
+        sekúnd.
       </Typography>
 
       <LandingSection title="Prečo sa oplatí kontrolovať zloženie krmiva">
         <Typography variant="body1" color="text.secondary">
-          Kvalita krmiva priamo ovplyvňuje trávenie, srsť aj energiu psa. Na obale sa však ťažko orientuje —
-          poradie zložiek, zdroj bielkovín a skryté obilniny či konzervanty veľa napovedia o tom, či je krmivo
-          pre tvojho psa vhodné.
+          Kvalita krmiva priamo ovplyvňuje trávenie, srsť aj energiu psa. Na obale sa však ťažko
+          orientuje — poradie zložiek, zdroj bielkovín a skryté obilniny či konzervanty veľa
+          napovedia o tom, či je krmivo pre tvojho psa vhodné.
         </Typography>
       </LandingSection>
 
@@ -86,9 +95,9 @@ export default function FoodAnalysisLandingPage({ darkMode, onToggleTheme }: Pro
 
       <LandingSection title="Ako Pawly analyzuje krmivo">
         <Typography variant="body1" color="text.secondary">
-          Vlož zloženie textom alebo odfoť obal — Pawly text načíta a vyhodnotí skóre, prednosti, riziká a
-          upozornenia voči profilu psa. Výsledok si môžeš uložiť a nastaviť dané krmivo ako aktuálne, aby Pawly
-          sledoval reakcie psa v čase.
+          Vlož zloženie textom alebo odfoť obal — Pawly text načíta a vyhodnotí skóre, prednosti,
+          riziká a upozornenia voči profilu psa. Výsledok si môžeš uložiť a nastaviť dané krmivo ako
+          aktuálne, aby Pawly sledoval reakcie psa v čase.
         </Typography>
       </LandingSection>
 

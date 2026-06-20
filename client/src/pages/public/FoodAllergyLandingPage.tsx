@@ -33,22 +33,25 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Alergia na krmivo u psa — príznaky a riešenie | Pawly',
+  description:
+    'Príznaky alergie a intolerancie na krmivo u psa, najčastejšie alergény a eliminačná diéta. Pawly upozorní na alergény v krmive a pomôže sledovať reakcie.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Alergia na krmivo u psa', path: PATH },
+    ],
+  }),
+};
+
 export default function FoodAllergyLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Alergia na krmivo u psa — príznaky a riešenie | Pawly"
-        description="Príznaky alergie a intolerancie na krmivo u psa, najčastejšie alergény a eliminačná diéta. Pawly upozorní na alergény v krmive a pomôže sledovať reakcie."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Alergia na krmivo u psa', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Alergia na krmivo u psa

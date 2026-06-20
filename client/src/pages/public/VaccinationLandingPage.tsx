@@ -33,22 +33,25 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Očkovanie psa — kalendár a pripomienky | Pawly',
+  description:
+    'Prehľad očkovaní psa: čo je povinné, ako často preočkovať a ako nezmeškať termín. Pawly ti vakcinácie eviduje a pripomenie blížiace sa preočkovanie.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Očkovanie psa', path: PATH },
+    ],
+  }),
+};
+
 export default function VaccinationLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Očkovanie psa — kalendár a pripomienky | Pawly"
-        description="Prehľad očkovaní psa: čo je povinné, ako často preočkovať a ako nezmeškať termín. Pawly ti vakcinácie eviduje a pripomenie blížiace sa preočkovanie."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Očkovanie psa', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Očkovanie psa

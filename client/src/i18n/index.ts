@@ -20,53 +20,63 @@ import enAuth from '../locales/en/auth.json';
 import enLanding from '../locales/en/landing.json';
 import enInstall from '../locales/en/install.json';
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    fallbackLng: 'sk',
-    supportedLngs: ['sk', 'en'],
-    defaultNS: 'common',
-    ns: [
-      'common',
-      'analyze',
-      'healthPassport',
-      'episodes',
-      'vetCard',
-      'auth',
-      'landing',
-      'install',
-    ],
-    detection: {
-      order: ['localStorage', 'navigator'],
-      lookupLocalStorage: 'granule-check-language',
-      caches: ['localStorage'],
-    },
-    resources: {
-      sk: {
-        common: skCommon,
-        analyze: skAnalyze,
-        healthPassport: skHealthPassport,
-        episodes: skEpisodes,
-        vetCard: skVetCard,
-        auth: skAuth,
-        landing: skLanding,
-        install: skInstall,
-      },
-      en: {
-        common: enCommon,
-        analyze: enAnalyze,
-        healthPassport: enHealthPassport,
-        episodes: enEpisodes,
-        vetCard: enVetCard,
-        auth: enAuth,
-        landing: enLanding,
-        install: enInstall,
-      },
-    },
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+const isBrowser = typeof window !== 'undefined';
+
+export const namespaces = [
+  'common',
+  'analyze',
+  'healthPassport',
+  'episodes',
+  'vetCard',
+  'auth',
+  'landing',
+  'install',
+];
+
+export const resources = {
+  sk: {
+    common: skCommon,
+    analyze: skAnalyze,
+    healthPassport: skHealthPassport,
+    episodes: skEpisodes,
+    vetCard: skVetCard,
+    auth: skAuth,
+    landing: skLanding,
+    install: skInstall,
+  },
+  en: {
+    common: enCommon,
+    analyze: enAnalyze,
+    healthPassport: enHealthPassport,
+    episodes: enEpisodes,
+    vetCard: enVetCard,
+    auth: enAuth,
+    landing: enLanding,
+    install: enInstall,
+  },
+};
+
+// LanguageDetector číta navigator/localStorage — v Node (build-time prerender)
+// by hodil. V SSR fixujeme jazyk na 'sk'; v prehliadači beží detekcia normálne.
+if (isBrowser) {
+  i18n.use(LanguageDetector);
+}
+
+i18n.use(initReactI18next).init({
+  fallbackLng: 'sk',
+  lng: isBrowser ? undefined : 'sk',
+  supportedLngs: ['sk', 'en'],
+  defaultNS: 'common',
+  ns: namespaces,
+  detection: {
+    order: ['localStorage', 'navigator'],
+    lookupLocalStorage: 'granule-check-language',
+    caches: ['localStorage'],
+  },
+  resources,
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;

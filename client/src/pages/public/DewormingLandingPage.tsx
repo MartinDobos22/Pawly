@@ -33,22 +33,25 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+export const seo = {
+  title: 'Odčervenie psa — ako často a prečo | Pawly',
+  description:
+    'Ako často odčervovať psa, aké sú príznaky parazitov a ako nezmeškať termín. Pawly eviduje odčervenia aj ochranu proti kliešťom a pripomenie ďalší termín.',
+  path: PATH,
+  jsonLd: landingJsonLd({
+    faqs: FAQS,
+    breadcrumbs: [
+      { name: 'Pawly', path: '/' },
+      { name: 'Odčervenie psa', path: PATH },
+    ],
+  }),
+};
+
 export default function DewormingLandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   return (
     <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
-      <Seo
-        title="Odčervenie psa — ako často a prečo | Pawly"
-        description="Ako často odčervovať psa, aké sú príznaky parazitov a ako nezmeškať termín. Pawly eviduje odčervenia aj ochranu proti kliešťom a pripomenie ďalší termín."
-        path={PATH}
-        jsonLd={landingJsonLd({
-          faqs: FAQS,
-          breadcrumbs: [
-            { name: 'Pawly', path: '/' },
-            { name: 'Odčervenie psa', path: PATH },
-          ],
-        })}
-      />
+      <Seo {...seo} />
 
       <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
         Odčervenie psa
