@@ -185,7 +185,17 @@
     "resultMild": "We noted a mild change. If it recurs, Pawly will help you create a health episode.",
     "resultAttention": "Some symptoms may need attention. If they persist or worsen, contact your vet.",
     "resultDone": "Back to overview",
-    "nav": "Check-in"
+    "nav": "Check-in",
+    "newCheckIn": "New check-in",
+    "historyTitle": "Recent check-ins",
+    "historyEmpty": "No check-ins yet. Fill the first one and Pawly will start tracking the trend.",
+    "trendTitle": "Last 30 days",
+    "noSymptoms": "No symptoms",
+    "severityNone": "OK",
+    "severityMild": "Mild",
+    "severityAttention": "Attention",
+    "recurringHint": "Recurring: {{symptom}}. Consider recording a health episode.",
+    "createEpisode": "Record episode"
   },
   "aiDisclaimer": "This output is AI-generated and may contain errors. It does not replace professional veterinary advice.",
   "supportEmail": "support@pawly.sk",

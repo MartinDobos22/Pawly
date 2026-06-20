@@ -185,7 +185,17 @@
     "resultMild": "Zaznamenali sme miernu zmenu. Ak sa bude opakovať, Pawly ti pomôže vytvoriť zdravotnú epizódu.",
     "resultAttention": "Niektoré príznaky môžu vyžadovať pozornosť. Ak pretrvávajú alebo sa zhoršujú, kontaktuj veterinára.",
     "resultDone": "Späť na prehľad",
-    "nav": "Check-in"
+    "nav": "Check-in",
+    "newCheckIn": "Nový check-in",
+    "historyTitle": "Posledné check-iny",
+    "historyEmpty": "Zatiaľ žiadne check-iny. Vyplň prvý a Pawly začne sledovať trend.",
+    "trendTitle": "Za posledných 30 dní",
+    "noSymptoms": "Bez príznakov",
+    "severityNone": "OK",
+    "severityMild": "Mierne",
+    "severityAttention": "Pozornosť",
+    "recurringHint": "Opakuje sa: {{symptom}}. Zváž zaznamenať zdravotnú epizódu.",
+    "createEpisode": "Zaznamenať epizódu"
   },
   "aiDisclaimer": "Tento výstup generuje AI a môže obsahovať chyby. Nenahrádza odbornú veterinárnu konzultáciu.",
   "supportEmail": "support@pawly.sk",

@@ -15,7 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, FactCheck as FactCheckIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
 import QuickCheckInStep from '../components/checkIn/QuickCheckInStep';
 import DetailedCheckInForm, {
@@ -23,6 +23,7 @@ import DetailedCheckInForm, {
   type SymptomField,
 } from '../components/checkIn/DetailedCheckInForm';
 import CheckInResult from '../components/checkIn/CheckInResult';
+import CheckInHistory from '../components/checkIn/CheckInHistory';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import { computeSeverity } from '../utils/checkInSeverity';
@@ -37,7 +38,7 @@ import type {
   CheckInStool,
 } from '../types/petHealth';
 
-type Step = 'quick' | 'detail' | 'result';
+type Step = 'hub' | 'quick' | 'detail' | 'result';
 
 const EMPTY_DETAIL: DetailedState = { weight: '', note: '' };
 
@@ -47,10 +48,12 @@ export default function CheckInPage() {
   const navigate = useNavigate();
 
   const { petProfiles, activePetId } = useActivePet();
-  const { addCheckIn, addWeightLog } = useHealthData();
+  const { addCheckIn, addWeightLog, checkIns } = useHealthData();
 
-  const [selectedPetId, setSelectedPetId] = useState<string>(activePetId || petProfiles[0]?.id || '');
-  const [step, setStep] = useState<Step>('quick');
+  const [selectedPetId, setSelectedPetId] = useState<string>(
+    activePetId || petProfiles[0]?.id || ''
+  );
+  const [step, setStep] = useState<Step>('hub');
   const [overallStatus, setOverallStatus] = useState<CheckInOverallStatus>('ok');
   const [detail, setDetail] = useState<DetailedState>(EMPTY_DETAIL);
   const [resultSeverity, setResultSeverity] = useState<CheckInSeverity>('none');
@@ -62,6 +65,18 @@ export default function CheckInPage() {
     [petProfiles, selectedPetId]
   );
   const petName = selectedPet?.name ?? '';
+
+  const petCheckIns = useMemo(
+    () => checkIns.filter((c) => c.petId === selectedPetId),
+    [checkIns, selectedPetId]
+  );
+
+  const resetFlow = () => {
+    setStep('hub');
+    setOverallStatus('ok');
+    setDetail(EMPTY_DETAIL);
+    setError(null);
+  };
 
   const handleQuickSelect = (status: CheckInOverallStatus) => {
     setOverallStatus(status);
@@ -125,6 +140,25 @@ export default function CheckInPage() {
     );
   }
 
+  const petSelector = petProfiles.length > 1 && (
+    <FormControl fullWidth sx={{ mb: theme.spacing(3) }}>
+      <InputLabel id="checkin-pet-label">{t('checkIn.selectPet')}</InputLabel>
+      <Select
+        labelId="checkin-pet-label"
+        label={t('checkIn.selectPet')}
+        value={selectedPetId}
+        onChange={(e) => setSelectedPetId(e.target.value)}
+        disabled={step === 'quick' || step === 'detail'}
+      >
+        {petProfiles.map((p) => (
+          <MenuItem key={p.id} value={p.id}>
+            {p.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+
   return (
     <Box sx={{ maxWidth: 560, mx: 'auto' }}>
       <Seo title={`${t('checkIn.title')} — Pawly`} noindex />
@@ -143,34 +177,26 @@ export default function CheckInPage() {
       )}
 
       {step === 'result' ? (
-        <CheckInResult
-          severity={resultSeverity}
-          petName={petName}
-          onDone={() => navigate('/prehlad')}
-        />
+        <CheckInResult severity={resultSeverity} petName={petName} onDone={resetFlow} />
       ) : (
         <Card sx={{ p: theme.spacing(3) }}>
-          {petProfiles.length > 1 && (
-            <FormControl fullWidth sx={{ mb: theme.spacing(3) }}>
-              <InputLabel id="checkin-pet-label">{t('checkIn.selectPet')}</InputLabel>
-              <Select
-                labelId="checkin-pet-label"
-                label={t('checkIn.selectPet')}
-                value={selectedPetId}
-                onChange={(e) => setSelectedPetId(e.target.value)}
+          {petSelector}
+
+          {step === 'hub' && (
+            <Stack spacing={theme.spacing(3)}>
+              <Button
+                variant="contained"
+                startIcon={<FactCheckIcon />}
+                onClick={() => setStep('quick')}
+                sx={{ alignSelf: 'flex-start' }}
               >
-                {petProfiles.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    {p.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                {t('checkIn.newCheckIn')}
+              </Button>
+              <CheckInHistory checkIns={petCheckIns} />
+            </Stack>
           )}
 
-          {step === 'quick' && (
-            <QuickCheckInStep petName={petName} onSelect={handleQuickSelect} />
-          )}
+          {step === 'quick' && <QuickCheckInStep petName={petName} onSelect={handleQuickSelect} />}
 
           {step === 'detail' && (
             <Stack spacing={theme.spacing(3)}>
