@@ -14,6 +14,8 @@ import RegisterPage from './pages/RegisterPage';
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const PrivacyPolicyRoute = lazy(() => import('./pages/PrivacyPolicyRoute'));
+const FoodAnalysisLandingPage = lazy(() => import('./pages/public/FoodAnalysisLandingPage'));
+const HealthPassportLandingPage = lazy(() => import('./pages/public/HealthPassportLandingPage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
 export default function App() {
@@ -68,6 +70,16 @@ export default function App() {
               <Route
                 path="/ochrana-sukromia"
                 element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/analyza-krmiva-pre-psa"
+                element={<FoodAnalysisLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/digitalny-zdravotny-pas-pre-psa"
+                element={
+                  <HealthPassportLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                }
               />
               <Route
                 path="/*"

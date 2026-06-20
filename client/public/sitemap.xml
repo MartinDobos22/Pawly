@@ -6,6 +6,16 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://pawly.sk/analyza-krmiva-pre-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/digitalny-zdravotny-pas-pre-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://pawly.sk/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>

@@ -31,7 +31,21 @@ export default function LandingFooter() {
               · {new Date().getFullYear()}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" gap={3}>
+          <Stack direction="row" alignItems="center" gap={3} flexWrap="wrap">
+            <Link
+              href="/analyza-krmiva-pre-psa"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Analýza krmiva
+            </Link>
+            <Link
+              href="/digitalny-zdravotny-pas-pre-psa"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Zdravotný pas
+            </Link>
             <Link
               href="/info?tab=about"
               underline="hover"
