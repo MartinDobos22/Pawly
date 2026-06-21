@@ -1,20 +1,16 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Box, Card, CardActionArea, Link, Typography, useTheme } from '@mui/material';
+import { Box, Link, Typography, useTheme } from '@mui/material';
 import Seo from '../../components/Seo';
 import PublicPageLayout from '../../components/public/PublicPageLayout';
+import ArticleCard from '../../components/public/ArticleCard';
 import { collectionJsonLd } from '../../utils/seoSchema';
-import { articles, articlesByCategory } from '../../content/poradna/articles';
+import { CATEGORY_LABELS, articles, articlesByCategory } from '../../content/poradna/articles';
 import type { ArticleCategory } from '../../content/poradna/types';
 
 interface Props {
   darkMode: boolean;
   onToggleTheme: () => void;
 }
-
-const CATEGORY_LABELS: Record<ArticleCategory, string> = {
-  krmivo: 'Krmivo a výživa',
-  zdravie: 'Zdravie a prevencia',
-};
 
 export const seo = {
   title: 'Poradňa o psoch — krmivo, zdravie, prevencia | Pawly',
@@ -60,20 +56,7 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
             </Typography>
             <Box sx={{ display: 'grid', gap: theme.spacing(2) }}>
               {list.map((article) => (
-                <Card key={article.slug}>
-                  <CardActionArea
-                    component={RouterLink}
-                    to={`/poradna/${article.slug}`}
-                    sx={{ p: theme.spacing(2.5) }}
-                  >
-                    <Typography variant="h6" component="h3" sx={{ mb: theme.spacing(0.5) }}>
-                      {article.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {article.description}
-                    </Typography>
-                  </CardActionArea>
-                </Card>
+                <ArticleCard key={article.slug} article={article} />
               ))}
             </Box>
           </Box>

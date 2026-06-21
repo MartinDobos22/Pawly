@@ -1,5 +1,15 @@
 import type { Article, ArticleCategory } from './types';
 
+export const CATEGORY_LABELS: Record<ArticleCategory, string> = {
+  krmivo: 'Krmivo a výživa',
+  zdravie: 'Zdravie a prevencia',
+};
+
+export const CATEGORY_COLORS: Record<ArticleCategory, 'success' | 'info'> = {
+  krmivo: 'success',
+  zdravie: 'info',
+};
+
 export const articles: Article[] = [
   {
     slug: 'ako-citat-zlozenie-psieho-krmiva',
