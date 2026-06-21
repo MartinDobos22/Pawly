@@ -125,7 +125,12 @@
     "overdue": "po termíne ({{days}} dní)",
     "emptyTitle": "Zatiaľ nemáš pridané zviera",
     "emptySubtitle": "Pridaj svoje zviera a Pawly ti pomôže mať jeho starostlivosť pod kontrolou.",
-    "emptyAction": "Pridať zviera"
+    "emptyAction": "Pridať zviera",
+    "welcomeTitle": "Vitaj v Pawly!",
+    "welcomeFood": "Začni pridaním svojho psa — potom môžeš analyzovať jeho krmivo a sledovať, či mu sedí.",
+    "welcomePassport": "Začni pridaním svojho psa — potom mu môžeš viesť digitálny zdravotný pas s pripomienkami.",
+    "welcomeAddPet": "Pridať psa",
+    "welcomeDismiss": "Zavrieť uvítanie"
   },
   "checkIn": {
     "title": "Týždenný check-in",

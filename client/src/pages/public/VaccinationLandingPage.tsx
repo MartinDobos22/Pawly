@@ -96,6 +96,7 @@ export default function VaccinationLandingPage({ darkMode, onToggleTheme }: Prop
         heading="Maj očkovania psa pod kontrolou"
         buttonLabel="Vytvoriť zdravotný pas"
         to="/register"
+        intent="passport"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />

@@ -93,6 +93,7 @@ export default function HealthPassportLandingPage({ darkMode, onToggleTheme }: P
         heading="Vytvor si digitálny zdravotný pas pre svojho psa"
         buttonLabel="Vytvoriť zdravotný pas"
         to="/register"
+        intent="passport"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />

@@ -97,6 +97,7 @@ export default function ForbiddenFoodsLandingPage({ darkMode, onToggleTheme }: P
         heading="Skontroluj, čo má tvoj pes v miske"
         buttonLabel="Analyzovať krmivo"
         to="/register"
+        intent="food"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />

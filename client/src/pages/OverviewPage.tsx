@@ -20,6 +20,13 @@ import {
 import Seo from '../components/Seo';
 import PetStatusCard from '../components/overview/PetStatusCard';
 import CareStatusChip from '../components/overview/CareStatusChip';
+import OnboardingWelcomeCard from '../components/overview/OnboardingWelcomeCard';
+import {
+  getOnboardingIntent,
+  clearOnboardingIntent,
+  intentActionRoute,
+  type OnboardingIntent,
+} from '../utils/onboardingIntent';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
 import { useCareStatus } from '../hooks/useCareStatus';
@@ -37,6 +44,7 @@ export default function OverviewPage() {
   const { dietEntries, checkIns } = useHealthData();
   const { statuses, loading: statusLoading, error } = useCareStatus();
   const [upcoming, setUpcoming] = useState<UpcomingItem[]>([]);
+  const [intent, setIntent] = useState<OnboardingIntent | null>(() => getOnboardingIntent());
 
   useEffect(() => {
     let active = true;
@@ -52,6 +60,16 @@ export default function OverviewPage() {
       active = false;
     };
   }, []);
+
+  // Onboarding intent (z landing CTA): user s aspoň jedným psom → presmeruj na
+  // relevantnú akciu. Nový user (0 psov) dostane uvítaciu kartu nižšie.
+  useEffect(() => {
+    if (!intent || profilesLoading) return;
+    if (profiles.length > 0) {
+      clearOnboardingIntent();
+      navigate(intentActionRoute(intent), { replace: true });
+    }
+  }, [intent, profilesLoading, profiles.length, navigate]);
 
   const statusByPet = useMemo(() => new Map(statuses.map((s) => [s.petId, s])), [statuses]);
 
@@ -125,17 +143,28 @@ export default function OverviewPage() {
           <CircularProgress />
         </Box>
       ) : profiles.length === 0 ? (
-        <Card sx={{ p: theme.spacing(4), textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
-            {t('overview.emptyTitle')}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
-            {t('overview.emptySubtitle')}
-          </Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/profily')}>
-            {t('overview.emptyAction')}
-          </Button>
-        </Card>
+        intent ? (
+          <OnboardingWelcomeCard
+            intent={intent}
+            onAddPet={() => navigate('/profily')}
+            onDismiss={() => {
+              clearOnboardingIntent();
+              setIntent(null);
+            }}
+          />
+        ) : (
+          <Card sx={{ p: theme.spacing(4), textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
+              {t('overview.emptyTitle')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
+              {t('overview.emptySubtitle')}
+            </Typography>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/profily')}>
+              {t('overview.emptyAction')}
+            </Button>
+          </Card>
+        )
       ) : (
         <Stack spacing={theme.spacing(2)}>
           <Card

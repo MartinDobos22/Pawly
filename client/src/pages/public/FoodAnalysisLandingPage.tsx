@@ -105,6 +105,7 @@ export default function FoodAnalysisLandingPage({ darkMode, onToggleTheme }: Pro
         heading="Zisti za pár sekúnd, či je krmivo pre tvojho psa vhodné"
         buttonLabel="Analyzovať krmivo"
         to="/register"
+        intent="food"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />

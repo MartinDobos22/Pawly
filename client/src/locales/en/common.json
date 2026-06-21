@@ -125,7 +125,12 @@
     "overdue": "overdue ({{days}} days)",
     "emptyTitle": "No pet added yet",
     "emptySubtitle": "Add your pet and Pawly will help you keep its care under control.",
-    "emptyAction": "Add pet"
+    "emptyAction": "Add pet",
+    "welcomeTitle": "Welcome to Pawly!",
+    "welcomeFood": "Start by adding your dog — then you can analyze its food and track whether it suits them.",
+    "welcomePassport": "Start by adding your dog — then you can keep a digital health passport with reminders.",
+    "welcomeAddPet": "Add dog",
+    "welcomeDismiss": "Dismiss welcome"
   },
   "checkIn": {
     "title": "Weekly check-in",

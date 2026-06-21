@@ -95,6 +95,7 @@ export default function DewormingLandingPage({ darkMode, onToggleTheme }: Props)
         heading="Nezmeškaj ďalšie odčervenie psa"
         buttonLabel="Vytvoriť zdravotný pas"
         to="/register"
+        intent="passport"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />

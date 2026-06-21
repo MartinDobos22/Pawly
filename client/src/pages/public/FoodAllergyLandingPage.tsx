@@ -97,6 +97,7 @@ export default function FoodAllergyLandingPage({ darkMode, onToggleTheme }: Prop
         heading="Zisti, či krmivo neobsahuje alergény tvojho psa"
         buttonLabel="Analyzovať krmivo"
         to="/register"
+        intent="food"
       />
 
       <LandingFaq title="Časté otázky" faqs={FAQS} />
