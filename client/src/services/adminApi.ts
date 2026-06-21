@@ -61,3 +61,17 @@ export async function updateAdminArticle(slug: string, article: AdminArticle): P
 export async function deleteAdminArticle(slug: string): Promise<void> {
   await request<void>(`/articles/${encodeURIComponent(slug)}`, { method: 'DELETE' });
 }
+
+export async function uploadArticleImage(payload: {
+  mimeType: string;
+  base64Data: string;
+}): Promise<{ url: string; objectPath: string }> {
+  return request<{ url: string; objectPath: string }>('/articles/upload-image', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function publishArticles(): Promise<void> {
+  await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
+}

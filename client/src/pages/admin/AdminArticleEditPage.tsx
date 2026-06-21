@@ -13,6 +13,8 @@ import {
   MenuItem,
   Stack,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Typography,
   useTheme,
@@ -22,13 +24,19 @@ import {
   ArrowBack as BackIcon,
   DeleteOutline as DeleteIcon,
   Save as SaveIcon,
+  UploadFile as UploadIcon,
 } from '@mui/icons-material';
 import ArticleSectionsEditor from '../../components/admin/ArticleSectionsEditor';
+import ArticleBody from '../../components/public/ArticleBody';
+import Callout from '../../components/public/Callout';
 import {
   createAdminArticle,
   getAdminArticle,
   updateAdminArticle,
+  uploadArticleImage,
 } from '../../services/adminApi';
+import { downscaleImage } from '../../utils/imageDownscale';
+import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
 import type { AdminArticle } from '../../content/poradna/types';
 
 function emptyArticle(): AdminArticle {
@@ -61,6 +69,8 @@ export default function AdminArticleEditPage() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState(0);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (isNew) return;
@@ -76,6 +86,25 @@ export default function AdminArticleEditPage() {
 
   const faqs = form.faqs ?? [];
   const sources = form.sources ?? [];
+
+  const handleCoverUpload = async (file: File) => {
+    setError(null);
+    setUploading(true);
+    try {
+      const { dataUrl, mimeType } = await downscaleImage(file, {
+        maxWidth: 1200,
+        mimeType: 'image/jpeg',
+        quality: 0.85,
+      });
+      const base64Data = dataUrl.split(',')[1] ?? '';
+      const { url } = await uploadArticleImage({ mimeType, base64Data });
+      set('coverImage', url);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -138,6 +167,51 @@ export default function AdminArticleEditPage() {
         </Alert>
       )}
 
+      <Tabs value={tab} onChange={(_, v) => setTab(v as number)} sx={{ mb: theme.spacing(2) }}>
+        <Tab label="Editor" />
+        <Tab label="Náhľad" />
+      </Tabs>
+
+      {tab === 1 && (
+        <Box sx={{ maxWidth: 720, mx: 'auto' }}>
+          <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
+            {form.title || '(bez titulku)'}
+          </Typography>
+          {form.intro && (
+            <Typography
+              variant="h6"
+              component="p"
+              sx={{ fontWeight: 400, color: 'text.secondary', mb: theme.spacing(3) }}
+            >
+              {form.intro}
+            </Typography>
+          )}
+          <Divider sx={{ mb: theme.spacing(3) }} />
+          <ArticleBody sections={form.sections} />
+          {faqs.length > 0 && (
+            <Box component="section" sx={{ mt: theme.spacing(4) }}>
+              <Typography variant="h5" component="h2" sx={{ mb: theme.spacing(2) }}>
+                Časté otázky
+              </Typography>
+              {faqs.map((f, i) => (
+                <Box key={i} sx={{ mb: theme.spacing(2) }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    {f.q}
+                  </Typography>
+                  <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.8 }}>
+                    {f.a}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
+          <Box sx={{ mt: theme.spacing(3) }}>
+            <Callout variant="info" title="Upozornenie" text={ARTICLE_DISCLAIMER} />
+          </Box>
+        </Box>
+      )}
+
+      {tab === 0 && (
       <Stack spacing={theme.spacing(2)}>
         <Card variant="outlined">
           <CardContent>
@@ -203,14 +277,49 @@ export default function AdminArticleEditPage() {
                 fullWidth
                 size="small"
               />
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
-                <TextField
-                  label="URL titulného obrázka"
-                  value={form.coverImage ?? ''}
-                  onChange={(e) => set('coverImage', e.target.value)}
-                  size="small"
-                  fullWidth
-                />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)} alignItems="flex-start">
+                <Stack spacing={1} sx={{ flexGrow: 1, width: '100%' }}>
+                  <TextField
+                    label="URL titulného obrázka"
+                    value={form.coverImage ?? ''}
+                    onChange={(e) => set('coverImage', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    size="small"
+                    startIcon={<UploadIcon />}
+                    disabled={uploading}
+                    sx={{ alignSelf: 'flex-start' }}
+                  >
+                    {uploading ? 'Nahrávam…' : 'Nahrať obrázok'}
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) void handleCoverUpload(file);
+                        e.target.value = '';
+                      }}
+                    />
+                  </Button>
+                  {form.coverImage && (
+                    <Box
+                      component="img"
+                      src={form.coverImage}
+                      alt=""
+                      sx={{
+                        width: '100%',
+                        maxWidth: theme.spacing(40),
+                        borderRadius: theme.shape.borderRadius,
+                        objectFit: 'cover',
+                      }}
+                    />
+                  )}
+                </Stack>
                 <TextField
                   label="Autor"
                   value={form.author ?? ''}
@@ -380,6 +489,7 @@ export default function AdminArticleEditPage() {
           {saving ? 'Ukladám…' : 'Uložiť článok'}
         </Button>
       </Stack>
+      )}
     </Box>
   );
 }

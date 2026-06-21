@@ -16,16 +16,18 @@ import BlogLayout from '../../components/public/BlogLayout';
 import LandingFaq from '../../components/public/LandingFaq';
 import LandingCta from '../../components/public/LandingCta';
 import ArticleCard from '../../components/public/ArticleCard';
+import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
-import RichText from '../../components/public/RichText';
 import { articleJsonLd } from '../../utils/seoSchema';
 import { articleReadingMinutes } from '../../utils/readingTime';
 import { slugifyHeading } from '../../utils/slugifyHeading';
-import { CATEGORY_COLORS, CATEGORY_LABELS, getArticle } from '../../content/poradna/articles';
+import {
+  ARTICLE_DISCLAIMER,
+  CATEGORY_COLORS,
+  CATEGORY_LABELS,
+  getArticle,
+} from '../../content/poradna/articles';
 import type { Article, Block } from '../../content/poradna/types';
-
-const DISCLAIMER =
-  'Tento článok má informačný charakter a nenahrádza odbornú veterinárnu starostlivosť. Pri zdravotných ťažkostiach alebo otázkach o výžive psa sa vždy poraď s veterinárom.';
 
 interface Props {
   darkMode: boolean;
@@ -223,82 +225,9 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
         )}
 
         <Box component="article" sx={{ maxWidth: 720, mx: 'auto' }}>
-          {article.sections.map((section, i) => (
-            <Box
-              component="section"
-              key={section.heading}
-              sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}
-            >
-              <Typography
-                variant="h5"
-                component="h2"
-                id={slugifyHeading(section.heading)}
-                sx={{ mb: theme.spacing(2), scrollMarginTop: theme.spacing(10) }}
-              >
-                {section.heading}
-              </Typography>
-              {section.blocks.map((block, j) => {
-                switch (block.type) {
-                  case 'paragraph':
-                    return (
-                      <Typography
-                        key={j}
-                        variant="body1"
-                        color="text.primary"
-                        sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
-                      >
-                        <RichText text={block.text} />
-                      </Typography>
-                    );
-                  case 'bullets':
-                    return (
-                      <Typography
-                        key={j}
-                        component="ul"
-                        variant="body1"
-                        color="text.primary"
-                        sx={{ mb: theme.spacing(2), lineHeight: 1.8, pl: theme.spacing(3) }}
-                      >
-                        {block.items.map((item, k) => (
-                          <li key={k}>
-                            <RichText text={item} />
-                          </li>
-                        ))}
-                      </Typography>
-                    );
-                  case 'subheading':
-                    return (
-                      <Typography
-                        key={j}
-                        variant="h6"
-                        component="h3"
-                        id={slugifyHeading(block.text)}
-                        sx={{
-                          mt: theme.spacing(3),
-                          mb: theme.spacing(1.5),
-                          scrollMarginTop: theme.spacing(10),
-                        }}
-                      >
-                        {block.text}
-                      </Typography>
-                    );
-                  case 'callout':
-                    return (
-                      <Callout
-                        key={j}
-                        variant={block.variant}
-                        title={block.title}
-                        text={block.text}
-                      />
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </Box>
-          ))}
+          <ArticleBody sections={article.sections} />
 
-          <Callout variant="info" title="Upozornenie" text={DISCLAIMER} />
+          <Callout variant="info" title="Upozornenie" text={ARTICLE_DISCLAIMER} />
 
           {article.sources && article.sources.length > 0 && (
             <Box component="section" sx={{ mt: theme.spacing(4) }}>

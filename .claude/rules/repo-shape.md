@@ -63,7 +63,7 @@ AnimalPassport/
 | `extractText.ts` | `POST /api/extract-text` | `aiHeavyLimiter` | OCR fallback ladder (Vision → OpenAI → pdf-parser) |
 | `interpretPassport.ts` | `POST /api/interpret-passport` | `aiHeavyLimiter` | AI parsing zdravotného pasu (vakcinácie, …) |
 | `articles.ts` | `GET /api/articles`, `GET /api/articles/:slug` | `globalLimiter`, **bez auth** | Verejné články poradne (read-only z DB). Mountnuté PRED `firebaseAuth`. |
-| `admin.ts` | `GET /api/admin/status`, `GET/POST/PUT/DELETE /api/admin/articles[/:slug]` | `firebaseAuth` + `ensureUser` (+ `requireAdmin` na `/articles`) | Admin správa článkov (write). Gate cez env `ADMIN_EMAILS`. `status` vráti `{ isAdmin }`. |
+| `admin.ts` | `GET /api/admin/status`, `GET/POST/PUT/DELETE /api/admin/articles[/:slug]`, `POST /api/admin/articles/upload-image`, `POST /api/admin/articles/publish` | `firebaseAuth` + `ensureUser` (+ `requireAdmin` na `/articles`) | Admin správa článkov (write, upload cover obrázka, publish = Netlify build hook). Gate cez env `ADMIN_EMAILS`. `status` vráti `{ isAdmin }`. |
 | `index.ts` | `GET /api/health` | (žiadny) | Health check |
 
 > **Pozor:** `/api/episodes/similar-summary` je AI volanie, ale dnes spadá pod celý `episodesRouter` bez `aiHeavyLimiter`. Pri pridávaní AI endpointu pod existujúci router zváž split.

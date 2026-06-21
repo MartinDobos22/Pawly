@@ -8,6 +8,8 @@ import {
   listAllArticles,
   updateArticle,
 } from '../services/articleService';
+import { uploadArticleImage } from '../services/articleImageService';
+import { logger } from '../utils/logger';
 
 // /api/admin/* — vyžaduje Firebase auth (globálny firebaseAuth) + ensureUser
 // (mount v index.ts). `status` je dostupný každému prihlásenému (vráti isAdmin);
@@ -41,6 +43,40 @@ articles.get('/:slug', async (req: Request, res: Response, next: NextFunction) =
 articles.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.status(201).json({ article: await createArticle(req.body) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.post('/upload-image', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await uploadArticleImage(req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Spustí Netlify build hook → rebuild verejného webu (prerender z DB).
+articles.post('/publish', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const hookUrl = process.env.NETLIFY_BUILD_HOOK_URL;
+    if (!hookUrl) {
+      throw httpError(503, 'Publikovanie nie je nakonfigurované.', 'PUBLISH_NOT_CONFIGURED');
+    }
+    let ok = false;
+    let status = 0;
+    try {
+      const hookRes = await fetch(hookUrl, { method: 'POST', signal: AbortSignal.timeout(15000) });
+      ok = hookRes.ok;
+      status = hookRes.status;
+    } catch {
+      throw httpError(502, 'Spustenie buildu zlyhalo.', 'PUBLISH_FAILED');
+    }
+    if (!ok) {
+      logger.error('Netlify build hook vrátil chybu', { status });
+      throw httpError(502, 'Spustenie buildu zlyhalo.', 'PUBLISH_FAILED');
+    }
+    res.json({ triggered: true });
   } catch (err) {
     next(err);
   }

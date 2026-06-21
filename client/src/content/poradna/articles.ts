@@ -11,6 +11,10 @@ export const CATEGORY_COLORS: Record<ArticleCategory, 'success' | 'info'> = {
   zdravie: 'info',
 };
 
+// YMYL disclaimer zobrazený na konci každého článku (web aj admin náhľad).
+export const ARTICLE_DISCLAIMER =
+  'Tento článok má informačný charakter a nenahrádza odbornú veterinárnu starostlivosť. Pri zdravotných ťažkostiach alebo otázkach o výžive psa sa vždy poraď s veterinárom.';
+
 // Zdroj pravdy pre obsah je Supabase tabuľka `articles`. `articles.data.json` je
 // committed mirror (seed + build fallback): build ho pred prerenderom obnoví z DB
 // cez `scripts/syncArticles.mjs`; ak DB nie je dostupná, použije sa posledný

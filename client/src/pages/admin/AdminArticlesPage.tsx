@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Snackbar,
   Stack,
   Tooltip,
   Typography,
@@ -19,9 +20,14 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   DeleteOutline as DeleteIcon,
+  CloudUpload as PublishIcon,
 } from '@mui/icons-material';
 import ConfirmDialog from '../../components/ConfirmDialog';
-import { deleteAdminArticle, listAdminArticles } from '../../services/adminApi';
+import {
+  deleteAdminArticle,
+  listAdminArticles,
+  publishArticles,
+} from '../../services/adminApi';
 import type { AdminArticle } from '../../content/poradna/types';
 
 export default function AdminArticlesPage() {
@@ -31,6 +37,9 @@ export default function AdminArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<AdminArticle | null>(null);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -57,12 +66,33 @@ export default function AdminArticlesPage() {
     }
   };
 
+  const confirmPublish = async () => {
+    setPublishing(true);
+    try {
+      await publishArticles();
+      setPublishOpen(false);
+      setNotice('Build spustený — zmeny budú na webe o pár minút.');
+    } catch (e) {
+      setPublishOpen(false);
+      setError((e as Error).message);
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: theme.spacing(100), mx: 'auto', p: theme.spacing(2) }}>
-      <Stack direction="row" alignItems="center" sx={{ mb: theme.spacing(2) }}>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(2) }}>
         <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           Správa článkov
         </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<PublishIcon />}
+          onClick={() => setPublishOpen(true)}
+        >
+          Publikovať na web
+        </Button>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -144,6 +174,23 @@ export default function AdminArticlesPage() {
         confirmLabel="Zmazať"
         onConfirm={confirmDelete}
         onCancel={() => setToDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={publishOpen}
+        title="Publikovať na web?"
+        message="Spustí sa nový build webu. Aktuálny stav článkov z databázy sa premietne na verejné stránky o pár minút."
+        confirmLabel="Publikovať"
+        loading={publishing}
+        onConfirm={confirmPublish}
+        onCancel={() => setPublishOpen(false)}
+      />
+
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={6000}
+        onClose={() => setNotice(null)}
+        message={notice ?? ''}
       />
     </Box>
   );
