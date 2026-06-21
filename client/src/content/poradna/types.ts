@@ -6,6 +6,7 @@ export type ArticleCategory = 'krmivo' | 'zdravie';
 export interface ArticleSection {
   heading: string;
   paragraphs: string[];
+  bullets?: string[];
 }
 
 export interface Article {

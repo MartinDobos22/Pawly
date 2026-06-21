@@ -10,10 +10,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import {
-  ArrowBack as ArrowBackIcon,
-  Schedule as ScheduleIcon,
-} from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
 import Seo from '../../components/Seo';
 import BlogLayout from '../../components/public/BlogLayout';
 import LandingFaq from '../../components/public/LandingFaq';
@@ -73,8 +70,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
     .map((s) => getArticle(s))
     .filter((a): a is Article => Boolean(a));
 
-  const ctaLabel =
-    article.ctaIntent === 'food' ? 'Analyzovať krmivo' : 'Vytvoriť zdravotný pas';
+  const ctaLabel = article.ctaIntent === 'food' ? 'Analyzovať krmivo' : 'Vytvoriť zdravotný pas';
 
   const color = CATEGORY_COLORS[article.category];
   const readingMinutes = articleReadingMinutes(article);
@@ -103,7 +99,13 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
             <Link component={RouterLink} to="/" underline="hover" color="inherit" variant="body2">
               Pawly
             </Link>
-            <Link component={RouterLink} to="/poradna" underline="hover" color="inherit" variant="body2">
+            <Link
+              component={RouterLink}
+              to="/poradna"
+              underline="hover"
+              color="inherit"
+              variant="body2"
+            >
               Poradňa
             </Link>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
@@ -132,6 +134,19 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
       </Box>
 
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+        <Box sx={{ mb: theme.spacing(3) }}>
+          <Link
+            component={RouterLink}
+            to="/poradna"
+            underline="hover"
+            variant="body2"
+            sx={{ display: 'inline-flex', alignItems: 'center', gap: theme.spacing(0.5) }}
+          >
+            <ArrowBackIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
+            Späť na Poradňu
+          </Link>
+        </Box>
+
         <Typography
           variant="h6"
           component="p"
@@ -161,7 +176,11 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
             <Stack component="ol" spacing={0.75} sx={{ listStyle: 'none', m: 0, p: 0 }}>
               {article.sections.map((section) => (
                 <li key={section.heading}>
-                  <Link href={`#${slugifyHeading(section.heading)}`} underline="hover" variant="body2">
+                  <Link
+                    href={`#${slugifyHeading(section.heading)}`}
+                    underline="hover"
+                    variant="body2"
+                  >
                     {section.heading}
                   </Link>
                 </li>
@@ -172,7 +191,11 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
 
         <Box component="article" sx={{ maxWidth: 720, mx: 'auto' }}>
           {article.sections.map((section, i) => (
-            <Box component="section" key={section.heading} sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}>
+            <Box
+              component="section"
+              key={section.heading}
+              sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}
+            >
               <Typography
                 variant="h5"
                 component="h2"
@@ -191,6 +214,18 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
                   {p}
                 </Typography>
               ))}
+              {section.bullets && section.bullets.length > 0 && (
+                <Typography
+                  component="ul"
+                  variant="body1"
+                  color="text.primary"
+                  sx={{ mb: theme.spacing(2), lineHeight: 1.8, pl: theme.spacing(3) }}
+                >
+                  {section.bullets.map((b, k) => (
+                    <li key={k}>{b}</li>
+                  ))}
+                </Typography>
+              )}
             </Box>
           ))}
         </Box>

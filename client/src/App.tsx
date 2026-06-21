@@ -14,12 +14,6 @@ import RegisterPage from './pages/RegisterPage';
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const PrivacyPolicyRoute = lazy(() => import('./pages/PrivacyPolicyRoute'));
-const FoodAnalysisLandingPage = lazy(() => import('./pages/public/FoodAnalysisLandingPage'));
-const HealthPassportLandingPage = lazy(() => import('./pages/public/HealthPassportLandingPage'));
-const VaccinationLandingPage = lazy(() => import('./pages/public/VaccinationLandingPage'));
-const DewormingLandingPage = lazy(() => import('./pages/public/DewormingLandingPage'));
-const FoodAllergyLandingPage = lazy(() => import('./pages/public/FoodAllergyLandingPage'));
-const ForbiddenFoodsLandingPage = lazy(() => import('./pages/public/ForbiddenFoodsLandingPage'));
 const InfoPublicPage = lazy(() => import('./pages/public/InfoPublicPage'));
 const ContactPublicPage = lazy(() => import('./pages/public/ContactPublicPage'));
 const PoradnaIndexPage = lazy(() => import('./pages/public/PoradnaIndexPage'));
@@ -81,31 +75,27 @@ export default function App() {
               />
               <Route
                 path="/analyza-krmiva-pre-psa"
-                element={<FoodAnalysisLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={<Navigate to="/poradna/analyza-krmiva-pre-psa" replace />}
               />
               <Route
                 path="/digitalny-zdravotny-pas-pre-psa"
-                element={
-                  <HealthPassportLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
-                }
+                element={<Navigate to="/poradna/digitalny-zdravotny-pas-pre-psa" replace />}
               />
               <Route
                 path="/ockovanie-psa"
-                element={<VaccinationLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={<Navigate to="/poradna/ockovanie-psa" replace />}
               />
               <Route
                 path="/odcervenie-psa"
-                element={<DewormingLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={<Navigate to="/poradna/odcervenie-psa" replace />}
               />
               <Route
                 path="/alergia-na-krmivo-u-psa"
-                element={<FoodAllergyLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={<Navigate to="/poradna/alergia-na-krmivo-u-psa" replace />}
               />
               <Route
                 path="/co-nesmie-pes-jest"
-                element={
-                  <ForbiddenFoodsLandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
-                }
+                element={<Navigate to="/poradna/co-nesmie-pes-jest" replace />}
               />
               <Route
                 path="/info"

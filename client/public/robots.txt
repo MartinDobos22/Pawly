@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
-# Verejné SEO stránky (explicitne povolené — prefix /analyza by ich inak blokoval)
-Allow: /analyza-krmiva-pre-psa
-Allow: /digitalny-zdravotny-pas-pre-psa
 Disallow: /analyza$
 Disallow: /profily
 Disallow: /historia

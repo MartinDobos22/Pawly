@@ -6,39 +6,39 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://pawly.sk/analyza-krmiva-pre-psa</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pawly.sk/digitalny-zdravotny-pas-pre-psa</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pawly.sk/ockovanie-psa</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pawly.sk/odcervenie-psa</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pawly.sk/alergia-na-krmivo-u-psa</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pawly.sk/co-nesmie-pes-jest</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://pawly.sk/poradna</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/analyza-krmiva-pre-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/digitalny-zdravotny-pas-pre-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/ockovanie-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/odcervenie-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/alergia-na-krmivo-u-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/co-nesmie-pes-jest</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pawly.sk/poradna/ako-citat-zlozenie-psieho-krmiva</loc>
