@@ -75,6 +75,13 @@ export default function LandingFooter() {
               Čo nesmie pes jesť
             </Link>
             <Link
+              href="/poradna"
+              underline="hover"
+              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
+            >
+              Poradňa
+            </Link>
+            <Link
               href="/info?tab=about"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}

@@ -28,6 +28,13 @@ interface Props {
   onToggleTheme: () => void;
 }
 
+export const seo = {
+  title: 'Pawly — Zdravotný pas pre tvojho miláčika',
+  description:
+    'Pawly – digitálny zdravotný pas pre tvojho miláčika. AI analýza krmiva, vakcinačný preukaz, denník epizód a karta pre veterinára. Zadarmo.',
+  path: '/',
+};
+
 export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -37,11 +44,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
 
   return (
     <>
-      <Seo
-        title="Pawly — Zdravotný pas pre tvojho miláčika"
-        description="Pawly – digitálny zdravotný pas pre tvojho miláčika. AI analýza krmiva, vakcinačný preukaz, denník epizód a karta pre veterinára. Zadarmo."
-        path="/"
-      />
+      <Seo {...seo} />
       <Box
         sx={{
           position: 'relative',

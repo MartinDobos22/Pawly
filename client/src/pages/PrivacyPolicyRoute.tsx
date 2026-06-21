@@ -16,6 +16,13 @@ interface Props {
   onToggleTheme: () => void;
 }
 
+export const seo = {
+  title: 'Ochrana súkromia — Pawly',
+  description:
+    'Ako Pawly nakladá s tvojimi údajmi a údajmi tvojho zvieraťa. Zásady ochrany osobných údajov.',
+  path: '/ochrana-sukromia',
+};
+
 export default function PrivacyPolicyRoute({ darkMode, onToggleTheme }: Props) {
   const { user, loading } = useAuth();
   const { t } = useTranslation('auth');
@@ -23,18 +30,12 @@ export default function PrivacyPolicyRoute({ darkMode, onToggleTheme }: Props) {
 
   if (loading) return null;
 
-  const seo = (
-    <Seo
-      title="Ochrana súkromia — Pawly"
-      description="Ako Pawly nakladá s tvojimi údajmi a údajmi tvojho zvieraťa. Zásady ochrany osobných údajov."
-      path="/ochrana-sukromia"
-    />
-  );
+  const seoEl = <Seo {...seo} />;
 
   if (user) {
     return (
       <>
-        {seo}
+        {seoEl}
         <PetProfilesProvider>
           <ActivePetProvider>
             <HealthDataProvider>
@@ -50,7 +51,7 @@ export default function PrivacyPolicyRoute({ darkMode, onToggleTheme }: Props) {
 
   return (
     <>
-      {seo}
+      {seoEl}
       <Box sx={{ minHeight: '100dvh', bgcolor: 'background.default' }}>
         <Toolbar sx={{ px: { xs: 2, md: 3 }, gap: 1.5 }}>
           <IconButton

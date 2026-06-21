@@ -36,6 +36,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://pawly.sk/poradna</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/ako-citat-zlozenie-psieho-krmiva</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/ockovaci-kalendar-psa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pawly.sk/poradna/prve-priznaky-alergie-na-krmivo</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://pawly.sk/info</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>

@@ -22,6 +22,8 @@ const FoodAllergyLandingPage = lazy(() => import('./pages/public/FoodAllergyLand
 const ForbiddenFoodsLandingPage = lazy(() => import('./pages/public/ForbiddenFoodsLandingPage'));
 const InfoPublicPage = lazy(() => import('./pages/public/InfoPublicPage'));
 const ContactPublicPage = lazy(() => import('./pages/public/ContactPublicPage'));
+const PoradnaIndexPage = lazy(() => import('./pages/public/PoradnaIndexPage'));
+const PoradnaArticlePage = lazy(() => import('./pages/public/PoradnaArticlePage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
 export default function App() {
@@ -112,6 +114,14 @@ export default function App() {
               <Route
                 path="/kontakt"
                 element={<ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/poradna"
+                element={<PoradnaIndexPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+              />
+              <Route
+                path="/poradna/:slug"
+                element={<PoradnaArticlePage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
               />
               <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
               <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />

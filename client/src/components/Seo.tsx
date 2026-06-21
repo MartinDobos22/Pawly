@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 export const SITE_URL = 'https://pawly.sk';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/pawly-banner.png`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/branding/pawly-banner.png`;
 
 interface Props {
   title: string;
