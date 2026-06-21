@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/prerender.mjs",
+    "build": "node scripts/syncArticles.mjs && tsc -b && vite build && node scripts/prerender.mjs",
+    "articles:sync": "node scripts/syncArticles.mjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "tsc --noEmit",

@@ -56,6 +56,17 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 
 > **Konvencia:** premenná sa volá `VITE_API_URL`, nie `VITE_API_BASE_URL`. Ak ju premenuješ v kóde, updatni aj túto tabuľku, README a `.env.example`.
 
+### Build-time premenné (klient) — sync článkov z DB
+
+Tieto sa čítajú LEN počas buildu v `client/scripts/syncArticles.mjs` (prebuild krok). **Nemajú prefix `VITE_`** a **nebundlujú sa do klienta** — bežia v Node počas buildu (na Netlify build env, server-side). Slúžia na obnovenie mirroru `client/src/content/poradna/articles.data.json` zo Supabase pred prerenderom.
+
+| Premenná | Povinná | Default | Popis |
+|---|---|---|---|
+| `SUPABASE_URL` | nie (odporúčané v prod build) | — | URL Supabase projektu (rovnaká ako server). Ak chýba, sync sa preskočí a použije sa committed mirror (fallback). |
+| `SUPABASE_SERVICE_ROLE_KEY` | nie (odporúčané v prod build) | — | service_role kľúč (alias `SUPABASE_SERVICE_KEY`). Číta sa len pri builde; **nikdy sa nedostane do klientského bundla**. Bez neho sync skončí fallbackom. |
+
+> **Dôležité:** build je odolný — ak premenné chýbajú, DB je nedostupná alebo vráti 0 článkov, build **nespadne**, len použije posledný committed `articles.data.json`. Po editácii obsahu v DB treba **re-trigger buildu** (Netlify build hook), aby sa zmena premietla do prerendrovaného HTML (SEO). Zdroj pravdy je DB; mirror je cache + fallback.
+
 ## Pravidlá
 
 - **NIKDY** necommituj `.env` (musí byť v `.gitignore`).
