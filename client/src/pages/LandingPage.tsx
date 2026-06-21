@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
@@ -92,6 +93,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           >
             <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
               <PawlyLogo size="md" glow onClick={() => navigate('/')} />
+              <PublicHeaderNav />
             </Stack>
             <LanguageSwitcher variant="compact" />
             <IconButton

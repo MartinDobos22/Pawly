@@ -131,7 +131,11 @@
     "floatingValidUntil": "Valid until 23 Jun 2026",
     "navEnter": "Open app",
     "navLogin": "Sign in",
-    "navRegister": "Sign up"
+    "navRegister": "Sign up",
+    "navGuide": "Guide",
+    "navAdvice": "Advice",
+    "navAllArticles": "All articles",
+    "navMenu": "Menu"
   },
   "howItWorks": {
     "title": "3 steps and your health passport is on your phone",

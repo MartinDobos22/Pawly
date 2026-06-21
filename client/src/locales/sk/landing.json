@@ -131,7 +131,11 @@
     "floatingValidUntil": "Platné do 23. 6. 2026",
     "navEnter": "Vstúpiť",
     "navLogin": "Prihlásiť sa",
-    "navRegister": "Registrácia"
+    "navRegister": "Registrácia",
+    "navGuide": "Sprievodca",
+    "navAdvice": "Poradňa",
+    "navAllArticles": "Všetky články",
+    "navMenu": "Menu"
   },
   "howItWorks": {
     "title": "3 kroky a máš zdravotný pas v mobile",

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import LanguageSwitcher from '../LanguageSwitcher';
 import PawlyLogo from '../PawlyLogo';
+import PublicHeaderNav from './PublicHeaderNav';
 import LandingFooter from '../landing/LandingFooter';
 
 interface Props {
@@ -45,8 +46,9 @@ export default function PublicPageLayout({ children, darkMode, onToggleTheme }: 
         }}
       >
         <Toolbar sx={{ maxWidth: 1100, width: '100%', mx: 'auto', px: { xs: 2, md: 4 }, gap: 1 }}>
-          <Stack direction="row" alignItems="center" sx={{ flex: 1 }}>
+          <Stack direction="row" alignItems="center" gap={1} sx={{ flex: 1 }}>
             <PawlyLogo size="sm" onClick={() => navigate('/')} />
+            <PublicHeaderNav />
           </Stack>
           <LanguageSwitcher variant="compact" />
           <IconButton
