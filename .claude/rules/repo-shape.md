@@ -62,6 +62,7 @@ AnimalPassport/
 | `episodes.ts` | `GET/POST /api/episodes/*` | `globalLimiter` (120/min) | Epizódy + `POST /similar-summary` (AI) |
 | `extractText.ts` | `POST /api/extract-text` | `aiHeavyLimiter` | OCR fallback ladder (Vision → OpenAI → pdf-parser) |
 | `interpretPassport.ts` | `POST /api/interpret-passport` | `aiHeavyLimiter` | AI parsing zdravotného pasu (vakcinácie, …) |
+| `articles.ts` | `GET /api/articles`, `GET /api/articles/:slug` | `globalLimiter`, **bez auth** | Verejné články poradne (read-only z DB). Mountnuté PRED `firebaseAuth`. |
 | `index.ts` | `GET /api/health` | (žiadny) | Health check |
 
 > **Pozor:** `/api/episodes/similar-summary` je AI volanie, ale dnes spadá pod celý `episodesRouter` bez `aiHeavyLimiter`. Pri pridávaní AI endpointu pod existujúci router zváž split.

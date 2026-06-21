@@ -14,6 +14,7 @@ import accountRouter from './routes/account';
 import notificationsRouter from './routes/notifications';
 import cronRouter from './routes/cron';
 import authEmailsRouter from './routes/authEmails';
+import articlesRouter from './routes/articles';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -197,6 +198,10 @@ app.use('/api/cron', cronRouter);
 // vyžaduje token+gate-skip, password reset je úplne unauth). Definované v
 // samotnom routeri kvôli prehľadu a flexibilite per endpoint.
 app.use('/api/auth', authEmailsRouter);
+
+// /api/articles — verejný read-only obsah poradne. Žiadny token (mountuje sa
+// PRED firebaseAuth). Pokrytý globalLimiterom.
+app.use('/api/articles', articlesRouter);
 
 // Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token + email verified gate
 app.use('/api/', firebaseAuth());
