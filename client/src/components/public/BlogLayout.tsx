@@ -9,7 +9,7 @@ interface Props {
   onToggleTheme: () => void;
 }
 
-export default function PublicPageLayout({ children, darkMode, onToggleTheme }: Props) {
+export default function BlogLayout({ children, darkMode, onToggleTheme }: Props) {
   return (
     <Box
       sx={{
@@ -21,17 +21,7 @@ export default function PublicPageLayout({ children, darkMode, onToggleTheme }: 
     >
       <PublicHeader darkMode={darkMode} onToggleTheme={onToggleTheme} />
 
-      <Box
-        component="main"
-        sx={{
-          flex: 1,
-          maxWidth: 880,
-          width: '100%',
-          mx: 'auto',
-          px: { xs: 2.5, md: 4 },
-          py: { xs: 4, md: 6 },
-        }}
-      >
+      <Box component="main" sx={{ flex: 1, width: '100%' }}>
         {children}
       </Box>
 

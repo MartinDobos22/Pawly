@@ -3,6 +3,7 @@ import {
   Box,
   Breadcrumbs,
   Chip,
+  Container,
   Divider,
   Link,
   Stack,
@@ -14,7 +15,7 @@ import {
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import Seo from '../../components/Seo';
-import PublicPageLayout from '../../components/public/PublicPageLayout';
+import BlogLayout from '../../components/public/BlogLayout';
 import LandingFaq from '../../components/public/LandingFaq';
 import LandingCta from '../../components/public/LandingCta';
 import ArticleCard from '../../components/public/ArticleCard';
@@ -75,151 +76,168 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
   const ctaLabel =
     article.ctaIntent === 'food' ? 'Analyzovať krmivo' : 'Vytvoriť zdravotný pas';
 
+  const color = CATEGORY_COLORS[article.category];
   const readingMinutes = articleReadingMinutes(article);
   const showToc = article.sections.length >= 3;
 
   return (
-    <PublicPageLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
+    <BlogLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
       <Seo {...articleSeo(article)} />
 
-      <Box component="header" sx={{ mb: theme.spacing(4) }}>
-        <Breadcrumbs sx={{ mb: theme.spacing(2) }}>
-          <Link component={RouterLink} to="/" underline="hover" color="inherit" variant="body2">
-            Pawly
-          </Link>
-          <Link component={RouterLink} to="/poradna" underline="hover" color="inherit" variant="body2">
-            Poradňa
-          </Link>
-          <Typography variant="body2" color="text.secondary">
-            {article.title}
-          </Typography>
-        </Breadcrumbs>
+      <Box
+        component="header"
+        sx={{
+          position: 'relative',
+          color: theme.palette.common.white,
+          bgcolor: theme.palette[color].dark,
+          backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.7) 100%)${
+            article.coverImage ? `, url(${article.coverImage})` : ''
+          }`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          py: { xs: 6, md: 10 },
+        }}
+      >
+        <Container maxWidth="md">
+          <Breadcrumbs sx={{ mb: theme.spacing(2), color: 'inherit' }}>
+            <Link component={RouterLink} to="/" underline="hover" color="inherit" variant="body2">
+              Pawly
+            </Link>
+            <Link component={RouterLink} to="/poradna" underline="hover" color="inherit" variant="body2">
+              Poradňa
+            </Link>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
+              {article.title}
+            </Typography>
+          </Breadcrumbs>
 
-        <Stack
-          direction="row"
-          spacing={1.5}
-          alignItems="center"
-          flexWrap="wrap"
-          useFlexGap
-          sx={{ mb: theme.spacing(2) }}
-        >
           <Chip
             label={CATEGORY_LABELS[article.category]}
-            color={CATEGORY_COLORS[article.category]}
+            color={color}
             size="small"
-            variant="outlined"
+            sx={{ mb: theme.spacing(2) }}
           />
-          <Stack direction="row" spacing={0.5} alignItems="center" color="text.secondary">
+
+          <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
+            {article.title}
+          </Typography>
+
+          <Stack direction="row" spacing={0.5} alignItems="center">
             <ScheduleIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
               Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min čítania
             </Typography>
           </Stack>
-        </Stack>
+        </Container>
+      </Box>
 
-        <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2.5) }}>
-          {article.title}
-        </Typography>
+      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Typography
           variant="h6"
           component="p"
           color="text.primary"
-          sx={{ fontWeight: 400, lineHeight: 1.6 }}
+          sx={{ fontWeight: 400, lineHeight: 1.6, mb: theme.spacing(4) }}
         >
           {article.intro}
         </Typography>
-      </Box>
 
-      <Divider sx={{ mb: theme.spacing(4) }} />
+        <Divider sx={{ mb: theme.spacing(4) }} />
 
-      {showToc && (
-        <Box
-          component="nav"
-          aria-label="Obsah článku"
-          sx={{
-            mb: theme.spacing(4),
-            p: theme.spacing(2.5),
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: `${theme.shape.borderRadius}px`,
-            bgcolor: 'action.hover',
-          }}
-        >
-          <Typography variant="subtitle2" sx={{ mb: theme.spacing(1) }}>
-            Obsah
-          </Typography>
-          <Stack component="ol" spacing={0.75} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-            {article.sections.map((section) => (
-              <li key={section.heading}>
-                <Link href={`#${slugifyHeading(section.heading)}`} underline="hover" variant="body2">
-                  {section.heading}
-                </Link>
-              </li>
-            ))}
-          </Stack>
-        </Box>
-      )}
-
-      <Box component="article" sx={{ maxWidth: 680, mx: 'auto' }}>
-        {article.sections.map((section, i) => (
-          <Box component="section" key={section.heading} sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}>
-            <Typography
-              variant="h5"
-              component="h2"
-              id={slugifyHeading(section.heading)}
-              sx={{ mb: theme.spacing(2), scrollMarginTop: theme.spacing(10) }}
-            >
-              {section.heading}
+        {showToc && (
+          <Box
+            component="nav"
+            aria-label="Obsah článku"
+            sx={{
+              mb: theme.spacing(4),
+              p: theme.spacing(2.5),
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: `${theme.shape.borderRadius}px`,
+              bgcolor: 'action.hover',
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ mb: theme.spacing(1) }}>
+              Obsah
             </Typography>
-            {section.paragraphs.map((p, j) => (
+            <Stack component="ol" spacing={0.75} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+              {article.sections.map((section) => (
+                <li key={section.heading}>
+                  <Link href={`#${slugifyHeading(section.heading)}`} underline="hover" variant="body2">
+                    {section.heading}
+                  </Link>
+                </li>
+              ))}
+            </Stack>
+          </Box>
+        )}
+
+        <Box component="article" sx={{ maxWidth: 720, mx: 'auto' }}>
+          {article.sections.map((section, i) => (
+            <Box component="section" key={section.heading} sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}>
               <Typography
-                key={j}
-                variant="body1"
-                color="text.primary"
-                sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
+                variant="h5"
+                component="h2"
+                id={slugifyHeading(section.heading)}
+                sx={{ mb: theme.spacing(2), scrollMarginTop: theme.spacing(10) }}
               >
-                {p}
+                {section.heading}
               </Typography>
-            ))}
-          </Box>
-        ))}
-      </Box>
-
-      <LandingCta
-        heading="Začni sa o psa starať s Pawly"
-        buttonLabel={ctaLabel}
-        to="/register"
-        intent={article.ctaIntent}
-      />
-
-      {article.faqs && article.faqs.length > 0 && (
-        <LandingFaq title="Časté otázky" faqs={article.faqs} />
-      )}
-
-      {related.length > 0 && (
-        <Box component="section" sx={{ mt: theme.spacing(5) }}>
-          <Typography variant="h5" component="h2" sx={{ mb: theme.spacing(2) }}>
-            Súvisiace články
-          </Typography>
-          <Box sx={{ display: 'grid', gap: theme.spacing(2) }}>
-            {related.map((a) => (
-              <ArticleCard key={a.slug} article={a} />
-            ))}
-          </Box>
+              {section.paragraphs.map((p, j) => (
+                <Typography
+                  key={j}
+                  variant="body1"
+                  color="text.primary"
+                  sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
+                >
+                  {p}
+                </Typography>
+              ))}
+            </Box>
+          ))}
         </Box>
-      )}
 
-      <Box sx={{ mt: theme.spacing(5) }}>
-        <Link
-          component={RouterLink}
-          to="/poradna"
-          underline="hover"
-          variant="body2"
-          sx={{ display: 'inline-flex', alignItems: 'center', gap: theme.spacing(0.5) }}
-        >
-          <ArrowBackIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-          Späť na Poradňu
-        </Link>
-      </Box>
-    </PublicPageLayout>
+        <LandingCta
+          heading="Začni sa o psa starať s Pawly"
+          buttonLabel={ctaLabel}
+          to="/register"
+          intent={article.ctaIntent}
+        />
+
+        {article.faqs && article.faqs.length > 0 && (
+          <LandingFaq title="Časté otázky" faqs={article.faqs} />
+        )}
+
+        {related.length > 0 && (
+          <Box component="section" sx={{ mt: theme.spacing(5) }}>
+            <Typography variant="h5" component="h2" sx={{ mb: theme.spacing(2) }}>
+              Súvisiace články
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: theme.spacing(3),
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              }}
+            >
+              {related.map((a) => (
+                <ArticleCard key={a.slug} article={a} />
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        <Box sx={{ mt: theme.spacing(5) }}>
+          <Link
+            component={RouterLink}
+            to="/poradna"
+            underline="hover"
+            variant="body2"
+            sx={{ display: 'inline-flex', alignItems: 'center', gap: theme.spacing(0.5) }}
+          >
+            <ArrowBackIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
+            Späť na Poradňu
+          </Link>
+        </Box>
+      </Container>
+    </BlogLayout>
   );
 }

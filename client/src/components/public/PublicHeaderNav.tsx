@@ -6,7 +6,6 @@ import {
   KeyboardArrowDown as ArrowDownIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
-import { articles } from '../../content/poradna/articles';
 
 interface LinkItem {
   label: string;
@@ -29,17 +28,10 @@ export default function PublicHeaderNav() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [guideAnchor, setGuideAnchor] = useState<null | HTMLElement>(null);
-  const [adviceAnchor, setAdviceAnchor] = useState<null | HTMLElement>(null);
   const [mobileAnchor, setMobileAnchor] = useState<null | HTMLElement>(null);
-
-  const adviceLinks: LinkItem[] = [
-    { label: t('hero.navAllArticles'), to: '/poradna' },
-    ...articles.map((a) => ({ label: a.title, to: `/poradna/${a.slug}` })),
-  ];
 
   const go = (to: string) => {
     setGuideAnchor(null);
-    setAdviceAnchor(null);
     setMobileAnchor(null);
     navigate(to);
   };
@@ -66,12 +58,7 @@ export default function PublicHeaderNav() {
             </MenuItem>
           ))}
           <Divider />
-          <ListSubheader disableSticky>{t('hero.navAdvice')}</ListSubheader>
-          {adviceLinks.map((item) => (
-            <MenuItem key={item.to} onClick={() => go(item.to)}>
-              {item.label}
-            </MenuItem>
-          ))}
+          <MenuItem onClick={() => go('/poradna')}>{t('hero.navAdvice')}</MenuItem>
         </Menu>
       </>
     );
@@ -95,21 +82,9 @@ export default function PublicHeaderNav() {
         ))}
       </Menu>
 
-      <Button
-        color="inherit"
-        endIcon={<ArrowDownIcon />}
-        onClick={(e: MouseEvent<HTMLElement>) => setAdviceAnchor(e.currentTarget)}
-        sx={{ whiteSpace: 'nowrap' }}
-      >
+      <Button color="inherit" onClick={() => go('/poradna')} sx={{ whiteSpace: 'nowrap' }}>
         {t('hero.navAdvice')}
       </Button>
-      <Menu anchorEl={adviceAnchor} open={Boolean(adviceAnchor)} onClose={() => setAdviceAnchor(null)}>
-        {adviceLinks.map((item) => (
-          <MenuItem key={item.to} onClick={() => go(item.to)}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </Menu>
     </Box>
   );
 }

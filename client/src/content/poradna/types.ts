@@ -21,6 +21,8 @@ export interface Article {
   relatedSlugs?: string[];
   /** ISO dátum poslednej aktualizácie (pre Article schema). */
   updated: string;
+  /** URL titulného obrázka (zatiaľ Unsplash placeholder, neskôr vlastné). */
+  coverImage?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
 }

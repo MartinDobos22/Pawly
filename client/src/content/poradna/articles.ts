@@ -20,6 +20,8 @@ export const articles: Article[] = [
     intro:
       'Zloženie na obale krmiva povie o jeho kvalite viac než marketingové heslá na prednej strane. Keď vieš, čo hľadať, dokážeš za pár sekúnd posúdiť, či krmivo psovi sedí.',
     updated: '2026-06-21',
+    coverImage:
+      'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=1200&q=70',
     ctaIntent: 'food',
     sections: [
       {
@@ -65,6 +67,8 @@ export const articles: Article[] = [
     intro:
       'Správne načasované očkovanie je základ prevencie. Tento prehľad ti pomôže zorientovať sa, čo a kedy pes potrebuje — konkrétny plán vždy potvrdí veterinár.',
     updated: '2026-06-21',
+    coverImage:
+      'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=70',
     ctaIntent: 'passport',
     sections: [
       {
@@ -110,6 +114,8 @@ export const articles: Article[] = [
     intro:
       'Potravinová alergia sa u psov prejavuje rôzne a často sa zamieňa s inými problémami. Čím skôr vzor rozpoznáš, tým ľahšie sa hľadá príčina — vždy v spolupráci s veterinárom.',
     updated: '2026-06-21',
+    coverImage:
+      'https://images.unsplash.com/photo-1518155317743-a8ff43ea6a5f?auto=format&fit=crop&w=1200&q=70',
     ctaIntent: 'food',
     sections: [
       {
