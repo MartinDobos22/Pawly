@@ -39,9 +39,11 @@ import {
   Settings as SettingsIcon,
   MailOutline as MailOutlineIcon,
   VolunteerActivism as VolunteerActivismIcon,
+  Article as ArticleIcon,
 } from '@mui/icons-material';
 
 const IS_STRIPE_ENABLED = Boolean(import.meta.env.VITE_STRIPE_PAYMENT_LINK);
+import { useIsAdmin } from '../hooks/useIsAdmin';
 import PetSwitcher from './PetSwitcher';
 import PawlyLogo from './PawlyLogo';
 import InstallAppBanner from './InstallAppBanner';
@@ -71,6 +73,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useIsAdmin();
 
   const NAV_SECTIONS: NavSection[] = [
     {
@@ -118,6 +121,9 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         { label: t('nav.contact'), icon: <MailOutlineIcon />, path: '/kontakt' },
         ...(IS_STRIPE_ENABLED
           ? [{ label: t('nav.donate'), icon: <VolunteerActivismIcon />, path: '/podpora' }]
+          : []),
+        ...(isAdmin
+          ? [{ label: t('nav.adminArticles'), icon: <ArticleIcon />, path: '/admin/clanky' }]
           : []),
       ],
     },

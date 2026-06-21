@@ -42,3 +42,9 @@ export interface Article {
   author?: string;
   sources?: ArticleSource[];
 }
+
+// Admin pohľad — navyše stavové polia (vrátane draftov a poradia).
+export interface AdminArticle extends Article {
+  published: boolean;
+  position: number;
+}

@@ -15,6 +15,7 @@ import notificationsRouter from './routes/notifications';
 import cronRouter from './routes/cron';
 import authEmailsRouter from './routes/authEmails';
 import articlesRouter from './routes/articles';
+import adminRouter from './routes/admin';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -207,6 +208,7 @@ app.use('/api/articles', articlesRouter);
 app.use('/api/', firebaseAuth());
 
 // Routes
+app.use('/api/admin', ensureUser, adminRouter);
 app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/health', ensureUser, healthRouter);
 app.use('/api/account', ensureUser, accountRouter);

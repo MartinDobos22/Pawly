@@ -9,8 +9,11 @@ import { PetProfilesProvider } from './contexts/PetProfilesContext';
 import { ActivePetProvider } from './contexts/ActivePetContext';
 import { HealthDataProvider } from './contexts/HealthDataContext';
 import Layout from './components/Layout';
+import AdminGuard from './components/admin/AdminGuard';
 
 const OverviewPage = lazy(() => import('./pages/OverviewPage'));
+const AdminArticlesPage = lazy(() => import('./pages/admin/AdminArticlesPage'));
+const AdminArticleEditPage = lazy(() => import('./pages/admin/AdminArticleEditPage'));
 const CheckInPage = lazy(() => import('./pages/CheckInPage'));
 const FoodPage = lazy(() => import('./pages/FoodPage'));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
@@ -67,6 +70,30 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
                   <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
                   <Route path="/dennik" element={<EpisodeDiaryPage />} />
                   <Route path="/notifikacie" element={<NotificationsPage />} />
+                  <Route
+                    path="/admin/clanky"
+                    element={
+                      <AdminGuard>
+                        <AdminArticlesPage />
+                      </AdminGuard>
+                    }
+                  />
+                  <Route
+                    path="/admin/clanky/novy"
+                    element={
+                      <AdminGuard>
+                        <AdminArticleEditPage />
+                      </AdminGuard>
+                    }
+                  />
+                  <Route
+                    path="/admin/clanky/:slug"
+                    element={
+                      <AdminGuard>
+                        <AdminArticleEditPage />
+                      </AdminGuard>
+                    }
+                  />
                   <Route path="/podpora" element={<SupportProjectPage />} />
                   <Route path="/dakujeme" element={<DonateThanksPage />} />
                   <Route

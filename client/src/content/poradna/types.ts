@@ -43,3 +43,9 @@ export interface Article {
   /** Zdroje (E-E-A-T) — externé odkazy na konci článku. */
   sources?: ArticleSource[];
 }
+
+/** Admin pohľad na článok — navyše stavové polia (draft + poradie). */
+export interface AdminArticle extends Article {
+  published: boolean;
+  position: number;
+}
