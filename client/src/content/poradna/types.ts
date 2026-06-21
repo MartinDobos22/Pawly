@@ -3,10 +3,22 @@ import type { OnboardingIntent } from '../../utils/onboardingIntent';
 
 export type ArticleCategory = 'krmivo' | 'zdravie';
 
+export type CalloutVariant = 'tip' | 'warning' | 'info';
+
+export type Block =
+  | { type: 'paragraph'; text: string }
+  | { type: 'bullets'; items: string[] }
+  | { type: 'subheading'; text: string }
+  | { type: 'callout'; variant: CalloutVariant; title?: string; text: string };
+
 export interface ArticleSection {
   heading: string;
-  paragraphs: string[];
-  bullets?: string[];
+  blocks: Block[];
+}
+
+export interface ArticleSource {
+  label: string;
+  url: string;
 }
 
 export interface Article {
@@ -26,4 +38,8 @@ export interface Article {
   coverImage?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
+  /** Autorský riadok (E-E-A-T). Default „Tím Pawly" ak chýba. */
+  author?: string;
+  /** Zdroje (E-E-A-T) — externé odkazy na konci článku. */
+  sources?: ArticleSource[];
 }

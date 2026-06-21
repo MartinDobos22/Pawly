@@ -16,11 +16,16 @@ import BlogLayout from '../../components/public/BlogLayout';
 import LandingFaq from '../../components/public/LandingFaq';
 import LandingCta from '../../components/public/LandingCta';
 import ArticleCard from '../../components/public/ArticleCard';
+import Callout from '../../components/public/Callout';
+import RichText from '../../components/public/RichText';
 import { articleJsonLd } from '../../utils/seoSchema';
 import { articleReadingMinutes } from '../../utils/readingTime';
 import { slugifyHeading } from '../../utils/slugifyHeading';
 import { CATEGORY_COLORS, CATEGORY_LABELS, getArticle } from '../../content/poradna/articles';
-import type { Article } from '../../content/poradna/types';
+import type { Article, Block } from '../../content/poradna/types';
+
+const DISCLAIMER =
+  'Tento článok má informačný charakter a nenahrádza odbornú veterinárnu starostlivosť. Pri zdravotných ťažkostiach alebo otázkach o výžive psa sa vždy poraď s veterinárom.';
 
 interface Props {
   darkMode: boolean;
@@ -40,6 +45,7 @@ export function articleSeo(article: Article) {
       description: article.description,
       path,
       updated: article.updated,
+      image: article.coverImage,
       faqs: article.faqs,
       breadcrumbs: [
         { name: 'Pawly', path: '/' },
@@ -75,6 +81,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
   const color = CATEGORY_COLORS[article.category];
   const readingMinutes = articleReadingMinutes(article);
   const showToc = article.sections.length >= 3;
+  const author = article.author ?? 'Tím Pawly';
 
   return (
     <BlogLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
@@ -124,10 +131,11 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
             {article.title}
           </Typography>
 
-          <Stack direction="row" spacing={0.5} alignItems="center">
+          <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap" useFlexGap>
             <ScheduleIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-              Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min čítania
+              {author} · Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min
+              čítania
             </Typography>
           </Stack>
         </Container>
@@ -183,6 +191,31 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
                   >
                     {section.heading}
                   </Link>
+                  {section.blocks.some((b) => b.type === 'subheading') && (
+                    <Stack
+                      component="ol"
+                      spacing={0.5}
+                      sx={{ listStyle: 'none', m: 0, mt: 0.5, p: 0, pl: theme.spacing(2) }}
+                    >
+                      {section.blocks
+                        .filter(
+                          (b): b is Extract<Block, { type: 'subheading' }> =>
+                            b.type === 'subheading'
+                        )
+                        .map((b) => (
+                          <li key={b.text}>
+                            <Link
+                              href={`#${slugifyHeading(b.text)}`}
+                              underline="hover"
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {b.text}
+                            </Link>
+                          </li>
+                        ))}
+                    </Stack>
+                  )}
                 </li>
               ))}
             </Stack>
@@ -204,30 +237,90 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
               >
                 {section.heading}
               </Typography>
-              {section.paragraphs.map((p, j) => (
-                <Typography
-                  key={j}
-                  variant="body1"
-                  color="text.primary"
-                  sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
-                >
-                  {p}
-                </Typography>
-              ))}
-              {section.bullets && section.bullets.length > 0 && (
-                <Typography
-                  component="ul"
-                  variant="body1"
-                  color="text.primary"
-                  sx={{ mb: theme.spacing(2), lineHeight: 1.8, pl: theme.spacing(3) }}
-                >
-                  {section.bullets.map((b, k) => (
-                    <li key={k}>{b}</li>
-                  ))}
-                </Typography>
-              )}
+              {section.blocks.map((block, j) => {
+                switch (block.type) {
+                  case 'paragraph':
+                    return (
+                      <Typography
+                        key={j}
+                        variant="body1"
+                        color="text.primary"
+                        sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
+                      >
+                        <RichText text={block.text} />
+                      </Typography>
+                    );
+                  case 'bullets':
+                    return (
+                      <Typography
+                        key={j}
+                        component="ul"
+                        variant="body1"
+                        color="text.primary"
+                        sx={{ mb: theme.spacing(2), lineHeight: 1.8, pl: theme.spacing(3) }}
+                      >
+                        {block.items.map((item, k) => (
+                          <li key={k}>
+                            <RichText text={item} />
+                          </li>
+                        ))}
+                      </Typography>
+                    );
+                  case 'subheading':
+                    return (
+                      <Typography
+                        key={j}
+                        variant="h6"
+                        component="h3"
+                        id={slugifyHeading(block.text)}
+                        sx={{
+                          mt: theme.spacing(3),
+                          mb: theme.spacing(1.5),
+                          scrollMarginTop: theme.spacing(10),
+                        }}
+                      >
+                        {block.text}
+                      </Typography>
+                    );
+                  case 'callout':
+                    return (
+                      <Callout
+                        key={j}
+                        variant={block.variant}
+                        title={block.title}
+                        text={block.text}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })}
             </Box>
           ))}
+
+          <Callout variant="info" title="Upozornenie" text={DISCLAIMER} />
+
+          {article.sources && article.sources.length > 0 && (
+            <Box component="section" sx={{ mt: theme.spacing(4) }}>
+              <Typography variant="h6" component="h2" sx={{ mb: theme.spacing(1.5) }}>
+                Zdroje
+              </Typography>
+              <Typography
+                component="ul"
+                variant="body2"
+                color="text.secondary"
+                sx={{ m: 0, pl: theme.spacing(3), lineHeight: 1.8 }}
+              >
+                {article.sources.map((src) => (
+                  <li key={src.url}>
+                    <Link href={src.url} target="_blank" rel="noopener nofollow" underline="hover">
+                      {src.label}
+                    </Link>
+                  </li>
+                ))}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
         <LandingCta

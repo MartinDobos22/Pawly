@@ -45,10 +45,7 @@ export function breadcrumbSchema(items: BreadcrumbItem[]) {
 }
 
 /** Skombinuje viac schém do jedného JSON-LD grafu pre <script>. */
-export function landingJsonLd(opts: {
-  faqs: FaqItem[];
-  breadcrumbs: BreadcrumbItem[];
-}): object {
+export function landingJsonLd(opts: { faqs: FaqItem[]; breadcrumbs: BreadcrumbItem[] }): object {
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -64,12 +61,15 @@ export function articleSchema(opts: {
   description: string;
   path: string;
   updated: string;
+  image?: string;
 }) {
   return {
     '@type': 'Article',
     headline: opts.title,
     description: opts.description,
+    datePublished: opts.updated,
     dateModified: opts.updated,
+    ...(opts.image ? { image: opts.image } : {}),
     mainEntityOfPage: `${SITE_URL}${opts.path}`,
     author: { '@type': 'Organization', name: 'Pawly', url: SITE_URL },
     publisher: { '@type': 'Organization', name: 'Pawly', url: SITE_URL },
@@ -82,13 +82,11 @@ export function articleJsonLd(opts: {
   description: string;
   path: string;
   updated: string;
+  image?: string;
   faqs?: FaqItem[];
   breadcrumbs: BreadcrumbItem[];
 }): object {
-  const graph: object[] = [
-    articleSchema(opts),
-    breadcrumbSchema(opts.breadcrumbs),
-  ];
+  const graph: object[] = [articleSchema(opts), breadcrumbSchema(opts.breadcrumbs)];
   if (opts.faqs && opts.faqs.length > 0) graph.push(faqPageSchema(opts.faqs));
   return { '@context': 'https://schema.org', '@graph': graph };
 }
