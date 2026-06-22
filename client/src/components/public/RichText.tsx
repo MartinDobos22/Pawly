@@ -7,15 +7,22 @@ interface Props {
 }
 
 /**
- * Minimalistický inline parser: podporuje `**tučné**` a `[text](url)`.
+ * Minimalistický inline parser: podporuje `**tučné**`, `*kurzíva*`,
+ * `__podčiarknuté__`, `~~prečiarknuté~~` a `[text](url)`.
  * Interný odkaz (url začína `/`) ide cez RouterLink, externý cez <a> s nofollow.
  * Bez závislosti, SSR-safe.
  */
-const TOKEN = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
+const TOKEN = /(\*\*[^*]+\*\*|__[^_]+__|~~[^~]+~~|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
 
 function renderToken(token: string, key: number): ReactNode {
   if (token.startsWith('**') && token.endsWith('**')) {
     return <strong key={key}>{token.slice(2, -2)}</strong>;
+  }
+  if (token.startsWith('__') && token.endsWith('__')) {
+    return <u key={key}>{token.slice(2, -2)}</u>;
+  }
+  if (token.startsWith('~~') && token.endsWith('~~')) {
+    return <s key={key}>{token.slice(2, -2)}</s>;
   }
   const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(token);
   if (linkMatch) {
@@ -32,6 +39,9 @@ function renderToken(token: string, key: number): ReactNode {
         {label}
       </Link>
     );
+  }
+  if (token.startsWith('*') && token.endsWith('*')) {
+    return <em key={key}>{token.slice(1, -1)}</em>;
   }
   return token;
 }

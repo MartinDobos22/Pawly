@@ -7,7 +7,7 @@ export type CalloutVariant = 'tip' | 'warning' | 'info';
 
 export type Block =
   | { type: 'paragraph'; text: string }
-  | { type: 'bullets'; items: string[] }
+  | { type: 'bullets'; ordered?: boolean; items: string[] }
   | { type: 'subheading'; text: string }
   | { type: 'callout'; variant: CalloutVariant; title?: string; text: string };
 

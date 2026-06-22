@@ -17,7 +17,11 @@ import {
 import { styled } from '@mui/material/styles';
 import {
   FormatBold as BoldIcon,
+  FormatItalic as ItalicIcon,
+  FormatUnderlined as UnderlineIcon,
+  StrikethroughS as StrikeIcon,
   FormatListBulleted as BulletsIcon,
+  FormatListNumbered as NumberedIcon,
   InsertLink as LinkIcon,
   LinkOff as LinkOffIcon,
   TitleOutlined as SectionIcon,
@@ -73,7 +77,7 @@ const EditorShell = styled(Box)(({ theme }) => ({
   '& .ProseMirror p': {
     margin: `0 0 ${theme.spacing(1.5)}`,
   },
-  '& .ProseMirror ul': {
+  '& .ProseMirror ul, & .ProseMirror ol': {
     paddingLeft: theme.spacing(3),
     marginBottom: theme.spacing(1.5),
   },
@@ -97,7 +101,11 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
       isH2: e.isActive('heading', { level: 2 }),
       isH3: e.isActive('heading', { level: 3 }),
       isBold: e.isActive('bold'),
+      isItalic: e.isActive('italic'),
+      isUnderline: e.isActive('underline'),
+      isStrike: e.isActive('strike'),
       isBullets: e.isActive('bulletList'),
+      isOrdered: e.isActive('orderedList'),
       isCallout: e.isActive('callout'),
       isLink: e.isActive('link'),
     }),
@@ -159,6 +167,36 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
           <BoldIcon fontSize="small" />
         </ToggleButton>
       </Tooltip>
+      <Tooltip title="Kurzíva (Ctrl/Cmd+I)">
+        <ToggleButton
+          value="italic"
+          size="small"
+          selected={state.isItalic}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <ItalicIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Podčiarknuté (Ctrl/Cmd+U)">
+        <ToggleButton
+          value="underline"
+          size="small"
+          selected={state.isUnderline}
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+        >
+          <UnderlineIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Prečiarknuté">
+        <ToggleButton
+          value="strike"
+          size="small"
+          selected={state.isStrike}
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <StrikeIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
       <Tooltip title={state.isLink ? 'Upraviť odkaz' : 'Vložiť odkaz'}>
         <ToggleButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
           <LinkIcon fontSize="small" />
@@ -186,6 +224,16 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
           <BulletsIcon fontSize="small" />
         </ToggleButton>
       </Tooltip>
+      <Tooltip title="Číslovaný zoznam">
+        <ToggleButton
+          value="ordered"
+          size="small"
+          selected={state.isOrdered}
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        >
+          <NumberedIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
       <Tooltip title="Box (tip/pozor/info)">
         <ToggleButton
           value="callout"
@@ -205,6 +253,9 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
     editor,
     selector: ({ editor: e }) => ({
       isBold: e.isActive('bold'),
+      isItalic: e.isActive('italic'),
+      isUnderline: e.isActive('underline'),
+      isStrike: e.isActive('strike'),
       isLink: e.isActive('link'),
     }),
   });
@@ -228,6 +279,36 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <BoldIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Kurzíva">
+        <ToggleButton
+          value="italic"
+          size="small"
+          selected={state.isItalic}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <ItalicIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Podčiarknuté">
+        <ToggleButton
+          value="underline"
+          size="small"
+          selected={state.isUnderline}
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+        >
+          <UnderlineIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Prečiarknuté">
+        <ToggleButton
+          value="strike"
+          size="small"
+          selected={state.isStrike}
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+        >
+          <StrikeIcon fontSize="small" />
         </ToggleButton>
       </Tooltip>
       <Tooltip title={state.isLink ? 'Upraviť odkaz' : 'Vložiť odkaz'}>
@@ -260,14 +341,10 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
-        italic: false,
-        strike: false,
         code: false,
         codeBlock: false,
         blockquote: false,
-        orderedList: false,
         horizontalRule: false,
-        underline: false,
         link: false,
       }),
       Link.configure({
