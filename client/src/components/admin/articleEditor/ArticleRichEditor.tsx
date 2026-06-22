@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Paper,
   Stack,
   TextField,
   ToggleButton,
@@ -22,10 +23,14 @@ import {
   TitleOutlined as SectionIcon,
   TextFieldsOutlined as SubheadingIcon,
   LightbulbOutlined as CalloutIcon,
+  DragIndicator as DragIcon,
 } from '@mui/icons-material';
 import { useEditor, EditorContent, useEditorState, type Editor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
+import { DragHandle } from '@tiptap/extension-drag-handle-react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
 import { CalloutNode } from './CalloutNode';
 import { sectionsToTiptap, tiptapToSections } from './articleTiptapBridge';
 import type { ArticleSection } from '../../../content/poradna/types';
@@ -41,8 +46,16 @@ const EditorShell = styled(Box)(({ theme }) => ({
   '& .ProseMirror': {
     minHeight: theme.spacing(40),
     padding: theme.spacing(2),
+    paddingLeft: theme.spacing(4),
     outline: 'none',
     lineHeight: 1.8,
+  },
+  '& .ProseMirror .is-editor-empty:first-of-type::before': {
+    content: 'attr(data-placeholder)',
+    color: theme.palette.text.disabled,
+    float: 'left',
+    height: 0,
+    pointerEvents: 'none',
   },
   '& .ProseMirror:focus': {
     outline: 'none',
@@ -187,6 +200,56 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
   );
 }
 
+function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
+  const state = useEditorState({
+    editor,
+    selector: ({ editor: e }) => ({
+      isBold: e.isActive('bold'),
+      isLink: e.isActive('link'),
+    }),
+  });
+
+  return (
+    <Paper
+      elevation={4}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.5,
+        p: 0.5,
+        borderRadius: (t) => `${t.shape.borderRadius}px`,
+      }}
+    >
+      <Tooltip title="Tučné">
+        <ToggleButton
+          value="bold"
+          size="small"
+          selected={state.isBold}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
+          <BoldIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title={state.isLink ? 'Upraviť odkaz' : 'Vložiť odkaz'}>
+        <ToggleButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
+          <LinkIcon fontSize="small" />
+        </ToggleButton>
+      </Tooltip>
+      {state.isLink && (
+        <Tooltip title="Odstrániť odkaz">
+          <ToggleButton
+            value="unlink"
+            size="small"
+            onClick={() => editor.chain().focus().unsetLink().run()}
+          >
+            <LinkOffIcon fontSize="small" />
+          </ToggleButton>
+        </Tooltip>
+      )}
+    </Paper>
+  );
+}
+
 export default function ArticleRichEditor({ value, onChange }: Props) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -211,6 +274,9 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
         openOnClick: false,
         autolink: false,
         HTMLAttributes: { rel: 'noopener nofollow' },
+      }),
+      Placeholder.configure({
+        placeholder: 'Začni písať obsah článku… „H2" v lište začne novú sekciu.',
       }),
       CalloutNode,
     ],
@@ -242,6 +308,22 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
     <Box>
       <EditorShell>
         <Toolbar editor={editor} onLinkRequest={openLinkDialog} />
+        <DragHandle editor={editor}>
+          <Box
+            sx={{
+              display: 'flex',
+              color: 'text.disabled',
+              cursor: 'grab',
+              '&:active': { cursor: 'grabbing' },
+              '&:hover': { color: 'text.secondary' },
+            }}
+          >
+            <DragIcon fontSize="small" />
+          </Box>
+        </DragHandle>
+        <BubbleMenu editor={editor}>
+          <BubbleToolbar editor={editor} onLinkRequest={openLinkDialog} />
+        </BubbleMenu>
         <EditorContent editor={editor} />
       </EditorShell>
       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
