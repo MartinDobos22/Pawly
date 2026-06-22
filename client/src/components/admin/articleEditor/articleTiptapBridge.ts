@@ -41,9 +41,11 @@ function inlineToMarkdown(content: JSONContent[] | undefined): string {
       if (link && typeof link.attrs?.href === 'string') {
         return `[${text}](${link.attrs.href})`;
       }
-      if (marks.some((m) => m.type === 'bold')) {
-        return `**${text}**`;
-      }
+      // RichText nepodporuje vnorené značky — zvolíme jednu podľa priority.
+      if (marks.some((m) => m.type === 'bold')) return `**${text}**`;
+      if (marks.some((m) => m.type === 'italic')) return `*${text}*`;
+      if (marks.some((m) => m.type === 'underline')) return `__${text}__`;
+      if (marks.some((m) => m.type === 'strike')) return `~~${text}~~`;
       return text;
     })
     .join('');
@@ -51,7 +53,7 @@ function inlineToMarkdown(content: JSONContent[] | undefined): string {
 
 // --- Reťazec (markdown-lite) → inline TipTap text nodes -------------------
 
-const TOKEN = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
+const TOKEN = /(\*\*[^*]+\*\*|__[^_]+__|~~[^~]+~~|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
 
 function markdownToInline(text: string): JSONContent[] {
   if (!text) return [];
@@ -68,10 +70,22 @@ function markdownToInline(text: string): JSONContent[] {
       nodes.push({ type: 'text', text: part.slice(2, -2), marks: [{ type: 'bold' }] });
       return;
     }
+    if (part.startsWith('__') && part.endsWith('__')) {
+      nodes.push({ type: 'text', text: part.slice(2, -2), marks: [{ type: 'underline' }] });
+      return;
+    }
+    if (part.startsWith('~~') && part.endsWith('~~')) {
+      nodes.push({ type: 'text', text: part.slice(2, -2), marks: [{ type: 'strike' }] });
+      return;
+    }
     const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
     if (linkMatch) {
       const [, label, href] = linkMatch;
       nodes.push({ type: 'text', text: label, marks: [{ type: 'link', attrs: { href } }] });
+      return;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      nodes.push({ type: 'text', text: part.slice(1, -1), marks: [{ type: 'italic' }] });
       return;
     }
     nodes.push({ type: 'text', text: part });
@@ -94,7 +108,7 @@ function blockToNodes(block: Block): JSONContent[] {
     case 'bullets':
       return [
         {
-          type: 'bulletList',
+          type: block.ordered ? 'orderedList' : 'bulletList',
           content: block.items.map((item) => ({
             type: 'listItem',
             content: [{ type: 'paragraph', content: markdownToInline(item) }],
@@ -143,7 +157,8 @@ function nodeToBlock(node: JSONContent): Block | null {
       if (!text) return null;
       return { type: 'subheading', text };
     }
-    case 'bulletList': {
+    case 'bulletList':
+    case 'orderedList': {
       const items = (node.content ?? [])
         .map((li) => {
           const para = (li.content ?? []).find((c) => c.type === 'paragraph');
@@ -151,7 +166,9 @@ function nodeToBlock(node: JSONContent): Block | null {
         })
         .filter((item) => item.trim().length > 0);
       if (items.length === 0) return null;
-      return { type: 'bullets', items };
+      return node.type === 'orderedList'
+        ? { type: 'bullets', ordered: true, items }
+        : { type: 'bullets', items };
     }
     case 'callout': {
       const text = inlineToMarkdown(node.content);

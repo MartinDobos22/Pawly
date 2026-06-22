@@ -46,7 +46,7 @@ export default function ArticleBody({ sections }: Props) {
                 return (
                   <Typography
                     key={j}
-                    component="ul"
+                    component={block.ordered ? 'ol' : 'ul'}
                     variant="body1"
                     color="text.primary"
                     sx={{ mb: theme.spacing(2), lineHeight: 1.8, pl: theme.spacing(3) }}
