@@ -11,6 +11,7 @@ import {
   Stack,
   TextField,
   ToggleButton,
+  type ToggleButtonProps,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -89,6 +90,21 @@ const EditorShell = styled(Box)(({ theme }) => ({
   },
 }));
 
+// Zabráni strate fokusu/výberu v editore pri kliknutí na tlačidlo lišty.
+// Bez toho contenteditable stratí výber a blokové príkazy (nadpisy, zoznamy)
+// nemajú na čom pracovať.
+function ToolButton(props: ToggleButtonProps) {
+  return (
+    <ToggleButton
+      {...props}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        props.onMouseDown?.(e);
+      }}
+    />
+  );
+}
+
 interface ToolbarProps {
   editor: Editor;
   onLinkRequest: () => void;
@@ -137,112 +153,112 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
       }}
     >
       <Tooltip title="Nadpis sekcie (H2)">
-        <ToggleButton
+        <ToolButton
           value="h2"
           size="small"
           selected={state.isH2}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           <SectionIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Podnadpis (H3)">
-        <ToggleButton
+        <ToolButton
           value="h3"
           size="small"
           selected={state.isH3}
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         >
           <SubheadingIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
       <Tooltip title="Tučné (Ctrl/Cmd+B)">
-        <ToggleButton
+        <ToolButton
           value="bold"
           size="small"
           selected={state.isBold}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <BoldIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Kurzíva (Ctrl/Cmd+I)">
-        <ToggleButton
+        <ToolButton
           value="italic"
           size="small"
           selected={state.isItalic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <ItalicIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Podčiarknuté (Ctrl/Cmd+U)">
-        <ToggleButton
+        <ToolButton
           value="underline"
           size="small"
           selected={state.isUnderline}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
           <UnderlineIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Prečiarknuté">
-        <ToggleButton
+        <ToolButton
           value="strike"
           size="small"
           selected={state.isStrike}
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <StrikeIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title={state.isLink ? 'Upraviť odkaz' : 'Vložiť odkaz'}>
-        <ToggleButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
+        <ToolButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
           <LinkIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       {state.isLink && (
         <Tooltip title="Odstrániť odkaz">
-          <ToggleButton
+          <ToolButton
             value="unlink"
             size="small"
             onClick={() => editor.chain().focus().unsetLink().run()}
           >
             <LinkOffIcon fontSize="small" />
-          </ToggleButton>
+          </ToolButton>
         </Tooltip>
       )}
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
       <Tooltip title="Odrážky">
-        <ToggleButton
+        <ToolButton
           value="bullets"
           size="small"
           selected={state.isBullets}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
           <BulletsIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Číslovaný zoznam">
-        <ToggleButton
+        <ToolButton
           value="ordered"
           size="small"
           selected={state.isOrdered}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
           <NumberedIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Box (tip/pozor/info)">
-        <ToggleButton
+        <ToolButton
           value="callout"
           size="small"
           selected={state.isCallout}
           onClick={toggleCallout}
         >
           <CalloutIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
     </Stack>
   );
@@ -272,59 +288,59 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
       }}
     >
       <Tooltip title="Tučné">
-        <ToggleButton
+        <ToolButton
           value="bold"
           size="small"
           selected={state.isBold}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <BoldIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Kurzíva">
-        <ToggleButton
+        <ToolButton
           value="italic"
           size="small"
           selected={state.isItalic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <ItalicIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Podčiarknuté">
-        <ToggleButton
+        <ToolButton
           value="underline"
           size="small"
           selected={state.isUnderline}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
           <UnderlineIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title="Prečiarknuté">
-        <ToggleButton
+        <ToolButton
           value="strike"
           size="small"
           selected={state.isStrike}
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <StrikeIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       <Tooltip title={state.isLink ? 'Upraviť odkaz' : 'Vložiť odkaz'}>
-        <ToggleButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
+        <ToolButton value="link" size="small" selected={state.isLink} onClick={onLinkRequest}>
           <LinkIcon fontSize="small" />
-        </ToggleButton>
+        </ToolButton>
       </Tooltip>
       {state.isLink && (
         <Tooltip title="Odstrániť odkaz">
-          <ToggleButton
+          <ToolButton
             value="unlink"
             size="small"
             onClick={() => editor.chain().focus().unsetLink().run()}
           >
             <LinkOffIcon fontSize="small" />
-          </ToggleButton>
+          </ToolButton>
         </Tooltip>
       )}
     </Paper>
