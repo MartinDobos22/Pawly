@@ -102,9 +102,24 @@ function plainTextNode(text: string): JSONContent[] {
 function blockToNodes(block: Block): JSONContent[] {
   switch (block.type) {
     case 'paragraph':
-      return [{ type: 'paragraph', content: markdownToInline(block.text) }];
+      return [
+        {
+          type: 'paragraph',
+          ...(block.align ? { attrs: { textAlign: block.align } } : {}),
+          content: markdownToInline(block.text),
+        },
+      ];
     case 'subheading':
       return [{ type: 'heading', attrs: { level: 3 }, content: plainTextNode(block.text) }];
+    case 'quote':
+      return [
+        {
+          type: 'blockquote',
+          content: [{ type: 'paragraph', content: markdownToInline(block.text) }],
+        },
+      ];
+    case 'divider':
+      return [{ type: 'horizontalRule' }];
     case 'bullets':
       return [
         {
@@ -149,8 +164,22 @@ function nodeToBlock(node: JSONContent): Block | null {
     case 'paragraph': {
       const text = inlineToMarkdown(node.content);
       if (!text.trim()) return null;
-      return { type: 'paragraph', text };
+      const align = node.attrs?.textAlign;
+      return align === 'center' || align === 'right'
+        ? { type: 'paragraph', text, align }
+        : { type: 'paragraph', text };
     }
+    case 'blockquote': {
+      const text = (node.content ?? [])
+        .filter((c) => c.type === 'paragraph')
+        .map((p) => inlineToMarkdown(p.content))
+        .filter((t) => t.trim().length > 0)
+        .join('\n');
+      if (!text.trim()) return null;
+      return { type: 'quote', text };
+    }
+    case 'horizontalRule':
+      return { type: 'divider' };
     case 'heading': {
       if (node.attrs?.level !== 3) return null;
       const text = inlineToPlain(node.content).trim();

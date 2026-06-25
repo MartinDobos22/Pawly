@@ -37,10 +37,41 @@ export default function ArticleBody({ sections }: Props) {
                     key={j}
                     variant="body1"
                     color="text.primary"
-                    sx={{ mb: theme.spacing(2), lineHeight: 1.8 }}
+                    sx={{ mb: theme.spacing(2), lineHeight: 1.8, textAlign: block.align }}
                   >
                     <RichText text={block.text} />
                   </Typography>
+                );
+              case 'quote':
+                return (
+                  <Typography
+                    key={j}
+                    component="blockquote"
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{
+                      my: theme.spacing(3),
+                      ml: 0,
+                      pl: theme.spacing(2.5),
+                      borderLeft: `4px solid ${theme.palette.divider}`,
+                      fontStyle: 'italic',
+                      lineHeight: 1.8,
+                    }}
+                  >
+                    <RichText text={block.text} />
+                  </Typography>
+                );
+              case 'divider':
+                return (
+                  <Box
+                    key={j}
+                    component="hr"
+                    sx={{
+                      my: theme.spacing(4),
+                      border: 0,
+                      borderTop: `1px solid ${theme.palette.divider}`,
+                    }}
+                  />
                 );
               case 'bullets':
                 return (

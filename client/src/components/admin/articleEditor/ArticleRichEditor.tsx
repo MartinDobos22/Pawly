@@ -25,6 +25,11 @@ import {
   StrikethroughS as StrikeIcon,
   FormatListBulleted as BulletsIcon,
   FormatListNumbered as NumberedIcon,
+  FormatQuote as QuoteIcon,
+  HorizontalRule as DividerIcon,
+  FormatAlignLeft as AlignLeftIcon,
+  FormatAlignCenter as AlignCenterIcon,
+  FormatAlignRight as AlignRightIcon,
   InsertLink as LinkIcon,
   LinkOff as LinkOffIcon,
   ArrowDropDown as ArrowDropDownIcon,
@@ -37,6 +42,7 @@ import { BubbleMenu } from '@tiptap/react/menus';
 import { DragHandle } from '@tiptap/extension-drag-handle-react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
 import { CalloutNode } from './CalloutNode';
 import { sectionsToTiptap, tiptapToSections } from './articleTiptapBridge';
@@ -83,6 +89,18 @@ const EditorShell = styled(Box)(({ theme }) => ({
   '& .ProseMirror ul, & .ProseMirror ol': {
     paddingLeft: theme.spacing(3),
     marginBottom: theme.spacing(1.5),
+  },
+  '& .ProseMirror blockquote': {
+    margin: `${theme.spacing(2)} 0`,
+    paddingLeft: theme.spacing(2.5),
+    borderLeft: `4px solid ${theme.palette.divider}`,
+    color: theme.palette.text.secondary,
+    fontStyle: 'italic',
+  },
+  '& .ProseMirror hr': {
+    margin: `${theme.spacing(3)} 0`,
+    border: 0,
+    borderTop: `1px solid ${theme.palette.divider}`,
   },
   '& .ProseMirror a': {
     color: theme.palette.primary.main,
@@ -174,8 +192,11 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
       isStrike: e.isActive('strike'),
       isBullets: e.isActive('bulletList'),
       isOrdered: e.isActive('orderedList'),
+      isQuote: e.isActive('blockquote'),
       isCallout: e.isActive('callout'),
       isLink: e.isActive('link'),
+      isAlignCenter: e.isActive({ textAlign: 'center' }),
+      isAlignRight: e.isActive({ textAlign: 'right' }),
     }),
   });
 
@@ -263,6 +284,37 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
         </Tooltip>
       )}
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+      <Tooltip title="Zarovnať vľavo">
+        <ToolButton
+          value="alignLeft"
+          size="small"
+          selected={!state.isAlignCenter && !state.isAlignRight}
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+        >
+          <AlignLeftIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
+      <Tooltip title="Zarovnať na stred">
+        <ToolButton
+          value="alignCenter"
+          size="small"
+          selected={state.isAlignCenter}
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+        >
+          <AlignCenterIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
+      <Tooltip title="Zarovnať vpravo">
+        <ToolButton
+          value="alignRight"
+          size="small"
+          selected={state.isAlignRight}
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+        >
+          <AlignRightIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
       <Tooltip title="Odrážky">
         <ToolButton
           value="bullets"
@@ -281,6 +333,25 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
           <NumberedIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
+      <Tooltip title="Citácia">
+        <ToolButton
+          value="quote"
+          size="small"
+          selected={state.isQuote}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        >
+          <QuoteIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
+      <Tooltip title="Oddeľovač (čiara)">
+        <ToolButton
+          value="divider"
+          size="small"
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        >
+          <DividerIcon fontSize="small" />
         </ToolButton>
       </Tooltip>
       <Tooltip title="Box (tip/pozor/info)">
@@ -387,8 +458,6 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
         heading: { levels: [2, 3] },
         code: false,
         codeBlock: false,
-        blockquote: false,
-        horizontalRule: false,
         link: false,
       }),
       Link.configure({
@@ -396,6 +465,7 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
         autolink: false,
         HTMLAttributes: { rel: 'noopener nofollow' },
       }),
+      TextAlign.configure({ types: ['paragraph'] }),
       Placeholder.configure({
         placeholder: 'Začni písať obsah článku… „H2" v lište začne novú sekciu.',
       }),
