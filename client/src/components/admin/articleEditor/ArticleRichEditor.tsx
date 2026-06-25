@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import {
   Box,
   Button,
@@ -7,6 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   TextField,
@@ -25,7 +27,7 @@ import {
   FormatListNumbered as NumberedIcon,
   InsertLink as LinkIcon,
   LinkOff as LinkOffIcon,
-  TitleOutlined as SectionIcon,
+  ArrowDropDown as ArrowDropDownIcon,
   TextFieldsOutlined as SubheadingIcon,
   LightbulbOutlined as CalloutIcon,
   DragIndicator as DragIcon,
@@ -105,6 +107,58 @@ function ToolButton(props: ToggleButtonProps) {
   );
 }
 
+function HeadingMenu({ editor }: { editor: Editor }) {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const state = useEditorState({
+    editor,
+    selector: ({ editor: e }) => ({
+      isH2: e.isActive('heading', { level: 2 }),
+      isH3: e.isActive('heading', { level: 3 }),
+    }),
+  });
+
+  const label = state.isH2 ? 'Nadpis 2' : state.isH3 ? 'Nadpis 3' : 'Normálny text';
+
+  const apply = (level: 0 | 2 | 3) => {
+    if (level === 0) editor.chain().focus().setParagraph().run();
+    else editor.chain().focus().setHeading({ level }).run();
+    setAnchor(null);
+  };
+
+  const keepSelection = (e: MouseEvent) => e.preventDefault();
+
+  return (
+    <>
+      <Button
+        size="small"
+        color="inherit"
+        startIcon={<SubheadingIcon fontSize="small" />}
+        endIcon={<ArrowDropDownIcon fontSize="small" />}
+        onMouseDown={keepSelection}
+        onClick={(e) => setAnchor(e.currentTarget)}
+        sx={{ textTransform: 'none', minWidth: (t) => t.spacing(18), justifyContent: 'flex-start' }}
+      >
+        {label}
+      </Button>
+      <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
+        <MenuItem
+          selected={!state.isH2 && !state.isH3}
+          onMouseDown={keepSelection}
+          onClick={() => apply(0)}
+        >
+          Normálny text
+        </MenuItem>
+        <MenuItem selected={state.isH2} onMouseDown={keepSelection} onClick={() => apply(2)}>
+          Nadpis 2 (sekcia)
+        </MenuItem>
+        <MenuItem selected={state.isH3} onMouseDown={keepSelection} onClick={() => apply(3)}>
+          Nadpis 3 (podnadpis)
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
+
 interface ToolbarProps {
   editor: Editor;
   onLinkRequest: () => void;
@@ -114,8 +168,6 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
-      isH2: e.isActive('heading', { level: 2 }),
-      isH3: e.isActive('heading', { level: 3 }),
       isBold: e.isActive('bold'),
       isItalic: e.isActive('italic'),
       isUnderline: e.isActive('underline'),
@@ -152,26 +204,7 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
         borderTopRightRadius: (t) => `${t.shape.borderRadius}px`,
       }}
     >
-      <Tooltip title="Nadpis sekcie (H2)">
-        <ToolButton
-          value="h2"
-          size="small"
-          selected={state.isH2}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        >
-          <SectionIcon fontSize="small" />
-        </ToolButton>
-      </Tooltip>
-      <Tooltip title="Podnadpis (H3)">
-        <ToolButton
-          value="h3"
-          size="small"
-          selected={state.isH3}
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        >
-          <SubheadingIcon fontSize="small" />
-        </ToolButton>
-      </Tooltip>
+      <HeadingMenu editor={editor} />
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
       <Tooltip title="Tučné (Ctrl/Cmd+B)">
         <ToolButton
@@ -251,12 +284,7 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
         </ToolButton>
       </Tooltip>
       <Tooltip title="Box (tip/pozor/info)">
-        <ToolButton
-          value="callout"
-          size="small"
-          selected={state.isCallout}
-          onClick={toggleCallout}
-        >
+        <ToolButton value="callout" size="small" selected={state.isCallout} onClick={toggleCallout}>
           <CalloutIcon fontSize="small" />
         </ToolButton>
       </Tooltip>
