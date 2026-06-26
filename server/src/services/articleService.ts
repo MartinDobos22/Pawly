@@ -17,17 +17,31 @@ type Row = Record<string, unknown>;
 const TEXT_ALIGNS: TextAlign[] = ['left', 'center', 'right'];
 const ARTICLE_STATUSES: ArticleStatus[] = [
   'draft',
-  'review',
+  'in_review',
   'approved',
   'scheduled',
   'published',
   'archived',
 ];
 
+// Povolené prechody stavov — jediný zdroj pravdy, vynucované na API.
+export const ARTICLE_STATUS_TRANSITIONS: Record<ArticleStatus, ArticleStatus[]> = {
+  draft: ['in_review', 'archived'],
+  in_review: ['draft', 'approved'],
+  approved: ['published', 'scheduled', 'draft'],
+  scheduled: ['published', 'draft'],
+  published: ['archived', 'draft'],
+  archived: ['draft'],
+};
+
+export function isTransitionAllowed(from: ArticleStatus, to: ArticleStatus): boolean {
+  return ARTICLE_STATUS_TRANSITIONS[from]?.includes(to) ?? false;
+}
+
 const SELECT_COLUMNS =
   'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, position';
 
-const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at`;
+const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by`;
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const CALLOUT_VARIANTS: CalloutVariant[] = ['tip', 'warning', 'info'];
@@ -95,10 +109,18 @@ function rowToAdminArticle(row: Row): AdminArticle {
     published: row.published === true,
     position: typeof row.position === 'number' ? row.position : 0,
     status: asStatus(row.status),
-    assignedEditor: asOptionalString(row.assigned_editor),
-    editorialNotes: asOptionalString(row.editorial_notes),
-    publishAt: asOptionalString(row.publish_at),
+    assignedTo: asOptionalString(row.assigned_editor),
+    internalNotes: asOptionalString(row.editorial_notes),
+    scheduledFor: asOptionalString(row.publish_at),
     unpublishAt: asOptionalString(row.unpublish_at),
+    submittedForReviewAt: asOptionalString(row.submitted_for_review_at),
+    submittedForReviewBy: asOptionalString(row.submitted_for_review_by),
+    approvedAt: asOptionalString(row.approved_at),
+    approvedBy: asOptionalString(row.approved_by),
+    publishedAt: asOptionalString(row.published_at),
+    publishedBy: asOptionalString(row.published_by),
+    archivedAt: asOptionalString(row.archived_at),
+    archivedBy: asOptionalString(row.archived_by),
   };
 }
 
@@ -193,7 +215,8 @@ function validateSources(value: unknown): ArticleSource[] {
   });
 }
 
-interface ArticleRow {
+// Obsahové stĺpce — status a audit polia sa menia výhradne cez changeArticleStatus.
+interface ContentRow {
   slug: string;
   category: string;
   title: string;
@@ -207,13 +230,9 @@ interface ArticleRow {
   author: string | null;
   sources: ArticleSource[];
   updated: string;
-  published: boolean;
   position: number;
-  status: ArticleStatus;
   assigned_editor: string | null;
   editorial_notes: string | null;
-  publish_at: string | null;
-  unpublish_at: string | null;
 }
 
 function optionalIso(value: unknown, field: string): string | null {
@@ -224,7 +243,7 @@ function optionalIso(value: unknown, field: string): string | null {
   return d.toISOString();
 }
 
-function toRow(input: unknown): ArticleRow {
+function toRow(input: unknown): ContentRow {
   if (!input || typeof input !== 'object') bad('Telo požiadavky musí byť objekt.');
   const a = input as Record<string, unknown>;
 
@@ -234,14 +253,6 @@ function toRow(input: unknown): ArticleRow {
   const category = reqStr(a.category, 'category');
   if (category !== 'krmivo' && category !== 'zdravie')
     bad('Kategória musí byť "krmivo" alebo "zdravie".');
-
-  const status: ArticleStatus = ARTICLE_STATUSES.includes(a.status as ArticleStatus)
-    ? (a.status as ArticleStatus)
-    : 'draft';
-  const publishAt = optionalIso(a.publishAt, 'publishAt');
-  if (status === 'scheduled' && !publishAt) {
-    bad('Pre naplánovaný článok je potrebný dátum publikovania.');
-  }
 
   return {
     slug,
@@ -265,19 +276,15 @@ function toRow(input: unknown): ArticleRow {
       typeof a.updated === 'string' && a.updated.trim().length > 0
         ? a.updated.trim()
         : new Date().toISOString().slice(0, 10),
-    published: status === 'published',
     position: typeof a.position === 'number' && Number.isFinite(a.position) ? a.position : 0,
-    status,
     assigned_editor:
-      typeof a.assignedEditor === 'string' && a.assignedEditor.trim().length > 0
-        ? a.assignedEditor.trim()
+      typeof a.assignedTo === 'string' && a.assignedTo.trim().length > 0
+        ? a.assignedTo.trim()
         : null,
     editorial_notes:
-      typeof a.editorialNotes === 'string' && a.editorialNotes.trim().length > 0
-        ? a.editorialNotes.trim()
+      typeof a.internalNotes === 'string' && a.internalNotes.trim().length > 0
+        ? a.internalNotes.trim()
         : null,
-    publish_at: publishAt,
-    unpublish_at: optionalIso(a.unpublishAt, 'unpublishAt'),
   };
 }
 
@@ -313,7 +320,8 @@ export async function getArticleBySlugAdmin(slug: string): Promise<AdminArticle 
 }
 
 export async function createArticle(input: unknown): Promise<AdminArticle> {
-  const row = toRow(input);
+  // Nový článok vždy začína ako koncept; stav sa odvtedy mení len cez workflow.
+  const row = { ...toRow(input), status: 'draft' as ArticleStatus, published: false };
   const { data, error } = await getSupabase()
     .from('articles')
     .insert(row)
@@ -333,6 +341,79 @@ export async function updateArticle(slug: string, input: unknown): Promise<Admin
   const { data, error } = await getSupabase()
     .from('articles')
     .update(row)
+    .eq('slug', slug)
+    .select(SELECT_COLUMNS_ADMIN)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw httpError(404, 'Článok sa nenašiel.', 'NOT_FOUND');
+  return rowToAdminArticle(data as Row);
+}
+
+function assertPublishable(article: AdminArticle): void {
+  const missing: string[] = [];
+  if (!article.title.trim()) missing.push('titulok');
+  if (!article.description.trim()) missing.push('meta popis');
+  if (!SLUG_RE.test(article.slug)) missing.push('validný slug');
+  if (
+    article.category === 'zdravie' &&
+    (article.sources ?? []).filter((s) => s.url.trim().length > 0).length === 0
+  ) {
+    missing.push('aspoň jeden zdroj (zdravotný článok)');
+  }
+  if (missing.length > 0) {
+    throw httpError(400, `Pred publikovaním doplň: ${missing.join(', ')}.`, 'NOT_PUBLISHABLE');
+  }
+}
+
+export async function changeArticleStatus(
+  slug: string,
+  target: ArticleStatus,
+  opts: { by?: string | null; scheduledFor?: unknown } = {}
+): Promise<AdminArticle> {
+  if (!ARTICLE_STATUSES.includes(target)) bad('Neplatný cieľový stav.');
+
+  const current = await getArticleBySlugAdmin(slug);
+  if (!current) throw httpError(404, 'Článok sa nenašiel.', 'NOT_FOUND');
+  if (current.status === target) return current;
+
+  if (!isTransitionAllowed(current.status, target)) {
+    throw httpError(
+      400,
+      `Prechod „${current.status}" → „${target}" nie je povolený.`,
+      'INVALID_TRANSITION'
+    );
+  }
+
+  const by = typeof opts.by === 'string' && opts.by.length > 0 ? opts.by : null;
+  const nowIso = new Date().toISOString();
+  const patch: Row = { status: target, published: target === 'published' };
+
+  if (target === 'scheduled') {
+    const when = optionalIso(opts.scheduledFor, 'scheduledFor');
+    if (!when) bad('Pre naplánovanie je potrebný dátum publikovania.');
+    patch.publish_at = when;
+  }
+  if (target === 'published') {
+    assertPublishable(current);
+    patch.published_at = nowIso;
+    patch.published_by = by;
+  }
+  if (target === 'in_review') {
+    patch.submitted_for_review_at = nowIso;
+    patch.submitted_for_review_by = by;
+  }
+  if (target === 'approved') {
+    patch.approved_at = nowIso;
+    patch.approved_by = by;
+  }
+  if (target === 'archived') {
+    patch.archived_at = nowIso;
+    patch.archived_by = by;
+  }
+
+  const { data, error } = await getSupabase()
+    .from('articles')
+    .update(patch)
     .eq('slug', slug)
     .select(SELECT_COLUMNS_ADMIN)
     .maybeSingle();

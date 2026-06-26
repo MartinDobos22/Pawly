@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Checkbox,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -40,14 +41,22 @@ import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
   autosaveArticle,
+  changeArticleStatus,
   createAdminArticle,
   getAdminArticle,
+  listArticleVersions,
   updateAdminArticle,
   uploadArticleImage,
 } from '../../services/adminApi';
 import { downscaleImage } from '../../utils/imageDownscale';
+import {
+  ARTICLE_STATUS_TRANSITIONS,
+  STATUS_COLORS,
+  STATUS_LABELS,
+  transitionActionLabel,
+} from '../../utils/articleWorkflow';
 import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
-import type { AdminArticle } from '../../content/poradna/types';
+import type { AdminArticle, ArticleStatus } from '../../content/poradna/types';
 
 function emptyArticle(): AdminArticle {
   return {
@@ -67,21 +76,11 @@ function emptyArticle(): AdminArticle {
     published: false,
     position: 0,
     status: 'draft',
-    assignedEditor: '',
-    editorialNotes: '',
-    publishAt: '',
-    unpublishAt: '',
+    assignedTo: '',
+    internalNotes: '',
+    scheduledFor: '',
   };
 }
-
-const STATUS_OPTIONS: { value: AdminArticle['status']; label: string }[] = [
-  { value: 'draft', label: 'Koncept' },
-  { value: 'review', label: 'Na kontrolu' },
-  { value: 'approved', label: 'Schválené' },
-  { value: 'scheduled', label: 'Naplánované' },
-  { value: 'published', label: 'Publikované' },
-  { value: 'archived', label: 'Archivované' },
-];
 
 const PUBLISH_CHECKLIST = [
   'Obsah skontroloval človek (nie len AI).',
@@ -121,6 +120,9 @@ export default function AdminArticleEditPage() {
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [checklistChecked, setChecklistChecked] = useState<boolean[]>([]);
   const [autosavedAt, setAutosavedAt] = useState<string | null>(null);
+  const [latestVersion, setLatestVersion] = useState<number | null>(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleAt, setScheduleAt] = useState('');
 
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
@@ -135,6 +137,9 @@ export default function AdminArticleEditPage() {
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
+    listArticleVersions(slug)
+      .then((v) => setLatestVersion(v[0]?.versionNumber ?? 0))
+      .catch(() => setLatestVersion(null));
   }, [slug, isNew]);
 
   // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
@@ -182,28 +187,33 @@ export default function AdminArticleEditPage() {
     }
   };
 
-  const persist = async (statusValue: AdminArticle['status']) => {
+  const cleanedPayload = (): AdminArticle => ({
+    ...form,
+    faqs: faqs.filter((f) => f.q.trim() || f.a.trim()),
+    sources: sources.filter((s) => s.label.trim() || s.url.trim()),
+    sections: form.sections.map((s) => ({
+      ...s,
+      blocks: s.blocks.map((b) =>
+        b.type === 'bullets' ? { ...b, items: b.items.filter((i) => i.trim().length > 0) } : b
+      ),
+    })),
+  });
+
+  // Uloženie obsahu/metadát — NEMENÍ stav (ten ide len cez prechody nižšie).
+  const saveContent = async () => {
     setSaving(true);
     setError(null);
     try {
-      const payload: AdminArticle = {
-        ...form,
-        status: statusValue,
-        faqs: faqs.filter((f) => f.q.trim() || f.a.trim()),
-        sources: sources.filter((s) => s.label.trim() || s.url.trim()),
-        sections: form.sections.map((s) => ({
-          ...s,
-          blocks: s.blocks.map((b) =>
-            b.type === 'bullets' ? { ...b, items: b.items.filter((i) => i.trim().length > 0) } : b
-          ),
-        })),
-      };
+      const payload = cleanedPayload();
       if (isNew) {
-        await createAdminArticle(payload);
-      } else {
-        await updateAdminArticle(slug, payload);
+        const created = await createAdminArticle(payload);
+        navigate(`/admin/clanky/${created.slug}`);
+        return;
       }
-      navigate('/admin/clanky');
+      const updated = await updateAdminArticle(slug, payload);
+      setForm(updated);
+      savedSnapshotRef.current = JSON.stringify(updated);
+      setNotice('Uložené.');
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -211,17 +221,45 @@ export default function AdminArticleEditPage() {
     }
   };
 
-  // Publikovanie prejde cez checklist (poistka proti omylom pustenému obsahu).
-  const requestSave = (statusValue: AdminArticle['status'] = form.status) => {
-    if (statusValue === 'published') {
+  // Zmena stavu cez workflow. Najprv uloží obsah (aby server validoval aktuálne
+  // dáta, napr. pri publikovaní), potom zmení stav cez validovaný prechod.
+  const runStatus = async (target: ArticleStatus, opts?: { scheduledFor?: string }) => {
+    if (isNew || !slug) {
+      setError('Najprv ulož článok.');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await updateAdminArticle(slug, cleanedPayload());
+      const updated = await changeArticleStatus(slug, target, opts);
+      setForm(updated);
+      savedSnapshotRef.current = JSON.stringify(updated);
+      setLatestVersion((v) => (v == null ? v : v + 1));
+      setNotice(`Stav: ${STATUS_LABELS[target]}.`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Akcia podľa cieľového stavu: publish cez checklist, schedule cez dialóg.
+  const handleTransition = (target: ArticleStatus) => {
+    if (target === 'published') {
       setChecklistChecked(PUBLISH_CHECKLIST.map(() => false));
       setChecklistOpen(true);
       return;
     }
-    void persist(statusValue);
+    if (target === 'scheduled') {
+      setScheduleAt(toLocalInput(form.scheduledFor));
+      setScheduleOpen(true);
+      return;
+    }
+    void runStatus(target);
   };
 
-  const save = () => requestSave();
+  const allowedTransitions = ARTICLE_STATUS_TRANSITIONS[form.status];
 
   if (loading) {
     return (
@@ -254,7 +292,7 @@ export default function AdminArticleEditPage() {
             História verzií
           </Button>
         )}
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={save} disabled={saving}>
+        <Button variant="contained" startIcon={<SaveIcon />} onClick={saveContent} disabled={saving}>
           {saving ? 'Ukladám…' : 'Uložiť'}
         </Button>
       </Stack>
@@ -484,78 +522,70 @@ export default function AdminArticleEditPage() {
                 Redakčný stav
               </Typography>
               <Stack spacing={theme.spacing(2)}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
-                  <TextField
-                    select
-                    label="Stav"
-                    value={form.status}
-                    onChange={(e) => set('status', e.target.value as AdminArticle['status'])}
-                    size="small"
-                    fullWidth
-                  >
-                    {STATUS_OPTIONS.map((o) => (
-                      <MenuItem key={o.value} value={o.value}>
-                        {o.label}
-                      </MenuItem>
+                <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center">
+                  <Stack direction="row" spacing={0.5} alignItems="center">
+                    <Typography variant="body2" color="text.secondary">
+                      Status:
+                    </Typography>
+                    <Chip
+                      label={STATUS_LABELS[form.status]}
+                      color={STATUS_COLORS[form.status]}
+                      size="small"
+                    />
+                  </Stack>
+                  <Typography variant="body2" color="text.secondary">
+                    Posledná zmena: {form.updated}
+                  </Typography>
+                  {latestVersion != null && (
+                    <Typography variant="body2" color="text.secondary">
+                      Verzia: v{latestVersion}
+                    </Typography>
+                  )}
+                  {form.scheduledFor && form.status === 'scheduled' && (
+                    <Typography variant="body2" color="text.secondary">
+                      Naplánované na {new Date(form.scheduledFor).toLocaleString('sk-SK')}
+                    </Typography>
+                  )}
+                </Stack>
+
+                {isNew ? (
+                  <Typography variant="caption" color="text.secondary">
+                    Po uložení sa článok vytvorí ako koncept a sprístupnia sa redakčné akcie.
+                  </Typography>
+                ) : (
+                  <Stack direction="row" spacing={1} flexWrap="wrap">
+                    {allowedTransitions.map((target) => (
+                      <Button
+                        key={target}
+                        size="small"
+                        variant="outlined"
+                        disabled={saving}
+                        color={
+                          target === 'published'
+                            ? 'success'
+                            : target === 'archived'
+                              ? 'inherit'
+                              : 'primary'
+                        }
+                        onClick={() => handleTransition(target)}
+                      >
+                        {transitionActionLabel(form.status, target)}
+                      </Button>
                     ))}
-                  </TextField>
-                  <TextField
-                    label="Priradený editor (e-mail)"
-                    value={form.assignedEditor ?? ''}
-                    onChange={(e) => set('assignedEditor', e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                </Stack>
-
-                <Stack direction="row" spacing={1} flexWrap="wrap">
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="warning"
-                    onClick={() => requestSave('review')}
-                    disabled={saving}
-                  >
-                    Požiadať o revíziu
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="success"
-                    onClick={() => requestSave('approved')}
-                    disabled={saving}
-                  >
-                    Schváliť
-                  </Button>
-                </Stack>
-
-                {form.status === 'scheduled' && (
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
-                    <TextField
-                      label="Publikovať o"
-                      type="datetime-local"
-                      value={toLocalInput(form.publishAt)}
-                      onChange={(e) => set('publishAt', fromLocalInput(e.target.value))}
-                      size="small"
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                    />
-                    <TextField
-                      label="Stiahnuť o (voliteľné)"
-                      type="datetime-local"
-                      value={toLocalInput(form.unpublishAt)}
-                      onChange={(e) => set('unpublishAt', fromLocalInput(e.target.value))}
-                      size="small"
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                    />
                   </Stack>
                 )}
 
                 <TextField
+                  label="Priradené (e-mail editora)"
+                  value={form.assignedTo ?? ''}
+                  onChange={(e) => set('assignedTo', e.target.value)}
+                  size="small"
+                  fullWidth
+                />
+                <TextField
                   label="Interné poznámky (nezobrazujú sa verejne)"
-                  value={form.editorialNotes ?? ''}
-                  onChange={(e) => set('editorialNotes', e.target.value)}
+                  value={form.internalNotes ?? ''}
+                  onChange={(e) => set('internalNotes', e.target.value)}
                   multiline
                   minRows={2}
                   fullWidth
@@ -695,7 +725,7 @@ export default function AdminArticleEditPage() {
           <Button
             variant="contained"
             startIcon={<SaveIcon />}
-            onClick={save}
+            onClick={saveContent}
             disabled={saving}
             sx={{ alignSelf: 'flex-start' }}
           >
@@ -768,10 +798,43 @@ export default function AdminArticleEditPage() {
             }
             onClick={() => {
               setChecklistOpen(false);
-              void persist('published');
+              void runStatus('published');
             }}
           >
             Publikovať
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={scheduleOpen} onClose={() => setScheduleOpen(false)} fullWidth maxWidth="xs">
+        <DialogTitle>Naplánovať publikovanie</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Publikovať o"
+            type="datetime-local"
+            value={scheduleAt}
+            onChange={(e) => setScheduleAt(e.target.value)}
+            fullWidth
+            margin="dense"
+            InputLabelProps={{ shrink: true }}
+          />
+          <Typography variant="caption" color="text.secondary">
+            V naplánovanom čase článok automaticky zverejní cron.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setScheduleOpen(false)}>Zrušiť</Button>
+          <Button
+            variant="contained"
+            disabled={saving || !scheduleAt}
+            onClick={() => {
+              const iso = fromLocalInput(scheduleAt);
+              if (!iso) return;
+              setScheduleOpen(false);
+              void runStatus('scheduled', { scheduledFor: iso });
+            }}
+          >
+            Naplánovať
           </Button>
         </DialogActions>
       </Dialog>

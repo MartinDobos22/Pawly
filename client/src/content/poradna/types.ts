@@ -50,7 +50,7 @@ export interface Article {
 
 export type ArticleStatus =
   | 'draft'
-  | 'review'
+  | 'in_review'
   | 'approved'
   | 'scheduled'
   | 'published'
@@ -62,10 +62,20 @@ export interface AdminArticle extends Article {
   published: boolean;
   position: number;
   status: ArticleStatus;
-  assignedEditor?: string;
-  editorialNotes?: string;
-  publishAt?: string;
+  assignedTo?: string;
+  internalNotes?: string;
+  /** Naplánovaný čas publikovania. */
+  scheduledFor?: string;
   unpublishAt?: string;
+  // Audit — kto a kedy vykonal prechod do daného stavu.
+  submittedForReviewAt?: string;
+  submittedForReviewBy?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  publishedAt?: string;
+  publishedBy?: string;
+  archivedAt?: string;
+  archivedBy?: string;
 }
 
 export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';

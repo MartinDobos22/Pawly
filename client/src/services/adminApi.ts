@@ -80,6 +80,21 @@ export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
 }
 
+export async function changeArticleStatus(
+  slug: string,
+  status: AdminArticle['status'],
+  opts?: { note?: string; scheduledFor?: string }
+): Promise<AdminArticle> {
+  const data = await request<{ article: AdminArticle }>(
+    `/articles/${encodeURIComponent(slug)}/status`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ status, note: opts?.note, scheduledFor: opts?.scheduledFor }),
+    }
+  );
+  return data.article;
+}
+
 export async function autosaveArticle(
   slug: string,
   article: AdminArticle
