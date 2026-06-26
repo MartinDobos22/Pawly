@@ -35,6 +35,7 @@ import {
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
 import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
 import ArticleSeoPanel from '../../components/admin/ArticleSeoPanel';
+import { analyzeSeo } from '../../utils/articleSeo';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
@@ -133,6 +134,7 @@ export default function AdminArticleEditPage() {
 
   const faqs = form.faqs ?? [];
   const sources = form.sources ?? [];
+  const seoErrors = analyzeSeo(form).filter((c) => c.status === 'error');
 
   const handleCoverUpload = async (file: File) => {
     setError(null);
@@ -690,6 +692,16 @@ export default function AdminArticleEditPage() {
             Pri témach ako zdravie psa over, že obsah je v poriadku. Publikovať môžeš až po
             odškrtnutí všetkých bodov.
           </Typography>
+          {seoErrors.length > 0 && (
+            <Alert severity="error" sx={{ mb: theme.spacing(2) }}>
+              Najprv oprav kritické SEO chyby (pozri SEO tab):
+              <Box component="ul" sx={{ mt: 0.5, mb: 0, pl: theme.spacing(3) }}>
+                {seoErrors.map((c) => (
+                  <li key={c.id}>{c.label}</li>
+                ))}
+              </Box>
+            </Alert>
+          )}
           <Stack>
             {PUBLISH_CHECKLIST.map((item, i) => (
               <FormControlLabel
@@ -715,7 +727,12 @@ export default function AdminArticleEditPage() {
           <Button onClick={() => setChecklistOpen(false)}>Zrušiť</Button>
           <Button
             variant="contained"
-            disabled={saving || !checklistChecked.every(Boolean) || checklistChecked.length === 0}
+            disabled={
+              saving ||
+              seoErrors.length > 0 ||
+              checklistChecked.length === 0 ||
+              !checklistChecked.every(Boolean)
+            }
             onClick={() => {
               setChecklistOpen(false);
               void persist('published');
