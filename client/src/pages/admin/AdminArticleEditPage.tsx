@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Alert,
@@ -6,13 +6,18 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControlLabel,
   IconButton,
   MenuItem,
+  Snackbar,
   Stack,
-  Switch,
   Tab,
   Tabs,
   TextField,
@@ -23,13 +28,18 @@ import {
   Add as AddIcon,
   ArrowBack as BackIcon,
   DeleteOutline as DeleteIcon,
+  HistoryOutlined as HistoryIcon,
   Save as SaveIcon,
   UploadFile as UploadIcon,
 } from '@mui/icons-material';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
+import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
+import ArticleSeoPanel from '../../components/admin/ArticleSeoPanel';
+import { analyzeSeo } from '../../utils/articleSeo';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
+  autosaveArticle,
   createAdminArticle,
   getAdminArticle,
   updateAdminArticle,
@@ -54,9 +64,44 @@ function emptyArticle(): AdminArticle {
     ctaIntent: 'food',
     author: '',
     sources: [],
-    published: true,
+    published: false,
     position: 0,
+    status: 'draft',
+    assignedEditor: '',
+    editorialNotes: '',
+    publishAt: '',
+    unpublishAt: '',
   };
+}
+
+const STATUS_OPTIONS: { value: AdminArticle['status']; label: string }[] = [
+  { value: 'draft', label: 'Koncept' },
+  { value: 'review', label: 'Na kontrolu' },
+  { value: 'approved', label: 'Schválené' },
+  { value: 'scheduled', label: 'Naplánované' },
+  { value: 'published', label: 'Publikované' },
+  { value: 'archived', label: 'Archivované' },
+];
+
+const PUBLISH_CHECKLIST = [
+  'Obsah skontroloval človek (nie len AI).',
+  'Pri zdravotných tvrdeniach sú uvedené zdroje.',
+  'Titulok, meta popis a úvod sú vyplnené.',
+  'Odkazy a obrázky fungujú.',
+];
+
+function toLocalInput(iso?: string): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function fromLocalInput(local: string): string {
+  if (!local) return '';
+  const d = new Date(local);
+  return Number.isNaN(d.getTime()) ? '' : d.toISOString();
 }
 
 export default function AdminArticleEditPage() {
@@ -71,21 +116,52 @@ export default function AdminArticleEditPage() {
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [versionsOpen, setVersionsOpen] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [checklistOpen, setChecklistOpen] = useState(false);
+  const [checklistChecked, setChecklistChecked] = useState<boolean[]>([]);
+  const [autosavedAt, setAutosavedAt] = useState<string | null>(null);
+
+  // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
+  const savedSnapshotRef = useRef<string>('');
 
   useEffect(() => {
     if (isNew) return;
     setLoading(true);
     getAdminArticle(slug)
-      .then(setForm)
+      .then((a) => {
+        setForm(a);
+        savedSnapshotRef.current = JSON.stringify(a);
+      })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [slug, isNew]);
+
+  // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
+  // zmena. Nemení živý článok — len zachová rozpracovanú prácu vo verziách.
+  useEffect(() => {
+    if (isNew || !slug || loading) return;
+    const current = JSON.stringify(form);
+    if (current === savedSnapshotRef.current) return;
+    const timer = setTimeout(() => {
+      autosaveArticle(slug, form)
+        .then(({ savedAt }) => {
+          savedSnapshotRef.current = current;
+          setAutosavedAt(savedAt);
+        })
+        .catch(() => {
+          /* autosave je best-effort; chyby nerušia editáciu */
+        });
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [form, slug, isNew, loading]);
 
   const set = <K extends keyof AdminArticle>(key: K, val: AdminArticle[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
 
   const faqs = form.faqs ?? [];
   const sources = form.sources ?? [];
+  const seoErrors = analyzeSeo(form).filter((c) => c.status === 'error');
 
   const handleCoverUpload = async (file: File) => {
     setError(null);
@@ -106,12 +182,13 @@ export default function AdminArticleEditPage() {
     }
   };
 
-  const save = async () => {
+  const persist = async (statusValue: AdminArticle['status']) => {
     setSaving(true);
     setError(null);
     try {
       const payload: AdminArticle = {
         ...form,
+        status: statusValue,
         faqs: faqs.filter((f) => f.q.trim() || f.a.trim()),
         sources: sources.filter((s) => s.label.trim() || s.url.trim()),
         sections: form.sections.map((s) => ({
@@ -134,6 +211,18 @@ export default function AdminArticleEditPage() {
     }
   };
 
+  // Publikovanie prejde cez checklist (poistka proti omylom pustenému obsahu).
+  const requestSave = (statusValue: AdminArticle['status'] = form.status) => {
+    if (statusValue === 'published') {
+      setChecklistChecked(PUBLISH_CHECKLIST.map(() => false));
+      setChecklistOpen(true);
+      return;
+    }
+    void persist(statusValue);
+  };
+
+  const save = () => requestSave();
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
@@ -151,6 +240,20 @@ export default function AdminArticleEditPage() {
         <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           {isNew ? 'Nový článok' : 'Upraviť článok'}
         </Typography>
+        {autosavedAt && (
+          <Typography variant="caption" color="text.secondary">
+            Automaticky uložené o {new Date(autosavedAt).toLocaleTimeString('sk-SK')}
+          </Typography>
+        )}
+        {!isNew && (
+          <Button
+            variant="outlined"
+            startIcon={<HistoryIcon />}
+            onClick={() => setVersionsOpen(true)}
+          >
+            História verzií
+          </Button>
+        )}
         <Button variant="contained" startIcon={<SaveIcon />} onClick={save} disabled={saving}>
           {saving ? 'Ukladám…' : 'Uložiť'}
         </Button>
@@ -165,7 +268,10 @@ export default function AdminArticleEditPage() {
       <Tabs value={tab} onChange={(_, v) => setTab(v as number)} sx={{ mb: theme.spacing(2) }}>
         <Tab label="Editor" />
         <Tab label="Náhľad" />
+        <Tab label="SEO" />
       </Tabs>
+
+      {tab === 2 && <ArticleSeoPanel article={form} />}
 
       {tab === 1 && (
         <Box sx={{ maxWidth: 720, mx: 'auto' }}>
@@ -352,15 +458,6 @@ export default function AdminArticleEditPage() {
                     size="small"
                     sx={{ width: theme.spacing(14) }}
                   />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={form.published}
-                        onChange={(e) => set('published', e.target.checked)}
-                      />
-                    }
-                    label={form.published ? 'Publikované' : 'Koncept'}
-                  />
                 </Stack>
                 <TextField
                   label="Súvisiace články (slugy oddelené čiarkou)"
@@ -374,6 +471,93 @@ export default function AdminArticleEditPage() {
                         .filter((s) => s.length > 0)
                     )
                   }
+                  fullWidth
+                  size="small"
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="subtitle1" gutterBottom>
+                Redakčný stav
+              </Typography>
+              <Stack spacing={theme.spacing(2)}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                  <TextField
+                    select
+                    label="Stav"
+                    value={form.status}
+                    onChange={(e) => set('status', e.target.value as AdminArticle['status'])}
+                    size="small"
+                    fullWidth
+                  >
+                    {STATUS_OPTIONS.map((o) => (
+                      <MenuItem key={o.value} value={o.value}>
+                        {o.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    label="Priradený editor (e-mail)"
+                    value={form.assignedEditor ?? ''}
+                    onChange={(e) => set('assignedEditor', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                </Stack>
+
+                <Stack direction="row" spacing={1} flexWrap="wrap">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => requestSave('review')}
+                    disabled={saving}
+                  >
+                    Požiadať o revíziu
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="success"
+                    onClick={() => requestSave('approved')}
+                    disabled={saving}
+                  >
+                    Schváliť
+                  </Button>
+                </Stack>
+
+                {form.status === 'scheduled' && (
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                    <TextField
+                      label="Publikovať o"
+                      type="datetime-local"
+                      value={toLocalInput(form.publishAt)}
+                      onChange={(e) => set('publishAt', fromLocalInput(e.target.value))}
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                    <TextField
+                      label="Stiahnuť o (voliteľné)"
+                      type="datetime-local"
+                      value={toLocalInput(form.unpublishAt)}
+                      onChange={(e) => set('unpublishAt', fromLocalInput(e.target.value))}
+                      size="small"
+                      fullWidth
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Stack>
+                )}
+
+                <TextField
+                  label="Interné poznámky (nezobrazujú sa verejne)"
+                  value={form.editorialNotes ?? ''}
+                  onChange={(e) => set('editorialNotes', e.target.value)}
+                  multiline
+                  minRows={2}
                   fullWidth
                   size="small"
                 />
@@ -519,6 +703,85 @@ export default function AdminArticleEditPage() {
           </Button>
         </Stack>
       )}
+
+      {!isNew && (
+        <ArticleVersionsDrawer
+          open={versionsOpen}
+          slug={slug ?? ''}
+          current={form}
+          onClose={() => setVersionsOpen(false)}
+          onRestored={(article) => {
+            setForm(article);
+            setVersionsOpen(false);
+            setNotice(`Obnovená verzia článku „${article.title}".`);
+          }}
+        />
+      )}
+
+      <Dialog open={checklistOpen} onClose={() => setChecklistOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Kontrola pred publikovaním</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: theme.spacing(1) }}>
+            Pri témach ako zdravie psa over, že obsah je v poriadku. Publikovať môžeš až po
+            odškrtnutí všetkých bodov.
+          </Typography>
+          {seoErrors.length > 0 && (
+            <Alert severity="error" sx={{ mb: theme.spacing(2) }}>
+              Najprv oprav kritické SEO chyby (pozri SEO tab):
+              <Box component="ul" sx={{ mt: 0.5, mb: 0, pl: theme.spacing(3) }}>
+                {seoErrors.map((c) => (
+                  <li key={c.id}>{c.label}</li>
+                ))}
+              </Box>
+            </Alert>
+          )}
+          <Stack>
+            {PUBLISH_CHECKLIST.map((item, i) => (
+              <FormControlLabel
+                key={i}
+                control={
+                  <Checkbox
+                    checked={checklistChecked[i] ?? false}
+                    onChange={(e) =>
+                      setChecklistChecked((prev) => {
+                        const next = [...prev];
+                        next[i] = e.target.checked;
+                        return next;
+                      })
+                    }
+                  />
+                }
+                label={item}
+              />
+            ))}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setChecklistOpen(false)}>Zrušiť</Button>
+          <Button
+            variant="contained"
+            disabled={
+              saving ||
+              seoErrors.length > 0 ||
+              checklistChecked.length === 0 ||
+              !checklistChecked.every(Boolean)
+            }
+            onClick={() => {
+              setChecklistOpen(false);
+              void persist('published');
+            }}
+          >
+            Publikovať
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={6000}
+        onClose={() => setNotice(null)}
+        message={notice ?? ''}
+      />
     </Box>
   );
 }

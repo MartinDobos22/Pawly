@@ -9,6 +9,14 @@ import {
   updateArticle,
 } from '../services/articleService';
 import { uploadArticleImage } from '../services/articleImageService';
+import {
+  getArticleVersion,
+  listArticleVersions,
+  recordArticleVersionBySlug,
+  recordAutosaveVersion,
+  restoreArticleVersion,
+  snapshotPublishedArticles,
+} from '../services/articleVersionService';
 import { logger } from '../utils/logger';
 
 // /api/admin/* — vyžaduje Firebase auth (globálny firebaseAuth) + ensureUser
@@ -42,7 +50,15 @@ articles.get('/:slug', async (req: Request, res: Response, next: NextFunction) =
 
 articles.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.status(201).json({ article: await createArticle(req.body) });
+    const article = await createArticle(req.body);
+    await recordArticleVersionBySlug({
+      slug: article.slug,
+      data: article,
+      kind: 'manual',
+      createdBy: req.user?.email ?? null,
+      changeSummary: 'Vytvorené',
+    });
+    res.status(201).json({ article });
   } catch (err) {
     next(err);
   }
@@ -57,12 +73,13 @@ articles.post('/upload-image', async (req: Request, res: Response, next: NextFun
 });
 
 // Spustí Netlify build hook → rebuild verejného webu (prerender z DB).
-articles.post('/publish', async (_req: Request, res: Response, next: NextFunction) => {
+articles.post('/publish', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const hookUrl = process.env.NETLIFY_BUILD_HOOK_URL;
     if (!hookUrl) {
       throw httpError(503, 'Publikovanie nie je nakonfigurované.', 'PUBLISH_NOT_CONFIGURED');
     }
+    await snapshotPublishedArticles(req.user?.email ?? null);
     let ok = false;
     let status = 0;
     try {
@@ -84,11 +101,79 @@ articles.post('/publish', async (_req: Request, res: Response, next: NextFunctio
 
 articles.put('/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json({ article: await updateArticle(String(req.params.slug), req.body) });
+    const slug = String(req.params.slug);
+    const article = await updateArticle(slug, req.body);
+    const summary =
+      typeof req.body?.changeSummary === 'string' && req.body.changeSummary.trim().length > 0
+        ? req.body.changeSummary.trim()
+        : 'Upravené';
+    await recordArticleVersionBySlug({
+      slug,
+      data: article,
+      kind: 'manual',
+      createdBy: req.user?.email ?? null,
+      changeSummary: summary,
+    });
+    res.json({ article });
   } catch (err) {
     next(err);
   }
 });
+
+articles.post('/:slug/autosave', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.body || typeof req.body !== 'object') {
+      throw httpError(400, 'Telo požiadavky musí byť objekt.', 'INVALID_INPUT');
+    }
+    const result = await recordAutosaveVersion({
+      slug: String(req.params.slug),
+      data: req.body,
+      createdBy: req.user?.email ?? null,
+    });
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.get('/:slug/versions', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ versions: await listArticleVersions(String(req.params.slug)) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.get(
+  '/:slug/versions/:versionId',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const version = await getArticleVersion(
+        String(req.params.slug),
+        String(req.params.versionId)
+      );
+      res.json({ version });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+articles.post(
+  '/:slug/versions/:versionId/restore',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const article = await restoreArticleVersion(
+        String(req.params.slug),
+        String(req.params.versionId),
+        req.user?.email ?? null
+      );
+      res.json({ article });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 articles.delete('/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {

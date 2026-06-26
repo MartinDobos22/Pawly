@@ -5,10 +5,14 @@ export type ArticleCategory = 'krmivo' | 'zdravie';
 
 export type CalloutVariant = 'tip' | 'warning' | 'info';
 
+export type TextAlign = 'left' | 'center' | 'right';
+
 export type Block =
-  | { type: 'paragraph'; text: string }
+  | { type: 'paragraph'; text: string; align?: TextAlign }
   | { type: 'bullets'; ordered?: boolean; items: string[] }
   | { type: 'subheading'; text: string }
+  | { type: 'quote'; text: string }
+  | { type: 'divider' }
   | { type: 'callout'; variant: CalloutVariant; title?: string; text: string };
 
 export interface ArticleSection {
@@ -44,8 +48,39 @@ export interface Article {
   sources?: ArticleSource[];
 }
 
-/** Admin pohľad na článok — navyše stavové polia (draft + poradie). */
+export type ArticleStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'scheduled'
+  | 'published'
+  | 'archived';
+
+/** Admin pohľad na článok — navyše redakčný workflow + poradie. */
 export interface AdminArticle extends Article {
+  /** Verejná viditeľnosť — odvodené zo status (published <=> status='published'). */
   published: boolean;
   position: number;
+  status: ArticleStatus;
+  assignedEditor?: string;
+  editorialNotes?: string;
+  publishAt?: string;
+  unpublishAt?: string;
+}
+
+export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';
+
+/** Metadáta verzie článku (bez plného snapshotu) — pre zoznam histórie. */
+export interface ArticleVersionMeta {
+  id: string;
+  versionNumber: number;
+  kind: ArticleVersionKind;
+  changeSummary: string | null;
+  createdBy: string | null;
+  createdAt: string;
+}
+
+/** Plná verzia vrátane snapshotu dát článku. */
+export interface ArticleVersion extends ArticleVersionMeta {
+  data: AdminArticle;
 }
