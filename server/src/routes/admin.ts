@@ -13,6 +13,7 @@ import {
   getArticleVersion,
   listArticleVersions,
   recordArticleVersionBySlug,
+  recordAutosaveVersion,
   restoreArticleVersion,
   snapshotPublishedArticles,
 } from '../services/articleVersionService';
@@ -114,6 +115,22 @@ articles.put('/:slug', async (req: Request, res: Response, next: NextFunction) =
       changeSummary: summary,
     });
     res.json({ article });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.post('/:slug/autosave', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.body || typeof req.body !== 'object') {
+      throw httpError(400, 'Telo požiadavky musí byť objekt.', 'INVALID_INPUT');
+    }
+    const result = await recordAutosaveVersion({
+      slug: String(req.params.slug),
+      data: req.body,
+      createdBy: req.user?.email ?? null,
+    });
+    res.json(result);
   } catch (err) {
     next(err);
   }

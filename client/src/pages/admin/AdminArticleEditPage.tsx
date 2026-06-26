@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Alert,
@@ -39,6 +39,7 @@ import { analyzeSeo } from '../../utils/articleSeo';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
+  autosaveArticle,
   createAdminArticle,
   getAdminArticle,
   updateAdminArticle,
@@ -119,15 +120,41 @@ export default function AdminArticleEditPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [checklistChecked, setChecklistChecked] = useState<boolean[]>([]);
+  const [autosavedAt, setAutosavedAt] = useState<string | null>(null);
+
+  // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
+  const savedSnapshotRef = useRef<string>('');
 
   useEffect(() => {
     if (isNew) return;
     setLoading(true);
     getAdminArticle(slug)
-      .then(setForm)
+      .then((a) => {
+        setForm(a);
+        savedSnapshotRef.current = JSON.stringify(a);
+      })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [slug, isNew]);
+
+  // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
+  // zmena. Nemení živý článok — len zachová rozpracovanú prácu vo verziách.
+  useEffect(() => {
+    if (isNew || !slug || loading) return;
+    const current = JSON.stringify(form);
+    if (current === savedSnapshotRef.current) return;
+    const timer = setTimeout(() => {
+      autosaveArticle(slug, form)
+        .then(({ savedAt }) => {
+          savedSnapshotRef.current = current;
+          setAutosavedAt(savedAt);
+        })
+        .catch(() => {
+          /* autosave je best-effort; chyby nerušia editáciu */
+        });
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [form, slug, isNew, loading]);
 
   const set = <K extends keyof AdminArticle>(key: K, val: AdminArticle[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -213,6 +240,11 @@ export default function AdminArticleEditPage() {
         <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           {isNew ? 'Nový článok' : 'Upraviť článok'}
         </Typography>
+        {autosavedAt && (
+          <Typography variant="caption" color="text.secondary">
+            Automaticky uložené o {new Date(autosavedAt).toLocaleTimeString('sk-SK')}
+          </Typography>
+        )}
         {!isNew && (
           <Button
             variant="outlined"
@@ -676,6 +708,7 @@ export default function AdminArticleEditPage() {
         <ArticleVersionsDrawer
           open={versionsOpen}
           slug={slug ?? ''}
+          current={form}
           onClose={() => setVersionsOpen(false)}
           onRestored={(article) => {
             setForm(article);

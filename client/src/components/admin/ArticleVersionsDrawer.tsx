@@ -22,6 +22,7 @@ import {
   Close as CloseIcon,
   RestoreOutlined as RestoreIcon,
   VisibilityOutlined as PreviewIcon,
+  CompareArrowsOutlined as CompareIcon,
 } from '@mui/icons-material';
 import ConfirmDialog from '../ConfirmDialog';
 import ArticleBody from '../public/ArticleBody';
@@ -30,6 +31,7 @@ import {
   listArticleVersions,
   restoreArticleVersion,
 } from '../../services/adminApi';
+import { articleToLines, diffLines, type DiffLine } from '../../utils/articleDiff';
 import type {
   AdminArticle,
   ArticleVersion,
@@ -40,6 +42,7 @@ import type {
 interface Props {
   open: boolean;
   slug: string;
+  current: AdminArticle;
   onClose: () => void;
   onRestored: (article: AdminArticle) => void;
 }
@@ -59,7 +62,13 @@ function formatDate(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleString('sk-SK');
 }
 
-export default function ArticleVersionsDrawer({ open, slug, onClose, onRestored }: Props) {
+export default function ArticleVersionsDrawer({
+  open,
+  slug,
+  current,
+  onClose,
+  onRestored,
+}: Props) {
   const theme = useTheme();
   const [versions, setVersions] = useState<ArticleVersionMeta[]>([]);
   const [loading, setLoading] = useState(false);
@@ -67,6 +76,7 @@ export default function ArticleVersionsDrawer({ open, slug, onClose, onRestored 
   const [preview, setPreview] = useState<ArticleVersion | null>(null);
   const [toRestore, setToRestore] = useState<ArticleVersionMeta | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [diff, setDiff] = useState<{ versionNumber: number; lines: DiffLine[] } | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -87,6 +97,19 @@ export default function ArticleVersionsDrawer({ open, slug, onClose, onRestored 
     setError(null);
     try {
       setPreview(await getArticleVersion(slug, versionId));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const handleCompare = async (version: ArticleVersionMeta) => {
+    setError(null);
+    try {
+      const full = await getArticleVersion(slug, version.id);
+      setDiff({
+        versionNumber: version.versionNumber,
+        lines: diffLines(articleToLines(full.data), articleToLines(current)),
+      });
     } catch (e) {
       setError((e as Error).message);
     }
@@ -158,13 +181,16 @@ export default function ArticleVersionsDrawer({ open, slug, onClose, onRestored 
                 {formatDate(v.createdAt)}
                 {v.createdBy ? ` · ${v.createdBy}` : ''}
               </Typography>
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} flexWrap="wrap">
                 <Button
                   size="small"
                   startIcon={<PreviewIcon />}
                   onClick={() => handlePreview(v.id)}
                 >
                   Náhľad
+                </Button>
+                <Button size="small" startIcon={<CompareIcon />} onClick={() => handleCompare(v)}>
+                  Porovnať
                 </Button>
                 <Button
                   size="small"
@@ -215,6 +241,59 @@ export default function ArticleVersionsDrawer({ open, slug, onClose, onRestored 
               Obnoviť túto verziu
             </Button>
           )}
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(diff)} onClose={() => setDiff(null)} fullWidth maxWidth="md">
+        <DialogTitle>
+          Porovnanie: v{diff?.versionNumber} → aktuálny stav
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+            <Box component="span" sx={{ color: 'success.main' }}>
+              zelená = pridané
+            </Box>
+            {' · '}
+            <Box component="span" sx={{ color: 'error.main' }}>
+              červená = odstránené
+            </Box>{' '}
+            (oproti tejto verzii)
+          </Typography>
+          <Box
+            sx={{
+              fontFamily: 'monospace',
+              fontSize: theme.typography.body2.fontSize,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          >
+            {diff?.lines.map((line, i) => (
+              <Box
+                key={i}
+                sx={{
+                  px: 1,
+                  py: 0.25,
+                  bgcolor:
+                    line.type === 'add'
+                      ? 'success.light'
+                      : line.type === 'remove'
+                        ? 'error.light'
+                        : 'transparent',
+                  color: line.type === 'same' ? 'text.secondary' : 'text.primary',
+                  textDecoration: line.type === 'remove' ? 'line-through' : 'none',
+                }}
+              >
+                {line.type === 'add' ? '+ ' : line.type === 'remove' ? '− ' : '  '}
+                {line.text || ' '}
+              </Box>
+            ))}
+            {diff && diff.lines.every((l) => l.type === 'same') && (
+              <Typography color="text.secondary">Žiadne rozdiely.</Typography>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDiff(null)}>Zavrieť</Button>
         </DialogActions>
       </Dialog>
 

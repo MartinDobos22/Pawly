@@ -80,6 +80,16 @@ export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
 }
 
+export async function autosaveArticle(
+  slug: string,
+  article: AdminArticle
+): Promise<{ savedAt: string }> {
+  return request<{ savedAt: string }>(`/articles/${encodeURIComponent(slug)}/autosave`, {
+    method: 'POST',
+    body: JSON.stringify(article),
+  });
+}
+
 export async function listArticleVersions(slug: string): Promise<ArticleVersionMeta[]> {
   const data = await request<{ versions: ArticleVersionMeta[] }>(
     `/articles/${encodeURIComponent(slug)}/versions`

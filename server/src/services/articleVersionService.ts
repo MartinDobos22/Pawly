@@ -85,6 +85,41 @@ export async function recordArticleVersionBySlug(params: {
   });
 }
 
+const AUTOSAVE_KEEP = 10;
+
+// Autosave neukladá do živého článku — len zapíše snapshot verzie 'autosave',
+// takže rozpracovaná práca sa nestratí, ale verejný obsah ostáva nedotknutý.
+// Staré autosave verzie sa prerezávajú (ponechá sa posledných AUTOSAVE_KEEP).
+export async function recordAutosaveVersion(params: {
+  slug: string;
+  data: AdminArticle;
+  createdBy?: string | null;
+}): Promise<{ savedAt: string }> {
+  const articleId = await getArticleId(params.slug);
+  await insertVersion({
+    articleId,
+    data: params.data,
+    kind: 'autosave',
+    createdBy: params.createdBy ?? null,
+    changeSummary: 'Automatické uloženie',
+  });
+
+  const { data: stale, error } = await getSupabase()
+    .from('article_versions')
+    .select('id')
+    .eq('article_id', articleId)
+    .eq('kind', 'autosave')
+    .order('version_number', { ascending: false })
+    .range(AUTOSAVE_KEEP, AUTOSAVE_KEEP + 1000);
+  if (error) throw error;
+  const ids = ((stale as Row[] | null) ?? []).map((r) => String(r.id));
+  if (ids.length > 0) {
+    await getSupabase().from('article_versions').delete().in('id', ids);
+  }
+
+  return { savedAt: new Date().toISOString() };
+}
+
 export async function listArticleVersions(slug: string): Promise<ArticleVersionMeta[]> {
   const articleId = await getArticleId(slug);
   const { data, error } = await getSupabase()
