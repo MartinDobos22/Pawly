@@ -53,3 +53,20 @@ export interface AdminArticle extends Article {
   published: boolean;
   position: number;
 }
+
+export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';
+
+/** Metadáta verzie článku (bez plného snapshotu) — pre zoznam histórie. */
+export interface ArticleVersionMeta {
+  id: string;
+  versionNumber: number;
+  kind: ArticleVersionKind;
+  changeSummary: string | null;
+  createdBy: string | null;
+  createdAt: string;
+}
+
+/** Plná verzia vrátane snapshotu dát článku. */
+export interface ArticleVersion extends ArticleVersionMeta {
+  data: AdminArticle;
+}

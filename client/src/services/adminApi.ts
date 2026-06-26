@@ -1,4 +1,8 @@
-import type { AdminArticle } from '../content/poradna/types';
+import type {
+  AdminArticle,
+  ArticleVersion,
+  ArticleVersionMeta,
+} from '../content/poradna/types';
 import { getAuthHeader, handleUnauthorized } from './authToken';
 import { logger } from '../utils/logger';
 
@@ -74,4 +78,29 @@ export async function uploadArticleImage(payload: {
 
 export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
+}
+
+export async function listArticleVersions(slug: string): Promise<ArticleVersionMeta[]> {
+  const data = await request<{ versions: ArticleVersionMeta[] }>(
+    `/articles/${encodeURIComponent(slug)}/versions`
+  );
+  return data.versions;
+}
+
+export async function getArticleVersion(slug: string, versionId: string): Promise<ArticleVersion> {
+  const data = await request<{ version: ArticleVersion }>(
+    `/articles/${encodeURIComponent(slug)}/versions/${encodeURIComponent(versionId)}`
+  );
+  return data.version;
+}
+
+export async function restoreArticleVersion(
+  slug: string,
+  versionId: string
+): Promise<AdminArticle> {
+  const data = await request<{ article: AdminArticle }>(
+    `/articles/${encodeURIComponent(slug)}/versions/${encodeURIComponent(versionId)}/restore`,
+    { method: 'POST' }
+  );
+  return data.article;
 }

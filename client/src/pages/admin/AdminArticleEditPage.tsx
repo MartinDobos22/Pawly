@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   IconButton,
   MenuItem,
+  Snackbar,
   Stack,
   Switch,
   Tab,
@@ -23,10 +24,12 @@ import {
   Add as AddIcon,
   ArrowBack as BackIcon,
   DeleteOutline as DeleteIcon,
+  HistoryOutlined as HistoryIcon,
   Save as SaveIcon,
   UploadFile as UploadIcon,
 } from '@mui/icons-material';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
+import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
@@ -71,6 +74,8 @@ export default function AdminArticleEditPage() {
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [versionsOpen, setVersionsOpen] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (isNew) return;
@@ -151,6 +156,11 @@ export default function AdminArticleEditPage() {
         <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           {isNew ? 'Nový článok' : 'Upraviť článok'}
         </Typography>
+        {!isNew && (
+          <Button variant="outlined" startIcon={<HistoryIcon />} onClick={() => setVersionsOpen(true)}>
+            História verzií
+          </Button>
+        )}
         <Button variant="contained" startIcon={<SaveIcon />} onClick={save} disabled={saving}>
           {saving ? 'Ukladám…' : 'Uložiť'}
         </Button>
@@ -519,6 +529,26 @@ export default function AdminArticleEditPage() {
           </Button>
         </Stack>
       )}
+
+      {!isNew && (
+        <ArticleVersionsDrawer
+          open={versionsOpen}
+          slug={slug ?? ''}
+          onClose={() => setVersionsOpen(false)}
+          onRestored={(article) => {
+            setForm(article);
+            setVersionsOpen(false);
+            setNotice(`Obnovená verzia článku „${article.title}".`);
+          }}
+        />
+      )}
+
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={6000}
+        onClose={() => setNotice(null)}
+        message={notice ?? ''}
+      />
     </Box>
   );
 }

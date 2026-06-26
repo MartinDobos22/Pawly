@@ -8,9 +8,12 @@ import type {
   Block,
   CalloutVariant,
   FaqItem,
+  TextAlign,
 } from '../types/article';
 
 type Row = Record<string, unknown>;
+
+const TEXT_ALIGNS: TextAlign[] = ['left', 'center', 'right'];
 
 const SELECT_COLUMNS =
   'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, position';
@@ -98,21 +101,38 @@ function validateBlocks(value: unknown): Block[] {
     if (!raw || typeof raw !== 'object') bad(`Blok #${i + 1} je neplatný.`);
     const b = raw as Record<string, unknown>;
     switch (b.type) {
-      case 'paragraph':
-        return { type: 'paragraph', text: reqStr(b.text, `blok #${i + 1} text`) };
+      case 'paragraph': {
+        const out: Block = { type: 'paragraph', text: reqStr(b.text, `blok #${i + 1} text`) };
+        if (TEXT_ALIGNS.includes(b.align as TextAlign) && b.align !== 'left') {
+          out.align = b.align as TextAlign;
+        }
+        return out;
+      }
       case 'subheading':
         return { type: 'subheading', text: reqStr(b.text, `blok #${i + 1} text`) };
+      case 'quote':
+        return { type: 'quote', text: reqStr(b.text, `blok #${i + 1} text`) };
+      case 'divider':
+        return { type: 'divider' };
       case 'bullets': {
         if (!Array.isArray(b.items) || b.items.length === 0) bad(`Blok #${i + 1}: prázdny zoznam.`);
-        return {
+        const out: Block = {
           type: 'bullets',
-          items: (b.items as unknown[]).map((it, j) => reqStr(it, `blok #${i + 1} položka #${j + 1}`)),
+          items: (b.items as unknown[]).map((it, j) =>
+            reqStr(it, `blok #${i + 1} položka #${j + 1}`)
+          ),
         };
+        if (b.ordered === true) out.ordered = true;
+        return out;
       }
       case 'callout': {
         const variant = b.variant as CalloutVariant;
         if (!CALLOUT_VARIANTS.includes(variant)) bad(`Blok #${i + 1}: neplatný variant calloutu.`);
-        const out: Block = { type: 'callout', variant, text: reqStr(b.text, `blok #${i + 1} text`) };
+        const out: Block = {
+          type: 'callout',
+          variant,
+          text: reqStr(b.text, `blok #${i + 1} text`),
+        };
         if (typeof b.title === 'string' && b.title.trim().length > 0) out.title = b.title.trim();
         return out;
       }
@@ -127,7 +147,10 @@ function validateSections(value: unknown): ArticleSection[] {
   return (value as unknown[]).map((raw, i) => {
     if (!raw || typeof raw !== 'object') bad(`Sekcia #${i + 1} je neplatná.`);
     const s = raw as Record<string, unknown>;
-    return { heading: reqStr(s.heading, `sekcia #${i + 1} nadpis`), blocks: validateBlocks(s.blocks) };
+    return {
+      heading: reqStr(s.heading, `sekcia #${i + 1} nadpis`),
+      blocks: validateBlocks(s.blocks),
+    };
   });
 }
 
@@ -145,7 +168,10 @@ function validateSources(value: unknown): ArticleSource[] {
   if (!Array.isArray(value)) bad('Pole "sources" musí byť zoznam.');
   return (value as unknown[]).map((raw, i) => {
     const s = (raw ?? {}) as Record<string, unknown>;
-    return { label: reqStr(s.label, `zdroj #${i + 1} názov`), url: reqStr(s.url, `zdroj #${i + 1} URL`) };
+    return {
+      label: reqStr(s.label, `zdroj #${i + 1} názov`),
+      url: reqStr(s.url, `zdroj #${i + 1} URL`),
+    };
   });
 }
 
@@ -175,7 +201,8 @@ function toRow(input: unknown): ArticleRow {
   if (!SLUG_RE.test(slug)) bad('Slug smie obsahovať len malé písmená, číslice a pomlčky.');
 
   const category = reqStr(a.category, 'category');
-  if (category !== 'krmivo' && category !== 'zdravie') bad('Kategória musí byť "krmivo" alebo "zdravie".');
+  if (category !== 'krmivo' && category !== 'zdravie')
+    bad('Kategória musí byť "krmivo" alebo "zdravie".');
 
   return {
     slug,
@@ -188,11 +215,17 @@ function toRow(input: unknown): ArticleRow {
     related_slugs: Array.isArray(a.relatedSlugs)
       ? (a.relatedSlugs as unknown[]).filter((s): s is string => typeof s === 'string')
       : [],
-    cover_image: typeof a.coverImage === 'string' && a.coverImage.trim().length > 0 ? a.coverImage.trim() : null,
+    cover_image:
+      typeof a.coverImage === 'string' && a.coverImage.trim().length > 0
+        ? a.coverImage.trim()
+        : null,
     cta_intent: reqStr(a.ctaIntent, 'ctaIntent'),
     author: typeof a.author === 'string' && a.author.trim().length > 0 ? a.author.trim() : null,
     sources: validateSources(a.sources),
-    updated: typeof a.updated === 'string' && a.updated.trim().length > 0 ? a.updated.trim() : new Date().toISOString().slice(0, 10),
+    updated:
+      typeof a.updated === 'string' && a.updated.trim().length > 0
+        ? a.updated.trim()
+        : new Date().toISOString().slice(0, 10),
     published: a.published !== false,
     position: typeof a.position === 'number' && Number.isFinite(a.position) ? a.position : 0,
   };
@@ -205,6 +238,18 @@ export async function listAllArticles(): Promise<AdminArticle[]> {
     .order('position', { ascending: true });
   if (error) throw error;
   return ((data as Row[] | null) ?? []).map(rowToAdminArticle);
+}
+
+export async function listAllArticlesWithId(): Promise<{ id: string; article: AdminArticle }[]> {
+  const { data, error } = await getSupabase()
+    .from('articles')
+    .select(`id, ${SELECT_COLUMNS_ADMIN}`)
+    .order('position', { ascending: true });
+  if (error) throw error;
+  return ((data as Row[] | null) ?? []).map((row) => ({
+    id: String(row.id),
+    article: rowToAdminArticle(row),
+  }));
 }
 
 export async function getArticleBySlugAdmin(slug: string): Promise<AdminArticle | null> {
