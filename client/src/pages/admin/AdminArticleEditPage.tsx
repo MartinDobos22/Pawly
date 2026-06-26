@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
 import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
+import ArticleSeoPanel from '../../components/admin/ArticleSeoPanel';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
@@ -211,7 +212,11 @@ export default function AdminArticleEditPage() {
           {isNew ? 'Nový článok' : 'Upraviť článok'}
         </Typography>
         {!isNew && (
-          <Button variant="outlined" startIcon={<HistoryIcon />} onClick={() => setVersionsOpen(true)}>
+          <Button
+            variant="outlined"
+            startIcon={<HistoryIcon />}
+            onClick={() => setVersionsOpen(true)}
+          >
             História verzií
           </Button>
         )}
@@ -229,7 +234,10 @@ export default function AdminArticleEditPage() {
       <Tabs value={tab} onChange={(_, v) => setTab(v as number)} sx={{ mb: theme.spacing(2) }}>
         <Tab label="Editor" />
         <Tab label="Náhľad" />
+        <Tab label="SEO" />
       </Tabs>
+
+      {tab === 2 && <ArticleSeoPanel article={form} />}
 
       {tab === 1 && (
         <Box sx={{ maxWidth: 720, mx: 'auto' }}>
