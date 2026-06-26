@@ -47,8 +47,22 @@ export interface Article {
   sources?: ArticleSource[];
 }
 
-// Admin pohľad — navyše stavové polia (vrátane draftov a poradia).
+export type ArticleStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'scheduled'
+  | 'published'
+  | 'archived';
+
+// Admin pohľad — navyše stavové polia (redakčný workflow + poradie).
 export interface AdminArticle extends Article {
+  /** Verejná viditeľnosť — odvodené zo status (published <=> status='published'). */
   published: boolean;
   position: number;
+  status: ArticleStatus;
+  assignedEditor?: string;
+  editorialNotes?: string;
+  publishAt?: string;
+  unpublishAt?: string;
 }

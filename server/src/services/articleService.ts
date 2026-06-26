@@ -5,6 +5,7 @@ import type {
   Article,
   ArticleSection,
   ArticleSource,
+  ArticleStatus,
   Block,
   CalloutVariant,
   FaqItem,
@@ -14,11 +15,19 @@ import type {
 type Row = Record<string, unknown>;
 
 const TEXT_ALIGNS: TextAlign[] = ['left', 'center', 'right'];
+const ARTICLE_STATUSES: ArticleStatus[] = [
+  'draft',
+  'review',
+  'approved',
+  'scheduled',
+  'published',
+  'archived',
+];
 
 const SELECT_COLUMNS =
   'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, position';
 
-const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published`;
+const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at`;
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const CALLOUT_VARIANTS: CalloutVariant[] = ['tip', 'warning', 'info'];
@@ -76,11 +85,20 @@ export async function getPublishedArticleBySlug(slug: string): Promise<Article |
 
 // ── Admin (write) ───────────────────────────────────────────────────────────
 
+function asStatus(value: unknown): ArticleStatus {
+  return ARTICLE_STATUSES.includes(value as ArticleStatus) ? (value as ArticleStatus) : 'draft';
+}
+
 function rowToAdminArticle(row: Row): AdminArticle {
   return {
     ...rowToArticle(row),
     published: row.published === true,
     position: typeof row.position === 'number' ? row.position : 0,
+    status: asStatus(row.status),
+    assignedEditor: asOptionalString(row.assigned_editor),
+    editorialNotes: asOptionalString(row.editorial_notes),
+    publishAt: asOptionalString(row.publish_at),
+    unpublishAt: asOptionalString(row.unpublish_at),
   };
 }
 
@@ -191,6 +209,19 @@ interface ArticleRow {
   updated: string;
   published: boolean;
   position: number;
+  status: ArticleStatus;
+  assigned_editor: string | null;
+  editorial_notes: string | null;
+  publish_at: string | null;
+  unpublish_at: string | null;
+}
+
+function optionalIso(value: unknown, field: string): string | null {
+  if (value == null || value === '') return null;
+  if (typeof value !== 'string') bad(`Pole "${field}" musí byť dátum.`);
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) bad(`Pole "${field}" má neplatný dátum.`);
+  return d.toISOString();
 }
 
 function toRow(input: unknown): ArticleRow {
@@ -203,6 +234,14 @@ function toRow(input: unknown): ArticleRow {
   const category = reqStr(a.category, 'category');
   if (category !== 'krmivo' && category !== 'zdravie')
     bad('Kategória musí byť "krmivo" alebo "zdravie".');
+
+  const status: ArticleStatus = ARTICLE_STATUSES.includes(a.status as ArticleStatus)
+    ? (a.status as ArticleStatus)
+    : 'draft';
+  const publishAt = optionalIso(a.publishAt, 'publishAt');
+  if (status === 'scheduled' && !publishAt) {
+    bad('Pre naplánovaný článok je potrebný dátum publikovania.');
+  }
 
   return {
     slug,
@@ -226,8 +265,19 @@ function toRow(input: unknown): ArticleRow {
       typeof a.updated === 'string' && a.updated.trim().length > 0
         ? a.updated.trim()
         : new Date().toISOString().slice(0, 10),
-    published: a.published !== false,
+    published: status === 'published',
     position: typeof a.position === 'number' && Number.isFinite(a.position) ? a.position : 0,
+    status,
+    assigned_editor:
+      typeof a.assignedEditor === 'string' && a.assignedEditor.trim().length > 0
+        ? a.assignedEditor.trim()
+        : null,
+    editorial_notes:
+      typeof a.editorialNotes === 'string' && a.editorialNotes.trim().length > 0
+        ? a.editorialNotes.trim()
+        : null,
+    publish_at: publishAt,
+    unpublish_at: optionalIso(a.unpublishAt, 'unpublishAt'),
   };
 }
 

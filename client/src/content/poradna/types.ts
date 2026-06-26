@@ -48,10 +48,24 @@ export interface Article {
   sources?: ArticleSource[];
 }
 
-/** Admin pohľad na článok — navyše stavové polia (draft + poradie). */
+export type ArticleStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'scheduled'
+  | 'published'
+  | 'archived';
+
+/** Admin pohľad na článok — navyše redakčný workflow + poradie. */
 export interface AdminArticle extends Article {
+  /** Verejná viditeľnosť — odvodené zo status (published <=> status='published'). */
   published: boolean;
   position: number;
+  status: ArticleStatus;
+  assignedEditor?: string;
+  editorialNotes?: string;
+  publishAt?: string;
+  unpublishAt?: string;
 }
 
 export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';

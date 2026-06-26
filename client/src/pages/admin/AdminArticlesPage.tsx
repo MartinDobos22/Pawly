@@ -28,7 +28,25 @@ import {
   listAdminArticles,
   publishArticles,
 } from '../../services/adminApi';
-import type { AdminArticle } from '../../content/poradna/types';
+import type { AdminArticle, ArticleStatus } from '../../content/poradna/types';
+
+const STATUS_LABELS: Record<ArticleStatus, string> = {
+  draft: 'Koncept',
+  review: 'Na kontrolu',
+  approved: 'Schválené',
+  scheduled: 'Naplánované',
+  published: 'Publikované',
+  archived: 'Archivované',
+};
+
+const STATUS_COLORS: Record<ArticleStatus, 'default' | 'info' | 'success' | 'warning'> = {
+  draft: 'default',
+  review: 'warning',
+  approved: 'info',
+  scheduled: 'info',
+  published: 'success',
+  archived: 'default',
+};
 
 export default function AdminArticlesPage() {
   const theme = useTheme();
@@ -143,8 +161,8 @@ export default function AdminArticlesPage() {
                   <Stack direction="row" spacing={1} alignItems="center">
                     <span>{a.title}</span>
                     <Chip
-                      label={a.published ? 'Publikované' : 'Koncept'}
-                      color={a.published ? 'success' : 'default'}
+                      label={STATUS_LABELS[a.status] ?? 'Koncept'}
+                      color={STATUS_COLORS[a.status] ?? 'default'}
                       size="small"
                     />
                     <Chip

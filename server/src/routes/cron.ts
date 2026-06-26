@@ -1,6 +1,7 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import { timingSafeEqual } from 'node:crypto';
 import { runSweep } from '../services/notificationsService';
+import { runArticleSchedule } from '../services/articleScheduleService';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -35,6 +36,22 @@ router.post(
     try {
       logger.info('Cron: spúšťam notifikačný sweep');
       const summary = await runSweep();
+      res.json(summary);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.post(
+  '/articles-schedule',
+  requireCronSecret,
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const summary = await runArticleSchedule();
+      if (summary.published || summary.unpublished) {
+        logger.info('Cron: naplánované články spracované', summary);
+      }
       res.json(summary);
     } catch (err) {
       next(err);
