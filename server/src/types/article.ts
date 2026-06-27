@@ -45,9 +45,18 @@ export interface Article {
   /** Alt text titulného obrázka (prístupnosť + og:image:alt). */
   coverAlt?: string;
   ctaIntent: string;
+  // Odborná kontrola — verejne zobraziteľné polia.
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewerTitle?: string;
+  medicalReviewedAt?: string;
+  /** Per-article disclaimer; ak chýba, použije sa globálny ARTICLE_DISCLAIMER. */
+  disclaimer?: string;
   author?: string;
   sources?: ArticleSource[];
 }
+
+export type RiskLevel = 'low' | 'medium' | 'high';
 
 export type ArticleStatus =
   | 'draft'
@@ -77,4 +86,11 @@ export interface AdminArticle extends Article {
   publishedBy?: string;
   archivedAt?: string;
   archivedBy?: string;
+  // Odborná kontrola — interné polia.
+  riskLevel?: RiskLevel;
+  factCheckedBy?: string;
+  factCheckedAt?: string;
+  medicalReviewedBy?: string;
+  lastContentReviewAt?: string;
+  nextReviewDueAt?: string;
 }

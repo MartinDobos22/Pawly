@@ -44,11 +44,20 @@ export interface Article {
   coverAlt?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
+  // Odborná kontrola — verejne zobraziteľné.
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewerTitle?: string;
+  medicalReviewedAt?: string;
+  /** Per-article disclaimer; ak chýba, použije sa globálny ARTICLE_DISCLAIMER. */
+  disclaimer?: string;
   /** Autorský riadok (E-E-A-T). Default „Tím Pawly" ak chýba. */
   author?: string;
   /** Zdroje (E-E-A-T) — externé odkazy na konci článku. */
   sources?: ArticleSource[];
 }
+
+export type RiskLevel = 'low' | 'medium' | 'high';
 
 export type ArticleStatus =
   | 'draft'
@@ -78,6 +87,13 @@ export interface AdminArticle extends Article {
   publishedBy?: string;
   archivedAt?: string;
   archivedBy?: string;
+  // Odborná kontrola — interné.
+  riskLevel?: RiskLevel;
+  factCheckedBy?: string;
+  factCheckedAt?: string;
+  medicalReviewedBy?: string;
+  lastContentReviewAt?: string;
+  nextReviewDueAt?: string;
 }
 
 export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';

@@ -688,6 +688,130 @@ export default function AdminArticleEditPage() {
             </Card>
           )}
 
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="subtitle1" gutterBottom>
+                Odborná kontrola
+              </Typography>
+              {form.category === 'zdravie' && (
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                  Zdravotný článok: pred publikovaním je povinný disclaimer, dátum poslednej kontroly
+                  a úroveň rizika. Pri vysokom riziku aj medicínska kontrola a fact-check.
+                </Typography>
+              )}
+              <Stack spacing={theme.spacing(2)}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                  <TextField
+                    id="field-riskLevel"
+                    select
+                    label="Úroveň rizika"
+                    value={form.riskLevel ?? ''}
+                    onChange={(e) => set('riskLevel', (e.target.value || undefined) as AdminArticle['riskLevel'])}
+                    size="small"
+                    fullWidth
+                  >
+                    <MenuItem value="">— nezvolené —</MenuItem>
+                    <MenuItem value="low">Nízke (všeobecná starostlivosť)</MenuItem>
+                    <MenuItem value="medium">Stredné (výživa, alergie, trávenie)</MenuItem>
+                    <MenuItem value="high">Vysoké (choroby, lieky, urgentné stavy)</MenuItem>
+                  </TextField>
+                  <TextField
+                    id="field-lastContentReviewAt"
+                    label="Dátum poslednej kontroly"
+                    type="date"
+                    value={(form.lastContentReviewAt ?? '').slice(0, 10)}
+                    onChange={(e) => set('lastContentReviewAt', e.target.value)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  <TextField
+                    label="Ďalšia kontrola"
+                    type="date"
+                    value={(form.nextReviewDueAt ?? '').slice(0, 10)}
+                    onChange={(e) => set('nextReviewDueAt', e.target.value)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Stack>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                  <TextField
+                    label="Kontroloval(a)"
+                    value={form.reviewedBy ?? ''}
+                    onChange={(e) => set('reviewedBy', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                  <TextField
+                    label="Titul / rola kontrolóra"
+                    value={form.reviewerTitle ?? ''}
+                    onChange={(e) => set('reviewerTitle', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                  <TextField
+                    label="Dátum kontroly"
+                    type="date"
+                    value={(form.reviewedAt ?? '').slice(0, 10)}
+                    onChange={(e) => set('reviewedAt', e.target.value)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Stack>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                  <TextField
+                    id="field-factCheckedBy"
+                    label="Fact-check (kto)"
+                    value={form.factCheckedBy ?? ''}
+                    onChange={(e) => set('factCheckedBy', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                  <TextField
+                    label="Fact-check (dátum)"
+                    type="date"
+                    value={(form.factCheckedAt ?? '').slice(0, 10)}
+                    onChange={(e) => set('factCheckedAt', e.target.value)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Stack>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.spacing(2)}>
+                  <TextField
+                    id="field-medicalReviewedBy"
+                    label="Medicínska kontrola (kto)"
+                    value={form.medicalReviewedBy ?? ''}
+                    onChange={(e) => set('medicalReviewedBy', e.target.value)}
+                    size="small"
+                    fullWidth
+                  />
+                  <TextField
+                    label="Medicínska kontrola (dátum)"
+                    type="date"
+                    value={(form.medicalReviewedAt ?? '').slice(0, 10)}
+                    onChange={(e) => set('medicalReviewedAt', e.target.value)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Stack>
+                <TextField
+                  id="field-disclaimer"
+                  label="Disclaimer (ak prázdne, použije sa globálny)"
+                  value={form.disclaimer ?? ''}
+                  onChange={(e) => set('disclaimer', e.target.value)}
+                  multiline
+                  minRows={2}
+                  fullWidth
+                  size="small"
+                />
+              </Stack>
+            </CardContent>
+          </Card>
+
           <Box>
             <Typography variant="subtitle1" gutterBottom>
               Obsah článku

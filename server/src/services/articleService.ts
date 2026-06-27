@@ -9,6 +9,7 @@ import type {
   Block,
   CalloutVariant,
   FaqItem,
+  RiskLevel,
   TextAlign,
 } from '../types/article';
 
@@ -39,9 +40,9 @@ export function isTransitionAllowed(from: ArticleStatus, to: ArticleStatus): boo
 }
 
 const SELECT_COLUMNS =
-  'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position';
+  'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position, reviewed_by, reviewed_at, reviewer_title, medical_reviewed_at, disclaimer';
 
-const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by`;
+const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by, risk_level, fact_checked_by, fact_checked_at, medical_reviewed_by, last_content_review_at, next_review_due_at`;
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const CALLOUT_VARIANTS: CalloutVariant[] = ['tip', 'warning', 'info'];
@@ -72,6 +73,11 @@ function rowToArticle(row: Row): Article {
     coverImage: asOptionalString(row.cover_image),
     coverAlt: asOptionalString(row.cover_alt),
     ctaIntent: asString(row.cta_intent),
+    reviewedBy: asOptionalString(row.reviewed_by),
+    reviewedAt: asOptionalString(row.reviewed_at),
+    reviewerTitle: asOptionalString(row.reviewer_title),
+    medicalReviewedAt: asOptionalString(row.medical_reviewed_at),
+    disclaimer: asOptionalString(row.disclaimer),
     author: asOptionalString(row.author),
     sources: (Array.isArray(row.sources) ? row.sources : []) as ArticleSource[],
   };
@@ -114,6 +120,14 @@ function rowToAdminArticle(row: Row): AdminArticle {
     internalNotes: asOptionalString(row.editorial_notes),
     scheduledFor: asOptionalString(row.publish_at),
     unpublishAt: asOptionalString(row.unpublish_at),
+    riskLevel: ['low', 'medium', 'high'].includes(String(row.risk_level))
+      ? (row.risk_level as RiskLevel)
+      : undefined,
+    factCheckedBy: asOptionalString(row.fact_checked_by),
+    factCheckedAt: asOptionalString(row.fact_checked_at),
+    medicalReviewedBy: asOptionalString(row.medical_reviewed_by),
+    lastContentReviewAt: asOptionalString(row.last_content_review_at),
+    nextReviewDueAt: asOptionalString(row.next_review_due_at),
     submittedForReviewAt: asOptionalString(row.submitted_for_review_at),
     submittedForReviewBy: asOptionalString(row.submitted_for_review_by),
     approvedAt: asOptionalString(row.approved_at),
@@ -235,6 +249,21 @@ interface ContentRow {
   assigned_editor: string | null;
   editorial_notes: string | null;
   cover_alt: string | null;
+  risk_level: RiskLevel | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  reviewer_title: string | null;
+  fact_checked_by: string | null;
+  fact_checked_at: string | null;
+  medical_reviewed_by: string | null;
+  medical_reviewed_at: string | null;
+  last_content_review_at: string | null;
+  next_review_due_at: string | null;
+  disclaimer: string | null;
+}
+
+function optionalStr(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
 function optionalIso(value: unknown, field: string): string | null {
@@ -289,6 +318,19 @@ function toRow(input: unknown): ContentRow {
       typeof a.internalNotes === 'string' && a.internalNotes.trim().length > 0
         ? a.internalNotes.trim()
         : null,
+    risk_level: ['low', 'medium', 'high'].includes(String(a.riskLevel))
+      ? (a.riskLevel as RiskLevel)
+      : null,
+    reviewed_by: optionalStr(a.reviewedBy),
+    reviewed_at: optionalIso(a.reviewedAt, 'reviewedAt'),
+    reviewer_title: optionalStr(a.reviewerTitle),
+    fact_checked_by: optionalStr(a.factCheckedBy),
+    fact_checked_at: optionalIso(a.factCheckedAt, 'factCheckedAt'),
+    medical_reviewed_by: optionalStr(a.medicalReviewedBy),
+    medical_reviewed_at: optionalIso(a.medicalReviewedAt, 'medicalReviewedAt'),
+    last_content_review_at: optionalIso(a.lastContentReviewAt, 'lastContentReviewAt'),
+    next_review_due_at: optionalIso(a.nextReviewDueAt, 'nextReviewDueAt'),
+    disclaimer: optionalStr(a.disclaimer),
   };
 }
 
