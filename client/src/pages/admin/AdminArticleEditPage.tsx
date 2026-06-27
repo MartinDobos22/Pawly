@@ -35,8 +35,7 @@ import {
 } from '@mui/icons-material';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
 import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
-import ArticleSeoPanel from '../../components/admin/ArticleSeoPanel';
-import { analyzeSeo } from '../../utils/articleSeo';
+import ArticleValidationPanel from '../../components/admin/ArticleValidationPanel';
 import ArticleBody from '../../components/public/ArticleBody';
 import Callout from '../../components/public/Callout';
 import {
@@ -44,6 +43,7 @@ import {
   changeArticleStatus,
   createAdminArticle,
   getAdminArticle,
+  getArticleValidation,
   listArticleVersions,
   updateAdminArticle,
   uploadArticleImage,
@@ -56,7 +56,7 @@ import {
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
 import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
-import type { AdminArticle, ArticleStatus } from '../../content/poradna/types';
+import type { AdminArticle, ArticleStatus, ArticleValidation } from '../../content/poradna/types';
 
 function emptyArticle(): AdminArticle {
   return {
@@ -79,6 +79,7 @@ function emptyArticle(): AdminArticle {
     assignedTo: '',
     internalNotes: '',
     scheduledFor: '',
+    coverAlt: '',
   };
 }
 
@@ -123,6 +124,8 @@ export default function AdminArticleEditPage() {
   const [latestVersion, setLatestVersion] = useState<number | null>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState('');
+  const [validation, setValidation] = useState<ArticleValidation | null>(null);
+  const [validationLoading, setValidationLoading] = useState(false);
 
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
@@ -140,6 +143,11 @@ export default function AdminArticleEditPage() {
     listArticleVersions(slug)
       .then((v) => setLatestVersion(v[0]?.versionNumber ?? 0))
       .catch(() => setLatestVersion(null));
+    setValidationLoading(true);
+    getArticleValidation(slug)
+      .then(setValidation)
+      .catch(() => setValidation(null))
+      .finally(() => setValidationLoading(false));
   }, [slug, isNew]);
 
   // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
@@ -166,7 +174,26 @@ export default function AdminArticleEditPage() {
 
   const faqs = form.faqs ?? [];
   const sources = form.sources ?? [];
-  const seoErrors = analyzeSeo(form).filter((c) => c.status === 'error');
+
+  const loadValidation = () => {
+    if (isNew || !slug) return;
+    setValidationLoading(true);
+    getArticleValidation(slug)
+      .then(setValidation)
+      .catch(() => setValidation(null))
+      .finally(() => setValidationLoading(false));
+  };
+
+  const focusField = (field: string) => {
+    setTab(0);
+    setTimeout(() => {
+      const el = document.getElementById(`field-${field}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      }
+    }, 100);
+  };
 
   const handleCoverUpload = async (file: File) => {
     setError(null);
@@ -214,6 +241,7 @@ export default function AdminArticleEditPage() {
       setForm(updated);
       savedSnapshotRef.current = JSON.stringify(updated);
       setNotice('Uložené.');
+      loadValidation();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -237,6 +265,7 @@ export default function AdminArticleEditPage() {
       savedSnapshotRef.current = JSON.stringify(updated);
       setLatestVersion((v) => (v == null ? v : v + 1));
       setNotice(`Stav: ${STATUS_LABELS[target]}.`);
+      loadValidation();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -306,10 +335,17 @@ export default function AdminArticleEditPage() {
       <Tabs value={tab} onChange={(_, v) => setTab(v as number)} sx={{ mb: theme.spacing(2) }}>
         <Tab label="Editor" />
         <Tab label="Náhľad" />
-        <Tab label="SEO" />
+        <Tab label="Kontrola" />
       </Tabs>
 
-      {tab === 2 && <ArticleSeoPanel article={form} />}
+      {tab === 2 && (
+        <ArticleValidationPanel
+          validation={validation}
+          loading={validationLoading}
+          onRefresh={loadValidation}
+          onFocusField={focusField}
+        />
+      )}
 
       {tab === 1 && (
         <Box sx={{ maxWidth: 720, mx: 'auto' }}>
@@ -359,6 +395,7 @@ export default function AdminArticleEditPage() {
               </Typography>
               <Stack spacing={theme.spacing(2)}>
                 <TextField
+                  id="field-title"
                   label="Titulok (H1)"
                   value={form.title}
                   onChange={(e) => set('title', e.target.value)}
@@ -366,6 +403,7 @@ export default function AdminArticleEditPage() {
                   size="small"
                 />
                 <TextField
+                  id="field-slug"
                   label="Slug (URL)"
                   value={form.slug}
                   onChange={(e) => set('slug', e.target.value)}
@@ -403,6 +441,7 @@ export default function AdminArticleEditPage() {
                   </TextField>
                 </Stack>
                 <TextField
+                  id="field-description"
                   label="Meta popis / perex v zozname"
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
@@ -412,6 +451,7 @@ export default function AdminArticleEditPage() {
                   size="small"
                 />
                 <TextField
+                  id="field-intro"
                   label="Úvodný odsek (pod H1)"
                   value={form.intro}
                   onChange={(e) => set('intro', e.target.value)}
@@ -427,11 +467,21 @@ export default function AdminArticleEditPage() {
                 >
                   <Stack spacing={1} sx={{ flexGrow: 1, width: '100%' }}>
                     <TextField
+                      id="field-coverImage"
                       label="URL titulného obrázka"
                       value={form.coverImage ?? ''}
                       onChange={(e) => set('coverImage', e.target.value)}
                       size="small"
                       fullWidth
+                    />
+                    <TextField
+                      id="field-coverAlt"
+                      label="Alt text titulného obrázka"
+                      value={form.coverAlt ?? ''}
+                      onChange={(e) => set('coverAlt', e.target.value)}
+                      size="small"
+                      fullWidth
+                      helperText="Popis obrázka pre prístupnosť a zdieľanie (og:image:alt)."
                     />
                     <Button
                       component="label"
@@ -755,12 +805,12 @@ export default function AdminArticleEditPage() {
             Pri témach ako zdravie psa over, že obsah je v poriadku. Publikovať môžeš až po
             odškrtnutí všetkých bodov.
           </Typography>
-          {seoErrors.length > 0 && (
+          {validation && validation.errors.length > 0 && (
             <Alert severity="error" sx={{ mb: theme.spacing(2) }}>
-              Najprv oprav kritické SEO chyby (pozri SEO tab):
+              Najprv oprav chyby (pozri tab „Kontrola"):
               <Box component="ul" sx={{ mt: 0.5, mb: 0, pl: theme.spacing(3) }}>
-                {seoErrors.map((c) => (
-                  <li key={c.id}>{c.label}</li>
+                {validation.errors.map((c) => (
+                  <li key={c.key}>{c.message}</li>
                 ))}
               </Box>
             </Alert>
@@ -792,7 +842,7 @@ export default function AdminArticleEditPage() {
             variant="contained"
             disabled={
               saving ||
-              seoErrors.length > 0 ||
+              (validation != null && !validation.canPublish) ||
               checklistChecked.length === 0 ||
               !checklistChecked.every(Boolean)
             }

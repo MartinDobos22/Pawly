@@ -39,7 +39,7 @@ export function isTransitionAllowed(from: ArticleStatus, to: ArticleStatus): boo
 }
 
 const SELECT_COLUMNS =
-  'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, position';
+  'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position';
 
 const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by`;
 
@@ -70,6 +70,7 @@ function rowToArticle(row: Row): Article {
     relatedSlugs: asStringArray(row.related_slugs),
     updated: asString(row.updated),
     coverImage: asOptionalString(row.cover_image),
+    coverAlt: asOptionalString(row.cover_alt),
     ctaIntent: asString(row.cta_intent),
     author: asOptionalString(row.author),
     sources: (Array.isArray(row.sources) ? row.sources : []) as ArticleSource[],
@@ -233,6 +234,7 @@ interface ContentRow {
   position: number;
   assigned_editor: string | null;
   editorial_notes: string | null;
+  cover_alt: string | null;
 }
 
 function optionalIso(value: unknown, field: string): string | null {
@@ -269,6 +271,8 @@ function toRow(input: unknown): ContentRow {
       typeof a.coverImage === 'string' && a.coverImage.trim().length > 0
         ? a.coverImage.trim()
         : null,
+    cover_alt:
+      typeof a.coverAlt === 'string' && a.coverAlt.trim().length > 0 ? a.coverAlt.trim() : null,
     cta_intent: reqStr(a.ctaIntent, 'ctaIntent'),
     author: typeof a.author === 'string' && a.author.trim().length > 0 ? a.author.trim() : null,
     sources: validateSources(a.sources),
@@ -349,20 +353,12 @@ export async function updateArticle(slug: string, input: unknown): Promise<Admin
   return rowToAdminArticle(data as Row);
 }
 
-function assertPublishable(article: AdminArticle): void {
-  const missing: string[] = [];
-  if (!article.title.trim()) missing.push('titulok');
-  if (!article.description.trim()) missing.push('meta popis');
-  if (!SLUG_RE.test(article.slug)) missing.push('validný slug');
-  if (
-    article.category === 'zdravie' &&
-    (article.sources ?? []).filter((s) => s.url.trim().length > 0).length === 0
-  ) {
-    missing.push('aspoň jeden zdroj (zdravotný článok)');
-  }
-  if (missing.length > 0) {
-    throw httpError(400, `Pred publikovaním doplň: ${missing.join(', ')}.`, 'NOT_PUBLISHABLE');
-  }
+export async function getExistingSlugs(): Promise<Set<string>> {
+  const { data, error } = await getSupabase().from('articles').select('slug');
+  if (error) throw error;
+  return new Set(
+    ((data as Row[] | null) ?? []).map((r) => String(r.slug)).filter((s) => s.length > 0)
+  );
 }
 
 export async function changeArticleStatus(
@@ -394,7 +390,6 @@ export async function changeArticleStatus(
     patch.publish_at = when;
   }
   if (target === 'published') {
-    assertPublishable(current);
     patch.published_at = nowIso;
     patch.published_by = by;
   }

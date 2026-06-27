@@ -42,6 +42,8 @@ export interface Article {
   relatedSlugs?: string[];
   updated: string;
   coverImage?: string;
+  /** Alt text titulného obrázka (prístupnosť + og:image:alt). */
+  coverAlt?: string;
   ctaIntent: string;
   author?: string;
   sources?: ArticleSource[];

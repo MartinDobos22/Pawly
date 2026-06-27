@@ -1,5 +1,6 @@
 import type {
   AdminArticle,
+  ArticleValidation,
   ArticleVersion,
   ArticleVersionMeta,
 } from '../content/poradna/types';
@@ -78,6 +79,10 @@ export async function uploadArticleImage(payload: {
 
 export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
+}
+
+export async function getArticleValidation(slug: string): Promise<ArticleValidation> {
+  return request<ArticleValidation>(`/articles/${encodeURIComponent(slug)}/validation`);
 }
 
 export async function changeArticleStatus(

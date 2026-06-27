@@ -40,6 +40,8 @@ export interface Article {
   updated: string;
   /** URL titulného obrázka (zatiaľ Unsplash placeholder, neskôr vlastné). */
   coverImage?: string;
+  /** Alt text titulného obrázka (prístupnosť + og:image:alt). */
+  coverAlt?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
   /** Autorský riadok (E-E-A-T). Default „Tím Pawly" ak chýba. */
@@ -93,4 +95,20 @@ export interface ArticleVersionMeta {
 /** Plná verzia vrátane snapshotu dát článku. */
 export interface ArticleVersion extends ArticleVersionMeta {
   data: AdminArticle;
+}
+
+export type ValidationSeverity = 'error' | 'warning' | 'suggestion';
+
+export interface ValidationResult {
+  key: string;
+  severity: ValidationSeverity;
+  message: string;
+  field?: string;
+}
+
+export interface ArticleValidation {
+  canPublish: boolean;
+  errors: ValidationResult[];
+  warnings: ValidationResult[];
+  suggestions: ValidationResult[];
 }
