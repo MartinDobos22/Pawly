@@ -9,7 +9,7 @@ export async function runArticleSchedule(): Promise<{ published: number; unpubli
 
   const { data: published, error: publishErr } = await sb
     .from('articles')
-    .update({ status: 'published', published: true })
+    .update({ status: 'published', published: true, published_at: now })
     .eq('status', 'scheduled')
     .lte('publish_at', now)
     .select('id');

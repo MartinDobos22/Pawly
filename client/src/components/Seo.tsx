@@ -9,6 +9,7 @@ interface Props {
   path?: string;
   noindex?: boolean;
   ogImage?: string;
+  ogImageAlt?: string;
   ogType?: string;
   jsonLd?: object;
 }
@@ -46,7 +47,16 @@ function upsertJsonLd(data: object | undefined) {
   if (!existing) document.head.appendChild(el);
 }
 
-export default function Seo({ title, description, path, noindex, ogImage, ogType, jsonLd }: Props) {
+export default function Seo({
+  title,
+  description,
+  path,
+  noindex,
+  ogImage,
+  ogImageAlt,
+  ogType,
+  jsonLd,
+}: Props) {
   useEffect(() => {
     document.title = title;
     upsertMeta('property', 'og:title', title);
@@ -63,6 +73,10 @@ export default function Seo({ title, description, path, noindex, ogImage, ogType
     const image = ogImage ?? DEFAULT_OG_IMAGE;
     upsertMeta('property', 'og:image', image);
     upsertMeta('name', 'twitter:image', image);
+    if (ogImageAlt) {
+      upsertMeta('property', 'og:image:alt', ogImageAlt);
+      upsertMeta('name', 'twitter:image:alt', ogImageAlt);
+    }
 
     const canonical = `${SITE_URL}${path ?? window.location.pathname}`;
     upsertLink('canonical', canonical);
@@ -75,7 +89,7 @@ export default function Seo({ title, description, path, noindex, ogImage, ogType
       // JSON-LD je per-stránka — odstráň pri odchode, aby sa nezdedil na app routy
       if (jsonLd) upsertJsonLd(undefined);
     };
-  }, [title, description, path, noindex, ogImage, ogType, jsonLd]);
+  }, [title, description, path, noindex, ogImage, ogImageAlt, ogType, jsonLd]);
 
   return null;
 }

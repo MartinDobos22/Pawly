@@ -21,6 +21,8 @@ import Callout from '../../components/public/Callout';
 import { articleJsonLd } from '../../utils/seoSchema';
 import { articleReadingMinutes } from '../../utils/readingTime';
 import { slugifyHeading } from '../../utils/slugifyHeading';
+import { useArticleTracking } from '../../hooks/useArticleTracking';
+import { trackArticleEvent } from '../../services/analyticsApi';
 import {
   ARTICLE_DISCLAIMER,
   CATEGORY_COLORS,
@@ -42,6 +44,8 @@ export function articleSeo(article: Article) {
     title: `${article.title} | Pawly`,
     description: article.description,
     path,
+    ogImage: article.coverImage,
+    ogImageAlt: article.coverAlt,
     jsonLd: articleJsonLd({
       title: article.title,
       description: article.description,
@@ -71,6 +75,8 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
   const params = useParams();
   const slug = slugProp ?? params.slug;
   const article = slug ? getArticle(slug) : undefined;
+
+  useArticleTracking(article?.slug);
 
   if (!article) return <Navigate to="/poradna" replace />;
 
@@ -242,7 +248,15 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
               >
                 {article.sources.map((src) => (
                   <li key={src.url}>
-                    <Link href={src.url} target="_blank" rel="noopener nofollow" underline="hover">
+                    <Link
+                      href={src.url}
+                      target="_blank"
+                      rel="noopener nofollow"
+                      underline="hover"
+                      onClick={() =>
+                        trackArticleEvent(article.slug, 'source_click', { url: src.url })
+                      }
+                    >
                       {src.label}
                     </Link>
                   </li>
@@ -252,12 +266,18 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
           )}
         </Box>
 
-        <LandingCta
-          heading="Začni sa o psa starať s Pawly"
-          buttonLabel={ctaLabel}
-          to="/register"
-          intent={article.ctaIntent}
-        />
+        <Box
+          onClick={() =>
+            trackArticleEvent(article.slug, 'cta_click', { ctaIntent: article.ctaIntent })
+          }
+        >
+          <LandingCta
+            heading="Začni sa o psa starať s Pawly"
+            buttonLabel={ctaLabel}
+            to="/register"
+            intent={article.ctaIntent}
+          />
+        </Box>
 
         {article.faqs && article.faqs.length > 0 && (
           <LandingFaq title="Časté otázky" faqs={article.faqs} />
@@ -276,7 +296,14 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
               }}
             >
               {related.map((a) => (
-                <ArticleCard key={a.slug} article={a} />
+                <Box
+                  key={a.slug}
+                  onClick={() =>
+                    trackArticleEvent(article.slug, 'related_click', { to: a.slug })
+                  }
+                >
+                  <ArticleCard article={a} />
+                </Box>
               ))}
             </Box>
           </Box>
