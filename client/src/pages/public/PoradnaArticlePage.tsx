@@ -42,6 +42,8 @@ export function articleSeo(article: Article) {
     title: `${article.title} | Pawly`,
     description: article.description,
     path,
+    ogImage: article.coverImage,
+    ogImageAlt: article.coverAlt,
     jsonLd: articleJsonLd({
       title: article.title,
       description: article.description,

@@ -40,6 +40,8 @@ export interface Article {
   updated: string;
   /** URL titulného obrázka (zatiaľ Unsplash placeholder, neskôr vlastné). */
   coverImage?: string;
+  /** Alt text titulného obrázka (prístupnosť + og:image:alt). */
+  coverAlt?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
   /** Autorský riadok (E-E-A-T). Default „Tím Pawly" ak chýba. */
@@ -50,7 +52,7 @@ export interface Article {
 
 export type ArticleStatus =
   | 'draft'
-  | 'review'
+  | 'in_review'
   | 'approved'
   | 'scheduled'
   | 'published'
@@ -62,10 +64,20 @@ export interface AdminArticle extends Article {
   published: boolean;
   position: number;
   status: ArticleStatus;
-  assignedEditor?: string;
-  editorialNotes?: string;
-  publishAt?: string;
+  assignedTo?: string;
+  internalNotes?: string;
+  /** Naplánovaný čas publikovania. */
+  scheduledFor?: string;
   unpublishAt?: string;
+  // Audit — kto a kedy vykonal prechod do daného stavu.
+  submittedForReviewAt?: string;
+  submittedForReviewBy?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  publishedAt?: string;
+  publishedBy?: string;
+  archivedAt?: string;
+  archivedBy?: string;
 }
 
 export type ArticleVersionKind = 'manual' | 'autosave' | 'publish' | 'restore';
@@ -83,4 +95,20 @@ export interface ArticleVersionMeta {
 /** Plná verzia vrátane snapshotu dát článku. */
 export interface ArticleVersion extends ArticleVersionMeta {
   data: AdminArticle;
+}
+
+export type ValidationSeverity = 'error' | 'warning' | 'suggestion';
+
+export interface ValidationResult {
+  key: string;
+  severity: ValidationSeverity;
+  message: string;
+  field?: string;
+}
+
+export interface ArticleValidation {
+  canPublish: boolean;
+  errors: ValidationResult[];
+  warnings: ValidationResult[];
+  suggestions: ValidationResult[];
 }

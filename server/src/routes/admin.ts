@@ -2,12 +2,16 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import { isAdminEmail, requireAdmin } from '../middleware/requireAdmin';
 import { httpError } from '../utils/httpError';
 import {
+  changeArticleStatus,
   createArticle,
   deleteArticle,
   getArticleBySlugAdmin,
+  getExistingSlugs,
   listAllArticles,
   updateArticle,
 } from '../services/articleService';
+import { groupValidation, validateArticleForPublish } from '../services/articleValidation';
+import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
 import {
   getArticleVersion,
@@ -114,6 +118,60 @@ articles.put('/:slug', async (req: Request, res: Response, next: NextFunction) =
       createdBy: req.user?.email ?? null,
       changeSummary: summary,
     });
+    res.json({ article });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.get('/:slug/validation', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const article = await getArticleBySlugAdmin(String(req.params.slug));
+    if (!article) throw httpError(404, 'Článok sa nenašiel.', 'NOT_FOUND');
+    const existingSlugs = await getExistingSlugs();
+    res.json(groupValidation(validateArticleForPublish(article, { existingSlugs })));
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.post('/:slug/status', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const slug = String(req.params.slug);
+    const body = (req.body ?? {}) as { status?: unknown; note?: unknown; scheduledFor?: unknown };
+    const target = body.status as ArticleStatus;
+    const by = req.user?.email ?? null;
+
+    // Tvrdý blok: publikovať sa nedá, ak validácia nájde errory.
+    if (target === 'published') {
+      const candidate = await getArticleBySlugAdmin(slug);
+      if (!candidate) throw httpError(404, 'Článok sa nenašiel.', 'NOT_FOUND');
+      const existingSlugs = await getExistingSlugs();
+      const validation = groupValidation(validateArticleForPublish(candidate, { existingSlugs }));
+      if (!validation.canPublish) {
+        res.status(400).json({
+          error: { message: 'Článok nemožno publikovať.', code: 'NOT_PUBLISHABLE' },
+          validation,
+        });
+        return;
+      }
+    }
+
+    const article = await changeArticleStatus(slug, target, {
+      by,
+      scheduledFor: body.scheduledFor,
+    });
+
+    const note =
+      typeof body.note === 'string' && body.note.trim().length > 0 ? ` — ${body.note.trim()}` : '';
+    await recordArticleVersionBySlug({
+      slug,
+      data: article,
+      kind: target === 'published' ? 'publish' : 'manual',
+      createdBy: by,
+      changeSummary: `Stav: ${target}${note}`,
+    });
+
     res.json({ article });
   } catch (err) {
     next(err);
