@@ -143,6 +143,50 @@ export function validateArticleForPublish(
       message: 'Zdravotný článok musí mať aspoň jeden zdroj.',
     });
   }
+  if (isHealth) {
+    if (!(article.disclaimer ?? '').trim()) {
+      out.push({
+        key: 'health_no_disclaimer',
+        severity: 'error',
+        message: 'Zdravotný článok musí mať disclaimer.',
+        field: 'disclaimer',
+      });
+    }
+    if (!article.lastContentReviewAt) {
+      out.push({
+        key: 'health_no_review_date',
+        severity: 'error',
+        message: 'Zdravotný článok musí mať dátum poslednej kontroly.',
+        field: 'lastContentReviewAt',
+      });
+    }
+    if (!article.riskLevel) {
+      out.push({
+        key: 'health_no_risk_level',
+        severity: 'error',
+        message: 'Zdravotný článok musí mať nastavenú úroveň rizika.',
+        field: 'riskLevel',
+      });
+    }
+    if (article.riskLevel === 'high') {
+      if (!article.medicalReviewedBy || !article.medicalReviewedAt) {
+        out.push({
+          key: 'high_risk_no_medical_review',
+          severity: 'error',
+          message: 'Vysoko rizikový článok vyžaduje medicínsku kontrolu (kto + kedy).',
+          field: 'medicalReviewedBy',
+        });
+      }
+      if (!article.factCheckedBy || !article.factCheckedAt) {
+        out.push({
+          key: 'high_risk_no_fact_check',
+          severity: 'error',
+          message: 'Vysoko rizikový článok vyžaduje fact-check (kto + kedy).',
+          field: 'factCheckedBy',
+        });
+      }
+    }
+  }
   const broken = new Set<string>();
   for (const match of text.matchAll(ARTICLE_LINK_RE)) {
     const target = match[1];

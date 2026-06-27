@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const MIRROR_PATH = resolve(__dirname, '../src/content/poradna/articles.data.json');
 
 const SELECT =
-  'slug,category,title,description,intro,sections,faqs,related_slugs,cover_image,cta_intent,author,sources,updated';
+  'slug,category,title,description,intro,sections,faqs,related_slugs,cover_image,cover_alt,cta_intent,author,sources,updated,reviewed_by,reviewed_at,reviewer_title,medical_reviewed_at,disclaimer';
 
 function normalizeUrl(raw) {
   return raw
@@ -39,9 +39,15 @@ function rowToArticle(row) {
     relatedSlugs: row.related_slugs ?? [],
     updated: row.updated,
     coverImage: row.cover_image ?? undefined,
+    coverAlt: row.cover_alt ?? undefined,
     ctaIntent: row.cta_intent,
     author: row.author ?? undefined,
     sources: row.sources ?? [],
+    reviewedBy: row.reviewed_by ?? undefined,
+    reviewedAt: row.reviewed_at ?? undefined,
+    reviewerTitle: row.reviewer_title ?? undefined,
+    medicalReviewedAt: row.medical_reviewed_at ?? undefined,
+    disclaimer: row.disclaimer ?? undefined,
   };
 }
 

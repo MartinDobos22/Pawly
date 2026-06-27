@@ -10,7 +10,11 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { ArrowBack as ArrowBackIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
+import {
+  ArrowBack as ArrowBackIcon,
+  Schedule as ScheduleIcon,
+  VerifiedOutlined as VerifiedIcon,
+} from '@mui/icons-material';
 import Seo from '../../components/Seo';
 import BlogLayout from '../../components/public/BlogLayout';
 import LandingFaq from '../../components/public/LandingFaq';
@@ -146,6 +150,23 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
               čítania
             </Typography>
           </Stack>
+
+          {article.medicalReviewedAt && (
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              flexWrap="wrap"
+              useFlexGap
+              sx={{ mt: theme.spacing(1) }}
+            >
+              <VerifiedIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                Odborne skontrolované {formatUpdated(article.medicalReviewedAt)}
+                {article.reviewerTitle ? ` · ${article.reviewerTitle}` : ''}
+              </Typography>
+            </Stack>
+          )}
         </Container>
       </Box>
 
@@ -233,7 +254,11 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
         <Box component="article" sx={{ maxWidth: 720, mx: 'auto' }}>
           <ArticleBody sections={article.sections} />
 
-          <Callout variant="info" title="Upozornenie" text={ARTICLE_DISCLAIMER} />
+          <Callout
+            variant="info"
+            title="Upozornenie"
+            text={article.disclaimer?.trim() || ARTICLE_DISCLAIMER}
+          />
 
           {article.sources && article.sources.length > 0 && (
             <Box component="section" sx={{ mt: theme.spacing(4) }}>
