@@ -132,6 +132,33 @@ export interface ArticleMetrics {
   ctr: number;
 }
 
+export type ArticleAiType =
+  | 'outline'
+  | 'rewrite'
+  | 'meta_description'
+  | 'faq'
+  | 'summary'
+  | 'source_check';
+
+export interface ArticleAiResult {
+  generationId: string;
+  type: ArticleAiType;
+  text?: string;
+  faqs?: { q: string; a: string }[];
+  headings?: string[];
+}
+
+export interface AiGenerationLog {
+  id: string;
+  type: ArticleAiType;
+  model: string;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  estimatedCost: number | null;
+  createdAt: string;
+  userEmail: string | null;
+}
+
 export type ValidationSeverity = 'error' | 'warning' | 'suggestion';
 
 export interface ValidationResult {

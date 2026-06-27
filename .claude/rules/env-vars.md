@@ -38,6 +38,8 @@ Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default
 | `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
 | `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
 | `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
+| `MODEL_ARTICLE_AUTHORING` | `gpt-4o-mini` | AI generovanie obsahu článkov (meta popis, úvod, FAQ, osnova, source-check) |
+| `MODEL_ARTICLE_REWRITE` | `gpt-4o` | AI preformulovanie textu článku |
 
 > Vision endpointy (`MODEL_OCR_VISION`, `MODEL_VET_FILE`) musia byť modely s vision podporou. Inak server vráti 502.
 

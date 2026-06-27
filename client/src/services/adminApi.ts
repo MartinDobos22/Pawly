@@ -1,5 +1,8 @@
 import type {
   AdminArticle,
+  AiGenerationLog,
+  ArticleAiResult,
+  ArticleAiType,
   ArticleMetrics,
   ArticleValidation,
   ArticleVersion,
@@ -80,6 +83,28 @@ export async function uploadArticleImage(payload: {
 
 export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
+}
+
+export async function generateArticleAi(payload: {
+  type: ArticleAiType;
+  articleSlug?: string;
+  title?: string;
+  bodyText?: string;
+  instruction?: string;
+  category?: string;
+  sources?: { label: string; url: string }[];
+}): Promise<ArticleAiResult> {
+  return request<ArticleAiResult>('/ai/article', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getArticleAiLog(slug: string): Promise<AiGenerationLog[]> {
+  const data = await request<{ generations: AiGenerationLog[] }>(
+    `/articles/${encodeURIComponent(slug)}/ai-log`
+  );
+  return data.generations;
 }
 
 export async function getArticlesMetrics(): Promise<ArticleMetrics[]> {

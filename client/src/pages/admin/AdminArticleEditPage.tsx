@@ -42,7 +42,9 @@ import {
   autosaveArticle,
   changeArticleStatus,
   createAdminArticle,
+  generateArticleAi,
   getAdminArticle,
+  getArticleAiLog,
   getArticleMetric,
   getArticleValidation,
   listArticleVersions,
@@ -60,6 +62,8 @@ import {
 import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
 import type {
   AdminArticle,
+  AiGenerationLog,
+  ArticleAiType,
   ArticleMetrics,
   ArticleStatus,
   ArticleValidation,
@@ -97,6 +101,14 @@ const PUBLISH_CHECKLIST = [
   'Odkazy a obrázky fungujú.',
 ];
 
+// Doplnkový checklist keď bol použitý AI obsah (audit/kontrola pred publikovaním).
+const AI_REVIEW_CHECKLIST = [
+  'AI text: skontrolované fakty.',
+  'AI text: skontrolované zdroje.',
+  'AI text: upravený tón.',
+  'AI text: odstránené neoverené tvrdenia.',
+];
+
 function toLocalInput(iso?: string): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -109,6 +121,27 @@ function fromLocalInput(local: string): string {
   if (!local) return '';
   const d = new Date(local);
   return Number.isNaN(d.getTime()) ? '' : d.toISOString();
+}
+
+// Plochý text tela článku ako kontext pre AI akcie.
+function articleBodyText(article: AdminArticle): string {
+  return article.sections
+    .flatMap((s) => [
+      s.heading,
+      ...s.blocks.flatMap((b) => {
+        if (b.type === 'bullets') return b.items;
+        if (
+          b.type === 'paragraph' ||
+          b.type === 'subheading' ||
+          b.type === 'quote' ||
+          b.type === 'callout'
+        )
+          return [b.text];
+        return [];
+      }),
+    ])
+    .filter((t) => t.trim().length > 0)
+    .join('\n');
 }
 
 export default function AdminArticleEditPage() {
@@ -134,6 +167,9 @@ export default function AdminArticleEditPage() {
   const [validation, setValidation] = useState<ArticleValidation | null>(null);
   const [validationLoading, setValidationLoading] = useState(false);
   const [metric, setMetric] = useState<ArticleMetrics | null>(null);
+  const [aiBusy, setAiBusy] = useState<ArticleAiType | null>(null);
+  const [aiLog, setAiLog] = useState<AiGenerationLog[]>([]);
+  const [aiNote, setAiNote] = useState<string | null>(null);
 
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
@@ -159,6 +195,9 @@ export default function AdminArticleEditPage() {
     getArticleMetric(slug)
       .then(setMetric)
       .catch(() => setMetric(null));
+    getArticleAiLog(slug)
+      .then(setAiLog)
+      .catch(() => setAiLog([]));
   }, [slug, isNew]);
 
   // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
@@ -287,7 +326,9 @@ export default function AdminArticleEditPage() {
   // Akcia podľa cieľového stavu: publish cez checklist, schedule cez dialóg.
   const handleTransition = (target: ArticleStatus) => {
     if (target === 'published') {
-      setChecklistChecked(PUBLISH_CHECKLIST.map(() => false));
+      const list =
+        aiLog.length > 0 ? [...PUBLISH_CHECKLIST, ...AI_REVIEW_CHECKLIST] : PUBLISH_CHECKLIST;
+      setChecklistChecked(list.map(() => false));
       setChecklistOpen(true);
       return;
     }
@@ -300,6 +341,51 @@ export default function AdminArticleEditPage() {
   };
 
   const allowedTransitions = ARTICLE_STATUS_TRANSITIONS[form.status];
+  const hasAi = aiLog.length > 0;
+  const publishChecklist = hasAi
+    ? [...PUBLISH_CHECKLIST, ...AI_REVIEW_CHECKLIST]
+    : PUBLISH_CHECKLIST;
+
+  const runAi = async (type: ArticleAiType, instruction?: string) => {
+    if (isNew || !slug) {
+      setError('Najprv ulož článok, potom môžeš použiť AI.');
+      return;
+    }
+    setAiBusy(type);
+    setError(null);
+    try {
+      const result = await generateArticleAi({
+        type,
+        articleSlug: slug,
+        title: form.title,
+        bodyText: type === 'rewrite' ? form.intro : articleBodyText(form),
+        instruction,
+        category: form.category,
+        sources: sources.filter((s) => s.url.trim()),
+      });
+      if (type === 'meta_description' && result.text) set('description', result.text);
+      else if (type === 'summary' && result.text) set('intro', result.text);
+      else if (type === 'rewrite' && result.text) set('intro', result.text);
+      else if (type === 'faq' && result.faqs) set('faqs', [...faqs, ...result.faqs]);
+      else if (type === 'outline' && result.headings) {
+        set('sections', [
+          ...form.sections,
+          ...result.headings.map((h) => ({
+            heading: h,
+            blocks: [{ type: 'paragraph' as const, text: '' }],
+          })),
+        ]);
+      } else if (type === 'source_check') setAiNote(result.text ?? 'Bez poznámok.');
+      getArticleAiLog(slug)
+        .then(setAiLog)
+        .catch(() => {});
+      setNotice('AI návrh pridaný — over a uprav podľa potreby.');
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setAiBusy(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -332,7 +418,12 @@ export default function AdminArticleEditPage() {
             História verzií
           </Button>
         )}
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={saveContent} disabled={saving}>
+        <Button
+          variant="contained"
+          startIcon={<SaveIcon />}
+          onClick={saveContent}
+          disabled={saving}
+        >
           {saving ? 'Ukladám…' : 'Uložiť'}
         </Button>
       </Stack>
@@ -694,9 +785,13 @@ export default function AdminArticleEditPage() {
                 Odborná kontrola
               </Typography>
               {form.category === 'zdravie' && (
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                  Zdravotný článok: pred publikovaním je povinný disclaimer, dátum poslednej kontroly
-                  a úroveň rizika. Pri vysokom riziku aj medicínska kontrola a fact-check.
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mb: 1 }}
+                >
+                  Zdravotný článok: pred publikovaním je povinný disclaimer, dátum poslednej
+                  kontroly a úroveň rizika. Pri vysokom riziku aj medicínska kontrola a fact-check.
                 </Typography>
               )}
               <Stack spacing={theme.spacing(2)}>
@@ -706,7 +801,9 @@ export default function AdminArticleEditPage() {
                     select
                     label="Úroveň rizika"
                     value={form.riskLevel ?? ''}
-                    onChange={(e) => set('riskLevel', (e.target.value || undefined) as AdminArticle['riskLevel'])}
+                    onChange={(e) =>
+                      set('riskLevel', (e.target.value || undefined) as AdminArticle['riskLevel'])
+                    }
                     size="small"
                     fullWidth
                   >
@@ -811,6 +908,62 @@ export default function AdminArticleEditPage() {
               </Stack>
             </CardContent>
           </Card>
+
+          {!isNew && (
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="subtitle1" gutterBottom>
+                  AI asistent
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mb: 1 }}
+                >
+                  AI len navrhuje — výstup vždy skontroluj a uprav. Každé volanie sa loguje (audit +
+                  náklady) a pred publikovaním si vyžiada AI kontrolu.
+                </Typography>
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {(
+                    [
+                      ['meta_description', 'Meta popis'],
+                      ['summary', 'Úvod'],
+                      ['rewrite', 'Vylepšiť úvod'],
+                      ['faq', 'Navrhnúť FAQ'],
+                      ['outline', 'Osnova sekcií'],
+                      ['source_check', 'Skontrolovať zdroje'],
+                    ] as [ArticleAiType, string][]
+                  ).map(([type, label]) => (
+                    <Button
+                      key={type}
+                      size="small"
+                      variant="outlined"
+                      disabled={aiBusy !== null}
+                      onClick={() => void runAi(type)}
+                    >
+                      {aiBusy === type ? 'Generujem…' : label}
+                    </Button>
+                  ))}
+                </Stack>
+                {aiLog.length > 0 && (
+                  <Box sx={{ mt: theme.spacing(2) }}>
+                    <Typography variant="caption" color="text.secondary">
+                      AI log ({aiLog.length}) — posledné:
+                    </Typography>
+                    <Stack sx={{ mt: 0.5 }}>
+                      {aiLog.slice(0, 5).map((g) => (
+                        <Typography key={g.id} variant="caption" color="text.secondary">
+                          {new Date(g.createdAt).toLocaleString('sk-SK')} · {g.type} · {g.model} ·{' '}
+                          {g.inputTokens ?? '?'}+{g.outputTokens ?? '?'} tok ·{' '}
+                          {g.estimatedCost != null ? `$${g.estimatedCost.toFixed(4)}` : '—'}
+                        </Typography>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Box>
             <Typography variant="subtitle1" gutterBottom>
@@ -983,7 +1136,7 @@ export default function AdminArticleEditPage() {
             </Alert>
           )}
           <Stack>
-            {PUBLISH_CHECKLIST.map((item, i) => (
+            {publishChecklist.map((item, i) => (
               <FormControlLabel
                 key={i}
                 control={
@@ -1053,6 +1206,18 @@ export default function AdminArticleEditPage() {
           >
             Naplánovať
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(aiNote)} onClose={() => setAiNote(null)} fullWidth maxWidth="sm">
+        <DialogTitle>AI kontrola zdrojov</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+            {aiNote}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAiNote(null)}>Zavrieť</Button>
         </DialogActions>
       </Dialog>
 

@@ -26,9 +26,18 @@ const MODELS = {
   episodeSummary: process.env.MODEL_EPISODE_SUMMARY ?? 'gpt-4o-mini',
   foodSafety: process.env.MODEL_FOOD_SAFETY ?? 'gpt-4o-mini',
   feedAnalysis: process.env.MODEL_FEED_ANALYSIS ?? 'gpt-4o',
+  articleAuthoring: process.env.MODEL_ARTICLE_AUTHORING ?? 'gpt-4o-mini',
+  articleRewrite: process.env.MODEL_ARTICLE_REWRITE ?? 'gpt-4o',
 } as const;
 
 export const AI_MODELS = MODELS;
+
+// Hrubý odhad ceny (USD za 1K tokenov) pre logovanie nákladov AI generovania.
+export const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  'gpt-4o': { input: 0.0025, output: 0.01 },
+  'gpt-4o-mini': { input: 0.00015, output: 0.0006 },
+  'gpt-4.1': { input: 0.002, output: 0.008 },
+};
 
 const OPENAI_ANALYSIS_TIMEOUT_MS = 30_000;
 const OPENAI_LIGHT_TIMEOUT_MS = 10_000;
