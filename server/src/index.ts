@@ -17,6 +17,8 @@ import authEmailsRouter from './routes/authEmails';
 import articlesRouter from './routes/articles';
 import analyticsRouter from './routes/analytics';
 import adminRouter from './routes/admin';
+import adminAiRouter from './routes/adminAi';
+import { requireAdmin } from './middleware/requireAdmin';
 import { errorHandler } from './middleware/errorHandler';
 import { firebaseAuth } from './middleware/firebaseAuth';
 import { ensureUser } from './middleware/ensureUser';
@@ -223,6 +225,8 @@ app.use('/api/analytics', analyticsLimiter, analyticsRouter);
 app.use('/api/', firebaseAuth());
 
 // Routes
+// AI generovanie článkov — admin only + AI rate limit + denný AI cap.
+app.use('/api/admin/ai', aiHeavyLimiter, ensureUser, requireAiQuota(), requireAdmin, adminAiRouter);
 app.use('/api/admin', ensureUser, adminRouter);
 app.use('/api/pets', ensureUser, petsRouter);
 app.use('/api/health', ensureUser, healthRouter);

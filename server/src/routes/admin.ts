@@ -12,6 +12,7 @@ import {
 } from '../services/articleService';
 import { groupValidation, validateArticleForPublish } from '../services/articleValidation';
 import { getArticleMetric, getArticleMetrics } from '../services/articleAnalyticsService';
+import { listAiGenerations } from '../services/articleAiService';
 import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
 import {
@@ -64,6 +65,14 @@ articles.get('/:slug', async (req: Request, res: Response, next: NextFunction) =
 articles.get('/:slug/metrics', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.json({ metrics: await getArticleMetric(String(req.params.slug), 30) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.get('/:slug/ai-log', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ generations: await listAiGenerations(String(req.params.slug)) });
   } catch (err) {
     next(err);
   }
