@@ -97,6 +97,25 @@ export interface ArticleVersion extends ArticleVersionMeta {
   data: AdminArticle;
 }
 
+export type ArticleEventType =
+  | 'view'
+  | 'cta_click'
+  | 'scroll_50'
+  | 'scroll_90'
+  | 'related_click'
+  | 'source_click';
+
+export interface ArticleMetrics {
+  slug: string;
+  views: number;
+  ctaClicks: number;
+  scroll50: number;
+  scroll90: number;
+  relatedClicks: number;
+  sourceClicks: number;
+  ctr: number;
+}
+
 export type ValidationSeverity = 'error' | 'warning' | 'suggestion';
 
 export interface ValidationResult {

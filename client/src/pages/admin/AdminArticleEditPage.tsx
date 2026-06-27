@@ -43,11 +43,13 @@ import {
   changeArticleStatus,
   createAdminArticle,
   getAdminArticle,
+  getArticleMetric,
   getArticleValidation,
   listArticleVersions,
   updateAdminArticle,
   uploadArticleImage,
 } from '../../services/adminApi';
+import { articleRefreshFlags } from '../../utils/articleRefreshFlags';
 import { downscaleImage } from '../../utils/imageDownscale';
 import {
   ARTICLE_STATUS_TRANSITIONS,
@@ -56,7 +58,12 @@ import {
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
 import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
-import type { AdminArticle, ArticleStatus, ArticleValidation } from '../../content/poradna/types';
+import type {
+  AdminArticle,
+  ArticleMetrics,
+  ArticleStatus,
+  ArticleValidation,
+} from '../../content/poradna/types';
 
 function emptyArticle(): AdminArticle {
   return {
@@ -126,6 +133,7 @@ export default function AdminArticleEditPage() {
   const [scheduleAt, setScheduleAt] = useState('');
   const [validation, setValidation] = useState<ArticleValidation | null>(null);
   const [validationLoading, setValidationLoading] = useState(false);
+  const [metric, setMetric] = useState<ArticleMetrics | null>(null);
 
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
@@ -148,6 +156,9 @@ export default function AdminArticleEditPage() {
       .then(setValidation)
       .catch(() => setValidation(null))
       .finally(() => setValidationLoading(false));
+    getArticleMetric(slug)
+      .then(setMetric)
+      .catch(() => setMetric(null));
   }, [slug, isNew]);
 
   // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
@@ -644,6 +655,38 @@ export default function AdminArticleEditPage() {
               </Stack>
             </CardContent>
           </Card>
+
+          {!isNew && (
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="subtitle1" gutterBottom>
+                  Výkon článku (30 dní)
+                </Typography>
+                <Stack direction="row" spacing={3} flexWrap="wrap" sx={{ mb: theme.spacing(1) }}>
+                  <Typography variant="body2">
+                    <strong>Zobrazenia:</strong> {metric?.views ?? 0}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>CTA kliky:</strong> {metric?.ctaClicks ?? 0}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>CTR:</strong> {((metric?.ctr ?? 0) * 100).toFixed(1)} %
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Scroll 90 %:</strong>{' '}
+                    {metric && metric.views > 0
+                      ? `${((metric.scroll90 / metric.views) * 100).toFixed(0)} %`
+                      : '—'}
+                  </Typography>
+                </Stack>
+                {articleRefreshFlags(form, metric).map((flag) => (
+                  <Alert key={flag.key} severity="warning" sx={{ mt: 1 }}>
+                    {flag.message}
+                  </Alert>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           <Box>
             <Typography variant="subtitle1" gutterBottom>

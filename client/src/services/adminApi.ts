@@ -1,5 +1,6 @@
 import type {
   AdminArticle,
+  ArticleMetrics,
   ArticleValidation,
   ArticleVersion,
   ArticleVersionMeta,
@@ -79,6 +80,18 @@ export async function uploadArticleImage(payload: {
 
 export async function publishArticles(): Promise<void> {
   await request<{ triggered: boolean }>('/articles/publish', { method: 'POST' });
+}
+
+export async function getArticlesMetrics(): Promise<ArticleMetrics[]> {
+  const data = await request<{ metrics: ArticleMetrics[] }>('/articles/metrics');
+  return data.metrics;
+}
+
+export async function getArticleMetric(slug: string): Promise<ArticleMetrics> {
+  const data = await request<{ metrics: ArticleMetrics }>(
+    `/articles/${encodeURIComponent(slug)}/metrics`
+  );
+  return data.metrics;
 }
 
 export async function getArticleValidation(slug: string): Promise<ArticleValidation> {

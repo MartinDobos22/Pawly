@@ -11,6 +11,7 @@ import {
   updateArticle,
 } from '../services/articleService';
 import { groupValidation, validateArticleForPublish } from '../services/articleValidation';
+import { getArticleMetric, getArticleMetrics } from '../services/articleAnalyticsService';
 import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
 import {
@@ -42,11 +43,27 @@ articles.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+articles.get('/metrics', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ metrics: await getArticleMetrics(30) });
+  } catch (err) {
+    next(err);
+  }
+});
+
 articles.get('/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const article = await getArticleBySlugAdmin(String(req.params.slug));
     if (!article) throw httpError(404, 'Článok sa nenašiel.', 'NOT_FOUND');
     res.json({ article });
+  } catch (err) {
+    next(err);
+  }
+});
+
+articles.get('/:slug/metrics', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ metrics: await getArticleMetric(String(req.params.slug), 30) });
   } catch (err) {
     next(err);
   }

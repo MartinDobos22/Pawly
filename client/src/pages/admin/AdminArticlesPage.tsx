@@ -31,6 +31,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import {
   changeArticleStatus,
   deleteAdminArticle,
+  getArticlesMetrics,
   listAdminArticles,
   publishArticles,
 } from '../../services/adminApi';
@@ -40,7 +41,7 @@ import {
   STATUS_LABELS,
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
-import type { AdminArticle, ArticleStatus } from '../../content/poradna/types';
+import type { AdminArticle, ArticleMetrics, ArticleStatus } from '../../content/poradna/types';
 
 type Filter = 'all' | ArticleStatus;
 
@@ -68,6 +69,7 @@ export default function AdminArticlesPage() {
   const [statusMenu, setStatusMenu] = useState<{ anchor: HTMLElement; article: AdminArticle } | null>(
     null
   );
+  const [metrics, setMetrics] = useState<Record<string, ArticleMetrics>>({});
 
   const load = () => {
     setLoading(true);
@@ -78,6 +80,9 @@ export default function AdminArticlesPage() {
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
+    getArticlesMetrics()
+      .then((rows) => setMetrics(Object.fromEntries(rows.map((m) => [m.slug, m]))))
+      .catch(() => setMetrics({}));
   };
 
   useEffect(load, []);
@@ -221,7 +226,11 @@ export default function AdminArticlesPage() {
                     />
                   </Stack>
                 }
-                secondary={`/${a.slug} · aktualizované ${a.updated}`}
+                secondary={`/${a.slug} · aktualizované ${a.updated} · Views 30d: ${
+                  metrics[a.slug]?.views ?? 0
+                } · CTA: ${metrics[a.slug]?.ctaClicks ?? 0} · CTR: ${(
+                  (metrics[a.slug]?.ctr ?? 0) * 100
+                ).toFixed(1)} %`}
               />
             </ListItem>
           ))}
