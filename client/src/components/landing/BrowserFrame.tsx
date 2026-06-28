@@ -19,7 +19,9 @@ export default function BrowserFrame({ url = 'pawly.app/zdravotny-pas', children
         overflow: 'hidden',
         bgcolor: 'background.paper',
         border: `1px solid ${theme.palette.divider}`,
-        boxShadow: isDark ? '0 24px 50px rgba(0,0,0,0.5)' : '0 24px 50px rgba(15,76,92,0.18)',
+        boxShadow: isDark
+          ? `0 24px 50px ${alpha(theme.palette.common.black, 0.5)}`
+          : `0 24px 50px ${alpha(theme.palette.primary.main, 0.18)}`,
         ...sx,
       }}
     >

@@ -8,6 +8,7 @@ import {
   TableRow,
   Typography,
   useTheme,
+  alpha,
 } from '@mui/material';
 
 type AiFormattedTextProps = {
@@ -255,7 +256,7 @@ export default function AiFormattedText({ text }: AiFormattedTextProps) {
                       minWidth: 22,
                       height: 22,
                       borderRadius: '50%',
-                      bgcolor: 'rgba(34,197,94,0.12)',
+                      bgcolor: alpha(theme.palette.success.main, 0.12),
                       color: 'success.main',
                       fontSize: 11,
                       fontWeight: 700,

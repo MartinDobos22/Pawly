@@ -1,4 +1,5 @@
 import { AppBar, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
@@ -28,7 +29,7 @@ export default function PublicHeader({ darkMode, onToggleTheme }: Props) {
       position="sticky"
       elevation={0}
       sx={{
-        bgcolor: theme.palette.mode === 'light' ? 'rgba(250,247,242,0.8)' : 'rgba(26,31,34,0.8)',
+        bgcolor: alpha(theme.palette.background.default, 0.8),
         backdropFilter: 'saturate(180%) blur(14px)',
         color: 'text.primary',
         borderBottom: `1px solid ${theme.palette.divider}`,

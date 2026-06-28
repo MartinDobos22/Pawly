@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Chip, Typography, useTheme } from '@mui/material';
+import { Box, Card, CardContent, Chip, Typography, useTheme, alpha } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { Recommendation } from '../types';
 
@@ -24,13 +24,13 @@ export default function RecommendationChip({ recommendation }: RecommendationChi
                 key={i}
                 label={item}
                 sx={{
-                  backgroundColor:
-                    theme.palette.mode === 'dark'
-                      ? 'rgba(129, 199, 132, 0.15)'
-                      : 'rgba(46, 125, 50, 0.08)',
+                  backgroundColor: alpha(
+                    theme.palette.success.main,
+                    theme.palette.mode === 'dark' ? 0.15 : 0.08
+                  ),
                   color: theme.palette.success.main,
                   fontWeight: 500,
-                  border: `1px solid ${theme.palette.success.main}30`,
+                  border: `1px solid ${alpha(theme.palette.success.main, 0.19)}`,
                 }}
               />
             ))}

@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
   useTheme,
+  alpha,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -105,7 +106,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
           position: 'relative',
           color: theme.palette.common.white,
           bgcolor: theme.palette[color].dark,
-          backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.7) 100%)${
+          backgroundImage: `linear-gradient(180deg, ${alpha(theme.palette.common.black, 0.35)} 0%, ${alpha(theme.palette.common.black, 0.7)} 100%)${
             article.coverImage ? `, url(${article.coverImage})` : ''
           }`,
           backgroundSize: 'cover',
@@ -127,7 +128,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
             >
               Poradňa
             </Link>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)' }}>
+            <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.75) }}>
               {article.title}
             </Typography>
           </Breadcrumbs>
@@ -145,7 +146,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
 
           <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap" useFlexGap>
             <ScheduleIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+            <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
               {author} · Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min
               čítania
             </Typography>
@@ -161,7 +162,7 @@ export default function PoradnaArticlePage({ darkMode, onToggleTheme, slug: slug
               sx={{ mt: theme.spacing(1) }}
             >
               <VerifiedIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
                 Odborne skontrolované {formatUpdated(article.medicalReviewedAt)}
                 {article.reviewerTitle ? ` · ${article.reviewerTitle}` : ''}
               </Typography>

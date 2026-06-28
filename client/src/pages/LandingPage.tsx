@@ -74,8 +74,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           position="sticky"
           elevation={0}
           sx={{
-            bgcolor:
-              theme.palette.mode === 'light' ? 'rgba(250,247,242,0.7)' : 'rgba(26,31,34,0.7)',
+            bgcolor: alpha(theme.palette.background.default, 0.7),
             backdropFilter: 'saturate(180%) blur(14px)',
             WebkitBackdropFilter: 'saturate(180%) blur(14px)',
             color: 'text.primary',
