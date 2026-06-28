@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Card, Stack, Typography, useTheme } from '@mui/material';
 import { Restaurant as FoodIcon, Edit as EditIcon } from '@mui/icons-material';
 import FoodSuitabilityChip from './FoodSuitabilityChip';
+import FoodCardHeader from './FoodCardHeader';
 import type { DietEntry } from '../../types/petHealth';
 
 interface Props {
@@ -14,21 +15,22 @@ export default function CurrentFoodCard({ current, onSetFood }: Props) {
   const theme = useTheme();
 
   return (
-    <Card sx={{ p: theme.spacing(2.5) }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(1.5) }}>
-        <FoodIcon color="action" />
-        <Typography variant="h6" sx={{ flex: 1 }}>
-          {t('food.current')}
-        </Typography>
-        <Button
-          size="small"
-          startIcon={current ? <EditIcon /> : undefined}
-          variant={current ? 'text' : 'contained'}
-          onClick={onSetFood}
-        >
-          {current ? t('food.changeFood') : t('food.setFood')}
-        </Button>
-      </Stack>
+    <Card sx={{ p: theme.spacing(2.5), borderRadius: 2, height: '100%' }}>
+      <FoodCardHeader
+        icon={<FoodIcon />}
+        accent={theme.palette.diet.main}
+        title={t('food.current')}
+        action={
+          <Button
+            size="small"
+            startIcon={current ? <EditIcon /> : undefined}
+            variant={current ? 'text' : 'contained'}
+            onClick={onSetFood}
+          >
+            {current ? t('food.changeFood') : t('food.setFood')}
+          </Button>
+        }
+      />
 
       {current ? (
         <Stack spacing={theme.spacing(1)}>

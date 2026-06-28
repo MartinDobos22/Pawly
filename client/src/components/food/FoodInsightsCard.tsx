@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Card, Stack, Typography, useTheme } from '@mui/material';
 import { Insights as InsightsIcon } from '@mui/icons-material';
+import FoodCardHeader from './FoodCardHeader';
 import { computeFoodInsights } from '../../utils/foodInsights';
 import type { SymptomField } from '../../utils/checkInTrends';
 import type { CheckIn, DietEntry } from '../../types/petHealth';
@@ -38,11 +39,12 @@ export default function FoodInsightsCard({ dietEntries, checkIns }: Props) {
   };
 
   return (
-    <Card sx={{ p: theme.spacing(2.5) }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(1.5) }}>
-        <InsightsIcon color="action" />
-        <Typography variant="h6">{t('food.insightsTitle')}</Typography>
-      </Stack>
+    <Card sx={{ p: theme.spacing(2.5), borderRadius: 2 }}>
+      <FoodCardHeader
+        icon={<InsightsIcon />}
+        accent={theme.palette.info.main}
+        title={t('food.insightsTitle')}
+      />
 
       {insights.length === 0 ? (
         <Typography variant="body2" color="text.secondary">

@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Divider, Stack, Typography, useTheme } from '@mui/material';
+import { History as HistoryIcon } from '@mui/icons-material';
 import FoodSuitabilityChip from './FoodSuitabilityChip';
+import FoodCardHeader from './FoodCardHeader';
 import type { DietEntry } from '../../types/petHealth';
 
 interface Props {
@@ -27,10 +29,12 @@ export default function FoodHistoryList({ entries }: Props) {
           : t('food.typeMain');
 
   return (
-    <Card sx={{ p: theme.spacing(2.5) }}>
-      <Typography variant="h6" sx={{ mb: theme.spacing(1.5) }}>
-        {t('food.history')}
-      </Typography>
+    <Card sx={{ p: theme.spacing(2.5), borderRadius: 2 }}>
+      <FoodCardHeader
+        icon={<HistoryIcon />}
+        accent={theme.palette.primary.main}
+        title={t('food.history')}
+      />
       {sorted.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
           {t('food.historyEmpty')}

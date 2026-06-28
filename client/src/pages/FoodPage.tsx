@@ -80,7 +80,7 @@ export default function FoodPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 640, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
       <Seo title={`${t('food.title')} — Pawly`} noindex />
 
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
@@ -90,36 +90,52 @@ export default function FoodPage() {
         {t('food.subtitle')}
       </Typography>
 
-      <Button
-        variant="outlined"
-        startIcon={<ScienceIcon />}
-        onClick={() => navigate('/analyza')}
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={theme.spacing(2)}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
         sx={{ mb: theme.spacing(3) }}
       >
-        {t('food.analyzeCta')}
-      </Button>
+        <Button
+          variant="outlined"
+          startIcon={<ScienceIcon />}
+          onClick={() => navigate('/analyza')}
+          sx={{ flexShrink: 0 }}
+        >
+          {t('food.analyzeCta')}
+        </Button>
 
-      {petProfiles.length > 1 && (
-        <FormControl fullWidth sx={{ mb: theme.spacing(3) }}>
-          <InputLabel id="food-pet-label">{t('checkIn.selectPet')}</InputLabel>
-          <Select
-            labelId="food-pet-label"
-            label={t('checkIn.selectPet')}
-            value={selectedPetId}
-            onChange={(e) => setSelectedPetId(e.target.value)}
-          >
-            {petProfiles.map((p) => (
-              <MenuItem key={p.id} value={p.id}>
-                {p.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
+        {petProfiles.length > 1 && (
+          <FormControl sx={{ minWidth: 220, flex: { sm: 1 } }}>
+            <InputLabel id="food-pet-label">{t('checkIn.selectPet')}</InputLabel>
+            <Select
+              labelId="food-pet-label"
+              label={t('checkIn.selectPet')}
+              value={selectedPetId}
+              onChange={(e) => setSelectedPetId(e.target.value)}
+            >
+              {petProfiles.map((p) => (
+                <MenuItem key={p.id} value={p.id}>
+                  {p.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+      </Stack>
 
       <Stack spacing={theme.spacing(2)}>
-        <CurrentFoodCard current={current} onSetFood={() => openDialog('main')} />
-        <TreatsList entries={petEntries} onAdd={() => openDialog('treats')} />
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
+            gap: theme.spacing(2),
+            alignItems: 'stretch',
+          }}
+        >
+          <CurrentFoodCard current={current} onSetFood={() => openDialog('main')} />
+          <TreatsList entries={petEntries} onAdd={() => openDialog('treats')} />
+        </Box>
         <FoodInsightsCard dietEntries={petEntries} checkIns={petCheckIns} />
         <FoodHistoryList entries={petEntries} />
       </Stack>

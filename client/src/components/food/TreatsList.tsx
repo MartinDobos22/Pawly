@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Chip, Divider, IconButton, Stack, Typography, useTheme } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Cookie as CookieIcon } from '@mui/icons-material';
+import FoodCardHeader from './FoodCardHeader';
 import { useHealthData } from '../../hooks/useHealthData';
 import type { DietEntry } from '../../types/petHealth';
 
@@ -19,16 +20,17 @@ export default function TreatsList({ entries, onAdd }: Props) {
   );
 
   return (
-    <Card sx={{ p: theme.spacing(2.5) }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(1.5) }}>
-        <CookieIcon color="action" />
-        <Typography variant="h6" sx={{ flex: 1 }}>
-          {t('food.treatsTitle')}
-        </Typography>
-        <Button size="small" startIcon={<AddIcon />} onClick={onAdd}>
-          {t('food.addTreat')}
-        </Button>
-      </Stack>
+    <Card sx={{ p: theme.spacing(2.5), borderRadius: 2, height: '100%' }}>
+      <FoodCardHeader
+        icon={<CookieIcon />}
+        accent={theme.palette.secondary.main}
+        title={t('food.treatsTitle')}
+        action={
+          <Button size="small" startIcon={<AddIcon />} onClick={onAdd}>
+            {t('food.addTreat')}
+          </Button>
+        }
+      />
 
       {active.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
