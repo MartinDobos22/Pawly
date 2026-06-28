@@ -15,6 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { Add as AddIcon, FactCheck as FactCheckIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
 import QuickCheckInStep from '../components/checkIn/QuickCheckInStep';
@@ -159,15 +160,14 @@ export default function CheckInPage() {
     </FormControl>
   );
 
+  const isHub = step === 'hub';
+
   return (
-    <Box sx={{ maxWidth: 560, mx: 'auto' }}>
+    <Box sx={{ maxWidth: isHub ? 960 : 680, mx: 'auto' }}>
       <Seo title={`${t('checkIn.title')} — Pawly`} noindex />
 
-      <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
+      <Typography variant="h4" sx={{ mb: theme.spacing(3) }}>
         {t('checkIn.title')}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: theme.spacing(3) }}>
-        {t('checkIn.subtitle')}
       </Typography>
 
       {error && (
@@ -178,23 +178,69 @@ export default function CheckInPage() {
 
       {step === 'result' ? (
         <CheckInResult severity={resultSeverity} petName={petName} onDone={resetFlow} />
-      ) : (
-        <Card sx={{ p: theme.spacing(3) }}>
+      ) : step === 'hub' ? (
+        <Stack spacing={theme.spacing(2)}>
           {petSelector}
 
-          {step === 'hub' && (
-            <Stack spacing={theme.spacing(3)}>
+          <Card
+            sx={{
+              p: theme.spacing(3),
+              borderRadius: 2,
+              borderLeft: `4px solid ${theme.palette.primary.main}`,
+              bgcolor: alpha(
+                theme.palette.primary.main,
+                theme.palette.mode === 'dark' ? 0.12 : 0.06
+              ),
+            }}
+          >
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={theme.spacing(2)}
+              alignItems={{ xs: 'flex-start', sm: 'center' }}
+              justifyContent="space-between"
+            >
+              <Stack direction="row" spacing={theme.spacing(2)} alignItems="center">
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 2,
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: alpha(theme.palette.primary.main, 0.14),
+                    color: 'primary.main',
+                    '& svg': { fontSize: 26 },
+                  }}
+                >
+                  <FactCheckIcon />
+                </Box>
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                    {t('checkIn.newCheckIn')}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('checkIn.subtitle')}
+                  </Typography>
+                </Box>
+              </Stack>
               <Button
                 variant="contained"
                 startIcon={<FactCheckIcon />}
                 onClick={() => setStep('quick')}
-                sx={{ alignSelf: 'flex-start' }}
+                sx={{ flexShrink: 0, alignSelf: { xs: 'stretch', sm: 'auto' } }}
               >
                 {t('checkIn.newCheckIn')}
               </Button>
-              <CheckInHistory checkIns={petCheckIns} />
             </Stack>
-          )}
+          </Card>
+
+          <CheckInHistory checkIns={petCheckIns} />
+        </Stack>
+      ) : (
+        <Card sx={{ p: theme.spacing(3), borderRadius: 2 }}>
+          {petSelector}
 
           {step === 'quick' && <QuickCheckInStep petName={petName} onSelect={handleQuickSelect} />}
 

@@ -1,9 +1,23 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Chip, Divider, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Chip,
+  Divider,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import type { CheckIn, CheckInSeverity } from '../../types/petHealth';
-import { recentSymptomCounts, recurringSymptoms, type SymptomField } from '../../utils/checkInTrends';
+import {
+  recentSymptomCounts,
+  recurringSymptoms,
+  type SymptomField,
+} from '../../utils/checkInTrends';
 import { useCheckInLabels } from '../../hooks/useCheckInLabels';
 
 interface Props {
@@ -71,54 +85,64 @@ export default function CheckInHistory({ checkIns }: Props) {
         </Alert>
       )}
 
-      {trend.length > 0 && (
-        <Box>
-          <Typography variant="subtitle2" sx={{ mb: theme.spacing(1) }}>
-            {t('checkIn.trendTitle')}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 2fr) minmax(0, 1fr)' },
+          gap: theme.spacing(2),
+          alignItems: 'start',
+        }}
+      >
+        <Card sx={{ p: theme.spacing(2.5), borderRadius: 2 }}>
+          <Typography variant="subtitle2" sx={{ mb: theme.spacing(1.5) }}>
+            {t('checkIn.historyTitle')}
           </Typography>
-          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: theme.spacing(1) }}>
-            {trend.map((o) => (
-              <Chip
-                key={`${o.field}:${o.value}`}
-                size="small"
-                label={`${labels[o.field][o.value] ?? o.value} ×${o.count}`}
-              />
-            ))}
+          <Stack divider={<Divider flexItem />} spacing={theme.spacing(0.5)}>
+            {sorted.slice(0, MAX_ROWS).map((c) => {
+              const symptoms = abnormalLabels(c);
+              return (
+                <Stack
+                  key={c.id}
+                  direction="row"
+                  alignItems="center"
+                  spacing={theme.spacing(1.5)}
+                  sx={{ py: theme.spacing(1) }}
+                >
+                  <Chip
+                    size="small"
+                    color={SEVERITY_COLOR[c.severity]}
+                    variant="outlined"
+                    label={severityLabel(c.severity)}
+                    sx={{ flexShrink: 0 }}
+                  />
+                  <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
+                    {c.date}
+                  </Typography>
+                  <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
+                    {symptoms.length > 0 ? symptoms.join(', ') : t('checkIn.noSymptoms')}
+                  </Typography>
+                </Stack>
+              );
+            })}
           </Stack>
-        </Box>
-      )}
+        </Card>
 
-      <Box>
-        <Typography variant="subtitle2" sx={{ mb: theme.spacing(1) }}>
-          {t('checkIn.historyTitle')}
-        </Typography>
-        <Stack divider={<Divider flexItem />} spacing={theme.spacing(1)}>
-          {sorted.slice(0, MAX_ROWS).map((c) => {
-            const symptoms = abnormalLabels(c);
-            return (
-              <Stack
-                key={c.id}
-                direction="row"
-                alignItems="center"
-                spacing={theme.spacing(1)}
-                sx={{ py: theme.spacing(0.5) }}
-              >
+        {trend.length > 0 && (
+          <Card sx={{ p: theme.spacing(2.5), borderRadius: 2 }}>
+            <Typography variant="subtitle2" sx={{ mb: theme.spacing(1.5) }}>
+              {t('checkIn.trendTitle')}
+            </Typography>
+            <Stack direction="row" sx={{ flexWrap: 'wrap', gap: theme.spacing(1) }}>
+              {trend.map((o) => (
                 <Chip
+                  key={`${o.field}:${o.value}`}
                   size="small"
-                  color={SEVERITY_COLOR[c.severity]}
-                  variant="outlined"
-                  label={severityLabel(c.severity)}
+                  label={`${labels[o.field][o.value] ?? o.value} ×${o.count}`}
                 />
-                <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
-                  {c.date}
-                </Typography>
-                <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
-                  {symptoms.length > 0 ? symptoms.join(', ') : t('checkIn.noSymptoms')}
-                </Typography>
-              </Stack>
-            );
-          })}
-        </Stack>
+              ))}
+            </Stack>
+          </Card>
+        )}
       </Box>
     </Stack>
   );
