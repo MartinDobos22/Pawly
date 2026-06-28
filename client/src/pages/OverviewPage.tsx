@@ -107,9 +107,7 @@ export default function OverviewPage() {
 
   const aggregateLevel = useMemo<CareStatusLevel>(() => {
     if (statuses.length === 0) return 'green';
-    return statuses
-      .map((s) => s.status)
-      .sort((a, b) => LEVEL_PRIORITY[a] - LEVEL_PRIORITY[b])[0];
+    return statuses.map((s) => s.status).sort((a, b) => LEVEL_PRIORITY[a] - LEVEL_PRIORITY[b])[0];
   }, [statuses]);
 
   const summaryText =
@@ -122,7 +120,7 @@ export default function OverviewPage() {
   const loading = profilesLoading || statusLoading;
 
   return (
-    <Box sx={{ maxWidth: 720, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
       <Seo title={`${t('overview.title')} — Pawly`} noindex />
 
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
@@ -153,14 +151,18 @@ export default function OverviewPage() {
             }}
           />
         ) : (
-          <Card sx={{ p: theme.spacing(4), textAlign: 'center' }}>
+          <Card sx={{ p: theme.spacing(4), textAlign: 'center', maxWidth: 520, mx: 'auto' }}>
             <Typography variant="h6" sx={{ mb: theme.spacing(1) }}>
               {t('overview.emptyTitle')}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: theme.spacing(2) }}>
               {t('overview.emptySubtitle')}
             </Typography>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/profily')}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/profily')}
+            >
               {t('overview.emptyAction')}
             </Button>
           </Card>
@@ -203,16 +205,25 @@ export default function OverviewPage() {
             </Stack>
           </Card>
 
-          {profiles.map((pet) => (
-            <PetStatusCard
-              key={pet.id}
-              pet={pet}
-              status={statusByPet.get(pet.id)}
-              currentFood={currentFoodByPet.get(pet.id)}
-              nextReminder={nextReminderByPet.get(pet.id)}
-              lastCheckIn={lastCheckInByPet.get(pet.id)}
-            />
-          ))}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+              gap: theme.spacing(2),
+              alignItems: 'stretch',
+            }}
+          >
+            {profiles.map((pet) => (
+              <PetStatusCard
+                key={pet.id}
+                pet={pet}
+                status={statusByPet.get(pet.id)}
+                currentFood={currentFoodByPet.get(pet.id)}
+                nextReminder={nextReminderByPet.get(pet.id)}
+                lastCheckIn={lastCheckInByPet.get(pet.id)}
+              />
+            ))}
+          </Box>
         </Stack>
       )}
     </Box>

@@ -1,15 +1,8 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Divider,
-  Stack,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Avatar, Box, Button, Card, Divider, Stack, Typography, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Pets as PetsIcon,
   Restaurant as FoodIcon,
@@ -27,6 +20,44 @@ interface Props {
   currentFood?: DietEntry;
   nextReminder?: UpcomingItem;
   lastCheckIn?: CheckIn;
+}
+
+interface InfoRowProps {
+  icon: ReactNode;
+  accent: string;
+  label: string;
+  value: string;
+}
+
+function InfoRow({ icon, accent, label, value }: InfoRowProps) {
+  return (
+    <Stack direction="row" alignItems="center" spacing={1.5}>
+      <Box
+        sx={{
+          width: 40,
+          height: 40,
+          borderRadius: 2,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: alpha(accent, 0.12),
+          color: accent,
+          '& svg': { fontSize: 21 },
+        }}
+      >
+        {icon}
+      </Box>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+          {label}
+        </Typography>
+        <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
+          {value}
+        </Typography>
+      </Box>
+    </Stack>
+  );
 }
 
 export default function PetStatusCard({
@@ -48,9 +79,20 @@ export default function PetStatusCard({
   };
 
   return (
-    <Card sx={{ p: theme.spacing(2.5), display: 'flex', flexDirection: 'column', gap: theme.spacing(1.5) }}>
+    <Card
+      sx={{
+        p: theme.spacing(2.5),
+        height: '100%',
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1.5),
+        transition: 'transform 120ms ease, box-shadow 120ms ease',
+        '&:hover': { transform: 'translateY(-1px)', boxShadow: theme.shadows[2] },
+      }}
+    >
       <Stack direction="row" alignItems="center" spacing={1.5}>
-        <Avatar src={pet.photoUrl} sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+        <Avatar src={pet.photoUrl} sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
           {pet.photoUrl ? null : <PetsIcon />}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -78,36 +120,29 @@ export default function PetStatusCard({
 
       <Divider />
 
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <FoodIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
-          {t('overview.currentFood')}:
-        </Typography>
-        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
-          {currentFood ? currentFood.foodName : t('overview.noCurrentFood')}
-        </Typography>
-      </Stack>
-
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <EventIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
-          {t('overview.nextReminder')}:
-        </Typography>
-        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
-          {nextReminder
-            ? `${nextReminder.typeLabel} — ${formatDays(nextReminder.daysUntil)}`
-            : t('overview.noReminders')}
-        </Typography>
-      </Stack>
-
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <CheckInIcon fontSize="small" color="action" />
-        <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
-          {t('overview.lastCheckIn')}:
-        </Typography>
-        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
-          {lastCheckIn ? lastCheckIn.date : t('overview.noCheckIn')}
-        </Typography>
+      <Stack spacing={1.25}>
+        <InfoRow
+          icon={<FoodIcon />}
+          accent={theme.palette.diet.main}
+          label={t('overview.currentFood')}
+          value={currentFood ? currentFood.foodName : t('overview.noCurrentFood')}
+        />
+        <InfoRow
+          icon={<EventIcon />}
+          accent={theme.palette.secondary.main}
+          label={t('overview.nextReminder')}
+          value={
+            nextReminder
+              ? `${nextReminder.typeLabel} — ${formatDays(nextReminder.daysUntil)}`
+              : t('overview.noReminders')
+          }
+        />
+        <InfoRow
+          icon={<CheckInIcon />}
+          accent={theme.palette.info.main}
+          label={t('overview.lastCheckIn')}
+          value={lastCheckIn ? lastCheckIn.date : t('overview.noCheckIn')}
+        />
       </Stack>
 
       {action && (
@@ -115,7 +150,7 @@ export default function PetStatusCard({
           variant="contained"
           size="small"
           onClick={() => navigate(action.route)}
-          sx={{ alignSelf: 'flex-start', mt: theme.spacing(0.5) }}
+          sx={{ alignSelf: 'flex-start', mt: 'auto', pt: theme.spacing(0.5) }}
         >
           {action.label}
         </Button>
