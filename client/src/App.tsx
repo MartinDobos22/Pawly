@@ -1,4 +1,4 @@
-import { Suspense, useMemo, type ReactNode } from 'react';
+import { Suspense, useMemo } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material';
@@ -21,21 +21,93 @@ const PoradnaIndexPage = lazy(() => import('./pages/public/PoradnaIndexPage'));
 const PoradnaArticlePage = lazy(() => import('./pages/public/PoradnaArticlePage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
-// Stránky `/info` a `/kontakt` sú verejné (marketing), ale prihlásený používateľ
-// k nim chodí cez bočné menu — vtedy ich chceme vykresliť v app shelle (so sidebarom),
-// nie ako samostatnú verejnú stránku bez navigácie.
-function AuthAwareRoute({
-  publicElement,
-  protectedElement,
-  fallback,
-}: {
-  publicElement: ReactNode;
-  protectedElement: ReactNode;
-  fallback: ReactNode;
-}) {
-  const { user, loading } = useAuth();
-  if (loading) return <>{fallback}</>;
-  return <>{user ? protectedElement : publicElement}</>;
+interface ThemeProps {
+  darkMode: boolean;
+  onToggleTheme: () => void;
+  language: string;
+}
+
+// `<Routes>` v samostatnom komponente vnútri <AuthProvider>, aby sme mohli volať
+// useAuth(). Stránky `/info` a `/kontakt` sú verejné (marketing), ale prihlásený
+// používateľ ich chce v app shelle (so sidebarom). Riešenie: verejné routy
+// zaradíme len pre odhláseného; prihlásený prepadne na `/*` → ProtectedApp, ktorý
+// `/info`/`/kontakt` vykreslí v Layoute. (Exact route nesmie renderovať ProtectedApp
+// priamo — vnorené <Routes> by stratili cestu a spadli na 404.)
+function AppRoutes({ darkMode, onToggleTheme, language }: ThemeProps) {
+  const { user } = useAuth();
+
+  const protectedApp = (
+    <ProtectedRoute>
+      <ProtectedApp darkMode={darkMode} onToggleTheme={onToggleTheme} language={language} />
+    </ProtectedRoute>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />} />
+      <Route
+        path="/login"
+        element={<LoginPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/register"
+        element={<RegisterPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/overenie-emailu"
+        element={<VerifyEmailPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/reset-hesla"
+        element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/ochrana-sukromia"
+        element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/analyza-krmiva-pre-psa"
+        element={<Navigate to="/poradna/analyza-krmiva-pre-psa" replace />}
+      />
+      <Route
+        path="/digitalny-zdravotny-pas-pre-psa"
+        element={<Navigate to="/poradna/digitalny-zdravotny-pas-pre-psa" replace />}
+      />
+      <Route path="/ockovanie-psa" element={<Navigate to="/poradna/ockovanie-psa" replace />} />
+      <Route path="/odcervenie-psa" element={<Navigate to="/poradna/odcervenie-psa" replace />} />
+      <Route
+        path="/alergia-na-krmivo-u-psa"
+        element={<Navigate to="/poradna/alergia-na-krmivo-u-psa" replace />}
+      />
+      <Route
+        path="/co-nesmie-pes-jest"
+        element={<Navigate to="/poradna/co-nesmie-pes-jest" replace />}
+      />
+      {!user && (
+        <Route
+          path="/info"
+          element={<InfoPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+        />
+      )}
+      {!user && (
+        <Route
+          path="/kontakt"
+          element={<ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+        />
+      )}
+      <Route
+        path="/poradna"
+        element={<PoradnaIndexPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route
+        path="/poradna/:slug"
+        element={<PoradnaArticlePage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+      />
+      <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
+      <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
+      <Route path="/*" element={protectedApp} />
+    </Routes>
+  );
 }
 
 export default function App() {
@@ -60,103 +132,13 @@ export default function App() {
     </Box>
   );
 
-  const protectedApp = (
-    <ProtectedRoute>
-      <ProtectedApp darkMode={darkMode} onToggleTheme={onToggleTheme} language={language} />
-    </ProtectedRoute>
-  );
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={suspenseFallback}>
-            <Routes>
-              <Route
-                path="/"
-                element={<LandingPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/login"
-                element={<LoginPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/register"
-                element={<RegisterPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/overenie-emailu"
-                element={<VerifyEmailPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/reset-hesla"
-                element={<ResetPasswordPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/ochrana-sukromia"
-                element={<PrivacyPolicyRoute darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/analyza-krmiva-pre-psa"
-                element={<Navigate to="/poradna/analyza-krmiva-pre-psa" replace />}
-              />
-              <Route
-                path="/digitalny-zdravotny-pas-pre-psa"
-                element={<Navigate to="/poradna/digitalny-zdravotny-pas-pre-psa" replace />}
-              />
-              <Route
-                path="/ockovanie-psa"
-                element={<Navigate to="/poradna/ockovanie-psa" replace />}
-              />
-              <Route
-                path="/odcervenie-psa"
-                element={<Navigate to="/poradna/odcervenie-psa" replace />}
-              />
-              <Route
-                path="/alergia-na-krmivo-u-psa"
-                element={<Navigate to="/poradna/alergia-na-krmivo-u-psa" replace />}
-              />
-              <Route
-                path="/co-nesmie-pes-jest"
-                element={<Navigate to="/poradna/co-nesmie-pes-jest" replace />}
-              />
-              <Route
-                path="/info"
-                element={
-                  <AuthAwareRoute
-                    fallback={suspenseFallback}
-                    protectedElement={protectedApp}
-                    publicElement={
-                      <InfoPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
-                    }
-                  />
-                }
-              />
-              <Route
-                path="/kontakt"
-                element={
-                  <AuthAwareRoute
-                    fallback={suspenseFallback}
-                    protectedElement={protectedApp}
-                    publicElement={
-                      <ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
-                    }
-                  />
-                }
-              />
-              <Route
-                path="/poradna"
-                element={<PoradnaIndexPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route
-                path="/poradna/:slug"
-                element={<PoradnaArticlePage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
-              />
-              <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
-              <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
-              <Route path="/*" element={protectedApp} />
-            </Routes>
+            <AppRoutes darkMode={darkMode} onToggleTheme={onToggleTheme} language={language} />
           </Suspense>
         </BrowserRouter>
       </AuthProvider>
