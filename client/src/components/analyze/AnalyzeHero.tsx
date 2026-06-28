@@ -1,6 +1,7 @@
 import { Avatar, Box, Chip, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { Pets as PetsIcon, Science as ScienceIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import IconTile from '../ui/IconTile';
 import { useActivePet } from '../../hooks/useActivePet';
 
 const initialsOf = (name: string) =>
@@ -33,22 +34,7 @@ export default function AnalyzeHero() {
         alignItems={{ xs: 'flex-start', sm: 'center' }}
         gap={2}
       >
-        <Box
-          sx={{
-            width: 60,
-            height: 60,
-            borderRadius: 2,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
-            flexShrink: 0,
-          }}
-        >
-          <ScienceIcon fontSize="large" />
-        </Box>
+        <IconTile icon={<ScienceIcon />} size={60} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
             variant="h1"
