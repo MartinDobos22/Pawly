@@ -12,6 +12,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Add as AddIcon,
   FactCheck as FactCheckIcon,
@@ -117,6 +118,13 @@ export default function OverviewPage() {
         ? t('overview.summaryOrange')
         : t('overview.summaryGreen');
 
+  const levelColor =
+    aggregateLevel === 'red'
+      ? theme.palette.error.main
+      : aggregateLevel === 'orange'
+        ? theme.palette.warning.main
+        : theme.palette.success.main;
+
   const loading = profilesLoading || statusLoading;
 
   return (
@@ -172,8 +180,9 @@ export default function OverviewPage() {
           <Card
             sx={{
               p: theme.spacing(3),
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
+              borderRadius: 2,
+              borderLeft: `4px solid ${levelColor}`,
+              bgcolor: alpha(levelColor, theme.palette.mode === 'dark' ? 0.12 : 0.06),
             }}
           >
             <Stack
@@ -186,7 +195,10 @@ export default function OverviewPage() {
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <CareStatusChip level={aggregateLevel} />
                   <Tooltip title={t('overview.whatChecked')} enterTouchDelay={0} arrow>
-                    <InfoOutlinedIcon fontSize="small" sx={{ opacity: 0.85, cursor: 'help' }} />
+                    <InfoOutlinedIcon
+                      fontSize="small"
+                      sx={{ color: 'text.secondary', cursor: 'help' }}
+                    />
                   </Tooltip>
                 </Stack>
                 <Typography variant="h6" sx={{ mt: theme.spacing(1) }}>
@@ -195,7 +207,7 @@ export default function OverviewPage() {
               </Box>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 startIcon={<FactCheckIcon />}
                 onClick={() => navigate('/check-in')}
                 sx={{ flexShrink: 0 }}
