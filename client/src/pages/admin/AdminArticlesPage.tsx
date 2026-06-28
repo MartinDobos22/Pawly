@@ -4,30 +4,25 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   CircularProgress,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Menu,
   MenuItem,
   Snackbar,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Edit as EditIcon,
-  DeleteOutline as DeleteIcon,
   CloudUpload as PublishIcon,
-  ArrowDropDown as ArrowDropDownIcon,
+  Article as ArticleIcon,
 } from '@mui/icons-material';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import PageContainer from '../../components/ui/PageContainer';
+import PageHeader from '../../components/ui/PageHeader';
+import AdminArticleCard from '../../components/admin/AdminArticleCard';
 import {
   changeArticleStatus,
   deleteAdminArticle,
@@ -37,7 +32,6 @@ import {
 } from '../../services/adminApi';
 import {
   ARTICLE_STATUS_TRANSITIONS,
-  STATUS_COLORS,
   STATUS_LABELS,
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
@@ -66,9 +60,10 @@ export default function AdminArticlesPage() {
   const [publishing, setPublishing] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
-  const [statusMenu, setStatusMenu] = useState<{ anchor: HTMLElement; article: AdminArticle } | null>(
-    null
-  );
+  const [statusMenu, setStatusMenu] = useState<{
+    anchor: HTMLElement;
+    article: AdminArticle;
+  } | null>(null);
   const [metrics, setMetrics] = useState<Record<string, ArticleMetrics>>({});
 
   const load = () => {
@@ -135,24 +130,31 @@ export default function AdminArticlesPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: theme.spacing(100), mx: 'auto', p: theme.spacing(2) }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(2) }}>
-        <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
-          Správa článkov
-        </Typography>
-        <Button variant="outlined" startIcon={<PublishIcon />} onClick={() => setPublishOpen(true)}>
-          Publikovať na web
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/admin/clanky/novy')}
-        >
-          Nový článok
-        </Button>
-      </Stack>
+    <PageContainer>
+      <PageHeader
+        icon={<ArticleIcon />}
+        title="Správa článkov"
+        action={
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<PublishIcon />}
+              onClick={() => setPublishOpen(true)}
+            >
+              Publikovať na web
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/admin/clanky/novy')}
+            >
+              Nový článok
+            </Button>
+          </Stack>
+        }
+      />
 
-      <Alert severity="info" sx={{ mb: theme.spacing(2) }}>
+      <Alert severity="info" variant="outlined" sx={{ mb: theme.spacing(2) }}>
         Zmeny sa uložia do databázy a sú hneď cez API. Na verejnom webe sa prejavia až po novom
         builde (prerender) — spusti rebuild (Netlify).
       </Alert>
@@ -168,78 +170,40 @@ export default function AdminArticlesPage() {
         exclusive
         size="small"
         onChange={(_, v) => v && setFilter(v as Filter)}
-        sx={{ mb: theme.spacing(2), flexWrap: 'wrap' }}
+        sx={{ mb: theme.spacing(2.5), flexWrap: 'wrap' }}
       >
-        {FILTERS.map((f) => (
-          <ToggleButton key={f.value} value={f.value}>
-            {f.label}
-          </ToggleButton>
-        ))}
+        {FILTERS.map((f) => {
+          const count =
+            f.value === 'all' ? articles.length : articles.filter((a) => a.status === f.value).length;
+          return (
+            <ToggleButton key={f.value} value={f.value} sx={{ borderRadius: 2 }}>
+              {f.label} ({count})
+            </ToggleButton>
+          );
+        })}
       </ToggleButtonGroup>
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
           <CircularProgress />
         </Box>
+      ) : visible.length === 0 ? (
+        <Typography color="text.secondary" sx={{ py: 6, textAlign: 'center' }}>
+          Žiadne články v tomto filtri.
+        </Typography>
       ) : (
-        <List>
+        <Stack spacing={theme.spacing(1.5)}>
           {visible.map((a) => (
-            <ListItem
+            <AdminArticleCard
               key={a.slug}
-              divider
-              secondaryAction={
-                <Stack direction="row" spacing={0.5} alignItems="center">
-                  <Button
-                    size="small"
-                    endIcon={<ArrowDropDownIcon />}
-                    onClick={(e) => setStatusMenu({ anchor: e.currentTarget, article: a })}
-                  >
-                    Stav
-                  </Button>
-                  <Tooltip title="Upraviť">
-                    <IconButton onClick={() => navigate(`/admin/clanky/${a.slug}`)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Zmazať">
-                    <IconButton color="error" onClick={() => setToDelete(a)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              }
-            >
-              <ListItemText
-                primary={
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <span>{a.title}</span>
-                    <Chip
-                      label={STATUS_LABELS[a.status] ?? 'Koncept'}
-                      color={STATUS_COLORS[a.status] ?? 'default'}
-                      size="small"
-                    />
-                    <Chip
-                      label={a.category === 'krmivo' ? 'Krmivo' : 'Zdravie'}
-                      color={a.category === 'krmivo' ? 'success' : 'info'}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </Stack>
-                }
-                secondary={`/${a.slug} · aktualizované ${a.updated} · Views 30d: ${
-                  metrics[a.slug]?.views ?? 0
-                } · CTA: ${metrics[a.slug]?.ctaClicks ?? 0} · CTR: ${(
-                  (metrics[a.slug]?.ctr ?? 0) * 100
-                ).toFixed(1)} %`}
-              />
-            </ListItem>
+              article={a}
+              metrics={metrics[a.slug]}
+              onEdit={() => navigate(`/admin/clanky/${a.slug}`)}
+              onDelete={() => setToDelete(a)}
+              onStatusMenu={(anchor) => setStatusMenu({ anchor, article: a })}
+            />
           ))}
-          {visible.length === 0 && (
-            <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-              Žiadne články v tomto filtri.
-            </Typography>
-          )}
-        </List>
+        </Stack>
       )}
 
       <Menu
@@ -283,6 +247,6 @@ export default function AdminArticlesPage() {
         onClose={() => setNotice(null)}
         message={notice ?? ''}
       />
-    </Box>
+    </PageContainer>
   );
 }
