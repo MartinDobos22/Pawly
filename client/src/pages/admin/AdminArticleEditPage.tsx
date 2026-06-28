@@ -32,7 +32,17 @@ import {
   HistoryOutlined as HistoryIcon,
   Save as SaveIcon,
   UploadFile as UploadIcon,
+  InfoOutlined as InfoIcon,
+  Flag as FlagIcon,
+  BarChart as BarChartIcon,
+  VerifiedUser as VerifiedUserIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Article as ArticleIcon,
+  QuestionAnswer as QuestionAnswerIcon,
+  Link as LinkIcon,
 } from '@mui/icons-material';
+import PageContainer from '../../components/ui/PageContainer';
+import SectionCardHeader from '../../components/ui/SectionCardHeader';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
 import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
 import ArticleValidationPanel from '../../components/admin/ArticleValidationPanel';
@@ -396,49 +406,60 @@ export default function AdminArticleEditPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: theme.spacing(100), mx: 'auto', p: theme.spacing(2) }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: theme.spacing(2) }}>
-        <IconButton onClick={() => navigate('/admin/clanky')}>
-          <BackIcon />
-        </IconButton>
-        <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
-          {isNew ? 'Nový článok' : 'Upraviť článok'}
-        </Typography>
-        {autosavedAt && (
-          <Typography variant="caption" color="text.secondary">
-            Automaticky uložené o {new Date(autosavedAt).toLocaleTimeString('sk-SK')}
+    <PageContainer>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: (t) => t.zIndex.appBar - 1,
+          bgcolor: 'background.default',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          mb: theme.spacing(2),
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ py: theme.spacing(1) }}>
+          <IconButton onClick={() => navigate('/admin/clanky')}>
+            <BackIcon />
+          </IconButton>
+          <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
+            {isNew ? 'Nový článok' : 'Upraviť článok'}
           </Typography>
-        )}
-        {!isNew && (
+          {autosavedAt && (
+            <Typography variant="caption" color="text.secondary">
+              Automaticky uložené o {new Date(autosavedAt).toLocaleTimeString('sk-SK')}
+            </Typography>
+          )}
+          {!isNew && (
+            <Button
+              variant="outlined"
+              startIcon={<HistoryIcon />}
+              onClick={() => setVersionsOpen(true)}
+            >
+              História verzií
+            </Button>
+          )}
           <Button
-            variant="outlined"
-            startIcon={<HistoryIcon />}
-            onClick={() => setVersionsOpen(true)}
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={saveContent}
+            disabled={saving}
           >
-            História verzií
+            {saving ? 'Ukladám…' : 'Uložiť'}
           </Button>
-        )}
-        <Button
-          variant="contained"
-          startIcon={<SaveIcon />}
-          onClick={saveContent}
-          disabled={saving}
-        >
-          {saving ? 'Ukladám…' : 'Uložiť'}
-        </Button>
-      </Stack>
+        </Stack>
+
+        <Tabs value={tab} onChange={(_, v) => setTab(v as number)}>
+          <Tab label="Editor" />
+          <Tab label="Náhľad" />
+          <Tab label="Kontrola" />
+        </Tabs>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: theme.spacing(2) }}>
           {error}
         </Alert>
       )}
-
-      <Tabs value={tab} onChange={(_, v) => setTab(v as number)} sx={{ mb: theme.spacing(2) }}>
-        <Tab label="Editor" />
-        <Tab label="Náhľad" />
-        <Tab label="Kontrola" />
-      </Tabs>
 
       {tab === 2 && (
         <ArticleValidationPanel
@@ -490,11 +511,13 @@ export default function AdminArticleEditPage() {
 
       {tab === 0 && (
         <Stack spacing={theme.spacing(2)}>
-          <Card variant="outlined">
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Základné údaje
-              </Typography>
+              <SectionCardHeader
+                icon={<InfoIcon />}
+                accent={theme.palette.primary.main}
+                title="Základné údaje"
+              />
               <Stack spacing={theme.spacing(2)}>
                 <TextField
                   id="field-title"
@@ -668,11 +691,13 @@ export default function AdminArticleEditPage() {
             </CardContent>
           </Card>
 
-          <Card variant="outlined">
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Redakčný stav
-              </Typography>
+              <SectionCardHeader
+                icon={<FlagIcon />}
+                accent={theme.palette.secondary.main}
+                title="Redakčný stav"
+              />
               <Stack spacing={theme.spacing(2)}>
                 <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center">
                   <Stack direction="row" spacing={0.5} alignItems="center">
@@ -748,11 +773,13 @@ export default function AdminArticleEditPage() {
           </Card>
 
           {!isNew && (
-            <Card variant="outlined">
+            <Card sx={{ borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="subtitle1" gutterBottom>
-                  Výkon článku (30 dní)
-                </Typography>
+                <SectionCardHeader
+                  icon={<BarChartIcon />}
+                  accent={theme.palette.info.main}
+                  title="Výkon článku (30 dní)"
+                />
                 <Stack direction="row" spacing={3} flexWrap="wrap" sx={{ mb: theme.spacing(1) }}>
                   <Typography variant="body2">
                     <strong>Zobrazenia:</strong> {metric?.views ?? 0}
@@ -779,11 +806,13 @@ export default function AdminArticleEditPage() {
             </Card>
           )}
 
-          <Card variant="outlined">
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Odborná kontrola
-              </Typography>
+              <SectionCardHeader
+                icon={<VerifiedUserIcon />}
+                accent={theme.palette.success.main}
+                title="Odborná kontrola"
+              />
               {form.category === 'zdravie' && (
                 <Typography
                   variant="caption"
@@ -910,11 +939,13 @@ export default function AdminArticleEditPage() {
           </Card>
 
           {!isNew && (
-            <Card variant="outlined">
+            <Card sx={{ borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="subtitle1" gutterBottom>
-                  AI asistent
-                </Typography>
+                <SectionCardHeader
+                  icon={<AutoAwesomeIcon />}
+                  accent={theme.palette.diet.main}
+                  title="AI asistent"
+                />
                 <Typography
                   variant="caption"
                   color="text.secondary"
@@ -965,21 +996,27 @@ export default function AdminArticleEditPage() {
             </Card>
           )}
 
-          <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              Obsah článku
-            </Typography>
-            <ArticleRichEditor
-              value={form.sections}
-              onChange={(sections) => set('sections', sections)}
-            />
-          </Box>
-
-          <Card variant="outlined">
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Často kladené otázky (FAQ)
-              </Typography>
+              <SectionCardHeader
+                icon={<ArticleIcon />}
+                accent={theme.palette.primary.main}
+                title="Obsah článku"
+              />
+              <ArticleRichEditor
+                value={form.sections}
+                onChange={(sections) => set('sections', sections)}
+              />
+            </CardContent>
+          </Card>
+
+          <Card sx={{ borderRadius: 2 }}>
+            <CardContent>
+              <SectionCardHeader
+                icon={<QuestionAnswerIcon />}
+                accent={theme.palette.info.main}
+                title="Často kladené otázky (FAQ)"
+              />
               <Stack spacing={theme.spacing(1.5)}>
                 {faqs.map((f, i) => (
                   <Stack key={i} direction="row" spacing={1} alignItems="flex-start">
@@ -1035,11 +1072,13 @@ export default function AdminArticleEditPage() {
             </CardContent>
           </Card>
 
-          <Card variant="outlined">
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Zdroje
-              </Typography>
+              <SectionCardHeader
+                icon={<LinkIcon />}
+                accent={theme.palette.secondary.main}
+                title="Zdroje"
+              />
               <Stack spacing={theme.spacing(1.5)}>
                 {sources.map((s, i) => (
                   <Stack key={i} direction="row" spacing={1} alignItems="center">
@@ -1227,6 +1266,6 @@ export default function AdminArticleEditPage() {
         onClose={() => setNotice(null)}
         message={notice ?? ''}
       />
-    </Box>
+    </PageContainer>
   );
 }
