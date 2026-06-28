@@ -18,6 +18,8 @@ import {
 import { alpha } from '@mui/material/styles';
 import { Add as AddIcon, FactCheck as FactCheckIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
+import IconTile from '../components/ui/IconTile';
+import PageContainer from '../components/ui/PageContainer';
 import QuickCheckInStep from '../components/checkIn/QuickCheckInStep';
 import DetailedCheckInForm, {
   type DetailedState,
@@ -127,7 +129,7 @@ export default function CheckInPage() {
 
   if (petProfiles.length === 0) {
     return (
-      <Box sx={{ maxWidth: 560, mx: 'auto' }}>
+      <PageContainer width="narrow">
         <Seo title={`${t('checkIn.title')} — Pawly`} noindex />
         <Card sx={{ p: theme.spacing(4), textAlign: 'center' }}>
           <Typography variant="h6" sx={{ mb: theme.spacing(2) }}>
@@ -137,7 +139,7 @@ export default function CheckInPage() {
             {t('overview.emptyAction')}
           </Button>
         </Card>
-      </Box>
+      </PageContainer>
     );
   }
 
@@ -163,7 +165,7 @@ export default function CheckInPage() {
   const isHub = step === 'hub';
 
   return (
-    <Box sx={{ maxWidth: isHub ? 960 : 680, mx: 'auto' }}>
+    <PageContainer width={isHub ? 'page' : 'form'}>
       <Seo title={`${t('checkIn.title')} — Pawly`} noindex />
 
       <Typography variant="h4" sx={{ mb: theme.spacing(3) }}>
@@ -200,22 +202,7 @@ export default function CheckInPage() {
               justifyContent="space-between"
             >
               <Stack direction="row" spacing={theme.spacing(2)} alignItems="center">
-                <Box
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 2,
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: alpha(theme.palette.primary.main, 0.14),
-                    color: 'primary.main',
-                    '& svg': { fontSize: 26 },
-                  }}
-                >
-                  <FactCheckIcon />
-                </Box>
+                <IconTile icon={<FactCheckIcon />} size={48} />
                 <Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                     {t('checkIn.newCheckIn')}
@@ -287,6 +274,6 @@ export default function CheckInPage() {
           )}
         </Card>
       )}
-    </Box>
+    </PageContainer>
   );
 }

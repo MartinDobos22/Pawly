@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Science as ScienceIcon } from '@mui/icons-material';
 import Seo from '../components/Seo';
+import PageContainer from '../components/ui/PageContainer';
 import CurrentFoodCard from '../components/food/CurrentFoodCard';
 import TreatsList from '../components/food/TreatsList';
 import FoodInsightsCard from '../components/food/FoodInsightsCard';
@@ -65,7 +66,7 @@ export default function FoodPage() {
 
   if (petProfiles.length === 0) {
     return (
-      <Box sx={{ maxWidth: 640, mx: 'auto' }}>
+      <PageContainer width="form">
         <Seo title={`${t('food.title')} — Pawly`} noindex />
         <Card sx={{ p: theme.spacing(4), textAlign: 'center' }}>
           <Typography variant="h6" sx={{ mb: theme.spacing(2) }}>
@@ -75,12 +76,12 @@ export default function FoodPage() {
             {t('overview.emptyAction')}
           </Button>
         </Card>
-      </Box>
+      </PageContainer>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <Seo title={`${t('food.title')} — Pawly`} noindex />
 
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
@@ -146,6 +147,6 @@ export default function FoodPage() {
         petId={selectedPetId}
         defaultType={dialogType}
       />
-    </Box>
+    </PageContainer>
   );
 }

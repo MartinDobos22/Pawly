@@ -32,6 +32,7 @@ import type { VisitBundle } from '../utils/vetVisitHelper';
 
 // Sub-components
 import FeatureIntro from '../components/FeatureIntro';
+import PageContainer from '../components/ui/PageContainer';
 import PassportHero, { type HeroInfoCard } from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import PawlyInsightCard from '../components/healthPassport/PawlyInsightCard';
@@ -663,7 +664,7 @@ export default function HealthPassportPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <FeatureIntro featureKey="passport" icon={<PetsIcon />} />
       {selectedDog && (
         <PassportHero
@@ -896,6 +897,6 @@ export default function HealthPassportPage() {
         </Alert>
       </Snackbar>
       {confirmDialog}
-    </Box>
+    </PageContainer>
   );
 }

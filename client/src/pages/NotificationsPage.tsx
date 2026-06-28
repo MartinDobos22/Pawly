@@ -14,9 +14,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { alpha, useTheme } from '@mui/material/styles';
 import { NotificationsActive as NotifyIcon } from '@mui/icons-material';
 
+import IconTile from '../components/ui/IconTile';
+import PageContainer from '../components/ui/PageContainer';
 import { useAuth } from '../hooks/useAuth';
 import { useNotificationPreferences } from '../hooks/useNotificationPreferences';
 import type { NotificationPreferences } from '../services/notificationsApi';
@@ -38,7 +39,6 @@ function statusColor(status: string): 'error' | 'warning' | 'success' {
 }
 
 export default function NotificationsPage() {
-  const theme = useTheme();
   const { user } = useAuth();
   const { prefs, upcoming, loading, error, save } = useNotificationPreferences();
   const [localError, setLocalError] = useState<string | null>(null);
@@ -101,23 +101,9 @@ export default function NotificationsPage() {
     .sort((a, b) => b - a);
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 0.5 }}>
-        <Box
-          sx={{
-            width: 44,
-            height: 44,
-            borderRadius: 2,
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.18 : 0.12),
-            color: 'primary.main',
-          }}
-        >
-          <NotifyIcon />
-        </Box>
+        <IconTile icon={<NotifyIcon />} size={44} />
         <Typography variant="h4">{t('notifications.title')}</Typography>
       </Stack>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -276,6 +262,6 @@ export default function NotificationsPage() {
           </Typography>
         </Stack>
       </Box>
-    </Box>
+    </PageContainer>
   );
 }

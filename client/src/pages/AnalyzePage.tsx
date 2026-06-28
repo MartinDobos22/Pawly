@@ -28,6 +28,7 @@ import { useHealthData } from '../hooks/useHealthData';
 import SetCurrentFoodDialog from '../components/food/SetCurrentFoodDialog';
 import AnalyzeHero from '../components/analyze/AnalyzeHero';
 import FeatureIntro from '../components/FeatureIntro';
+import PageContainer from '../components/ui/PageContainer';
 import HelpHint from '../components/HelpHint';
 import FoodSafetyCheck from '../components/analyze/FoodSafetyCheck';
 import ScoreCard from '../components/ScoreCard';
@@ -183,7 +184,7 @@ export default function AnalyzePage() {
   const recentAnalyses = savedAnalyses.slice(0, 3);
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <FeatureIntro featureKey="analyze" icon={<ScienceIcon />} />
       <AnalyzeHero />
 
@@ -451,6 +452,6 @@ export default function AnalyzePage() {
         onClose={() => setSnackOpen(false)}
         message={snackMessage}
       />
-    </Box>
+    </PageContainer>
   );
 }

@@ -25,6 +25,8 @@ import ProsConsCard from '../components/ProsConsCard';
 import RecommendationChip from '../components/RecommendationChip';
 import EmptyState from '../components/EmptyState';
 import FeatureIntro from '../components/FeatureIntro';
+import PageContainer from '../components/ui/PageContainer';
+import PageHeader from '../components/ui/PageHeader';
 import { scoreColor } from '../utils/scoreColor';
 
 export default function HistoryPage() {
@@ -57,7 +59,7 @@ export default function HistoryPage() {
 
   if (loading && savedAnalyses.length === 0) {
     return (
-      <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+      <PageContainer>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Skeleton variant="text" width={180} height={40} />
           <Skeleton variant="rounded" width={88} height={28} />
@@ -67,7 +69,7 @@ export default function HistoryPage() {
             <Skeleton key={i} variant="rounded" height={64} />
           ))}
         </Stack>
-      </Box>
+      </PageContainer>
     );
   }
 
@@ -85,16 +87,17 @@ export default function HistoryPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <FeatureIntro featureKey="history" icon={<HistoryIcon />} />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          {t('history.title')}
-        </Typography>
-        <Button size="small" color="error" onClick={handleClearAll}>
-          {t('actions.clearAll', { ns: 'common' })}
-        </Button>
-      </Box>
+      <PageHeader
+        icon={<HistoryIcon />}
+        title={t('history.title')}
+        action={
+          <Button size="small" color="error" onClick={handleClearAll}>
+            {t('actions.clearAll', { ns: 'common' })}
+          </Button>
+        }
+      />
 
       {savedAnalyses.map((item) => (
         <Accordion
@@ -163,6 +166,6 @@ export default function HistoryPage() {
           </AccordionDetails>
         </Accordion>
       ))}
-    </Box>
+    </PageContainer>
   );
 }

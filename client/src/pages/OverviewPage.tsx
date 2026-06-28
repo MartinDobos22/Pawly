@@ -19,6 +19,7 @@ import {
   InfoOutlined as InfoOutlinedIcon,
 } from '@mui/icons-material';
 import Seo from '../components/Seo';
+import PageContainer from '../components/ui/PageContainer';
 import PetStatusCard from '../components/overview/PetStatusCard';
 import CareStatusChip from '../components/overview/CareStatusChip';
 import OnboardingWelcomeCard from '../components/overview/OnboardingWelcomeCard';
@@ -128,7 +129,7 @@ export default function OverviewPage() {
   const loading = profilesLoading || statusLoading;
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <Seo title={`${t('overview.title')} — Pawly`} noindex />
 
       <Typography variant="h4" sx={{ mb: theme.spacing(0.5) }}>
@@ -238,6 +239,6 @@ export default function OverviewPage() {
           </Box>
         </Stack>
       )}
-    </Box>
+    </PageContainer>
   );
 }

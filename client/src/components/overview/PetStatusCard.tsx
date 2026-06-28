@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Button, Card, Divider, Stack, Typography, useTheme } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import {
   Pets as PetsIcon,
   Restaurant as FoodIcon,
@@ -12,6 +11,7 @@ import {
 import type { PetProfile } from '../../types';
 import type { CheckIn, DietEntry, PetCareStatus } from '../../types/petHealth';
 import type { UpcomingItem } from '../../services/notificationsApi';
+import IconTile from '../ui/IconTile';
 import CareStatusChip from './CareStatusChip';
 
 interface Props {
@@ -32,22 +32,7 @@ interface InfoRowProps {
 function InfoRow({ icon, accent, label, value }: InfoRowProps) {
   return (
     <Stack direction="row" alignItems="center" spacing={1.5}>
-      <Box
-        sx={{
-          width: 40,
-          height: 40,
-          borderRadius: 2,
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: alpha(accent, 0.12),
-          color: accent,
-          '& svg': { fontSize: 21 },
-        }}
-      >
-        {icon}
-      </Box>
+      <IconTile icon={icon} accent={accent} />
       <Box sx={{ minWidth: 0 }}>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
           {label}
