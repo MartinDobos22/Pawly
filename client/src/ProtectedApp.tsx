@@ -24,6 +24,8 @@ const HealthPassportPage = lazy(() => import('./pages/HealthPassportPage'));
 const VetCardPage = lazy(() => import('./pages/VetCardPage'));
 const EpisodeDiaryPage = lazy(() => import('./pages/EpisodeDiaryPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const InfoPage = lazy(() => import('./pages/InfoPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const DonateThanksPage = lazy(() => import('./pages/DonateThanksPage'));
@@ -70,6 +72,8 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
                   <Route path="/karta-pre-veterinara" element={<VetCardPage />} />
                   <Route path="/dennik" element={<EpisodeDiaryPage />} />
                   <Route path="/notifikacie" element={<NotificationsPage />} />
+                  <Route path="/info" element={<InfoPage />} />
+                  <Route path="/kontakt" element={<ContactPage />} />
                   <Route
                     path="/admin/clanky"
                     element={

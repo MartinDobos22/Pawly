@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, type ReactNode } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { lightTheme, darkTheme } from './theme';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { AuthProvider } from './contexts/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -19,6 +20,23 @@ const ContactPublicPage = lazy(() => import('./pages/public/ContactPublicPage'))
 const PoradnaIndexPage = lazy(() => import('./pages/public/PoradnaIndexPage'));
 const PoradnaArticlePage = lazy(() => import('./pages/public/PoradnaArticlePage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
+
+// Stránky `/info` a `/kontakt` sú verejné (marketing), ale prihlásený používateľ
+// k nim chodí cez bočné menu — vtedy ich chceme vykresliť v app shelle (so sidebarom),
+// nie ako samostatnú verejnú stránku bez navigácie.
+function AuthAwareRoute({
+  publicElement,
+  protectedElement,
+  fallback,
+}: {
+  publicElement: ReactNode;
+  protectedElement: ReactNode;
+  fallback: ReactNode;
+}) {
+  const { user, loading } = useAuth();
+  if (loading) return <>{fallback}</>;
+  return <>{user ? protectedElement : publicElement}</>;
+}
 
 export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage('granule-check-dark-mode', false);
@@ -40,6 +58,12 @@ export default function App() {
     >
       <CircularProgress />
     </Box>
+  );
+
+  const protectedApp = (
+    <ProtectedRoute>
+      <ProtectedApp darkMode={darkMode} onToggleTheme={onToggleTheme} language={language} />
+    </ProtectedRoute>
   );
 
   return (
@@ -99,11 +123,27 @@ export default function App() {
               />
               <Route
                 path="/info"
-                element={<InfoPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={
+                  <AuthAwareRoute
+                    fallback={suspenseFallback}
+                    protectedElement={protectedApp}
+                    publicElement={
+                      <InfoPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                    }
+                  />
+                }
               />
               <Route
                 path="/kontakt"
-                element={<ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}
+                element={
+                  <AuthAwareRoute
+                    fallback={suspenseFallback}
+                    protectedElement={protectedApp}
+                    publicElement={
+                      <ContactPublicPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+                    }
+                  />
+                }
               />
               <Route
                 path="/poradna"
@@ -115,18 +155,7 @@ export default function App() {
               />
               <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
               <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <ProtectedApp
-                      darkMode={darkMode}
-                      onToggleTheme={onToggleTheme}
-                      language={language}
-                    />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/*" element={protectedApp} />
             </Routes>
           </Suspense>
         </BrowserRouter>
