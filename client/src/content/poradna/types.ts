@@ -14,7 +14,8 @@ export type Block =
   | { type: 'subheading'; text: string }
   | { type: 'quote'; text: string }
   | { type: 'divider' }
-  | { type: 'callout'; variant: CalloutVariant; title?: string; text: string };
+  | { type: 'callout'; variant: CalloutVariant; title?: string; text: string }
+  | { type: 'image'; src: string; alt?: string };
 
 export interface ArticleSection {
   heading: string;

@@ -138,6 +138,8 @@ function blockToNodes(block: Block): JSONContent[] {
           content: markdownToInline(block.text),
         },
       ];
+    case 'image':
+      return [{ type: 'image', attrs: { src: block.src, alt: block.alt ?? null } }];
   }
 }
 
@@ -208,6 +210,12 @@ function nodeToBlock(node: JSONContent): Block | null {
         ...(title ? { title } : {}),
         text,
       };
+    }
+    case 'image': {
+      const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
+      if (!src) return null;
+      const alt = typeof node.attrs?.alt === 'string' && node.attrs.alt ? node.attrs.alt : undefined;
+      return { type: 'image', src, ...(alt ? { alt } : {}) };
     }
     default:
       return null;

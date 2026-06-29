@@ -193,6 +193,11 @@ function validateBlocks(value: unknown): Block[] {
         if (typeof b.title === 'string' && b.title.trim().length > 0) out.title = b.title.trim();
         return out;
       }
+      case 'image': {
+        const out: Block = { type: 'image', src: reqStr(b.src, `blok #${i + 1} src`) };
+        if (typeof b.alt === 'string' && b.alt.trim().length > 0) out.alt = b.alt.trim();
+        return out;
+      }
       default:
         return bad(`Blok #${i + 1}: neznámy typ.`);
     }

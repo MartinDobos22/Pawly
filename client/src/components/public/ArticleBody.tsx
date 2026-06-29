@@ -109,6 +109,23 @@ export default function ArticleBody({ sections }: Props) {
                 return (
                   <Callout key={j} variant={block.variant} title={block.title} text={block.text} />
                 );
+              case 'image':
+                return (
+                  <Box
+                    key={j}
+                    component="img"
+                    src={block.src}
+                    alt={block.alt ?? ''}
+                    loading="lazy"
+                    sx={{
+                      display: 'block',
+                      width: '100%',
+                      height: 'auto',
+                      borderRadius: (t) => `${t.shape.borderRadius}px`,
+                      my: 3,
+                    }}
+                  />
+                );
               default:
                 return null;
             }

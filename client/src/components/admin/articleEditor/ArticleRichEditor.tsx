@@ -1,4 +1,4 @@
-import { useMemo, useState, type MouseEvent } from 'react';
+import { useMemo, useRef, useState, type MouseEvent } from 'react';
 import {
   Box,
   Button,
@@ -36,6 +36,7 @@ import {
   TextFieldsOutlined as SubheadingIcon,
   LightbulbOutlined as CalloutIcon,
   DragIndicator as DragIcon,
+  AddPhotoAlternateOutlined as ImageIcon,
 } from '@mui/icons-material';
 import { useEditor, EditorContent, useEditorState, type Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -44,8 +45,10 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
+import Image from '@tiptap/extension-image';
 import { CalloutNode } from './CalloutNode';
 import { sectionsToTiptap, tiptapToSections } from './articleTiptapBridge';
+import { uploadArticleImage } from '../../../services/adminApi';
 import type { ArticleSection } from '../../../content/poradna/types';
 
 interface Props {
@@ -104,6 +107,15 @@ const EditorShell = styled(Box)(({ theme }) => ({
   },
   '& .ProseMirror a': {
     color: theme.palette.primary.main,
+  },
+  '& .ProseMirror img': {
+    maxWidth: '100%',
+    height: 'auto',
+    borderRadius: `${theme.shape.borderRadius}px`,
+    margin: `${theme.spacing(2)} 0`,
+  },
+  '& .ProseMirror img.ProseMirror-selectednode': {
+    outline: `2px solid ${theme.palette.primary.main}`,
   },
   '& .ProseMirror:first-of-type > :first-of-type': {
     marginTop: 0,
@@ -182,7 +194,11 @@ interface ToolbarProps {
   onLinkRequest: () => void;
 }
 
-function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
+interface MainToolbarProps extends ToolbarProps {
+  onImageRequest: () => void;
+}
+
+function Toolbar({ editor, onLinkRequest, onImageRequest }: MainToolbarProps) {
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
@@ -359,6 +375,11 @@ function Toolbar({ editor, onLinkRequest }: ToolbarProps) {
           <CalloutIcon fontSize="small" />
         </ToolButton>
       </Tooltip>
+      <Tooltip title="Vložiť obrázok">
+        <ToolButton value="image" size="small" onClick={onImageRequest}>
+          <ImageIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
     </Stack>
   );
 }
@@ -449,6 +470,8 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
 export default function ArticleRichEditor({ value, onChange }: Props) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initialContent = useMemo(() => sectionsToTiptap(value), []);
 
@@ -469,6 +492,7 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
       Placeholder.configure({
         placeholder: 'Začni písať obsah článku… „H2" v lište začne novú sekciu.',
       }),
+      Image.configure({ inline: false }),
       CalloutNode,
     ],
     content: initialContent,
@@ -495,10 +519,43 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
     setLinkOpen(false);
   };
 
+  const handleImageFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '');
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      const { url } = await uploadArticleImage({ mimeType: file.type, base64Data });
+      editor.chain().focus().setImage({ src: url }).run();
+    } catch {
+      /* admin uvidí, že sa obrázok nevložil */
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Box>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) void handleImageFile(f);
+          e.target.value = '';
+        }}
+      />
       <EditorShell>
-        <Toolbar editor={editor} onLinkRequest={openLinkDialog} />
+        <Toolbar
+          editor={editor}
+          onLinkRequest={openLinkDialog}
+          onImageRequest={() => fileInputRef.current?.click()}
+        />
         <DragHandle editor={editor}>
           <Box
             sx={{
@@ -519,7 +576,7 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
       </EditorShell>
       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
         Píš priamo do textu. Označ slovo a použi lištu na tučné/odkaz. „H2" začína novú sekciu,
-        „Box" premení odsek na zvýraznený box.
+        „Box" premení odsek na zvýraznený box.{uploading ? ' · Nahrávam obrázok…' : ''}
       </Typography>
 
       <Dialog open={linkOpen} onClose={() => setLinkOpen(false)} fullWidth maxWidth="sm">
