@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -43,6 +45,7 @@ import {
 } from '@mui/icons-material';
 import PageContainer from '../../components/ui/PageContainer';
 import SectionCardHeader from '../../components/ui/SectionCardHeader';
+import { ANIMAL_SPECIES, type AnimalType } from '../../constants/animalSpecies';
 import ArticleRichEditor from '../../components/admin/articleEditor/ArticleRichEditor';
 import ArticleVersionsDrawer from '../../components/admin/ArticleVersionsDrawer';
 import ArticleValidationPanel from '../../components/admin/ArticleValidationPanel';
@@ -83,6 +86,7 @@ function emptyArticle(): AdminArticle {
   return {
     slug: '',
     category: 'krmivo',
+    species: [],
     title: '',
     description: '',
     intro: '',
@@ -156,6 +160,9 @@ function articleBodyText(article: AdminArticle): string {
 
 export default function AdminArticleEditPage() {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
+  const speciesLabels = t('profiles.species', { returnObjects: true }) as Record<string, string>;
+  const speciesLabel = (key: string) => speciesLabels[key] ?? key;
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const isNew = !slug;
@@ -565,6 +572,21 @@ export default function AdminArticleEditPage() {
                     <MenuItem value="passport">Zdravotný pas</MenuItem>
                   </TextField>
                 </Stack>
+                <Autocomplete
+                  multiple
+                  size="small"
+                  options={ANIMAL_SPECIES as readonly AnimalType[]}
+                  value={(form.species ?? []) as AnimalType[]}
+                  onChange={(_e, value) => set('species', value)}
+                  getOptionLabel={(opt) => speciesLabel(opt)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Druh zvieraťa (filter)"
+                      helperText="Pre koho je článok určený. Prázdne = bez viazania na druh."
+                    />
+                  )}
+                />
                 <TextField
                   id="field-description"
                   label="Popis do zoznamu / SEO"

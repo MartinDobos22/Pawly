@@ -1,5 +1,6 @@
 import type { FaqItem } from '../../utils/seoSchema';
 import type { OnboardingIntent } from '../../utils/onboardingIntent';
+import type { AnimalType } from '../../constants/animalSpecies';
 
 export type ArticleCategory = 'krmivo' | 'zdravie';
 
@@ -28,6 +29,8 @@ export interface ArticleSource {
 export interface Article {
   slug: string;
   category: ArticleCategory;
+  /** Druh(y) zvieraťa, ktorých sa článok týka — verejný filter popri kategórii. */
+  species?: AnimalType[];
   title: string;
   /** Meta description + perex v zozname. */
   description: string;

@@ -34,6 +34,8 @@ export interface ArticleSource {
 export interface Article {
   slug: string;
   category: ArticleCategory;
+  /** Druh(y) zvieraťa, ktorých sa článok týka — verejný filter popri kategórii. */
+  species?: string[];
   title: string;
   description: string;
   intro: string;

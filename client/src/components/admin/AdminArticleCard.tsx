@@ -14,6 +14,7 @@ import {
   DeleteOutline as DeleteIcon,
   ArrowDropDown as ArrowDropDownIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { STATUS_COLORS, STATUS_LABELS } from '../../utils/articleWorkflow';
 import type { AdminArticle, ArticleMetrics } from '../../content/poradna/types';
 
@@ -55,6 +56,8 @@ export default function AdminArticleCard({
   onStatusMenu,
 }: Props) {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
+  const speciesLabels = t('profiles.species', { returnObjects: true }) as Record<string, string>;
 
   return (
     <Card
@@ -92,6 +95,9 @@ export default function AdminArticleCard({
               size="small"
               variant="outlined"
             />
+            {(article.species ?? []).map((s) => (
+              <Chip key={s} label={speciesLabels[s] ?? s} size="small" variant="outlined" />
+            ))}
           </Stack>
 
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>

@@ -1,5 +1,6 @@
 import { getSupabase } from '../config/supabase';
 import { httpError } from '../utils/httpError';
+import { ANIMAL_SPECIES } from '../constants/animalSpecies';
 import type {
   AdminArticle,
   Article,
@@ -40,7 +41,7 @@ export function isTransitionAllowed(from: ArticleStatus, to: ArticleStatus): boo
 }
 
 const SELECT_COLUMNS =
-  'slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position, reviewed_by, reviewed_at, reviewer_title, medical_reviewed_at, disclaimer';
+  'slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position, reviewed_by, reviewed_at, reviewer_title, medical_reviewed_at, disclaimer';
 
 const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by, risk_level, fact_checked_by, fact_checked_at, medical_reviewed_by, last_content_review_at, next_review_due_at`;
 
@@ -63,6 +64,7 @@ function rowToArticle(row: Row): Article {
   return {
     slug: asString(row.slug),
     category: asString(row.category) === 'zdravie' ? 'zdravie' : 'krmivo',
+    species: asStringArray(row.species),
     title: asString(row.title),
     description: asString(row.description),
     intro: asString(row.intro),
@@ -234,6 +236,7 @@ function validateSources(value: unknown): ArticleSource[] {
 interface ContentRow {
   slug: string;
   category: string;
+  species: string[];
   title: string;
   description: string;
   intro: string;
@@ -288,6 +291,12 @@ function toRow(input: unknown): ContentRow {
   return {
     slug,
     category,
+    species: Array.isArray(a.species)
+      ? (a.species as unknown[]).filter(
+          (s): s is string =>
+            typeof s === 'string' && (ANIMAL_SPECIES as readonly string[]).includes(s)
+        )
+      : [],
     title: reqStr(a.title, 'title'),
     description: reqStr(a.description, 'description'),
     // Perex = prvý odsek tela; samostatný `intro` je voliteľný (legacy obsah).

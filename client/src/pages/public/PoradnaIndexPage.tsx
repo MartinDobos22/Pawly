@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+import type { AnimalType } from '../../constants/animalSpecies';
 import {
   Box,
   Card,
@@ -101,17 +103,27 @@ function FeaturedCard({ article }: { article: Article }) {
 
 export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
+  const speciesLabels = t('profiles.species', { returnObjects: true }) as Record<string, string>;
   const [filter, setFilter] = useState<Filter>('all');
+  const [speciesFilter, setSpeciesFilter] = useState<'all' | AnimalType>('all');
 
   const ordered = useMemo(
     () => [...articles].sort((a, b) => b.updated.localeCompare(a.updated)),
     [],
   );
+  const availableSpecies = useMemo(
+    () => Array.from(new Set(ordered.flatMap((a) => a.species ?? []))),
+    [ordered],
+  );
+  const isDefault = filter === 'all' && speciesFilter === 'all';
   const featured = ordered[0];
   const gridArticles = useMemo(() => {
-    if (filter === 'all') return ordered.slice(1);
-    return ordered.filter((a) => a.category === filter);
-  }, [filter, ordered]);
+    let list = isDefault ? ordered.slice(1) : ordered;
+    if (filter !== 'all') list = list.filter((a) => a.category === filter);
+    if (speciesFilter !== 'all') list = list.filter((a) => (a.species ?? []).includes(speciesFilter));
+    return list;
+  }, [filter, speciesFilter, ordered, isDefault]);
 
   return (
     <BlogLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
@@ -138,9 +150,9 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
       </Box>
 
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-        {filter === 'all' && featured && <FeaturedCard article={featured} />}
+        {isDefault && featured && <FeaturedCard article={featured} />}
 
-        <Stack direction="row" spacing={1} sx={{ mb: theme.spacing(3), flexWrap: 'wrap' }} useFlexGap>
+        <Stack direction="row" spacing={1} sx={{ mb: theme.spacing(2), flexWrap: 'wrap' }} useFlexGap>
           {FILTERS.map((f) => (
             <Chip
               key={f.value}
@@ -151,6 +163,31 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
             />
           ))}
         </Stack>
+
+        {availableSpecies.length > 0 && (
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mb: theme.spacing(3), flexWrap: 'wrap' }}
+            useFlexGap
+          >
+            <Chip
+              label="Všetky druhy"
+              onClick={() => setSpeciesFilter('all')}
+              color={speciesFilter === 'all' ? 'primary' : 'default'}
+              variant={speciesFilter === 'all' ? 'filled' : 'outlined'}
+            />
+            {availableSpecies.map((s) => (
+              <Chip
+                key={s}
+                label={speciesLabels[s] ?? s}
+                onClick={() => setSpeciesFilter(s)}
+                color={speciesFilter === s ? 'primary' : 'default'}
+                variant={speciesFilter === s ? 'filled' : 'outlined'}
+              />
+            ))}
+          </Stack>
+        )}
 
         <Box
           sx={{
