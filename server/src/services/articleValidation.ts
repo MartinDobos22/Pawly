@@ -101,14 +101,6 @@ export function validateArticleForPublish(
       field: 'description',
     });
   }
-  if (!article.intro.trim()) {
-    out.push({
-      key: 'missing_intro',
-      severity: 'error',
-      message: 'Chýba úvodný odsek (intro).',
-      field: 'intro',
-    });
-  }
   if (!article.ctaIntent) {
     out.push({
       key: 'missing_cta',

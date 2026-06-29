@@ -567,19 +567,10 @@ export default function AdminArticleEditPage() {
                 </Stack>
                 <TextField
                   id="field-description"
-                  label="Meta popis / perex v zozname"
+                  label="Popis do zoznamu / SEO"
+                  helperText="Text na kartách v zozname a meta popis. Perex (úvod pod H1) = prvý odsek tela článku."
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
-                  multiline
-                  minRows={2}
-                  fullWidth
-                  size="small"
-                />
-                <TextField
-                  id="field-intro"
-                  label="Úvodný odsek (pod H1)"
-                  value={form.intro}
-                  onChange={(e) => set('intro', e.target.value)}
                   multiline
                   minRows={2}
                   fullWidth

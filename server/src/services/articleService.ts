@@ -290,7 +290,8 @@ function toRow(input: unknown): ContentRow {
     category,
     title: reqStr(a.title, 'title'),
     description: reqStr(a.description, 'description'),
-    intro: reqStr(a.intro, 'intro'),
+    // Perex = prvý odsek tela; samostatný `intro` je voliteľný (legacy obsah).
+    intro: asString(a.intro),
     sections: validateSections(a.sections),
     faqs: validateFaqs(a.faqs),
     related_slugs: Array.isArray(a.relatedSlugs)
