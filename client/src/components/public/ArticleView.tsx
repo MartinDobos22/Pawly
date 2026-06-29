@@ -59,7 +59,8 @@ export default function ArticleView({ article, preview = false }: Props) {
   const ctaLabel = article.ctaIntent === 'food' ? 'Analyzovať krmivo' : 'Vytvoriť zdravotný pas';
   const color = CATEGORY_COLORS[article.category];
   const readingMinutes = articleReadingMinutes(article);
-  const showToc = article.sections.length >= 3;
+  const tocSections = article.sections.filter((s) => s.heading.trim());
+  const showToc = tocSections.length >= 3;
   const author = article.author ?? 'Tím Pawly';
 
   return (
@@ -178,7 +179,7 @@ export default function ArticleView({ article, preview = false }: Props) {
               Obsah
             </Typography>
             <Stack component="ol" spacing={0.75} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-              {article.sections.map((section) => (
+              {tocSections.map((section) => (
                 <li key={section.heading}>
                   <Link
                     href={`#${slugifyHeading(section.heading)}`}

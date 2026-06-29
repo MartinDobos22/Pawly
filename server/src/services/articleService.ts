@@ -223,7 +223,8 @@ function validateSections(value: unknown): ArticleSection[] {
     if (!raw || typeof raw !== 'object') bad(`Sekcia #${i + 1} je neplatná.`);
     const s = raw as Record<string, unknown>;
     return {
-      heading: reqStr(s.heading, `sekcia #${i + 1} nadpis`),
+      // Sekcia bez nadpisu = lead obsah pred prvým H2 (perex/obrázok). Povolené.
+      heading: asString(s.heading),
       blocks: validateBlocks(s.blocks),
     };
   });

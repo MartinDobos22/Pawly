@@ -17,7 +17,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const MIRROR_PATH = resolve(__dirname, '../src/content/poradna/articles.data.json');
 
 const SELECT =
-  'slug,category,title,description,intro,sections,faqs,related_slugs,cover_image,cover_alt,cta_intent,author,sources,updated,reviewed_by,reviewed_at,reviewer_title,medical_reviewed_at,disclaimer';
+  'slug,category,species,title,description,intro,sections,faqs,related_slugs,cover_image,cover_alt,cta_intent,author,sources,updated,reviewed_by,reviewed_at,reviewer_title,medical_reviewed_at,disclaimer';
 
 function normalizeUrl(raw) {
   return raw
@@ -31,6 +31,7 @@ function rowToArticle(row) {
   return {
     slug: row.slug,
     category: row.category,
+    species: row.species ?? [],
     title: row.title,
     description: row.description,
     intro: row.intro,
@@ -56,7 +57,9 @@ async function main() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_KEY;
 
   if (!url || !key) {
-    console.warn('[syncArticles] SUPABASE_URL/kľúč nie sú nastavené — používam committed mirror (fallback).');
+    console.warn(
+      '[syncArticles] SUPABASE_URL/kľúč nie sú nastavené — používam committed mirror (fallback).'
+    );
     return;
   }
 

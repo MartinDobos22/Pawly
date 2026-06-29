@@ -21,14 +21,16 @@ export default function ArticleBody({ sections }: Props) {
           key={section.heading || i}
           sx={{ mt: i === 0 ? 0 : theme.spacing(5) }}
         >
-          <Typography
-            variant="h5"
-            component="h2"
-            id={slugifyHeading(section.heading)}
-            sx={{ mb: theme.spacing(2), scrollMarginTop: theme.spacing(10) }}
-          >
-            {section.heading}
-          </Typography>
+          {section.heading.trim() && (
+            <Typography
+              variant="h5"
+              component="h2"
+              id={slugifyHeading(section.heading)}
+              sx={{ mb: theme.spacing(2), scrollMarginTop: theme.spacing(10) }}
+            >
+              {section.heading}
+            </Typography>
+          )}
           {section.blocks.map((block, j) => {
             switch (block.type) {
               case 'paragraph':
