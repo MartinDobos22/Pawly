@@ -32,6 +32,7 @@ import {
   ArrowBack as BackIcon,
   DeleteOutline as DeleteIcon,
   HistoryOutlined as HistoryIcon,
+  OpenInNew as OpenInNewIcon,
   Save as SaveIcon,
   UploadFile as UploadIcon,
   InfoOutlined as InfoIcon,
@@ -435,6 +436,18 @@ export default function AdminArticleEditPage() {
             <Typography variant="caption" color="text.secondary">
               Automaticky uložené o {new Date(autosavedAt).toLocaleTimeString('sk-SK')}
             </Typography>
+          )}
+          {!isNew && (
+            <Button
+              variant="text"
+              startIcon={<OpenInNewIcon />}
+              component="a"
+              href={`/admin/clanky/${slug}/nahlad`}
+              target="_blank"
+              rel="noopener"
+            >
+              Otvoriť náhľad
+            </Button>
           )}
           {!isNew && (
             <Button

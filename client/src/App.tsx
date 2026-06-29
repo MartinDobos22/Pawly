@@ -19,6 +19,7 @@ const InfoPublicPage = lazy(() => import('./pages/public/InfoPublicPage'));
 const ContactPublicPage = lazy(() => import('./pages/public/ContactPublicPage'));
 const PoradnaIndexPage = lazy(() => import('./pages/public/PoradnaIndexPage'));
 const PoradnaArticlePage = lazy(() => import('./pages/public/PoradnaArticlePage'));
+const AdminArticlePreviewPage = lazy(() => import('./pages/admin/AdminArticlePreviewPage'));
 const ProtectedApp = lazy(() => import('./ProtectedApp'));
 
 interface ThemeProps {
@@ -105,6 +106,14 @@ function AppRoutes({ darkMode, onToggleTheme, language }: ThemeProps) {
       />
       <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
       <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
+      <Route
+        path="/admin/clanky/:slug/nahlad"
+        element={
+          <ProtectedRoute>
+            <AdminArticlePreviewPage darkMode={darkMode} onToggleTheme={onToggleTheme} />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/*" element={protectedApp} />
     </Routes>
   );
