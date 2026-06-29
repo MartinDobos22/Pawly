@@ -198,6 +198,19 @@ function validateBlocks(value: unknown): Block[] {
         if (typeof b.alt === 'string' && b.alt.trim().length > 0) out.alt = b.alt.trim();
         return out;
       }
+      case 'gallery': {
+        if (!Array.isArray(b.images) || b.images.length === 0)
+          bad(`Blok #${i + 1}: prázdna galéria.`);
+        const images = (b.images as unknown[]).map((raw, j) => {
+          const img = (raw ?? {}) as Record<string, unknown>;
+          const out: { src: string; alt?: string } = {
+            src: reqStr(img.src, `blok #${i + 1} obrázok #${j + 1} src`),
+          };
+          if (typeof img.alt === 'string' && img.alt.trim().length > 0) out.alt = img.alt.trim();
+          return out;
+        });
+        return { type: 'gallery', images };
+      }
       default:
         return bad(`Blok #${i + 1}: neznámy typ.`);
     }

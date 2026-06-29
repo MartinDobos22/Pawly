@@ -126,6 +126,38 @@ export default function ArticleBody({ sections }: Props) {
                     }}
                   />
                 );
+              case 'gallery':
+                return (
+                  <Box
+                    key={j}
+                    sx={{
+                      display: 'grid',
+                      gap: 1.5,
+                      gridTemplateColumns: {
+                        xs: 'repeat(2, 1fr)',
+                        sm: 'repeat(3, 1fr)',
+                      },
+                      my: 3,
+                    }}
+                  >
+                    {block.images.map((img, k) => (
+                      <Box
+                        key={k}
+                        component="img"
+                        src={img.src}
+                        alt={img.alt ?? ''}
+                        loading="lazy"
+                        sx={{
+                          width: '100%',
+                          aspectRatio: '1 / 1',
+                          objectFit: 'cover',
+                          borderRadius: (t) => `${t.shape.borderRadius}px`,
+                          display: 'block',
+                        }}
+                      />
+                    ))}
+                  </Box>
+                );
               default:
                 return null;
             }

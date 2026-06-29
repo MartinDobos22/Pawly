@@ -37,6 +37,7 @@ import {
   LightbulbOutlined as CalloutIcon,
   DragIndicator as DragIcon,
   AddPhotoAlternateOutlined as ImageIcon,
+  CollectionsOutlined as GalleryIcon,
 } from '@mui/icons-material';
 import { useEditor, EditorContent, useEditorState, type Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -47,6 +48,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import { CalloutNode } from './CalloutNode';
+import { GalleryNode } from './GalleryNode';
 import { sectionsToTiptap, tiptapToSections } from './articleTiptapBridge';
 import { uploadArticleImage } from '../../../services/adminApi';
 import type { ArticleSection } from '../../../content/poradna/types';
@@ -380,6 +382,15 @@ function Toolbar({ editor, onLinkRequest, onImageRequest }: MainToolbarProps) {
           <ImageIcon fontSize="small" />
         </ToolButton>
       </Tooltip>
+      <Tooltip title="Galéria obrázkov">
+        <ToolButton
+          value="gallery"
+          size="small"
+          onClick={() => editor.chain().focus().setGallery().run()}
+        >
+          <GalleryIcon fontSize="small" />
+        </ToolButton>
+      </Tooltip>
     </Stack>
   );
 }
@@ -494,6 +505,7 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
       }),
       Image.configure({ inline: false }),
       CalloutNode,
+      GalleryNode,
     ],
     content: initialContent,
     onUpdate: ({ editor: e }) => {

@@ -140,6 +140,8 @@ function blockToNodes(block: Block): JSONContent[] {
       ];
     case 'image':
       return [{ type: 'image', attrs: { src: block.src, alt: block.alt ?? null } }];
+    case 'gallery':
+      return [{ type: 'gallery', attrs: { images: block.images } }];
   }
 }
 
@@ -214,8 +216,19 @@ function nodeToBlock(node: JSONContent): Block | null {
     case 'image': {
       const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
       if (!src) return null;
-      const alt = typeof node.attrs?.alt === 'string' && node.attrs.alt ? node.attrs.alt : undefined;
+      const alt =
+        typeof node.attrs?.alt === 'string' && node.attrs.alt ? node.attrs.alt : undefined;
       return { type: 'image', src, ...(alt ? { alt } : {}) };
+    }
+    case 'gallery': {
+      const raw = Array.isArray(node.attrs?.images) ? node.attrs.images : [];
+      const images = raw
+        .filter(
+          (im): im is { src: string; alt?: string } => Boolean(im) && typeof im.src === 'string'
+        )
+        .map((im) => (im.alt ? { src: im.src, alt: im.alt } : { src: im.src }));
+      if (images.length === 0) return null;
+      return { type: 'gallery', images };
     }
     default:
       return null;
