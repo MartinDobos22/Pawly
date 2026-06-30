@@ -39,7 +39,13 @@ import {
   AddPhotoAlternateOutlined as ImageIcon,
   CollectionsOutlined as GalleryIcon,
 } from '@mui/icons-material';
-import { useEditor, EditorContent, useEditorState, type Editor } from '@tiptap/react';
+import {
+  useEditor,
+  EditorContent,
+  useEditorState,
+  ReactNodeViewRenderer,
+  type Editor,
+} from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import { DragHandle } from '@tiptap/extension-drag-handle-react';
 import StarterKit from '@tiptap/starter-kit';
@@ -49,6 +55,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
 import { CalloutNode } from './CalloutNode';
 import { GalleryNode } from './GalleryNode';
+import ImageNodeView from './ImageNodeView';
 import { sectionsToTiptap, tiptapToSections } from './articleTiptapBridge';
 import { uploadArticleImage } from '../../../services/adminApi';
 import type { ArticleSection } from '../../../content/poradna/types';
@@ -503,7 +510,11 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
       Placeholder.configure({
         placeholder: 'Začni písať obsah článku… „H2" v lište začne novú sekciu.',
       }),
-      Image.configure({ inline: false }),
+      Image.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(ImageNodeView);
+        },
+      }).configure({ inline: false }),
       CalloutNode,
       GalleryNode,
     ],

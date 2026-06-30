@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Box, Button, IconButton, Stack, Typography, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { AddPhotoAlternateOutlined as AddIcon, Close as CloseIcon } from '@mui/icons-material';
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import { uploadArticleImage } from '../../../services/adminApi';
@@ -31,6 +31,11 @@ export default function GalleryNodeView({ node, updateAttributes }: NodeViewProp
 
   const removeImage = (index: number) =>
     updateAttributes({ images: images.filter((_, i) => i !== index) });
+
+  const setAlt = (index: number, alt: string) =>
+    updateAttributes({
+      images: images.map((img, i) => (i === index ? { ...img, alt } : img)),
+    });
 
   return (
     <NodeViewWrapper>
@@ -76,33 +81,44 @@ export default function GalleryNodeView({ node, updateAttributes }: NodeViewProp
             }}
           >
             {images.map((img, i) => (
-              <Box key={`${img.src}-${i}`} sx={{ position: 'relative' }}>
-                <Box
-                  component="img"
-                  src={img.src}
-                  alt={img.alt ?? ''}
-                  sx={{
-                    width: '100%',
-                    aspectRatio: '1 / 1',
-                    objectFit: 'cover',
-                    borderRadius: `${theme.shape.borderRadius}px`,
-                    display: 'block',
-                  }}
-                />
-                <IconButton
+              <Box key={`${img.src}-${i}`}>
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    component="img"
+                    src={img.src}
+                    alt={img.alt ?? ''}
+                    sx={{
+                      width: '100%',
+                      aspectRatio: '1 / 1',
+                      objectFit: 'cover',
+                      borderRadius: `${theme.shape.borderRadius}px`,
+                      display: 'block',
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    aria-label="Odstrániť obrázok"
+                    onClick={() => removeImage(i)}
+                    sx={{
+                      position: 'absolute',
+                      top: 4,
+                      right: 4,
+                      bgcolor: 'background.paper',
+                      '&:hover': { bgcolor: 'background.paper' },
+                    }}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <TextField
+                  value={img.alt ?? ''}
+                  onChange={(e) => setAlt(i, e.target.value)}
+                  placeholder="Alt text"
                   size="small"
-                  aria-label="Odstrániť obrázok"
-                  onClick={() => removeImage(i)}
-                  sx={{
-                    position: 'absolute',
-                    top: 4,
-                    right: 4,
-                    bgcolor: 'background.paper',
-                    '&:hover': { bgcolor: 'background.paper' },
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
+                  variant="standard"
+                  fullWidth
+                  sx={{ mt: 0.5 }}
+                />
               </Box>
             ))}
           </Box>
