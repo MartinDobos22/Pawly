@@ -1,8 +1,18 @@
-import { Box, MenuItem, Select, Stack, TextField, useTheme } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Tooltip,
+  useTheme,
+} from '@mui/material';
 import {
   LightbulbOutlined as TipIcon,
   WarningAmberOutlined as WarningIcon,
   InfoOutlined as InfoIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { NodeViewContent, NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import type { CalloutVariant } from '../../../content/poradna/types';
@@ -16,7 +26,7 @@ const CONFIG: Record<
   info: { color: 'info', icon: InfoIcon, label: 'Zaujímavosť' },
 };
 
-export default function CalloutNodeView({ node, updateAttributes }: NodeViewProps) {
+export default function CalloutNodeView({ node, updateAttributes, deleteNode }: NodeViewProps) {
   const theme = useTheme();
   const variant = (node.attrs.variant as CalloutVariant) ?? 'tip';
   const title = (node.attrs.title as string) ?? '';
@@ -63,6 +73,11 @@ export default function CalloutNodeView({ node, updateAttributes }: NodeViewProp
             variant="standard"
             sx={{ flexGrow: 1 }}
           />
+          <Tooltip title="Zmazať box">
+            <IconButton size="small" aria-label="Zmazať box" onClick={deleteNode}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
         <Box component={NodeViewContent} sx={{ lineHeight: 1.8, '& p': { m: 0 } }} />
       </Box>

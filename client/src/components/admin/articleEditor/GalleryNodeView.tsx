@@ -1,11 +1,24 @@
 import { useRef, useState } from 'react';
-import { Box, Button, IconButton, Stack, TextField, Typography, useTheme } from '@mui/material';
-import { AddPhotoAlternateOutlined as AddIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import {
+  AddPhotoAlternateOutlined as AddIcon,
+  Close as CloseIcon,
+  DeleteOutline as DeleteIcon,
+} from '@mui/icons-material';
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import { uploadArticleImage } from '../../../services/adminApi';
 import type { GalleryImage } from './GalleryNode';
 
-export default function GalleryNodeView({ node, updateAttributes }: NodeViewProps) {
+export default function GalleryNodeView({ node, updateAttributes, deleteNode }: NodeViewProps) {
   const theme = useTheme();
   const images = (node.attrs.images as GalleryImage[]) ?? [];
   const [uploading, setUploading] = useState(false);
@@ -58,14 +71,21 @@ export default function GalleryNodeView({ node, updateAttributes }: NodeViewProp
           <Typography variant="caption" color="text.secondary">
             Galéria ({images.length})
           </Typography>
-          <Button
-            size="small"
-            startIcon={<AddIcon fontSize="small" />}
-            onClick={() => inputRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? 'Nahrávam…' : 'Pridať obrázok'}
-          </Button>
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Button
+              size="small"
+              startIcon={<AddIcon fontSize="small" />}
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? 'Nahrávam…' : 'Pridať obrázok'}
+            </Button>
+            <Tooltip title="Zmazať galériu">
+              <IconButton size="small" aria-label="Zmazať galériu" onClick={deleteNode}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         </Stack>
 
         {images.length === 0 ? (
