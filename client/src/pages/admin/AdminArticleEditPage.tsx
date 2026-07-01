@@ -1049,7 +1049,7 @@ export default function AdminArticleEditPage() {
             </Card>
           )}
 
-          <Card sx={{ borderRadius: 2 }}>
+          <Card sx={{ borderRadius: 2, overflow: 'visible' }}>
             <CardContent>
               <SectionCardHeader
                 icon={<ArticleIcon />}
