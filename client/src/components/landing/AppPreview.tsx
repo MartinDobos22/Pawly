@@ -312,7 +312,7 @@ export default function AppPreview() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1.25,
-                boxShadow: '0 10px 28px rgba(15,76,92,0.18)',
+                boxShadow: `0 10px 28px ${alpha(theme.palette.primary.main, 0.18)}`,
                 border: `1px solid ${theme.palette.divider}`,
               }}
             >
@@ -362,7 +362,7 @@ export default function AppPreview() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
-                boxShadow: '0 8px 20px rgba(15,76,92,0.15)',
+                boxShadow: `0 8px 20px ${alpha(theme.palette.primary.main, 0.15)}`,
                 border: `1px solid ${theme.palette.divider}`,
               }}
             >

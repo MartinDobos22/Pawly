@@ -94,7 +94,7 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (next: Mode) => 
                 lineHeight: 1.15,
                 color: active ? 'primary.contrastText' : 'text.secondary',
                 bgcolor: active ? 'primary.main' : 'transparent',
-                boxShadow: active ? '0 2px 6px rgba(15,76,92,0.18)' : 'none',
+                boxShadow: active ? `0 2px 6px ${alpha(theme.palette.primary.main, 0.18)}` : 'none',
                 transition: 'background-color 150ms ease, color 150ms ease',
                 '&:hover': active ? {} : { color: 'text.primary' },
                 '&:focus-visible': {

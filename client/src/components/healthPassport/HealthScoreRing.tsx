@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Stack, Tooltip, Typography, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { Favorite as FavoriteIcon } from '@mui/icons-material';
 
 export interface ScoreBreakdownItem {
@@ -144,7 +145,9 @@ export default function HealthScoreRing({
         : theme.palette.error.main;
 
   const trackColor =
-    theme.palette.mode === 'light' ? 'rgba(15,76,92,0.10)' : 'rgba(255,255,255,0.10)';
+    theme.palette.mode === 'light'
+      ? alpha(theme.palette.primary.main, 0.1)
+      : alpha(theme.palette.common.white, 0.1);
 
   const glowFilter =
     theme.palette.mode === 'dark' && hasScore ? `drop-shadow(0 0 6px ${color}55)` : undefined;

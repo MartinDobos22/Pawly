@@ -45,7 +45,7 @@ export default function FinalCta() {
               position: 'absolute',
               inset: 0,
               background: isDark
-                ? `linear-gradient(135deg, ${alpha('#000', 0.85)} 0%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
+                ? `linear-gradient(135deg, ${alpha(theme.palette.common.black, 0.85)} 0%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
                 : `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.92)} 0%, ${alpha(theme.palette.primary.main, 0.78)} 100%)`,
               zIndex: -1,
             }}
@@ -56,7 +56,7 @@ export default function FinalCta() {
             sx={{
               p: { xs: 3, md: 6 },
               maxWidth: 640,
-              color: '#fff',
+              color: theme.palette.common.white,
             }}
           >
             <Typography
@@ -74,7 +74,7 @@ export default function FinalCta() {
             <Typography
               variant="body1"
               sx={{
-                color: alpha('#fff', 0.85),
+                color: alpha(theme.palette.common.white, 0.85),
                 fontSize: { xs: '1rem', md: '1.1rem' },
                 maxWidth: 520,
               }}
@@ -90,10 +90,10 @@ export default function FinalCta() {
                 sx={{
                   px: 3,
                   py: 1.25,
-                  bgcolor: '#fff',
+                  bgcolor: theme.palette.common.white,
                   color: 'primary.dark',
                   fontSize: '1rem',
-                  '&:hover': { bgcolor: alpha('#fff', 0.9) },
+                  '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.9) },
                 }}
               >
                 {t('cta.btnStart')}
@@ -105,12 +105,12 @@ export default function FinalCta() {
                 sx={{
                   px: 3,
                   py: 1.25,
-                  borderColor: alpha('#fff', 0.5),
-                  color: '#fff',
+                  borderColor: alpha(theme.palette.common.white, 0.5),
+                  color: theme.palette.common.white,
                   fontSize: '1rem',
                   '&:hover': {
-                    borderColor: '#fff',
-                    bgcolor: alpha('#fff', 0.1),
+                    borderColor: theme.palette.common.white,
+                    bgcolor: alpha(theme.palette.common.white, 0.1),
                   },
                 }}
               >

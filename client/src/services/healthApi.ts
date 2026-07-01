@@ -1,11 +1,13 @@
 import type {
   AttachmentRef,
+  CheckIn,
   DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
   ExpenseRecord,
   MedicationDoseLog,
   MedicationRecord,
+  PetCareStatus,
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
@@ -76,10 +78,15 @@ export const dietEntriesApi = crudApi<DietEntry>('diet-entries');
 export const expensesApi = crudApi<ExpenseRecord>('expenses');
 export const episodesApi = crudApi<HealthEpisodeRecord>('episodes');
 export const weightLogsApi = crudApi<WeightLog>('weight-logs');
+export const checkInsApi = crudApi<CheckIn>('check-ins');
 
 export function createVisitBundle(bundle: VisitBundle): Promise<VisitBundle> {
   return request<VisitBundle>('/visit-bundle', { method: 'POST', body: JSON.stringify(bundle) });
 }
+
+export const careStatusApi = {
+  get: () => request<{ items: PetCareStatus[] }>('/care-status'),
+};
 
 export const savedAnalysesApi = {
   list: () => request<SavedAnalysis[]>('/saved-analyses'),

@@ -277,8 +277,8 @@ export default function LandingHero() {
                 objectFit: 'cover',
                 borderRadius: 6,
                 boxShadow: isDark
-                  ? '0 30px 60px rgba(0,0,0,0.5)'
-                  : '0 30px 60px rgba(15,76,92,0.18)',
+                  ? `0 30px 60px ${alpha(theme.palette.common.black, 0.5)}`
+                  : `0 30px 60px ${alpha(theme.palette.primary.main, 0.18)}`,
                 border: `4px solid ${theme.palette.background.paper}`,
               }}
             />
@@ -295,7 +295,7 @@ export default function LandingHero() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1.5,
-                boxShadow: '0 12px 32px rgba(15,76,92,0.18)',
+                boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.18)}`,
                 border: `1px solid ${theme.palette.divider}`,
               }}
             >

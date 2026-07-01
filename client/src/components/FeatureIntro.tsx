@@ -5,6 +5,7 @@ import {
   Close as CloseIcon,
   LightbulbOutlined as LightbulbOutlinedIcon,
 } from '@mui/icons-material';
+import IconTile from './ui/IconTile';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type FeatureKey = 'diary' | 'passport' | 'vetCard' | 'analyze' | 'history' | 'profiles';
@@ -51,22 +52,7 @@ export default function FeatureIntro({ featureKey, icon, hideOnPrint = false }: 
         <CloseIcon fontSize="small" />
       </IconButton>
       <Stack direction="row" alignItems="flex-start" gap={2} sx={{ pr: 4 }}>
-        <Box
-          sx={{
-            width: 48,
-            height: 48,
-            borderRadius: 2,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
-            flexShrink: 0,
-          }}
-        >
-          {icon}
-        </Box>
+        <IconTile icon={icon} size={48} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
             {t(`featureIntro.${featureKey}.title`)}

@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 import { NotificationsActive as NotifyIcon } from '@mui/icons-material';
 
+import IconTile from '../components/ui/IconTile';
+import PageContainer from '../components/ui/PageContainer';
 import { useAuth } from '../hooks/useAuth';
 import { useNotificationPreferences } from '../hooks/useNotificationPreferences';
 import type { NotificationPreferences } from '../services/notificationsApi';
@@ -99,152 +101,167 @@ export default function NotificationsPage() {
     .sort((a, b) => b - a);
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <NotifyIcon color="primary" />
-        <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          {t('notifications.title')}
-        </Typography>
+    <PageContainer>
+      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 0.5 }}>
+        <IconTile icon={<NotifyIcon />} size={44} />
+        <Typography variant="h4">{t('notifications.title')}</Typography>
       </Stack>
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {t('notifications.description')}
       </Typography>
 
-      {(error || localError) && <Alert severity="warning">{localError ?? error}</Alert>}
+      {(error || localError) && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {localError ?? error}
+        </Alert>
+      )}
 
-      <Card sx={{ p: 2 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            {t('notifications.emailSection')}
-          </Typography>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={prefs.emailEnabled}
-                onChange={(e) => save({ emailEnabled: e.target.checked })}
-              />
-            }
-            label={t('notifications.emailEnabled')}
-          />
-          <Typography variant="caption" color="text.secondary">
-            {user?.email
-              ? t('notifications.emailSentTo', { email: user.email })
-              : t('notifications.emailNoEmail')}
-          </Typography>
-        </Stack>
-      </Card>
-
-      <Card sx={{ p: 2 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            {t('notifications.leadDaysTitle')}
-          </Typography>
-          <Stack direction="row" gap={1} flexWrap="wrap">
-            {LEAD_DAY_OPTIONS.map((day) => (
-              <Chip
-                key={day}
-                label={t('notifications.leadDayChip', { count: day })}
-                color={prefs.leadDays.includes(day) ? 'primary' : 'default'}
-                variant={prefs.leadDays.includes(day) ? 'filled' : 'outlined'}
-                onClick={() => toggleLeadDay(day)}
-              />
-            ))}
-            {customLeadDays.map((day) => (
-              <Chip
-                key={day}
-                label={t('notifications.leadDayChip', { count: day })}
-                color="primary"
-                variant="filled"
-                onDelete={() => removeLeadDay(day)}
-              />
-            ))}
-          </Stack>
-          <Stack direction="row" gap={1} alignItems="center">
-            <TextField
-              size="small"
-              type="number"
-              label={t('notifications.customDayLabel')}
-              value={customDay}
-              onChange={(e) => setCustomDay(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  addCustomLeadDay();
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 3fr) minmax(0, 2fr)' },
+          gap: 2,
+          alignItems: 'start',
+        }}
+      >
+        <Stack spacing={2}>
+          <Card sx={{ p: 2, borderRadius: 2 }}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                {t('notifications.emailSection')}
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={prefs.emailEnabled}
+                    onChange={(e) => save({ emailEnabled: e.target.checked })}
+                  />
                 }
-              }}
-              inputProps={{ min: 1, max: 365 }}
-              sx={{ width: (theme) => theme.spacing(18) }}
-            />
-            <Button variant="outlined" onClick={addCustomLeadDay}>
-              {t('notifications.addLeadDay')}
-            </Button>
-          </Stack>
-          <Typography variant="caption" color="text.secondary">
-            {t('notifications.leadDaysNote')}
-          </Typography>
-        </Stack>
-      </Card>
+                label={t('notifications.emailEnabled')}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {user?.email
+                  ? t('notifications.emailSentTo', { email: user.email })
+                  : t('notifications.emailNoEmail')}
+              </Typography>
+            </Stack>
+          </Card>
 
-      <Card sx={{ p: 2 }}>
-        <Stack spacing={0.5}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-            {t('notifications.typesTitle')}
-          </Typography>
-          {TYPE_TOGGLE_KEYS.map((key) => (
-            <FormControlLabel
-              key={key}
-              control={
-                <Switch
-                  checked={prefs[key] as boolean}
-                  onChange={(e) => save({ [key]: e.target.checked })}
-                />
-              }
-              label={t(`notifications.types.${key}` as never)}
-            />
-          ))}
-        </Stack>
-      </Card>
-
-      <Card sx={{ p: 2 }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-          {t('notifications.upcomingTitle')}
-        </Typography>
-        {upcoming.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            {t('notifications.noUpcoming')}
-          </Typography>
-        ) : (
-          <Stack divider={<Divider />} spacing={0}>
-            {upcoming.map((item) => (
-              <Stack
-                key={`${item.type}-${item.recordId}`}
-                direction="row"
-                alignItems="center"
-                gap={1}
-                sx={{ py: 1 }}
-              >
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
-                    {item.petName} · {item.label}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {item.typeLabel} · {item.dueDate}
-                  </Typography>
-                </Box>
-                <Chip
-                  size="small"
-                  color={statusColor(item.status)}
-                  label={dueText(item.daysUntil)}
-                />
+          <Card sx={{ p: 2, borderRadius: 2 }}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                {t('notifications.leadDaysTitle')}
+              </Typography>
+              <Stack direction="row" gap={1} flexWrap="wrap">
+                {LEAD_DAY_OPTIONS.map((day) => (
+                  <Chip
+                    key={day}
+                    label={t('notifications.leadDayChip', { count: day })}
+                    color={prefs.leadDays.includes(day) ? 'primary' : 'default'}
+                    variant={prefs.leadDays.includes(day) ? 'filled' : 'outlined'}
+                    onClick={() => toggleLeadDay(day)}
+                  />
+                ))}
+                {customLeadDays.map((day) => (
+                  <Chip
+                    key={day}
+                    label={t('notifications.leadDayChip', { count: day })}
+                    color="primary"
+                    variant="filled"
+                    onDelete={() => removeLeadDay(day)}
+                  />
+                ))}
               </Stack>
-            ))}
-          </Stack>
-        )}
-      </Card>
+              <Stack direction="row" gap={1} alignItems="center">
+                <TextField
+                  size="small"
+                  type="number"
+                  label={t('notifications.customDayLabel')}
+                  value={customDay}
+                  onChange={(e) => setCustomDay(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addCustomLeadDay();
+                    }
+                  }}
+                  inputProps={{ min: 1, max: 365 }}
+                  sx={{ width: (th) => th.spacing(18) }}
+                />
+                <Button variant="outlined" onClick={addCustomLeadDay}>
+                  {t('notifications.addLeadDay')}
+                </Button>
+              </Stack>
+              <Typography variant="caption" color="text.secondary">
+                {t('notifications.leadDaysNote')}
+              </Typography>
+            </Stack>
+          </Card>
 
-      <Typography variant="caption" color="text.secondary">
-        {t('notifications.pushComing')}
-      </Typography>
-    </Stack>
+          <Card sx={{ p: 2, borderRadius: 2 }}>
+            <Stack spacing={0.5}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                {t('notifications.typesTitle')}
+              </Typography>
+              {TYPE_TOGGLE_KEYS.map((key) => (
+                <FormControlLabel
+                  key={key}
+                  control={
+                    <Switch
+                      checked={prefs[key] as boolean}
+                      onChange={(e) => save({ [key]: e.target.checked })}
+                    />
+                  }
+                  label={t(`notifications.types.${key}` as never)}
+                />
+              ))}
+            </Stack>
+          </Card>
+        </Stack>
+
+        <Stack spacing={2}>
+          <Card sx={{ p: 2, borderRadius: 2 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+              {t('notifications.upcomingTitle')}
+            </Typography>
+            {upcoming.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                {t('notifications.noUpcoming')}
+              </Typography>
+            ) : (
+              <Stack divider={<Divider />} spacing={0}>
+                {upcoming.map((item) => (
+                  <Stack
+                    key={`${item.type}-${item.recordId}`}
+                    direction="row"
+                    alignItems="center"
+                    gap={1}
+                    sx={{ py: 1 }}
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {item.petName} · {item.label}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {item.typeLabel} · {item.dueDate}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      size="small"
+                      color={statusColor(item.status)}
+                      label={dueText(item.daysUntil)}
+                    />
+                  </Stack>
+                ))}
+              </Stack>
+            )}
+          </Card>
+
+          <Typography variant="caption" color="text.secondary">
+            {t('notifications.pushComing')}
+          </Typography>
+        </Stack>
+      </Box>
+    </PageContainer>
   );
 }

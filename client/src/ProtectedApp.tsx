@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -9,17 +9,23 @@ import { PetProfilesProvider } from './contexts/PetProfilesContext';
 import { ActivePetProvider } from './contexts/ActivePetContext';
 import { HealthDataProvider } from './contexts/HealthDataContext';
 import Layout from './components/Layout';
+import AdminGuard from './components/admin/AdminGuard';
 
+const OverviewPage = lazy(() => import('./pages/OverviewPage'));
+const AdminArticlesPage = lazy(() => import('./pages/admin/AdminArticlesPage'));
+const AdminArticleEditPage = lazy(() => import('./pages/admin/AdminArticleEditPage'));
+const CheckInPage = lazy(() => import('./pages/CheckInPage'));
+const FoodPage = lazy(() => import('./pages/FoodPage'));
 const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
 const PetProfilePage = lazy(() => import('./pages/PetProfilePage'));
 const HistoryPage = lazy(() => import('./pages/HistoryPage'));
-const InfoPage = lazy(() => import('./pages/InfoPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
 const SupportProjectPage = lazy(() => import('./pages/SupportProjectPage'));
 const HealthPassportPage = lazy(() => import('./pages/HealthPassportPage'));
 const VetCardPage = lazy(() => import('./pages/VetCardPage'));
 const EpisodeDiaryPage = lazy(() => import('./pages/EpisodeDiaryPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const InfoPage = lazy(() => import('./pages/InfoPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const DonateThanksPage = lazy(() => import('./pages/DonateThanksPage'));
@@ -53,6 +59,9 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
             <Layout darkMode={darkMode} onToggleTheme={onToggleTheme}>
               <Suspense fallback={fallback}>
                 <Routes>
+                  <Route path="/prehlad" element={<OverviewPage />} />
+                  <Route path="/check-in" element={<CheckInPage />} />
+                  <Route path="/krmivo" element={<FoodPage />} />
                   <Route path="/analyza" element={<AnalyzePage />} />
                   <Route path="/profily" element={<PetProfilePage />} />
                   <Route path="/historia" element={<HistoryPage />} />
@@ -65,10 +74,32 @@ export default function ProtectedApp({ darkMode, onToggleTheme, language }: Prop
                   <Route path="/notifikacie" element={<NotificationsPage />} />
                   <Route path="/info" element={<InfoPage />} />
                   <Route path="/kontakt" element={<ContactPage />} />
+                  <Route
+                    path="/admin/clanky"
+                    element={
+                      <AdminGuard>
+                        <AdminArticlesPage />
+                      </AdminGuard>
+                    }
+                  />
+                  <Route
+                    path="/admin/clanky/novy"
+                    element={
+                      <AdminGuard>
+                        <AdminArticleEditPage />
+                      </AdminGuard>
+                    }
+                  />
+                  <Route
+                    path="/admin/clanky/:slug"
+                    element={
+                      <AdminGuard>
+                        <AdminArticleEditPage />
+                      </AdminGuard>
+                    }
+                  />
                   <Route path="/podpora" element={<SupportProjectPage />} />
                   <Route path="/dakujeme" element={<DonateThanksPage />} />
-                  <Route path="/o-aplikacii" element={<Navigate to="/info?tab=about" replace />} />
-                  <Route path="/caste-otazky" element={<Navigate to="/info?tab=faq" replace />} />
                   <Route
                     path="/nastavenia"
                     element={<SettingsPage darkMode={darkMode} onToggleTheme={onToggleTheme} />}

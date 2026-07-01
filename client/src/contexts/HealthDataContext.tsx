@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type {
+  CheckIn,
   DewormingRecord,
   DietEntry,
   EctoparasiteRecord,
@@ -26,6 +27,7 @@ import {
   vaccinationsApi,
   vetVisitsApi,
   weightLogsApi,
+  checkInsApi,
   type CrudApi,
 } from '../services/healthApi';
 import i18n from '../i18n';
@@ -81,6 +83,7 @@ export interface HealthDataContextValue {
   expenses: ExpenseRecord[];
   episodes: HealthEpisodeRecord[];
   weightLogs: WeightLog[];
+  checkIns: CheckIn[];
   savedAnalyses: SavedAnalysis[];
 
   addVaccination: Collection<VaccinationRecord>['add'];
@@ -107,6 +110,10 @@ export interface HealthDataContextValue {
   removeEpisode: Collection<HealthEpisodeRecord>['remove'];
   addWeightLog: Collection<WeightLog>['add'];
 
+  addCheckIn: Collection<CheckIn>['add'];
+  updateCheckIn: Collection<CheckIn>['update'];
+  removeCheckIn: Collection<CheckIn>['remove'];
+
   addMedication: Collection<MedicationRecord>['add'];
   updateMedication: Collection<MedicationRecord>['update'];
   toggleDose: (logId: string) => Promise<void>;
@@ -131,6 +138,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
   const expenses = useCollection<ExpenseRecord>(expensesApi);
   const episodes = useCollection<HealthEpisodeRecord>(episodesApi);
   const weightLogs = useCollection<WeightLog>(weightLogsApi);
+  const checkIns = useCollection<CheckIn>(checkInsApi);
 
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +148,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const [v, d, e, vi, m, dl, di, ex, ep, wl, sa] = await Promise.all([
+      const [v, d, e, vi, m, dl, di, ex, ep, wl, ci, sa] = await Promise.all([
         vaccinationsApi.list(),
         dewormingsApi.list(),
         ectoparasitesApi.list(),
@@ -151,6 +159,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
         expensesApi.list(),
         episodesApi.list(),
         weightLogsApi.list(),
+        checkInsApi.list(),
         savedAnalysesApi.list(),
       ]);
       vaccinations.setItems(v);
@@ -163,6 +172,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       expenses.setItems(ex);
       episodes.setItems(ep);
       weightLogs.setItems(wl);
+      checkIns.setItems(ci);
       setSavedAnalyses(sa);
     } catch (err) {
       setError(
@@ -250,6 +260,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       expenses: expenses.items,
       episodes: episodes.items,
       weightLogs: weightLogs.items,
+      checkIns: checkIns.items,
       savedAnalyses,
       addVaccination: vaccinations.add,
       updateVaccination: vaccinations.update,
@@ -273,6 +284,9 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       updateEpisode: episodes.update,
       removeEpisode: episodes.remove,
       addWeightLog: weightLogs.add,
+      addCheckIn: checkIns.add,
+      updateCheckIn: checkIns.update,
+      removeCheckIn: checkIns.remove,
       addMedication: medications.add,
       updateMedication: medications.update,
       toggleDose,
@@ -296,6 +310,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       expenses,
       episodes,
       weightLogs,
+      checkIns,
       savedAnalyses,
       toggleDose,
       removeMedication,

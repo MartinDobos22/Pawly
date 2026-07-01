@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
   alpha,
+  useTheme,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -50,6 +51,7 @@ export default function VisitDetailDialog({
   onSave,
   onDelete,
 }: VisitDetailDialogProps) {
+  const theme = useTheme();
   const { t } = useTranslation('healthPassport');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<VisitDraft>({
@@ -133,8 +135,8 @@ export default function VisitDetailDialog({
             width: 38,
             height: 38,
             borderRadius: 2,
-            bgcolor: alpha('#3b82f6', 0.1),
-            color: '#3b82f6',
+            bgcolor: alpha(theme.palette.info.main, 0.1),
+            color: theme.palette.info.main,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -263,9 +265,9 @@ export default function VisitDetailDialog({
                   sx={{
                     p: 2,
                     borderRadius: 2,
-                    bgcolor: alpha('#3b82f6', 0.05),
+                    bgcolor: alpha(theme.palette.info.main, 0.05),
                     border: '1px solid',
-                    borderColor: alpha('#3b82f6', 0.15),
+                    borderColor: alpha(theme.palette.info.main, 0.15),
                   }}
                 >
                   <SectionLabel>{t('detail.diagnosis')}</SectionLabel>
@@ -285,9 +287,9 @@ export default function VisitDetailDialog({
                   sx={{
                     p: 2,
                     borderRadius: 2,
-                    bgcolor: alpha('#22c55e', 0.05),
+                    bgcolor: alpha(theme.palette.success.main, 0.05),
                     border: '1px solid',
-                    borderColor: alpha('#22c55e', 0.15),
+                    borderColor: alpha(theme.palette.success.main, 0.15),
                   }}
                 >
                   <SectionLabel>{t('detail.recommendations')}</SectionLabel>

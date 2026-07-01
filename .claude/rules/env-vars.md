@@ -16,6 +16,8 @@
 | `SUPABASE_SERVICE_ROLE_KEY` | áno (DB) | — | **TAJOMSTVO** — service_role kľúč (obchádza RLS). Výhradne server-side, NIKDY do klienta. Z Supabase Dashboard → Project Settings → API. Číta `config/supabase.ts`. |
 | `AI_DAILY_LIMIT` | nie | `50` | Maximum AI volaní (analyze, OCR, interpret-passport, food-safety, similar-summary) na používateľa za kalendárny deň (UTC). Cost safety net — chráni pred power-userom/botom ktorý by vyžral OpenAI/Vision kredit. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_ai_quota`. Pri prekročení vracia 429 s `code: "DAILY_AI_LIMIT"`. |
 | `AI_GLOBAL_DAILY_CAP` | nie | `5000` | Globálny kolektívny denný strop AI volaní naprieč všetkými usermi. Kill switch ak by trending alebo botnet vystrelil OpenAI faktúru. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_global_ai_quota` (migrácia `0011_global_ai_quota.sql`). Pri 80% prahu loguje WARN; pri prekročení limitu vracia 503 s `code: "AI_GLOBAL_CAP_EXCEEDED"`. |
+| `ADMIN_EMAILS` | nie (povinné pre admin) | prázdne (žiadny admin) | Comma-separated zoznam e-mailov s admin oprávnením (správa článkov poradne). Porovnáva sa case-insensitive proti `req.user.email` z Firebase tokenu. Vynucuje `middleware/requireAdmin.ts` na `/api/admin/articles` (write). `GET /api/admin/status` vráti `{ isAdmin }`. Bez nastavenia nemá admin práva nikto. |
+| `NETLIFY_BUILD_HOOK_URL` | nie (povinné pre „Publikovať na web") | prázdne (feature vráti 503) | URL Netlify build hooku. `POST /api/admin/articles/publish` ho zavolá → spustí rebuild webu (prerender z DB). Vytvor v Netlify → Site settings → Build & deploy → Build hooks. Je to secret (kto pozná URL, spustí build) — nikdy ho neloguj. Bez neho admin tlačidlo „Publikovať" vráti 503 `PUBLISH_NOT_CONFIGURED`. |
 
 > **Supabase premenné sú povinné pre DB.** `server/src/config/supabase.ts` fail-fastne ak `SUPABASE_URL` alebo `SUPABASE_SERVICE_ROLE_KEY` chýba. service_role kľúč obchádza RLS — autorizácia sa vynucuje v API vrstve (scope na `req.appUserId` cez `middleware/ensureUser.ts`).
 
@@ -36,6 +38,8 @@ Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default
 | `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
 | `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
 | `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
+| `MODEL_ARTICLE_AUTHORING` | `gpt-4o-mini` | AI generovanie obsahu článkov (meta popis, úvod, FAQ, osnova, source-check) |
+| `MODEL_ARTICLE_REWRITE` | `gpt-4o` | AI preformulovanie textu článku |
 
 > Vision endpointy (`MODEL_OCR_VISION`, `MODEL_VET_FILE`) musia byť modely s vision podporou. Inak server vráti 502.
 
@@ -55,6 +59,17 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 | `VITE_STRIPE_PAYMENT_LINK` | nie | prázdne (feature skrytá) | URL Stripe Payment Linku pre dobrovoľný donate (Fáza 0 monetizácie). Vytvor v Stripe Dashboard → Payment Links. Konzumuje sa v `Layout.tsx` a `AboutPage.tsx`. Ak nie je nastavená, "Podporiť projekt" UI prvky sa nezobrazia. **Po vytvorení Payment Linku nastav `success_url` na `https://<tvoj-host>/dakujeme`** — tam aplikácia ukáže "Ďakujeme" page (`DonateThanksPage.tsx`). Bez toho user po platbe pristane na Stripe default page (nezistí, že platba dorazila do Pawly kontextu). |
 
 > **Konvencia:** premenná sa volá `VITE_API_URL`, nie `VITE_API_BASE_URL`. Ak ju premenuješ v kóde, updatni aj túto tabuľku, README a `.env.example`.
+
+### Build-time premenné (klient) — sync článkov z DB
+
+Tieto sa čítajú LEN počas buildu v `client/scripts/syncArticles.mjs` (prebuild krok). **Nemajú prefix `VITE_`** a **nebundlujú sa do klienta** — bežia v Node počas buildu (na Netlify build env, server-side). Slúžia na obnovenie mirroru `client/src/content/poradna/articles.data.json` zo Supabase pred prerenderom.
+
+| Premenná | Povinná | Default | Popis |
+|---|---|---|---|
+| `SUPABASE_URL` | nie (odporúčané v prod build) | — | URL Supabase projektu (rovnaká ako server). Ak chýba, sync sa preskočí a použije sa committed mirror (fallback). |
+| `SUPABASE_SERVICE_ROLE_KEY` | nie (odporúčané v prod build) | — | service_role kľúč (alias `SUPABASE_SERVICE_KEY`). Číta sa len pri builde; **nikdy sa nedostane do klientského bundla**. Bez neho sync skončí fallbackom. |
+
+> **Dôležité:** build je odolný — ak premenné chýbajú, DB je nedostupná alebo vráti 0 článkov, build **nespadne**, len použije posledný committed `articles.data.json`. Po editácii obsahu v DB treba **re-trigger buildu** (Netlify build hook), aby sa zmena premietla do prerendrovaného HTML (SEO). Zdroj pravdy je DB; mirror je cache + fallback.
 
 ## Pravidlá
 

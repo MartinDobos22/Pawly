@@ -31,27 +31,13 @@ export default function LandingFooter() {
               · {new Date().getFullYear()}
             </Typography>
           </Stack>
-          <Stack direction="row" alignItems="center" gap={3}>
+          <Stack direction="row" alignItems="center" gap={3} flexWrap="wrap">
             <Link
               href="/info?tab=about"
               underline="hover"
               sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
             >
               {t('footer.about')}
-            </Link>
-            <Link
-              href="/profily"
-              underline="hover"
-              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
-            >
-              {t('footer.profiles')}
-            </Link>
-            <Link
-              href="/analyza"
-              underline="hover"
-              sx={{ color: 'text.secondary', fontSize: '0.85rem' }}
-            >
-              {t('footer.start')}
             </Link>
             <SocialLinks size="sm" />
           </Stack>

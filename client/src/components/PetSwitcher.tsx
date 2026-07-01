@@ -12,6 +12,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   KeyboardArrowDown as ChevronIcon,
   Pets as PetsIcon,
@@ -147,7 +148,7 @@ export default function PetSwitcher({ variant = 'sidebar' }: Props) {
             minWidth: 240,
             borderRadius: 3,
             border: `1px solid ${theme.palette.divider}`,
-            boxShadow: '0 12px 32px rgba(15,76,92,0.12)',
+            boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.12)}`,
           },
         }}
       >

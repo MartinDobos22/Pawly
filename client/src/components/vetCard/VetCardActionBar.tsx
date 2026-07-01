@@ -85,7 +85,7 @@ export default function VetCardActionBar({
           bgcolor: 'background.paper',
           border: `1px solid ${theme.palette.divider}`,
           borderRadius: 4,
-          boxShadow: '0 4px 14px rgba(15,76,92,0.10)',
+          boxShadow: `0 4px 14px ${alpha(theme.palette.primary.main, 0.1)}`,
         }}
       >
         <Typography
@@ -168,7 +168,7 @@ export default function VetCardActionBar({
             minWidth: 240,
             borderRadius: 3,
             border: `1px solid ${theme.palette.divider}`,
-            boxShadow: '0 12px 32px rgba(15,76,92,0.14)',
+            boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.14)}`,
           },
         }}
       >

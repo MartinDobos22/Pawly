@@ -48,7 +48,10 @@ export default function ScoreCard({ score, summary }: ScoreCardProps) {
             size={160}
             thickness={4}
             sx={{
-              color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+              color:
+                theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.common.white, 0.08)
+                  : alpha(theme.palette.common.black, 0.06),
             }}
           />
           {/* Score arc */}

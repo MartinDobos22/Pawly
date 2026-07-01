@@ -23,6 +23,7 @@ import {
 import {
   Science as ScienceIcon,
   History as HistoryIcon,
+  Dashboard as DashboardIcon,
   HealthAndSafety as HealthAndSafetyIcon,
   Description as DescriptionIcon,
   Info as InfoIcon,
@@ -33,12 +34,16 @@ import {
   Pets as PetsIcon,
   MenuBook as MenuBookIcon,
   NotificationsActive as NotificationsActiveIcon,
+  FactCheck as FactCheckIcon,
+  Restaurant as RestaurantIcon,
   Settings as SettingsIcon,
   MailOutline as MailOutlineIcon,
   VolunteerActivism as VolunteerActivismIcon,
+  Article as ArticleIcon,
 } from '@mui/icons-material';
 
 const IS_STRIPE_ENABLED = Boolean(import.meta.env.VITE_STRIPE_PAYMENT_LINK);
+import { useIsAdmin } from '../hooks/useIsAdmin';
 import PetSwitcher from './PetSwitcher';
 import PawlyLogo from './PawlyLogo';
 import InstallAppBanner from './InstallAppBanner';
@@ -68,12 +73,19 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useIsAdmin();
 
   const NAV_SECTIONS: NavSection[] = [
     {
       id: 'health',
       label: t('nav.sectionMain'),
       items: [
+        {
+          label: t('nav.overview'),
+          shortLabel: t('nav.overviewShort'),
+          icon: <DashboardIcon />,
+          path: '/prehlad',
+        },
         {
           label: t('nav.healthPassport'),
           shortLabel: t('nav.healthPassportShort'),
@@ -93,6 +105,8 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
       id: 'tools',
       label: t('nav.sectionOther'),
       items: [
+        { label: t('checkIn.nav'), icon: <FactCheckIcon />, path: '/check-in' },
+        { label: t('nav.food'), icon: <RestaurantIcon />, path: '/krmivo' },
         { label: t('nav.analyze'), icon: <ScienceIcon />, path: '/analyza' },
         { label: t('nav.history'), icon: <HistoryIcon />, path: '/historia' },
       ],
@@ -107,6 +121,9 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
         { label: t('nav.contact'), icon: <MailOutlineIcon />, path: '/kontakt' },
         ...(IS_STRIPE_ENABLED
           ? [{ label: t('nav.donate'), icon: <VolunteerActivismIcon />, path: '/podpora' }]
+          : []),
+        ...(isAdmin
+          ? [{ label: t('nav.adminArticles'), icon: <ArticleIcon />, path: '/admin/clanky' }]
           : []),
       ],
     },
@@ -179,7 +196,7 @@ export default function Layout({ children, darkMode, onToggleTheme }: LayoutProp
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              handleNav('/');
+              handleNav('/prehlad');
             }
           }}
           sx={{

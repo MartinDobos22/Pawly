@@ -22,7 +22,7 @@ export default function LoginPage({ darkMode, onToggleTheme }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation('auth');
-  const redirectTo = (location.state as LocationState | null)?.from ?? '/zdravotny-pas';
+  const redirectTo = (location.state as LocationState | null)?.from ?? '/prehlad';
 
   useEffect(() => {
     if (user) navigate(redirectTo, { replace: true });

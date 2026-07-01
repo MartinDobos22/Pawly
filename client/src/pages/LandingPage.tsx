@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
@@ -28,6 +29,13 @@ interface Props {
   onToggleTheme: () => void;
 }
 
+export const seo = {
+  title: 'Pawly — Zdravotný pas pre tvojho miláčika',
+  description:
+    'Pawly – digitálny zdravotný pas pre tvojho miláčika. AI analýza krmiva, vakcinačný preukaz, denník epizód a karta pre veterinára. Zadarmo.',
+  path: '/',
+};
+
 export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -37,11 +45,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
 
   return (
     <>
-      <Seo
-        title="Pawly — Zdravotný pas pre tvojho miláčika"
-        description="Pawly – digitálny zdravotný pas pre tvojho miláčika. AI analýza krmiva, vakcinačný preukaz, denník epizód a karta pre veterinára. Zadarmo."
-        path="/"
-      />
+      <Seo {...seo} />
       <Box
         sx={{
           position: 'relative',
@@ -70,8 +74,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           position="sticky"
           elevation={0}
           sx={{
-            bgcolor:
-              theme.palette.mode === 'light' ? 'rgba(250,247,242,0.7)' : 'rgba(26,31,34,0.7)',
+            bgcolor: alpha(theme.palette.background.default, 0.7),
             backdropFilter: 'saturate(180%) blur(14px)',
             WebkitBackdropFilter: 'saturate(180%) blur(14px)',
             color: 'text.primary',
@@ -89,6 +92,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           >
             <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
               <PawlyLogo size="md" glow onClick={() => navigate('/')} />
+              <PublicHeaderNav />
             </Stack>
             <LanguageSwitcher variant="compact" />
             <IconButton
@@ -104,7 +108,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                   variant="contained"
                   size="small"
                   endIcon={<ArrowIcon />}
-                  onClick={() => navigate('/zdravotny-pas')}
+                  onClick={() => navigate('/prehlad')}
                   sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
                   {tLanding('hero.navEnter')}

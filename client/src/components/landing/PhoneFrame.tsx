@@ -1,4 +1,5 @@
 import { Box, useTheme, type SxProps, type Theme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { ReactNode } from 'react';
 
 interface Props {
@@ -18,7 +19,9 @@ export default function PhoneFrame({ children, sx }: Props) {
         borderRadius: 7,
         bgcolor: isDark ? '#0a0a0a' : '#1a1a1a',
         p: 1,
-        boxShadow: isDark ? '0 30px 60px rgba(0,0,0,0.6)' : '0 30px 60px rgba(15,76,92,0.25)',
+        boxShadow: isDark
+          ? `0 30px 60px ${alpha(theme.palette.common.black, 0.6)}`
+          : `0 30px 60px ${alpha(theme.palette.primary.main, 0.25)}`,
         position: 'relative',
         ...sx,
       }}

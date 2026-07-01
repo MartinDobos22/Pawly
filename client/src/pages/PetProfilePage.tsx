@@ -22,7 +22,6 @@ import {
   Stack,
   TextField,
   Typography,
-  alpha,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -33,6 +32,8 @@ import {
 import HelpHint from '../components/HelpHint';
 import PetPhotoField from '../components/PetPhotoField';
 import FeatureIntro from '../components/FeatureIntro';
+import PageContainer from '../components/ui/PageContainer';
+import PageHeader from '../components/ui/PageHeader';
 import SpeciesSelect from '../components/SpeciesSelect';
 import { usePetProfiles } from '../hooks/usePetProfiles';
 import { useHealthData } from '../hooks/useHealthData';
@@ -234,61 +235,18 @@ export default function PetProfilePage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 1024, mx: 'auto' }}>
+    <PageContainer>
       <FeatureIntro featureKey="profiles" icon={<PetsIcon />} />
-      <Box
-        sx={{
-          mb: 2.5,
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 4,
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06),
-          border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
-          p: { xs: 2, md: 2.5 },
-        }}
-      >
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
-          gap={2}
-        >
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: 2,
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 10px rgba(15,76,92,0.18)',
-              flexShrink: 0,
-            }}
-          >
-            <PetsIcon />
-          </Box>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: { xs: '1.5rem', md: '2rem' },
-                fontWeight: 700,
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {t('profiles.pageTitle')}
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, maxWidth: 640 }}>
-              {t('profiles.pageSubtitle')}
-            </Typography>
-          </Box>
+      <PageHeader
+        icon={<PetsIcon />}
+        title={t('profiles.pageTitle')}
+        description={t('profiles.pageSubtitle')}
+        action={
           <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
             {t('profiles.addPet')}
           </Button>
-        </Stack>
-      </Box>
+        }
+      />
 
       {!petsLoading && profiles.length === 0 && (
         <Card
@@ -850,6 +808,6 @@ export default function PetProfilePage() {
           {snack.msg}
         </Alert>
       </Snackbar>
-    </Box>
+    </PageContainer>
   );
 }

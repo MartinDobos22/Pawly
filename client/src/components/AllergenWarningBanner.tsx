@@ -47,7 +47,7 @@ export default function AllergenWarningBanner({
           </Box>
 
           {allAllergens.map((warning, idx) => (
-            <Box key={idx} sx={{ mb: 1.5, pl: 1, borderLeft: '3px solid rgba(255,255,255,0.5)' }}>
+            <Box key={idx} sx={{ mb: 1.5, pl: 1, borderLeft: `3px solid ${alpha(theme.palette.common.white, 0.5)}` }}>
               <Typography variant="body1" sx={{ fontWeight: 700 }}>
                 {warning.allergen} → {warning.ingredientName}
               </Typography>
@@ -63,7 +63,7 @@ export default function AllergenWarningBanner({
               mt: 2,
               fontWeight: 700,
               opacity: 0.95,
-              borderTop: '1px solid rgba(255,255,255,0.3)',
+              borderTop: `1px solid ${alpha(theme.palette.common.white, 0.3)}`,
               pt: 1.5,
             }}
           >
@@ -91,7 +91,7 @@ export default function AllergenWarningBanner({
           </Box>
 
           {healthWarnings.map((warning, idx) => (
-            <Box key={idx} sx={{ mb: 1.5, pl: 1, borderLeft: '3px solid rgba(255,255,255,0.5)' }}>
+            <Box key={idx} sx={{ mb: 1.5, pl: 1, borderLeft: `3px solid ${alpha(theme.palette.common.white, 0.5)}` }}>
               <Typography variant="body1" sx={{ fontWeight: 700 }}>
                 {warning.condition}
               </Typography>

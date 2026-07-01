@@ -63,7 +63,7 @@ export default function HowItWorks() {
                   transition: 'transform 220ms ease, box-shadow 220ms ease',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 32px rgba(15,76,92,0.10)',
+                    boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.1)}`,
                   },
                 }}
               >

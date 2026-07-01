@@ -123,7 +123,7 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
     if (!verifiedSuccess) return;
     if (verifiedButNoSession) return; // user musí najprv kliknúť "Prihlásiť sa"
     const id = window.setTimeout(
-      () => navigate('/zdravotny-pas', { replace: true }),
+      () => navigate('/prehlad', { replace: true }),
       SUCCESS_REDIRECT_DELAY_MS
     );
     return () => window.clearTimeout(id);
@@ -140,7 +140,7 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
   // Ak je user už verified (alebo Google) → vždy ďalej do appky.
   // Toto rieši aj prípad keď user klikne starý/už-použitý link po overení.
   if (user && (user.emailVerified || isGoogleUser(user))) {
-    return <Navigate to="/zdravotny-pas" replace />;
+    return <Navigate to="/prehlad" replace />;
   }
   // Bez session a bez oobCode → na login.
   if (!hasActionCode && !user) {
@@ -172,7 +172,7 @@ export default function VerifyEmailPage({ darkMode, onToggleTheme }: Props) {
         setError(t('verify.stillNotVerified'));
         return;
       }
-      navigate('/zdravotny-pas', { replace: true });
+      navigate('/prehlad', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('verify.stillNotVerified'));
     } finally {
