@@ -28,6 +28,7 @@ import {
   ARTICLE_DISCLAIMER,
   CATEGORY_COLORS,
   CATEGORY_LABELS,
+  SUPPORT_EMAIL,
   getArticle,
 } from '../../content/poradna/articles';
 import type { Article, Block } from '../../content/poradna/types';
@@ -255,6 +256,29 @@ export default function ArticleView({ article, preview = false }: Props) {
               </Typography>
             </Box>
           )}
+
+          <Box
+            sx={{
+              mt: theme.spacing(4),
+              p: theme.spacing(2),
+              borderRadius: `${theme.shape.borderRadius}px`,
+              border: `1px solid ${theme.palette.divider}`,
+              bgcolor: alpha(theme.palette.primary.main, 0.04),
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Našli ste v článku chybu alebo nepresnosť? Napíšte nám na{' '}
+              <Link
+                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
+                  `Chyba v článku: ${article.title}`
+                )}`}
+                underline="hover"
+              >
+                {SUPPORT_EMAIL}
+              </Link>{' '}
+              a opravíme to.
+            </Typography>
+          </Box>
         </Box>
 
         <Box onClick={() => track('cta_click', { ctaIntent: article.ctaIntent })}>
