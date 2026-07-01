@@ -192,6 +192,21 @@ export default function AdminArticleEditPage() {
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
 
+  // Výška sticky hlavičky stránky — lišta editora sa posadí tesne pod ňu, inak
+  // by sa pri skrolovaní schovala za hlavičku (obe boli na top: 0).
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const update = () => setHeaderHeight(el.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [tab]);
+
   useEffect(() => {
     if (isNew) return;
     setLoading(true);
@@ -295,7 +310,7 @@ export default function AdminArticleEditPage() {
   });
 
   // Uloženie obsahu/metadát — NEMENÍ stav (ten ide len cez prechody nižšie).
-  const saveContent = async () => {
+  const saveContent = async (): Promise<boolean> => {
     setSaving(true);
     setError(null);
     try {
@@ -303,18 +318,36 @@ export default function AdminArticleEditPage() {
       if (isNew) {
         const created = await createAdminArticle(payload);
         navigate(`/admin/clanky/${created.slug}`);
-        return;
+        return true;
       }
       const updated = await updateAdminArticle(slug, payload);
       setForm(updated);
       savedSnapshotRef.current = JSON.stringify(updated);
       setNotice('Uložené.');
       loadValidation();
+      return true;
     } catch (e) {
       setError((e as Error).message);
+      return false;
     } finally {
       setSaving(false);
     }
+  };
+
+  // Náhľad musí odrážať práve rozpracovanú prácu. „Otvoriť náhľad" fetchuje
+  // uložený obsah, preto pri neuložených zmenách najprv uložíme a až potom
+  // presmerujeme (blank tab otvoríme synchronne, aby ho neblokoval popup blocker).
+  const openPreview = async () => {
+    const href = `/admin/clanky/${slug}/nahlad`;
+    const hasUnsaved = JSON.stringify(form) !== savedSnapshotRef.current;
+    if (!hasUnsaved) {
+      window.open(href, '_blank', 'noopener');
+      return;
+    }
+    const previewWindow = window.open('', '_blank');
+    const ok = await saveContent();
+    if (ok && previewWindow) previewWindow.location.href = href;
+    else previewWindow?.close();
   };
 
   // Zmena stavu cez workflow. Najprv uloží obsah (aby server validoval aktuálne
@@ -416,6 +449,7 @@ export default function AdminArticleEditPage() {
   return (
     <PageContainer>
       <Box
+        ref={headerRef}
         sx={{
           position: 'sticky',
           top: 0,
@@ -438,14 +472,7 @@ export default function AdminArticleEditPage() {
             </Typography>
           )}
           {!isNew && (
-            <Button
-              variant="text"
-              startIcon={<OpenInNewIcon />}
-              component="a"
-              href={`/admin/clanky/${slug}/nahlad`}
-              target="_blank"
-              rel="noopener"
-            >
+            <Button variant="text" startIcon={<OpenInNewIcon />} onClick={openPreview}>
               Otvoriť náhľad
             </Button>
           )}
@@ -1032,6 +1059,7 @@ export default function AdminArticleEditPage() {
               <ArticleRichEditor
                 value={form.sections}
                 onChange={(sections) => set('sections', sections)}
+                stickyTop={headerHeight}
               />
             </CardContent>
           </Card>

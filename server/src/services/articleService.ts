@@ -196,6 +196,9 @@ function validateBlocks(value: unknown): Block[] {
       case 'image': {
         const out: Block = { type: 'image', src: reqStr(b.src, `blok #${i + 1} src`) };
         if (typeof b.alt === 'string' && b.alt.trim().length > 0) out.alt = b.alt.trim();
+        if (typeof b.width === 'number' && b.width >= 10 && b.width <= 100) {
+          out.width = Math.round(b.width);
+        }
         return out;
       }
       case 'gallery': {

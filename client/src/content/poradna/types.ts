@@ -15,7 +15,7 @@ export type Block =
   | { type: 'quote'; text: string }
   | { type: 'divider' }
   | { type: 'callout'; variant: CalloutVariant; title?: string; text: string }
-  | { type: 'image'; src: string; alt?: string }
+  | { type: 'image'; src: string; alt?: string; width?: number }
   | { type: 'gallery'; images: { src: string; alt?: string }[] };
 
 export interface ArticleSection {

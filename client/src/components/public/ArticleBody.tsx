@@ -121,7 +121,8 @@ export default function ArticleBody({ sections }: Props) {
                     loading="lazy"
                     sx={{
                       display: 'block',
-                      width: '100%',
+                      width: block.width ? `${block.width}%` : '100%',
+                      maxWidth: '100%',
                       height: 'auto',
                       borderRadius: (t) => `${t.shape.borderRadius}px`,
                       my: 3,

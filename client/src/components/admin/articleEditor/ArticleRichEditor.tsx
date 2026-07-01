@@ -63,6 +63,7 @@ import type { ArticleSection } from '../../../content/poradna/types';
 interface Props {
   value: ArticleSection[];
   onChange: (sections: ArticleSection[]) => void;
+  stickyTop?: number;
 }
 
 const EditorShell = styled(Box)(({ theme }) => ({
@@ -205,9 +206,10 @@ interface ToolbarProps {
 
 interface MainToolbarProps extends ToolbarProps {
   onImageRequest: () => void;
+  stickyTop: number;
 }
 
-function Toolbar({ editor, onLinkRequest, onImageRequest }: MainToolbarProps) {
+function Toolbar({ editor, onLinkRequest, onImageRequest, stickyTop }: MainToolbarProps) {
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
@@ -243,7 +245,7 @@ function Toolbar({ editor, onLinkRequest, onImageRequest }: MainToolbarProps) {
         p: (t) => t.spacing(0.75),
         borderBottom: (t) => `1px solid ${t.palette.divider}`,
         position: 'sticky',
-        top: 0,
+        top: stickyTop,
         zIndex: 1,
         bgcolor: 'background.paper',
         borderTopLeftRadius: (t) => `${t.shape.borderRadius}px`,
@@ -485,7 +487,7 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
   );
 }
 
-export default function ArticleRichEditor({ value, onChange }: Props) {
+export default function ArticleRichEditor({ value, onChange, stickyTop = 0 }: Props) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -511,6 +513,12 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
         placeholder: 'Začni písať obsah článku… „H2" v lište začne novú sekciu.',
       }),
       Image.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            width: { default: null },
+          };
+        },
         addNodeView() {
           return ReactNodeViewRenderer(ImageNodeView);
         },
@@ -578,6 +586,7 @@ export default function ArticleRichEditor({ value, onChange }: Props) {
           editor={editor}
           onLinkRequest={openLinkDialog}
           onImageRequest={() => fileInputRef.current?.click()}
+          stickyTop={stickyTop}
         />
         <DragHandle editor={editor}>
           <Box
