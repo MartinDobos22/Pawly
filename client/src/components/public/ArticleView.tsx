@@ -22,7 +22,6 @@ import LandingFaq from './LandingFaq';
 import LandingCta from './LandingCta';
 import ArticleCard from './ArticleCard';
 import { articleReadingMinutes } from '../../utils/readingTime';
-import { slugifyHeading } from '../../utils/slugifyHeading';
 import { trackArticleEvent } from '../../services/analyticsApi';
 import {
   ARTICLE_DISCLAIMER,
@@ -31,7 +30,7 @@ import {
   SUPPORT_EMAIL,
   getArticle,
 } from '../../content/poradna/articles';
-import type { Article, Block } from '../../content/poradna/types';
+import type { Article } from '../../content/poradna/types';
 
 interface Props {
   article: Article;
@@ -60,8 +59,6 @@ export default function ArticleView({ article, preview = false }: Props) {
   const ctaLabel = article.ctaIntent === 'food' ? 'Analyzovať krmivo' : 'Vytvoriť zdravotný pas';
   const color = CATEGORY_COLORS[article.category];
   const readingMinutes = articleReadingMinutes(article);
-  const tocSections = article.sections.filter((s) => s.heading.trim());
-  const showToc = tocSections.length >= 3;
   const author = article.author ?? 'Tím Pawly';
 
   return (
@@ -163,62 +160,6 @@ export default function ArticleView({ article, preview = false }: Props) {
         )}
 
         <Divider sx={{ mb: theme.spacing(4) }} />
-
-        {showToc && (
-          <Box
-            component="nav"
-            aria-label="Obsah článku"
-            sx={{
-              mb: theme.spacing(4),
-              p: theme.spacing(2.5),
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: `${theme.shape.borderRadius}px`,
-              bgcolor: 'action.hover',
-            }}
-          >
-            <Typography variant="subtitle2" sx={{ mb: theme.spacing(1) }}>
-              Obsah
-            </Typography>
-            <Stack component="ol" spacing={0.75} sx={{ listStyle: 'none', m: 0, p: 0 }}>
-              {tocSections.map((section) => (
-                <li key={section.heading}>
-                  <Link
-                    href={`#${slugifyHeading(section.heading)}`}
-                    underline="hover"
-                    variant="body2"
-                  >
-                    {section.heading}
-                  </Link>
-                  {section.blocks.some((b) => b.type === 'subheading') && (
-                    <Stack
-                      component="ol"
-                      spacing={0.5}
-                      sx={{ listStyle: 'none', m: 0, mt: 0.5, p: 0, pl: theme.spacing(2) }}
-                    >
-                      {section.blocks
-                        .filter(
-                          (b): b is Extract<Block, { type: 'subheading' }> =>
-                            b.type === 'subheading'
-                        )
-                        .map((b) => (
-                          <li key={b.text}>
-                            <Link
-                              href={`#${slugifyHeading(b.text)}`}
-                              underline="hover"
-                              variant="body2"
-                              color="text.secondary"
-                            >
-                              {b.text}
-                            </Link>
-                          </li>
-                        ))}
-                    </Stack>
-                  )}
-                </li>
-              ))}
-            </Stack>
-          </Box>
-        )}
 
         <Box component="article" sx={{ maxWidth: 720, mx: 'auto' }}>
           <ArticleBody sections={article.sections} />
