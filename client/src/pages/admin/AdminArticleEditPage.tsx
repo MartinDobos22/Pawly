@@ -192,20 +192,9 @@ export default function AdminArticleEditPage() {
   // Posledný uložený/načítaný stav (JSON) — autosave beží len pri reálnej zmene.
   const savedSnapshotRef = useRef<string>('');
 
-  // Výška sticky hlavičky stránky — lišta editora sa posadí tesne pod ňu, inak
-  // by sa pri skrolovaní schovala za hlavičku (obe boli na top: 0).
-  const headerRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
-
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const update = () => setHeaderHeight(el.offsetHeight);
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [tab]);
+  // Lišta editora sa portáluje do tejto sticky hlavičky, aby bola vždy viditeľná
+  // počas editácie tela (spoľahlivejšie než position: sticky vo vnorenom Card).
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (isNew) return;
@@ -449,7 +438,6 @@ export default function AdminArticleEditPage() {
   return (
     <PageContainer>
       <Box
-        ref={headerRef}
         sx={{
           position: 'sticky',
           top: 0,
@@ -500,6 +488,8 @@ export default function AdminArticleEditPage() {
           <Tab label="Náhľad" />
           <Tab label="Kontrola" />
         </Tabs>
+
+        {tab === 0 && <Box ref={setToolbarSlot} sx={{ mt: theme.spacing(0.5) }} />}
       </Box>
 
       {error && (
@@ -1049,7 +1039,7 @@ export default function AdminArticleEditPage() {
             </Card>
           )}
 
-          <Card sx={{ borderRadius: 2, overflow: 'visible' }}>
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <SectionCardHeader
                 icon={<ArticleIcon />}
@@ -1059,7 +1049,7 @@ export default function AdminArticleEditPage() {
               <ArticleRichEditor
                 value={form.sections}
                 onChange={(sections) => set('sections', sections)}
-                stickyTop={headerHeight}
+                toolbarContainer={toolbarSlot}
               />
             </CardContent>
           </Card>

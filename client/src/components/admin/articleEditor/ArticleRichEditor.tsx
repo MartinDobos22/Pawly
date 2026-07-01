@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type MouseEvent } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Box,
   Button,
@@ -17,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, type Theme } from '@mui/material/styles';
 import {
   FormatBold as BoldIcon,
   FormatItalic as ItalicIcon,
@@ -63,7 +64,8 @@ import type { ArticleSection } from '../../../content/poradna/types';
 interface Props {
   value: ArticleSection[];
   onChange: (sections: ArticleSection[]) => void;
-  stickyTop?: number;
+  /** DOM slot v sticky hlavičke stránky — ak je zadaný, lišta sa doň portáluje. */
+  toolbarContainer?: HTMLElement | null;
 }
 
 const EditorShell = styled(Box)(({ theme }) => ({
@@ -206,10 +208,10 @@ interface ToolbarProps {
 
 interface MainToolbarProps extends ToolbarProps {
   onImageRequest: () => void;
-  stickyTop: number;
+  inHeader: boolean;
 }
 
-function Toolbar({ editor, onLinkRequest, onImageRequest, stickyTop }: MainToolbarProps) {
+function Toolbar({ editor, onLinkRequest, onImageRequest, inHeader }: MainToolbarProps) {
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
@@ -244,12 +246,16 @@ function Toolbar({ editor, onLinkRequest, onImageRequest, stickyTop }: MainToolb
       sx={{
         p: (t) => t.spacing(0.75),
         borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        position: 'sticky',
-        top: stickyTop,
-        zIndex: 1,
-        bgcolor: 'background.paper',
-        borderTopLeftRadius: (t) => `${t.shape.borderRadius}px`,
-        borderTopRightRadius: (t) => `${t.shape.borderRadius}px`,
+        ...(inHeader
+          ? { position: 'static', bgcolor: 'background.default' }
+          : {
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+              bgcolor: 'background.paper',
+              borderTopLeftRadius: (t: Theme) => `${t.shape.borderRadius}px`,
+              borderTopRightRadius: (t: Theme) => `${t.shape.borderRadius}px`,
+            }),
       }}
     >
       <HeadingMenu editor={editor} />
@@ -487,7 +493,7 @@ function BubbleToolbar({ editor, onLinkRequest }: ToolbarProps) {
   );
 }
 
-export default function ArticleRichEditor({ value, onChange, stickyTop = 0 }: Props) {
+export default function ArticleRichEditor({ value, onChange, toolbarContainer }: Props) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -568,6 +574,15 @@ export default function ArticleRichEditor({ value, onChange, stickyTop = 0 }: Pr
     }
   };
 
+  const toolbar = (
+    <Toolbar
+      editor={editor}
+      onLinkRequest={openLinkDialog}
+      onImageRequest={() => fileInputRef.current?.click()}
+      inHeader={Boolean(toolbarContainer)}
+    />
+  );
+
   return (
     <Box>
       <input
@@ -581,13 +596,9 @@ export default function ArticleRichEditor({ value, onChange, stickyTop = 0 }: Pr
           e.target.value = '';
         }}
       />
+      {toolbarContainer && createPortal(toolbar, toolbarContainer)}
       <EditorShell>
-        <Toolbar
-          editor={editor}
-          onLinkRequest={openLinkDialog}
-          onImageRequest={() => fileInputRef.current?.click()}
-          stickyTop={stickyTop}
-        />
+        {!toolbarContainer && toolbar}
         <DragHandle editor={editor}>
           <Box
             sx={{
