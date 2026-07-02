@@ -42,6 +42,7 @@ export interface VaccinationRecord {
   dateApplied: string;
   validUntil: string;
   batchNumber?: string;
+  note?: string;
   attachments?: AttachmentRef[];
 }
 
@@ -52,6 +53,7 @@ export interface DewormingRecord {
   dateGiven: string;
   intervalDays: number;
   nextDueDate: string;
+  note?: string;
   attachments?: AttachmentRef[];
 }
 
@@ -64,6 +66,7 @@ export interface EctoparasiteRecord {
   intervalDays?: number;
   durationDays?: number;
   nextDueDate: string;
+  note?: string;
   attachments?: AttachmentRef[];
 }
 

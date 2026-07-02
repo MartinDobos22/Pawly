@@ -598,6 +598,13 @@
     "bulletOverdue": "{{item}} is overdue — schedule it soon.",
     "bulletExpiringSoon": "{{item}} is due soon — plan ahead."
   },
+  "history": {
+    "button": "History",
+    "vaccinationTitle": "Vaccination history",
+    "dewormingTitle": "Deworming history",
+    "ectoTitle": "Tick & flea protection history",
+    "empty": "No records yet."
+  },
   "overview": {
     "vaccination": "Vaccination",
     "deworming": "Deworming",
