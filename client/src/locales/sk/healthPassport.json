@@ -616,6 +616,13 @@
     "bulletOverdue": "{{item}} je po termíne — čoskoro naplánujte.",
     "bulletExpiringSoon": "{{item}} čoskoro končí — naplánujte vopred."
   },
+  "history": {
+    "button": "História",
+    "vaccinationTitle": "História očkovaní",
+    "dewormingTitle": "História odčervení",
+    "ectoTitle": "História ochrany proti kliešťom",
+    "empty": "Zatiaľ žiadne záznamy."
+  },
   "overview": {
     "vaccination": "Očkovanie",
     "deworming": "Odčervenie",
