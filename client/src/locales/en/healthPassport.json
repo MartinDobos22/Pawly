@@ -368,6 +368,18 @@
     "typeCombined": "Combined",
     "typeOther": "Other"
   },
+  "vaccineTypes": {
+    "RABIES": "Rabies",
+    "COMBINED": "Combined",
+    "DISTEMPER": "Distemper",
+    "PARVOVIROSIS": "Parvovirosis",
+    "HEPATITIS": "Infectious hepatitis",
+    "PARAINFLUENZA": "Parainfluenza",
+    "LEPTOSPIROSIS": "Leptospirosis",
+    "KENNEL_COUGH": "Kennel cough",
+    "LYME": "Lyme disease",
+    "OTHER": "Other"
+  },
   "deworming": {
     "product": "Product name",
     "validUntil": "Valid until",

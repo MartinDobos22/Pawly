@@ -29,6 +29,7 @@ import type {
 } from '../../types/petHealth';
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 import { today } from './utils.ts';
+import { VACCINE_TYPE_ORDER } from '../../utils/vaccineTypes';
 
 export type RecordDetailType =
   | 'VACCINATION'
@@ -302,9 +303,11 @@ export default function TimelineRecordDetailDialog({
                 setVacDraft((p) => ({ ...p, type: e.target.value as VaccinationRecord['type'] }))
               }
             >
-              <MenuItem value="RABIES">{t('detail.typeRabies')}</MenuItem>
-              <MenuItem value="COMBINED">{t('detail.typeCombined')}</MenuItem>
-              <MenuItem value="OTHER">{t('detail.typeOther')}</MenuItem>
+              {VACCINE_TYPE_ORDER.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {t(`vaccineTypes.${type}`)}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>

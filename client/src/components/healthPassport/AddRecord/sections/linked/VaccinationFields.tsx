@@ -4,6 +4,7 @@ import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mu
 import type { VaccinationRecord } from '../../../../../types/petHealth';
 import type { VaccinationFieldsValues } from '../../formTypes';
 import DateField from '../../../../DateField';
+import { VACCINE_TYPE_ORDER } from '../../../../../utils/vaccineTypes';
 
 interface VaccinationFieldsProps {
   values: VaccinationFieldsValues;
@@ -41,9 +42,11 @@ export default function VaccinationFields({
             value={values.type}
             onChange={(e) => onChange('type', e.target.value as VaccinationRecord['type'])}
           >
-            <MenuItem value="RABIES">{t('vaccination.typeRabies')}</MenuItem>
-            <MenuItem value="COMBINED">{t('vaccination.typeCombined')}</MenuItem>
-            <MenuItem value="OTHER">{t('vaccination.typeOther')}</MenuItem>
+            {VACCINE_TYPE_ORDER.map((type) => (
+              <MenuItem key={type} value={type}>
+                {t(`vaccineTypes.${type}`)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Stack>
