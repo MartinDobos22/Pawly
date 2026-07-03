@@ -15,6 +15,7 @@ import MinimalHero from '../components/landing/MinimalHero';
 import HowItWorks from '../components/landing/HowItWorks';
 import FeatureShowcase from '../components/landing/FeatureShowcase';
 import AppPreview from '../components/landing/AppPreview';
+import ComparisonSection from '../components/landing/ComparisonSection';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
 import FinalCta from '../components/landing/FinalCta';
@@ -147,6 +148,9 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         </RevealOnScroll>
         <RevealOnScroll>
           <AppPreview />
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <ComparisonSection />
         </RevealOnScroll>
         <RevealOnScroll>
           <InteractiveAiDemo />

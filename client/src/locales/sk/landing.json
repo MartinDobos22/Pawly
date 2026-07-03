@@ -134,12 +134,7 @@
     "navAdvice": "Poradňa",
     "navAllArticles": "Všetky články",
     "navMenu": "Menu",
-    "rotating": [
-      "vždy po ruke",
-      "pod kontrolou",
-      "bez papierov",
-      "v jednom pase"
-    ],
+    "rotating": ["vždy po ruke", "pod kontrolou", "bez papierov", "v jednom pase"],
     "scrollCue": "Posunúť na funkcie",
     "card": {
       "petName": "Bady",
@@ -158,7 +153,14 @@
     "subtitle": "Zadarmo a bez reklám. Stačí pridať profil zvieraťa a môžeš naplno využívať digitálny zdravotný pas.",
     "btnStart": "Vstúpiť do aplikácie",
     "btnProfile": "Vytvoriť profil",
-    "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
+    "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa",
+    "benefitsTitle": "Registráciou zadarmo získaš",
+    "benefits": [
+      "E-mailové pripomienky na očkovanie, odčervenie aj kontroly",
+      "Všetky záznamy bezpečne v cloude — na mobile aj počítači",
+      "AI analýzu krmiva šitú na alergie tvojho zvieraťa",
+      "PDF kartu pre veterinára na jeden klik"
+    ]
   },
   "footer": {
     "about": "O aplikácii",
@@ -179,12 +181,7 @@
     "askingBtn": "Pýtam sa…",
     "tryLabel": "Skús:",
     "continueBtn": "Pokračovať so skutočnou AI v aplikácii",
-    "quickFills": [
-      "čokoláda",
-      "mrkva",
-      "hrozno",
-      "kuracie kosti"
-    ],
+    "quickFills": ["čokoláda", "mrkva", "hrozno", "kuracie kosti"],
     "resultLabels": {
       "question": "Otázka:",
       "warnings": "Pozor na:",
@@ -194,46 +191,32 @@
       "verdict": "CAUTION",
       "short": "Bez plnej AI to neviem spoľahlivo posúdiť.",
       "explanation": "Toto je len demo s obmedzeným zoznamom potravín. Pre presné vyhodnotenie použi skutočnú AI v aplikácii.",
-      "warnings": [
-        "Pred podaním novej potraviny sa poraď s veterinárom"
-      ]
+      "warnings": ["Pred podaním novej potraviny sa poraď s veterinárom"]
     },
     "responses": {
       "čokoláda": {
         "verdict": "UNSAFE",
         "short": "Nie, čokoláda je pre zvieratá toxická.",
         "explanation": "Obsahuje teobromín, ktorý je pre zvieratá toxický a môže spôsobiť vracanie, triašku, kŕče alebo zlyhanie srdca.",
-        "alternatives": [
-          "pamlsky pre miláčikov",
-          "kúsok jablka",
-          "mrkva"
-        ]
+        "alternatives": ["pamlsky pre miláčikov", "kúsok jablka", "mrkva"]
       },
       "hrozno": {
         "verdict": "UNSAFE",
         "short": "Nie, hrozno môže spôsobiť zlyhanie obličiek.",
         "explanation": "Aj malé množstvo hrozna alebo hrozienok môže spôsobiť akútne zlyhanie obličiek.",
-        "alternatives": [
-          "čučoriedky",
-          "jablko bez jadierok",
-          "banán"
-        ]
+        "alternatives": ["čučoriedky", "jablko bez jadierok", "banán"]
       },
       "cibuľa": {
         "verdict": "UNSAFE",
         "short": "Nie, cibuľa poškodzuje červené krvinky.",
         "explanation": "Cibuľa, cesnak a pažítka obsahujú tioskloridy, ktoré rozkladajú červené krvinky a môžu spôsobiť anémiu.",
-        "alternatives": [
-          "varené mäso bez korenia"
-        ]
+        "alternatives": ["varené mäso bez korenia"]
       },
       "xylitol": {
         "verdict": "UNSAFE",
         "short": "Nie, xylitol je extrémne nebezpečný.",
         "explanation": "Sladidlo xylitol prudko znižuje hladinu cukru v krvi a môže spôsobiť zlyhanie pečene už pri malých dávkach.",
-        "alternatives": [
-          "psie pamlsky bez sladidiel"
-        ]
+        "alternatives": ["psie pamlsky bez sladidiel"]
       },
       "mrkva": {
         "verdict": "SAFE",
@@ -244,10 +227,7 @@
         "verdict": "CAUTION",
         "short": "Áno, ale bez jadierok a stopky.",
         "explanation": "Jablko je zdravé a chutné, ale jadierka obsahujú stopy kyanidu. Daj len mäsité kúsky.",
-        "warnings": [
-          "Odstráň jadierka a stopku",
-          "V miernych množstvách"
-        ]
+        "warnings": ["Odstráň jadierka a stopku", "V miernych množstvách"]
       },
       "banán": {
         "verdict": "SAFE",
@@ -258,38 +238,25 @@
         "verdict": "CAUTION",
         "short": "Záleží na úprave — varené nikdy nedávaj.",
         "explanation": "Varené kosti sa štiepia a môžu poraniť tráviaci trakt. Surové veľké kosti sú prijateľné pod dozorom.",
-        "warnings": [
-          "Varené kosti môžu poraniť trávenie",
-          "Iba surové a väčšie kosti pod dozorom"
-        ]
+        "warnings": ["Varené kosti môžu poraniť trávenie", "Iba surové a väčšie kosti pod dozorom"]
       },
       "mlieko": {
         "verdict": "CAUTION",
         "short": "Mnoho zvierat má intoleranciu laktózy.",
         "explanation": "Niektoré zvieratá strávia mlieko bez problému, iné dostanú hnačku. Vyskúšaj malé množstvo a sleduj reakciu.",
-        "warnings": [
-          "Sleduj prípadné tráviace ťažkosti",
-          "Bezlaktózové verzie sú lepšie"
-        ]
+        "warnings": ["Sleduj prípadné tráviace ťažkosti", "Bezlaktózové verzie sú lepšie"]
       },
       "syr": {
         "verdict": "CAUTION",
         "short": "V malých množstvách áno.",
         "explanation": "Tvrdé syry s nízkym obsahom laktózy sú OK ako pamlsky. Pozor na obsah soli.",
-        "warnings": [
-          "Pozor na soľ",
-          "Nie pre zvieratá s alergiou na mliečne produkty"
-        ]
+        "warnings": ["Pozor na soľ", "Nie pre zvieratá s alergiou na mliečne produkty"]
       },
       "avokádo": {
         "verdict": "UNSAFE",
         "short": "Nie, avokádo obsahuje persín.",
         "explanation": "Persín v avokáde môže spôsobiť tráviace ťažkosti a vracanie. Kôstka je aj rizikom udusenia.",
-        "alternatives": [
-          "banán",
-          "mrkva",
-          "jablko bez jadierok"
-        ]
+        "alternatives": ["banán", "mrkva", "jablko bez jadierok"]
       },
       "losos": {
         "verdict": "SAFE",
@@ -388,11 +355,7 @@
       "food": {
         "heading": "Skóre krmiva",
         "verdict": "Vhodné pre tvojho miláčika",
-        "chips": [
-          "bez alergénov",
-          "kvalitné bielkoviny",
-          "málo plnidiel"
-        ]
+        "chips": ["bez alergénov", "kvalitné bielkoviny", "málo plnidiel"]
       },
       "reminders": {
         "heading": "Najbližšie termíny",
@@ -482,5 +445,26 @@
       "expiresSoon": "Vyprší",
       "suitable": "Vhodná"
     }
+  },
+  "comparison": {
+    "title": "Papierový pas verzus Pawly",
+    "subtitle": "Prečo vymeniť otrhaný papier za digitálny zdravotný pas.",
+    "paperTitle": "Papierový pas",
+    "pawlyTitle": "Pawly",
+    "recommended": "Odporúčané",
+    "paperPoints": [
+      "Ľahko sa stratí alebo zničí",
+      "Žiadne pripomienky termínov",
+      "Musíš ho stále nosiť so sebou",
+      "Nečitateľný rukopis veterinára",
+      "Žiadna analýza krmiva"
+    ],
+    "pawlyPoints": [
+      "Vždy v mobile, nikdy sa nestratí",
+      "Automatické pripomienky očkovania a odčervenia",
+      "AI skenovanie pasu aj analýza krmiva",
+      "Prehľadná karta pre veterinára na jeden klik",
+      "Funguje offline a úplne zadarmo"
+    ]
   }
 }

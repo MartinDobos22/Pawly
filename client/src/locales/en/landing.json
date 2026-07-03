@@ -134,12 +134,7 @@
     "navAdvice": "Advice",
     "navAllArticles": "All articles",
     "navMenu": "Menu",
-    "rotating": [
-      "always at hand",
-      "under control",
-      "paper-free",
-      "in one passport"
-    ],
+    "rotating": ["always at hand", "under control", "paper-free", "in one passport"],
     "scrollCue": "Scroll to features",
     "card": {
       "petName": "Buddy",
@@ -158,7 +153,14 @@
     "subtitle": "Free and ad-free. Just add a pet profile and you're ready to use the digital health passport.",
     "btnStart": "Open app",
     "btnProfile": "Create profile",
-    "vetPhotoAlt": "Veterinary check-up of a pet"
+    "vetPhotoAlt": "Veterinary check-up of a pet",
+    "benefitsTitle": "Signing up free gets you",
+    "benefits": [
+      "Email reminders for vaccinations, deworming and check-ups",
+      "All records safely in the cloud — on your phone and computer",
+      "AI food analysis tailored to your pet’s allergies",
+      "A one-click PDF vet card"
+    ]
   },
   "footer": {
     "about": "About",
@@ -179,12 +181,7 @@
     "askingBtn": "Asking…",
     "tryLabel": "Try:",
     "continueBtn": "Continue with real AI in the app",
-    "quickFills": [
-      "chocolate",
-      "carrot",
-      "grapes",
-      "chicken bones"
-    ],
+    "quickFills": ["chocolate", "carrot", "grapes", "chicken bones"],
     "resultLabels": {
       "question": "Question:",
       "warnings": "Watch out for:",
@@ -194,46 +191,32 @@
       "verdict": "CAUTION",
       "short": "Without full AI I can't give a reliable answer.",
       "explanation": "This is just a demo with a limited list of foods. For accurate evaluation, use the real AI in the app.",
-      "warnings": [
-        "Consult your vet before giving any new food"
-      ]
+      "warnings": ["Consult your vet before giving any new food"]
     },
     "responses": {
       "chocolate": {
         "verdict": "UNSAFE",
         "short": "No, chocolate is toxic to dogs.",
         "explanation": "It contains theobromine, which is toxic to dogs and can cause vomiting, tremors, seizures or heart failure.",
-        "alternatives": [
-          "dog treats",
-          "a piece of apple",
-          "carrot"
-        ]
+        "alternatives": ["dog treats", "a piece of apple", "carrot"]
       },
       "grapes": {
         "verdict": "UNSAFE",
         "short": "No, grapes can cause kidney failure.",
         "explanation": "Even a small amount of grapes or raisins can cause acute kidney failure in dogs.",
-        "alternatives": [
-          "blueberries",
-          "apple without seeds",
-          "banana"
-        ]
+        "alternatives": ["blueberries", "apple without seeds", "banana"]
       },
       "onion": {
         "verdict": "UNSAFE",
         "short": "No, onions damage red blood cells.",
         "explanation": "Onions, garlic and chives contain thiosulfates that break down red blood cells and can cause anaemia.",
-        "alternatives": [
-          "plain cooked meat"
-        ]
+        "alternatives": ["plain cooked meat"]
       },
       "xylitol": {
         "verdict": "UNSAFE",
         "short": "No, xylitol is extremely dangerous.",
         "explanation": "The sweetener xylitol rapidly lowers blood sugar and can cause liver failure even in small doses.",
-        "alternatives": [
-          "dog treats without sweeteners"
-        ]
+        "alternatives": ["dog treats without sweeteners"]
       },
       "carrot": {
         "verdict": "SAFE",
@@ -244,10 +227,7 @@
         "verdict": "CAUTION",
         "short": "Yes, but remove the seeds and stem.",
         "explanation": "Apples are healthy and tasty, but the seeds contain traces of cyanide. Only give the fleshy pieces.",
-        "warnings": [
-          "Remove seeds and stem",
-          "In moderate amounts"
-        ]
+        "warnings": ["Remove seeds and stem", "In moderate amounts"]
       },
       "banana": {
         "verdict": "SAFE",
@@ -267,29 +247,19 @@
         "verdict": "CAUTION",
         "short": "Many dogs are lactose intolerant.",
         "explanation": "Some dogs digest milk fine, others get diarrhoea. Try a small amount and monitor the reaction.",
-        "warnings": [
-          "Watch for digestive issues",
-          "Lactose-free versions are better"
-        ]
+        "warnings": ["Watch for digestive issues", "Lactose-free versions are better"]
       },
       "cheese": {
         "verdict": "CAUTION",
         "short": "In small amounts, yes.",
         "explanation": "Hard cheeses low in lactose are OK as treats. Watch out for salt content.",
-        "warnings": [
-          "Watch out for salt",
-          "Not for dogs with dairy allergies"
-        ]
+        "warnings": ["Watch out for salt", "Not for dogs with dairy allergies"]
       },
       "avocado": {
         "verdict": "UNSAFE",
         "short": "No, avocado contains persin.",
         "explanation": "Persin in avocado can cause digestive problems and vomiting. The pit is also a choking hazard.",
-        "alternatives": [
-          "banana",
-          "carrot",
-          "apple without seeds"
-        ]
+        "alternatives": ["banana", "carrot", "apple without seeds"]
       },
       "salmon": {
         "verdict": "SAFE",
@@ -385,11 +355,7 @@
       "food": {
         "heading": "Food score",
         "verdict": "Suitable for your pet",
-        "chips": [
-          "allergen-free",
-          "quality protein",
-          "few fillers"
-        ]
+        "chips": ["allergen-free", "quality protein", "few fillers"]
       },
       "reminders": {
         "heading": "Upcoming deadlines",
@@ -479,5 +445,26 @@
       "expiresSoon": "Expires",
       "suitable": "Suitable"
     }
+  },
+  "comparison": {
+    "title": "Paper passport vs Pawly",
+    "subtitle": "Why swap a worn paper passport for a digital one.",
+    "paperTitle": "Paper passport",
+    "pawlyTitle": "Pawly",
+    "recommended": "Recommended",
+    "paperPoints": [
+      "Easily lost or damaged",
+      "No deadline reminders",
+      "You have to carry it everywhere",
+      "Unreadable vet handwriting",
+      "No food analysis"
+    ],
+    "pawlyPoints": [
+      "Always on your phone, never lost",
+      "Automatic vaccination and deworming reminders",
+      "AI passport scanning and food analysis",
+      "A clear vet card in one click",
+      "Works offline and completely free"
+    ]
   }
 }

@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography, alpha, useTheme } from '@mui/material';
-import { ArrowForward as ArrowIcon } from '@mui/icons-material';
+import { ArrowForward as ArrowIcon, CheckCircleOutline as CheckIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -11,9 +11,10 @@ export default function FinalCta() {
   const navigate = useNavigate();
   const isDark = theme.palette.mode === 'dark';
   const { t } = useTranslation('landing');
+  const benefits = t('cta.benefits', { returnObjects: true }) as string[];
 
   return (
-    <Box sx={{ py: { xs: 8, md: 14 } }}>
+    <Box sx={{ pt: { xs: 5, md: 6 }, pb: { xs: 8, md: 12 } }}>
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2.5, md: 4 } }}>
         <Box
           sx={{
@@ -51,73 +52,105 @@ export default function FinalCta() {
             }}
           />
 
-          <Stack
-            spacing={3}
+          <Box
             sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1.1fr 0.9fr' },
+              gap: { xs: 3, md: 6 },
+              alignItems: 'center',
+              width: '100%',
               p: { xs: 3, md: 6 },
-              maxWidth: 640,
-              color: theme.palette.common.white,
             }}
           >
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: '1.75rem', md: '2.5rem' },
-                fontWeight: 700,
-                lineHeight: 1.1,
-                letterSpacing: '-0.02em',
-                color: 'inherit',
-              }}
-            >
-              {t('cta.title')}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: alpha(theme.palette.common.white, 0.85),
-                fontSize: { xs: '1rem', md: '1.1rem' },
-                maxWidth: 520,
-              }}
-            >
-              {t('cta.subtitle')}
-            </Typography>
-            <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowIcon />}
-                onClick={() => navigate('/analyza')}
+            <Stack spacing={3} sx={{ color: theme.palette.common.white }}>
+              <Typography
+                variant="h2"
                 sx={{
-                  px: 3,
-                  py: 1.25,
-                  bgcolor: theme.palette.common.white,
-                  color: 'primary.dark',
-                  fontSize: '1rem',
-                  '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.9) },
+                  fontSize: { xs: '1.75rem', md: '2.5rem' },
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                  letterSpacing: '-0.02em',
+                  color: 'inherit',
                 }}
               >
-                {t('cta.btnStart')}
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate('/profily')}
+                {t('cta.title')}
+              </Typography>
+              <Typography
+                variant="body1"
                 sx={{
-                  px: 3,
-                  py: 1.25,
-                  borderColor: alpha(theme.palette.common.white, 0.5),
-                  color: theme.palette.common.white,
-                  fontSize: '1rem',
-                  '&:hover': {
-                    borderColor: theme.palette.common.white,
-                    bgcolor: alpha(theme.palette.common.white, 0.1),
-                  },
+                  color: alpha(theme.palette.common.white, 0.85),
+                  fontSize: { xs: '1rem', md: '1.1rem' },
+                  maxWidth: 520,
                 }}
               >
-                {t('cta.btnProfile')}
-              </Button>
+                {t('cta.subtitle')}
+              </Typography>
+              <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowIcon />}
+                  onClick={() => navigate('/analyza')}
+                  sx={{
+                    px: 3,
+                    py: 1.25,
+                    bgcolor: theme.palette.common.white,
+                    color: 'primary.dark',
+                    fontSize: '1rem',
+                    '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.9) },
+                  }}
+                >
+                  {t('cta.btnStart')}
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => navigate('/profily')}
+                  sx={{
+                    px: 3,
+                    py: 1.25,
+                    borderColor: alpha(theme.palette.common.white, 0.5),
+                    color: theme.palette.common.white,
+                    fontSize: '1rem',
+                    '&:hover': {
+                      borderColor: theme.palette.common.white,
+                      bgcolor: alpha(theme.palette.common.white, 0.1),
+                    },
+                  }}
+                >
+                  {t('cta.btnProfile')}
+                </Button>
+              </Stack>
             </Stack>
-          </Stack>
+
+            <Stack
+              spacing={1.5}
+              sx={{
+                p: { xs: 2.5, md: 3 },
+                borderRadius: 4,
+                bgcolor: alpha(theme.palette.common.white, 0.08),
+                border: `1px solid ${alpha(theme.palette.common.white, 0.18)}`,
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                color: theme.palette.common.white,
+              }}
+            >
+              <Typography
+                variant="overline"
+                sx={{ color: alpha(theme.palette.common.white, 0.72) }}
+              >
+                {t('cta.benefitsTitle')}
+              </Typography>
+              {benefits.map((benefit) => (
+                <Stack key={benefit} direction="row" alignItems="flex-start" gap={1.25}>
+                  <CheckIcon sx={{ fontSize: 20, color: 'secondary.light', flexShrink: 0 }} />
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: 'inherit' }}>
+                    {benefit}
+                  </Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </Box>
