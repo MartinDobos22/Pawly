@@ -10,6 +10,7 @@ import type {
   VetVisitRecord,
 } from '../types/petHealth';
 import i18n from '../i18n';
+import { inferVaccineType } from './vaccineTypes';
 
 interface VisitAttachmentDraft {
   attachmentLabel: string;
@@ -105,7 +106,6 @@ export interface VisitBundle {
   expenses: ExpenseRecord[];
 }
 
-const KNOWN_RABIES_KEYWORDS = ['rabies', 'besnot', 'nobivac rabies'];
 const DAY_MS = 1000 * 60 * 60 * 24;
 
 const computeIntervalDays = (date: string, validUntil: string, fallback: number) => {
@@ -367,11 +367,10 @@ export class VetVisitHelper {
 
     selectedRecords.forEach((record) => {
       if (record.targetType === 'VACCINATION') {
-        const vaccineType: VaccinationRecord['type'] = KNOWN_RABIES_KEYWORDS.some((keyword) =>
-          `${record.productName} ${record.sourceDisease ?? ''}`.toLowerCase().includes(keyword)
-        )
-          ? 'RABIES'
-          : 'OTHER';
+        const vaccineType: VaccinationRecord['type'] = inferVaccineType(
+          record.productName,
+          record.sourceDisease
+        );
         vaccinations.push({
           id: uid(),
           petId,

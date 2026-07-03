@@ -1,5 +1,15 @@
 export type PetSex = 'MALE' | 'FEMALE' | 'UNKNOWN';
-export type VaccineType = 'RABIES' | 'COMBINED' | 'OTHER';
+export type VaccineType =
+  | 'RABIES'
+  | 'COMBINED'
+  | 'DISTEMPER'
+  | 'PARVOVIROSIS'
+  | 'HEPATITIS'
+  | 'PARAINFLUENZA'
+  | 'LEPTOSPIROSIS'
+  | 'KENNEL_COUGH'
+  | 'LYME'
+  | 'OTHER';
 export type ValidityStatus = 'VALID' | 'EXPIRING_SOON' | 'EXPIRED' | 'UNKNOWN';
 export type EctoForm = 'TABLET' | 'SPOT_ON' | 'COLLAR';
 export type ExpenseCategory = 'VET_VISIT' | 'MEDICATION' | 'FOOD' | 'OTHER';

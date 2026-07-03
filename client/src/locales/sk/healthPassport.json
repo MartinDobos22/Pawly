@@ -374,6 +374,18 @@
     "typeCombined": "Kombinovaná",
     "typeOther": "Iná"
   },
+  "vaccineTypes": {
+    "RABIES": "Besnota",
+    "COMBINED": "Kombinovaná",
+    "DISTEMPER": "Psinka",
+    "PARVOVIROSIS": "Parvoviróza",
+    "HEPATITIS": "Infekčná hepatitída",
+    "PARAINFLUENZA": "Parainfluenza",
+    "LEPTOSPIROSIS": "Leptospiróza",
+    "KENNEL_COUGH": "Kotercový kašeľ",
+    "LYME": "Lymská borelióza",
+    "OTHER": "Iné"
+  },
   "deworming": {
     "product": "Názov prípravku",
     "validUntil": "Platnosť do",

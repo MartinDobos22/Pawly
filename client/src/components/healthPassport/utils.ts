@@ -1,5 +1,6 @@
 import type { ValidityStatus, VaccinationRecord } from '../../types/petHealth';
 import { KNOWN_DEWORMING_KEYWORDS, KNOWN_ECTOPARASITE_KEYWORDS } from './constants.ts';
+import { VACCINE_TYPE_KEYWORDS } from '../../utils/vaccineTypes';
 
 const MIN_NAME_OVERLAP = 4;
 const DUPLICATE_WINDOW_DAYS = 30;
@@ -19,10 +20,7 @@ function namesMatch(a: string, b: string): boolean {
 function diseaseMatches(disease: string | undefined, existing: VaccinationRecord): boolean {
   if (!disease) return false;
   const d = disease.toLowerCase();
-  if (existing.type === 'RABIES' && /(rabies|besnot)/i.test(d)) return true;
-  if (existing.type === 'COMBINED' && /(combined|kombin|dhppi|parvo|distemper)/i.test(d))
-    return true;
-  return false;
+  return (VACCINE_TYPE_KEYWORDS[existing.type] ?? []).some((keyword) => d.includes(keyword));
 }
 
 export function isDuplicateVaccination(params: {

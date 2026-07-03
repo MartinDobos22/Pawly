@@ -18,8 +18,9 @@ import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
-import type { TimelineEvent } from '../types/petHealth';
+import type { TimelineEvent, VaccinationRecord, VaccineType } from '../types/petHealth';
 import { dedupList, subtractList } from '../utils/healthProfileDedup';
+import { VACCINE_TYPE_ORDER } from '../utils/vaccineTypes';
 
 type PdfLang = 'sk' | 'en';
 
@@ -401,15 +402,17 @@ export default function VetCardPage() {
     );
     const dogDiet = dietEntries.filter((x) => x.petId === petId);
 
-    const rabies = dogVaccines
-      .filter((x) => x.type === 'RABIES')
-      .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))[0];
-    const combined = dogVaccines
-      .filter((x) => x.type === 'COMBINED')
-      .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))[0];
-    const otherVax = dogVaccines
-      .filter((x) => x.type === 'OTHER')
-      .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied));
+    const latestVaccineByType = new Map<VaccineType, VaccinationRecord>();
+    [...dogVaccines]
+      .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))
+      .forEach((v) => {
+        if (!latestVaccineByType.has(v.type)) latestVaccineByType.set(v.type, v);
+      });
+    const vaccineList = VACCINE_TYPE_ORDER.filter((type) => latestVaccineByType.has(type)).map(
+      (type) => ({ type, record: latestVaccineByType.get(type)! })
+    );
+    const rabies = latestVaccineByType.get('RABIES');
+    const combined = latestVaccineByType.get('COMBINED');
 
     const lastDeworming = [...dogDeworm].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0];
     const lastEcto = [...dogEctos].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0];
@@ -483,7 +486,7 @@ export default function VetCardPage() {
     return {
       rabies,
       combined,
-      otherVax,
+      vaccineList,
       lastDeworming,
       lastEcto,
       latestDiet,
@@ -663,8 +666,6 @@ export default function VetCardPage() {
         )
       : dog.ageYears;
 
-    const besnota = statusBadge(data.rabies?.validUntil, data.rabies?.dateApplied);
-    const kombinov = statusBadge(data.combined?.validUntil, data.combined?.dateApplied);
     const dew = statusBadge(data.lastDeworming?.nextDueDate, data.lastDeworming?.dateGiven, 7);
     const ecto = statusBadge(data.lastEcto?.nextDueDate, data.lastEcto?.dateGiven, 7);
 
@@ -763,34 +764,14 @@ export default function VetCardPage() {
       </tr>`;
 
     const vaccineRows = [
-      data.rabies
-        ? vaccineRow(
-            t('vetPage.vaccineRabiesType'),
-            t('vetPage.vaccineRabiesName'),
-            data.rabies.batchNumber,
-            data.rabies.dateApplied,
-            data.rabies.validUntil,
-            besnota
-          )
-        : '',
-      data.combined
-        ? vaccineRow(
-            t('vetPage.vaccineCombinedType'),
-            t('vetPage.vaccineCombinedName'),
-            data.combined.batchNumber,
-            data.combined.dateApplied,
-            data.combined.validUntil,
-            kombinov
-          )
-        : '',
-      ...(data.otherVax ?? []).map((v) =>
+      ...data.vaccineList.map(({ type, record }) =>
         vaccineRow(
-          t('vetPage.vaccineOtherType'),
-          v.name,
-          v.batchNumber,
-          v.dateApplied,
-          v.validUntil,
-          statusBadge(v.validUntil, v.dateApplied)
+          t(`vaccineTypes.${type}` as never),
+          record.name,
+          record.batchNumber,
+          record.dateApplied,
+          record.validUntil,
+          statusBadge(record.validUntil, record.dateApplied)
         )
       ),
       data.lastDeworming
@@ -1132,24 +1113,18 @@ export default function VetCardPage() {
   const ectoStatus = vetStatusFor(data.lastEcto?.nextDueDate, 7, tVetCard, lang);
 
   const preventiveItems: PreventiveItem[] = [];
-  if (data.rabies)
+  data.vaccineList.forEach(({ type, record }) => {
+    const vaccineStatus = vetStatusFor(record.validUntil, 30, tVetCard, lang);
+    const typeLabel = t(`vaccineTypes.${type}` as never);
     preventiveItems.push({
-      name: t('vetPage.rabiesItem'),
-      dateGiven: data.rabies.dateApplied,
-      validUntil: data.rabies.validUntil,
-      batch: data.rabies.batchNumber,
-      status: rabiesStatus.status,
-      statusLabel: rabiesStatus.detail,
+      name: record.name ? `${typeLabel} · ${record.name}` : typeLabel,
+      dateGiven: record.dateApplied,
+      validUntil: record.validUntil,
+      batch: record.batchNumber,
+      status: vaccineStatus.status,
+      statusLabel: vaccineStatus.detail,
     });
-  if (data.combined)
-    preventiveItems.push({
-      name: t('vetPage.combinedItem'),
-      dateGiven: data.combined.dateApplied,
-      validUntil: data.combined.validUntil,
-      batch: data.combined.batchNumber,
-      status: combinedStatus.status,
-      statusLabel: combinedStatus.detail,
-    });
+  });
   if (data.lastDeworming)
     preventiveItems.push({
       name: t('vetPage.dewormingItem', { product: data.lastDeworming.productName }),
