@@ -12,7 +12,9 @@ import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
 import CursorGlow from '../components/landing/CursorGlow';
 import MinimalHero from '../components/landing/MinimalHero';
+import HowItWorks from '../components/landing/HowItWorks';
 import FeatureShowcase from '../components/landing/FeatureShowcase';
+import AppPreview from '../components/landing/AppPreview';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
 import FinalCta from '../components/landing/FinalCta';
@@ -136,9 +138,15 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           </Toolbar>
         </AppBar>
 
-        <MinimalHero scrollTargetId="funkcie" />
+        <MinimalHero scrollTargetId="ako-to-funguje" />
+        <RevealOnScroll>
+          <HowItWorks />
+        </RevealOnScroll>
         <RevealOnScroll>
           <FeatureShowcase id="funkcie" />
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <AppPreview />
         </RevealOnScroll>
         <RevealOnScroll>
           <InteractiveAiDemo />
