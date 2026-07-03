@@ -110,7 +110,10 @@
             "q": "Does it work on mobile?",
             "a": "Yes, the app is fully responsive and you can add it to your home screen from the browser as an app."
           },
-          { "q": "How much does it cost?", "a": "Pawly is currently free." }
+          {
+            "q": "How much does it cost?",
+            "a": "Pawly is currently free."
+          }
         ]
       }
     }
@@ -118,94 +121,32 @@
   "hero": {
     "chip": "For dogs, cats and other pets",
     "title1": "Your pet's health,",
-    "title2": "always at hand",
     "description": "A digital health passport for dogs, cats and other pets. AI food analysis, a health episode diary and a PDF vet card all in one place. Never miss a vaccination, deworming or check-up.",
     "ctaStart": "Get started for free",
     "ctaHowItWorks": "How it works",
     "statFree": "Free",
     "statAiScan": "Passport scan",
     "statOffline": "Offline-ready",
-    "statVetCard": "Vet card",
-    "dogPhotoAlt": "Golden retriever looking at the camera",
-    "floatingVaccination": "Vaccination",
-    "floatingValidUntil": "Valid until 23 Jun 2026",
     "navEnter": "Open app",
     "navLogin": "Sign in",
     "navRegister": "Sign up",
     "navGuide": "Guide",
     "navAdvice": "Advice",
     "navAllArticles": "All articles",
-    "navMenu": "Menu"
-  },
-  "howItWorks": {
-    "title": "3 steps and your health passport is on your phone",
-    "subtitle": "No complicated forms, no monthly fees. Get started in a few minutes.",
-    "steps": [
-      {
-        "title": "Create a pet profile",
-        "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds."
-      },
-      {
-        "title": "Scan the health passport",
-        "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF."
-      },
-      {
-        "title": "Vet card",
-        "text": "Before every vet visit, export a clear PDF card with everything that matters."
-      }
-    ]
-  },
-  "features": {
-    "title1": "Everything for your pet's health",
-    "title2": "in one place",
-    "subtitle": "Six features that together cover every part of your pet's health care.",
-    "items": [
-      {
-        "title": "Health passport",
-        "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline."
-      },
-      {
-        "title": "AI food analysis",
-        "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet."
-      },
-      {
-        "title": "Reminders",
-        "text": "Your card always shows what's due: overdue deworming, upcoming vaccinations, check-ups."
-      },
-      {
-        "title": "Vet card",
-        "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history."
-      },
-      {
-        "title": "Can my pet eat…?",
-        "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer."
-      },
-      {
-        "title": "Health diary",
-        "text": "Log health episodes and instantly see from past entries what worked and what didn't."
-      }
-    ]
-  },
-  "comparison": {
-    "title": "Paper passport vs Pawly",
-    "subtitle": "Why swap a worn paper passport for a digital one.",
-    "paperTitle": "Paper passport",
-    "pawlyTitle": "Pawly",
-    "recommended": "Recommended",
-    "paperPoints": [
-      "Easily lost or damaged",
-      "No deadline reminders",
-      "You have to carry it everywhere",
-      "Unreadable vet handwriting",
-      "No food analysis"
-    ],
-    "pawlyPoints": [
-      "Always on your phone, never lost",
-      "Automatic vaccination and deworming reminders",
-      "AI passport scanning and food analysis",
-      "A clear vet card in one click",
-      "Works offline and completely free"
-    ]
+    "navMenu": "Menu",
+    "rotating": ["always at hand", "under control", "paper-free", "in one passport"],
+    "scrollCue": "Scroll to features",
+    "card": {
+      "petName": "Buddy",
+      "petMeta": "Dog · 4 years",
+      "badge": "Up to date",
+      "vaccination": "Vaccination · Rabies",
+      "vaccinationValue": "Valid",
+      "deworming": "Deworming · Milbemax",
+      "dewormingValue": "In 2 weeks",
+      "food": "Food · score",
+      "foodValue": "Suitable"
+    }
   },
   "cta": {
     "title": "Start caring for your pet's health today",
@@ -223,64 +164,6 @@
     "instagram": "Pawly on Instagram",
     "facebook": "Pawly on Facebook",
     "followUs": "Follow us"
-  },
-  "stats": {
-    "items": [
-      { "label": "main features" },
-      { "label": "supported species" },
-      { "label": "to add a profile" },
-      { "label": "free, no ads" }
-    ]
-  },
-  "appPreview": {
-    "title": "This is what your digital passport looks like",
-    "subtitle": "Works on desktop and mobile — all records synced, always with you.",
-    "overdueBadge": "Overdue",
-    "overdueDetail": "Antiparasitic · 26 days",
-    "syncBadge": "Synced",
-    "stats": [
-      { "label": "Main sections" },
-      { "label": "PDF export for vet" },
-      { "label": "Document scanning" },
-      { "label": "Works offline" }
-    ],
-    "vetCardLabel": "Vet card",
-    "clinicalHistory": "Clinical history",
-    "historyItems": [
-      { "date": "May 21", "label": "Antiparasitic · Bravecto", "tone": "warning" },
-      { "date": "May 12", "label": "Vet · Routine check-up", "tone": "primary" },
-      { "date": "Mar 27", "label": "Vaccination · Rabies", "tone": "success" },
-      { "date": "Mar 14", "label": "Deworming · Milbemax", "tone": "primary" }
-    ],
-    "mockCard": {
-      "vaccination": "Vaccination",
-      "deworming": "Deworming",
-      "ticks": "Ticks",
-      "diet": "Diet",
-      "vaccShort": "Vacc.",
-      "dewormShort": "Dew.",
-      "ticksShort": "Tck.",
-      "dietShort": "Diet",
-      "valid": "Valid",
-      "inWeeks": "In 5 wk.",
-      "expiresSoon": "Expires",
-      "suitable": "Suitable"
-    }
-  },
-  "allPets": {
-    "title1": "For every furry friend",
-    "title2": "and every scaly one",
-    "subtitle": "Dogs, cats, rabbits, birds, reptiles and horses — Pawly handles a health card for every pet.",
-    "items": [
-      { "label": "Dogs" },
-      { "label": "Cats" },
-      { "label": "Rabbits" },
-      { "label": "Rodents" },
-      { "label": "Birds" },
-      { "label": "Reptiles" },
-      { "label": "Fish" },
-      { "label": "Horses" }
-    ]
   },
   "demo": {
     "badge": "Try it right here, no sign-in needed",
@@ -419,5 +302,78 @@
     "noUpcoming": "No upcoming deadlines.",
     "saveSuccess": "Settings saved",
     "saveFailed": "Failed to save settings"
+  },
+  "showcase": {
+    "title": "Less worry, more clarity",
+    "subtitle": "Four things Pawly keeps an eye on for you — from vaccinations to the bowl.",
+    "items": [
+      {
+        "title": "Digital health passport",
+        "text": "Vaccinations, dewormings and medications in one clear timeline."
+      },
+      {
+        "title": "AI food analysis",
+        "text": "Snap the ingredient list and know in seconds what's in your pet's bowl."
+      },
+      {
+        "title": "Deadline reminders",
+        "text": "Know about every due date before it slips past."
+      },
+      {
+        "title": "Vet card",
+        "text": "A clean PDF with everything that matters, in one click."
+      }
+    ],
+    "preview": {
+      "passport": {
+        "heading": "Record timeline",
+        "rows": [
+          {
+            "label": "Vaccination · Rabies",
+            "date": "27 Mar",
+            "tone": "success"
+          },
+          {
+            "label": "Deworming · Milbemax",
+            "date": "14 Mar",
+            "tone": "primary"
+          },
+          {
+            "label": "Vet check-up",
+            "date": "12 May",
+            "tone": "warning"
+          }
+        ]
+      },
+      "food": {
+        "heading": "Food score",
+        "verdict": "Suitable for your pet",
+        "chips": ["allergen-free", "quality protein", "few fillers"]
+      },
+      "reminders": {
+        "heading": "Upcoming deadlines",
+        "rows": [
+          {
+            "label": "Antiparasitics",
+            "value": "overdue",
+            "tone": "error"
+          },
+          {
+            "label": "Vaccination · Rabies",
+            "value": "in 5 days",
+            "tone": "warning"
+          },
+          {
+            "label": "Vet check-up",
+            "value": "in 3 weeks",
+            "tone": "success"
+          }
+        ]
+      },
+      "vetcard": {
+        "heading": "Vet card",
+        "hint": "Ready to print or export as PDF"
+      }
+    }
   }
 }

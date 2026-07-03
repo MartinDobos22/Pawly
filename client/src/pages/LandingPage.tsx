@@ -10,15 +10,10 @@ import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
-import LandingHero from '../components/landing/LandingHero';
-import HowItWorks from '../components/landing/HowItWorks';
+import MinimalHero from '../components/landing/MinimalHero';
+import FeatureShowcase from '../components/landing/FeatureShowcase';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
-import StatsBand from '../components/landing/StatsBand';
-import FeatureGrid from '../components/landing/FeatureGrid';
-import ComparisonSection from '../components/landing/ComparisonSection';
-import PetSpeciesShowcase from '../components/landing/PetSpeciesShowcase';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
-import AppPreview from '../components/landing/AppPreview';
 import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
 import PawlyLogo from '../components/PawlyLogo';
@@ -57,11 +52,9 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
             position: 'absolute',
             inset: 0,
             background: `
-            radial-gradient(900px circle at 85% 5%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.1 : 0.18)}, transparent 55%),
-            radial-gradient(700px circle at 8% 28%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.08 : 0.14)}, transparent 50%),
-            radial-gradient(800px circle at 95% 55%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.07 : 0.12)}, transparent 50%),
-            radial-gradient(600px circle at 5% 75%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.06 : 0.1)}, transparent 50%),
-            radial-gradient(700px circle at 80% 92%, ${alpha(theme.palette.primary.light, theme.palette.mode === 'light' ? 0.05 : 0.1)}, transparent 50%)
+            radial-gradient(900px circle at 85% 0%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.08 : 0.14)}, transparent 55%),
+            radial-gradient(700px circle at 5% 45%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.05 : 0.09)}, transparent 50%),
+            radial-gradient(800px circle at 90% 90%, ${alpha(theme.palette.primary.light, theme.palette.mode === 'light' ? 0.05 : 0.09)}, transparent 50%)
           `,
             pointerEvents: 'none',
             zIndex: 0,
@@ -90,9 +83,11 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
               gap: 1,
             }}
           >
-            <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
+            <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1, minWidth: 0 }}>
               <PawlyLogo size="md" glow onClick={() => navigate('/')} />
-              <PublicHeaderNav />
+              <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                <PublicHeaderNav />
+              </Box>
             </Stack>
             <LanguageSwitcher variant="compact" />
             <IconButton
@@ -136,27 +131,12 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
           </Toolbar>
         </AppBar>
 
-        <LandingHero />
+        <MinimalHero scrollTargetId="funkcie" />
         <RevealOnScroll>
-          <HowItWorks />
+          <FeatureShowcase id="funkcie" />
         </RevealOnScroll>
         <RevealOnScroll>
           <InteractiveAiDemo />
-        </RevealOnScroll>
-        <RevealOnScroll>
-          <StatsBand />
-        </RevealOnScroll>
-        <RevealOnScroll>
-          <FeatureGrid />
-        </RevealOnScroll>
-        <RevealOnScroll>
-          <ComparisonSection />
-        </RevealOnScroll>
-        <RevealOnScroll>
-          <AppPreview />
-        </RevealOnScroll>
-        <RevealOnScroll>
-          <PetSpeciesShowcase />
         </RevealOnScroll>
         <RevealOnScroll>
           <FinalCta />

@@ -110,7 +110,10 @@
             "q": "Funguje to na mobile?",
             "a": "Áno, aplikácia je plne responzívna a v prehliadači si ju vieš pridať na domovskú obrazovku ako appku."
           },
-          { "q": "Koľko to stojí?", "a": "Pawly je momentálne zadarmo." }
+          {
+            "q": "Koľko to stojí?",
+            "a": "Pawly je momentálne zadarmo."
+          }
         ]
       }
     }
@@ -118,94 +121,32 @@
   "hero": {
     "chip": "Pre psy, mačky a ďalšie domáce zvieratá",
     "title1": "Zdravie tvojho miláčika,",
-    "title2": "vždy po ruke",
     "description": "Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva, denník zdravotných epizód a PDF karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani kontrolu.",
     "ctaStart": "Začať zadarmo",
     "ctaHowItWorks": "Ako to funguje",
     "statFree": "Zadarmo",
     "statAiScan": "Skenovanie pasu",
     "statOffline": "Offline-ready",
-    "statVetCard": "Karta pre veterinára",
-    "dogPhotoAlt": "Domáci miláčik sa pozerá do kamery",
-    "floatingVaccination": "Očkovanie",
-    "floatingValidUntil": "Platné do 23. 6. 2026",
     "navEnter": "Vstúpiť",
     "navLogin": "Prihlásiť sa",
     "navRegister": "Registrácia",
     "navGuide": "Sprievodca",
     "navAdvice": "Poradňa",
     "navAllArticles": "Všetky články",
-    "navMenu": "Menu"
-  },
-  "howItWorks": {
-    "title": "3 kroky a máš zdravotný pas v mobile",
-    "subtitle": "Žiadne komplikované formuláre, žiadne mesačné poplatky. Začni za pár minút.",
-    "steps": [
-      {
-        "title": "Vytvor profil zvieraťa",
-        "text": "Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd."
-      },
-      {
-        "title": "Naskenuj zdravotný pas",
-        "text": "AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF."
-      },
-      {
-        "title": "Karta pre veterinára",
-        "text": "Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným."
-      }
-    ]
-  },
-  "features": {
-    "title1": "Všetko pre zdravie tvojho miláčika",
-    "title2": "na jednom mieste",
-    "subtitle": "Šesť funkcií, ktoré ti pokryjú celú starostlivosť o zdravie tvojho miláčika.",
-    "items": [
-      {
-        "title": "Zdravotný pas",
-        "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline."
-      },
-      {
-        "title": "AI analýza krmiva",
-        "text": "Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera."
-      },
-      {
-        "title": "Pripomienky",
-        "text": "Karta vždy ukáže, čo treba urobiť: odčervenie po termíne, blížiace sa očkovanie či kontrolu."
-      },
-      {
-        "title": "Karta pre veterinára",
-        "text": "Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou."
-      },
-      {
-        "title": "Môže môj miláčik jesť…?",
-        "text": "Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď."
-      },
-      {
-        "title": "Denník epizód",
-        "text": "Zapisuj zdravotné príhody a z minulých záznamov hneď vidíš, čo zabralo a čo nie."
-      }
-    ]
-  },
-  "comparison": {
-    "title": "Papierový pas verzus Pawly",
-    "subtitle": "Prečo vymeniť otrhaný papier za digitálny zdravotný pas.",
-    "paperTitle": "Papierový pas",
-    "pawlyTitle": "Pawly",
-    "recommended": "Odporúčané",
-    "paperPoints": [
-      "Ľahko sa stratí alebo zničí",
-      "Žiadne pripomienky termínov",
-      "Musíš ho stále nosiť so sebou",
-      "Nečitateľný rukopis veterinára",
-      "Žiadna analýza krmiva"
-    ],
-    "pawlyPoints": [
-      "Vždy v mobile, nikdy sa nestratí",
-      "Automatické pripomienky očkovania a odčervenia",
-      "AI skenovanie pasu aj analýza krmiva",
-      "Prehľadná karta pre veterinára na jeden klik",
-      "Funguje offline a úplne zadarmo"
-    ]
+    "navMenu": "Menu",
+    "rotating": ["vždy po ruke", "pod kontrolou", "bez papierov", "v jednom pase"],
+    "scrollCue": "Posunúť na funkcie",
+    "card": {
+      "petName": "Bady",
+      "petMeta": "Pes · 4 roky",
+      "badge": "Aktuálny",
+      "vaccination": "Očkovanie · Besnota",
+      "vaccinationValue": "Platné",
+      "deworming": "Odčervenie · Milbemax",
+      "dewormingValue": "O 2 týždne",
+      "food": "Krmivo · skóre",
+      "foodValue": "Vhodné"
+    }
   },
   "cta": {
     "title": "Začni sa starať o zdravie svojho miláčika ešte dnes",
@@ -223,64 +164,6 @@
     "instagram": "Pawly na Instagrame",
     "facebook": "Pawly na Facebooku",
     "followUs": "Sleduj nás"
-  },
-  "stats": {
-    "items": [
-      { "label": "hlavných funkcií" },
-      { "label": "druhov zvierat" },
-      { "label": "na pridanie profilu" },
-      { "label": "zadarmo, bez reklám" }
-    ]
-  },
-  "appPreview": {
-    "title": "Takto vyzerá tvoj digitálny pas",
-    "subtitle": "Funguje na počítači aj v mobile — všetky záznamy synchronizované, vždy s tebou.",
-    "overdueBadge": "Po termíne",
-    "overdueDetail": "Antiparazitiká · 26 dní",
-    "syncBadge": "Synchronizované",
-    "stats": [
-      { "label": "Hlavných sekcií" },
-      { "label": "Export pre veterinára" },
-      { "label": "Skenovanie dokumentov" },
-      { "label": "Funguje offline" }
-    ],
-    "vetCardLabel": "Karta pre veterinára",
-    "clinicalHistory": "Klinická história",
-    "historyItems": [
-      { "date": "21. máj", "label": "Antiparazitiká · Bravecto", "tone": "warning" },
-      { "date": "12. máj", "label": "Veterinár · Kontrolná návšteva", "tone": "primary" },
-      { "date": "27. mar", "label": "Očkovanie · Besnota", "tone": "success" },
-      { "date": "14. mar", "label": "Odčervenie · Milbemax", "tone": "primary" }
-    ],
-    "mockCard": {
-      "vaccination": "Očkovanie",
-      "deworming": "Odčervenie",
-      "ticks": "Kliešte",
-      "diet": "Diéta",
-      "vaccShort": "Očk.",
-      "dewormShort": "Odč.",
-      "ticksShort": "Klš.",
-      "dietShort": "Diéta",
-      "valid": "Platné",
-      "inWeeks": "O 5 t.",
-      "expiresSoon": "Vyprší",
-      "suitable": "Vhodná"
-    }
-  },
-  "allPets": {
-    "title1": "Pre každého chlpáča",
-    "title2": "aj nechlpáča",
-    "subtitle": "Psy, mačky, králiky, vtáky, plazy aj kone — Pawly zvládne zdravotnú kartu pre každé domáce zviera.",
-    "items": [
-      { "label": "Psy" },
-      { "label": "Mačky" },
-      { "label": "Králiky" },
-      { "label": "Hlodavce" },
-      { "label": "Vtáci" },
-      { "label": "Plazy" },
-      { "label": "Ryby" },
-      { "label": "Kone" }
-    ]
   },
   "demo": {
     "badge": "Vyskúšaj rovno tu, bez prihlásenia",
@@ -419,5 +302,78 @@
     "noUpcoming": "Žiadne termíny v najbližšom období.",
     "saveSuccess": "Nastavenia uložené",
     "saveFailed": "Uloženie nastavení zlyhalo"
+  },
+  "showcase": {
+    "title": "Menej starostí, viac prehľadu",
+    "subtitle": "Štyri veci, ktoré za teba Pawly ustráži — od očkovaní až po misku.",
+    "items": [
+      {
+        "title": "Digitálny zdravotný pas",
+        "text": "Očkovania, odčervenia aj lieky v jednej prehľadnej časovej osi."
+      },
+      {
+        "title": "AI analýza krmiva",
+        "text": "Odfoť zloženie a o pár sekúnd vieš, čo má tvoje zviera v miske."
+      },
+      {
+        "title": "Pripomienky termínov",
+        "text": "O každom termíne vieš skôr, než prepadne."
+      },
+      {
+        "title": "Karta pre veterinára",
+        "text": "Prehľadné PDF so všetkým podstatným na jeden klik."
+      }
+    ],
+    "preview": {
+      "passport": {
+        "heading": "Časová os záznamov",
+        "rows": [
+          {
+            "label": "Očkovanie · Besnota",
+            "date": "27. 3.",
+            "tone": "success"
+          },
+          {
+            "label": "Odčervenie · Milbemax",
+            "date": "14. 3.",
+            "tone": "primary"
+          },
+          {
+            "label": "Kontrola u veterinára",
+            "date": "12. 5.",
+            "tone": "warning"
+          }
+        ]
+      },
+      "food": {
+        "heading": "Skóre krmiva",
+        "verdict": "Vhodné pre tvojho miláčika",
+        "chips": ["bez alergénov", "kvalitné bielkoviny", "málo plnidiel"]
+      },
+      "reminders": {
+        "heading": "Najbližšie termíny",
+        "rows": [
+          {
+            "label": "Antiparazitiká",
+            "value": "po termíne",
+            "tone": "error"
+          },
+          {
+            "label": "Očkovanie · Besnota",
+            "value": "o 5 dní",
+            "tone": "warning"
+          },
+          {
+            "label": "Kontrola u veterinára",
+            "value": "o 3 týždne",
+            "tone": "success"
+          }
+        ]
+      },
+      "vetcard": {
+        "heading": "Karta pre veterinára",
+        "hint": "Pripravená na tlač aj export do PDF"
+      }
+    }
   }
 }
