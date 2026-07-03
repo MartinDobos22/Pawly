@@ -1,6 +1,6 @@
 import type { ValidityStatus, VaccinationRecord } from '../../types/petHealth';
 import { KNOWN_DEWORMING_KEYWORDS, KNOWN_ECTOPARASITE_KEYWORDS } from './constants.ts';
-import { VACCINE_TYPE_KEYWORDS } from '../../utils/vaccineTypes';
+import { matchesVaccineType } from '../../utils/vaccineTypes';
 
 const MIN_NAME_OVERLAP = 4;
 const DUPLICATE_WINDOW_DAYS = 30;
@@ -18,9 +18,7 @@ function namesMatch(a: string, b: string): boolean {
 }
 
 function diseaseMatches(disease: string | undefined, existing: VaccinationRecord): boolean {
-  if (!disease) return false;
-  const d = disease.toLowerCase();
-  return (VACCINE_TYPE_KEYWORDS[existing.type] ?? []).some((keyword) => d.includes(keyword));
+  return matchesVaccineType(disease, existing.type);
 }
 
 export function isDuplicateVaccination(params: {
@@ -88,9 +86,7 @@ export function computeHealthScore(
   statuses: ValidityStatus[],
   activeEpisodeCount = 0
 ): number | null {
-  const known = statuses
-    .map((s) => STATUS_SCORE[s])
-    .filter((v): v is number => v !== null);
+  const known = statuses.map((s) => STATUS_SCORE[s]).filter((v): v is number => v !== null);
   if (known.length === 0) return null;
   const base = known.reduce((a, b) => a + b, 0) / known.length;
   const penalty = Math.min(20, activeEpisodeCount * 8);
