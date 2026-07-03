@@ -307,7 +307,12 @@ export default function FeatureShowcase({ id }: Props) {
     <Box
       id={id}
       ref={sectionRef}
-      sx={{ py: { xs: 8, md: 12 }, px: { xs: 2.5, md: 4 }, scrollMarginTop: theme.spacing(10) }}
+      sx={{
+        pt: { xs: 5, md: 6 },
+        pb: { xs: 8, md: 12 },
+        px: { xs: 2.5, md: 4 },
+        scrollMarginTop: theme.spacing(10),
+      }}
     >
       <Box sx={{ maxWidth: 1080, mx: 'auto' }}>
         <Stack spacing={1.5} alignItems="center" sx={{ textAlign: 'center', mb: { xs: 4, md: 6 } }}>

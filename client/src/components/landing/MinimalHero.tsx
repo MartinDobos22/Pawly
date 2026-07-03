@@ -168,9 +168,9 @@ function TiltPassportCard() {
           ),
           backdropFilter: 'blur(12px)',
           border: `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
-          boxShadow: `0 24px 60px ${alpha(
+          boxShadow: `0 12px 32px ${alpha(
             theme.palette.mode === 'dark' ? theme.palette.common.black : theme.palette.primary.main,
-            theme.palette.mode === 'dark' ? 0.45 : 0.16
+            theme.palette.mode === 'dark' ? 0.28 : 0.16
           )}`,
           transformStyle: 'preserve-3d',
           transform: 'rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
@@ -289,30 +289,12 @@ export default function MinimalHero({ scrollTargetId }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation('landing');
-  const sectionRef = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLButtonElement | null>(null);
-  const rafRef = useRef(0);
   const supportsHover = useMediaQuery('(hover: hover) and (pointer: fine)');
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const interactive = supportsHover && !reducedMotion;
 
   const rotatingWords = t('hero.rotating', { returnObjects: true }) as string[];
-
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
-
-  const handleSectionMove = (e: ReactMouseEvent<HTMLDivElement>) => {
-    if (!interactive) return;
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
-      el.style.setProperty('--spot-x', `${x}px`);
-      el.style.setProperty('--spot-y', `${y}px`);
-    });
-  };
 
   const handleCtaMove = (e: ReactMouseEvent<HTMLButtonElement>) => {
     if (!interactive) return;
@@ -337,37 +319,18 @@ export default function MinimalHero({ scrollTargetId }: Props) {
 
   return (
     <Box
-      ref={sectionRef}
-      onMouseMove={handleSectionMove}
       sx={{
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: { md: 'calc(100vh - 64px)' },
-        pt: { xs: 8, md: 6 },
-        pb: { xs: 8, md: 10 },
+        pt: { xs: 8, md: 10 },
+        pb: { xs: 4, md: 5 },
         px: { xs: 2.5, md: 4 },
         textAlign: 'center',
-        overflow: 'hidden',
       }}
     >
-      {interactive && (
-        <Box
-          aria-hidden
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            background: `radial-gradient(560px circle at var(--spot-x, 50%) var(--spot-y, 30%), ${alpha(
-              theme.palette.primary.main,
-              theme.palette.mode === 'dark' ? 0.14 : 0.09
-            )}, transparent 65%)`,
-          }}
-        />
-      )}
-
       <Stack spacing={3} alignItems="center" sx={{ position: 'relative', maxWidth: 760 }}>
         <Chip
           icon={<SparkleIcon sx={{ fontSize: 16 }} />}
@@ -454,7 +417,7 @@ export default function MinimalHero({ scrollTargetId }: Props) {
         onClick={scrollToShowcase}
         aria-label={t('hero.scrollCue')}
         sx={{
-          mt: { xs: 5, md: 6 },
+          mt: { xs: 3, md: 4 },
           color: 'text.secondary',
           animation: reducedMotion ? 'none' : 'pawly-scroll-cue 2.2s ease-in-out infinite',
           '@keyframes pawly-scroll-cue': {

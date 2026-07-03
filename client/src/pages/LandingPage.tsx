@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
+import CursorGlow from '../components/landing/CursorGlow';
 import MinimalHero from '../components/landing/MinimalHero';
 import FeatureShowcase from '../components/landing/FeatureShowcase';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
@@ -52,17 +53,21 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
             position: 'absolute',
             inset: 0,
             background: `
-            radial-gradient(900px circle at 85% 0%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.08 : 0.14)}, transparent 55%),
-            radial-gradient(700px circle at 5% 45%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.05 : 0.09)}, transparent 50%),
-            radial-gradient(800px circle at 90% 90%, ${alpha(theme.palette.primary.light, theme.palette.mode === 'light' ? 0.05 : 0.09)}, transparent 50%)
+            radial-gradient(900px circle at 85% 0%, ${alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.08 : 0.1)}, transparent 55%),
+            radial-gradient(700px circle at 5% 45%, ${alpha(theme.palette.secondary.main, theme.palette.mode === 'light' ? 0.05 : 0.04)}, transparent 50%),
+            radial-gradient(800px circle at 90% 90%, ${alpha(theme.palette.primary.light, theme.palette.mode === 'light' ? 0.05 : 0.06)}, transparent 50%)
           `,
             pointerEvents: 'none',
             zIndex: 0,
           },
-          '& > *:not([data-paw-trail])': { position: 'relative', zIndex: 1 },
+          '& > *:not([data-paw-trail]):not([data-cursor-glow])': {
+            position: 'relative',
+            zIndex: 1,
+          },
         }}
       >
         <PawTrail />
+        <CursorGlow />
         <AppBar
           position="sticky"
           elevation={0}
