@@ -370,6 +370,13 @@
     "type": "Typ",
     "validUntil": "Platnosť do",
     "batchNumber": "Šarža (voliteľné)",
+    "namePlaceholder": "napr. Nobivac DHPPi",
+    "nameHelper": "Názov z nálepky vo vakcinačnom preukaze",
+    "validUntilHelper": "Dátum „Platná do“ z pasu — nie EXP na nálepke",
+    "batchPlaceholder": "napr. A656A01",
+    "batchHelper": "Lot / číslo šarže z nálepky",
+    "passportHelpTitle": "Ako to nájsť v pase?",
+    "passportHelp": "Opíš údaje z nálepky vakcíny: názov (napr. Nobivac DHPPi), šaržu (Lot) a dátum „Platná do“. Pozor: EXP na nálepke je expirácia liekovky, nie platnosť očkovania. Ak pes dostal v jeden deň viac vakcín (napr. DHPPi + L4), pridaj každú ako samostatný záznam.",
     "typeRabies": "Besnota",
     "typeCombined": "Kombinovaná",
     "typeOther": "Iná"

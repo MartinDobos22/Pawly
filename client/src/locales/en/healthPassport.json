@@ -364,6 +364,13 @@
     "type": "Type",
     "validUntil": "Valid until",
     "batchNumber": "Batch (optional)",
+    "namePlaceholder": "e.g. Nobivac DHPPi",
+    "nameHelper": "Name from the sticker in the vaccination record",
+    "validUntilHelper": "The 'Valid until' date from the passport — not the sticker's EXP",
+    "batchPlaceholder": "e.g. A656A01",
+    "batchHelper": "Lot / batch number from the sticker",
+    "passportHelpTitle": "How to find it in the passport?",
+    "passportHelp": "Copy the details from the vaccine sticker: name (e.g. Nobivac DHPPi), batch (Lot) and the 'Valid until' date. Note: the EXP on the sticker is the vial's shelf life, not the vaccination validity. If the pet received several vaccines on one day (e.g. DHPPi + L4), add each as a separate record.",
     "typeRabies": "Rabies",
     "typeCombined": "Combined",
     "typeOther": "Other"

@@ -290,6 +290,8 @@ export default function TimelineRecordDetailDialog({
         <Stack spacing={1.5}>
           <TextField
             label={t('detail.vaccineName')}
+            placeholder={t('vaccination.namePlaceholder')}
+            helperText={t('vaccination.nameHelper')}
             value={vacDraft.name}
             onChange={(e) => setVacDraft((p) => ({ ...p, name: e.target.value }))}
             size="small"
@@ -327,11 +329,13 @@ export default function TimelineRecordDetailDialog({
               onChange={(e) => setVacDraft((p) => ({ ...p, validUntil: e.target.value }))}
               size="small"
               error={Boolean(vacDateError)}
-              helperText={vacDateError || undefined}
+              helperText={vacDateError || t('vaccination.validUntilHelper')}
             />
           </Box>
           <TextField
             label={t('detail.batchNumber')}
+            placeholder={t('vaccination.batchPlaceholder')}
+            helperText={t('vaccination.batchHelper')}
             value={vacDraft.batchNumber}
             onChange={(e) => setVacDraft((p) => ({ ...p, batchNumber: e.target.value }))}
             size="small"

@@ -1,10 +1,20 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import type { VaccinationRecord } from '../../../../../types/petHealth';
 import type { VaccinationFieldsValues } from '../../formTypes';
 import DateField from '../../../../DateField';
-import { VACCINE_TYPE_ORDER } from '../../../../../utils/vaccineTypes';
+import HelpHint from '../../../../HelpHint';
+import { VACCINE_TYPE_ORDER, inferVaccineType } from '../../../../../utils/vaccineTypes';
 
 interface VaccinationFieldsProps {
   values: VaccinationFieldsValues;
@@ -23,16 +33,30 @@ export default function VaccinationFields({
   onChange,
 }: VaccinationFieldsProps) {
   const { t } = useTranslation('healthPassport');
+  const [typeTouched, setTypeTouched] = useState(false);
+
+  const handleNameChange = (name: string) => {
+    onChange('name', name);
+    if (!typeTouched) onChange('type', inferVaccineType(name));
+  };
+
   return (
     <Stack spacing={1.5}>
+      <Stack direction="row" alignItems="center" spacing={0.5}>
+        <Typography variant="caption" color="text.secondary">
+          {t('vaccination.passportHelpTitle')}
+        </Typography>
+        <HelpHint text={t('vaccination.passportHelp')} size={15} />
+      </Stack>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <TextField
           size="small"
           label={t('vaccination.name')}
+          placeholder={t('vaccination.namePlaceholder')}
           value={values.name}
-          onChange={(e) => onChange('name', e.target.value)}
+          onChange={(e) => handleNameChange(e.target.value)}
           error={Boolean(errorName)}
-          helperText={errorName}
+          helperText={errorName || t('vaccination.nameHelper')}
           fullWidth
         />
         <FormControl size="small" sx={{ minWidth: 160 }}>
@@ -40,7 +64,10 @@ export default function VaccinationFields({
           <Select
             label={t('vaccination.type')}
             value={values.type}
-            onChange={(e) => onChange('type', e.target.value as VaccinationRecord['type'])}
+            onChange={(e) => {
+              setTypeTouched(true);
+              onChange('type', e.target.value as VaccinationRecord['type']);
+            }}
           >
             {VACCINE_TYPE_ORDER.map((type) => (
               <MenuItem key={type} value={type}>
@@ -56,14 +83,16 @@ export default function VaccinationFields({
           value={values.validUntil}
           onChange={(v) => onChange('validUntil', v)}
           error={Boolean(errorValidUntil)}
-          helperText={errorValidUntil}
+          helperText={errorValidUntil || t('vaccination.validUntilHelper')}
           fullWidth
         />
         <TextField
           size="small"
           label={t('vaccination.batchNumber')}
+          placeholder={t('vaccination.batchPlaceholder')}
           value={values.batchNumber}
           onChange={(e) => onChange('batchNumber', e.target.value)}
+          helperText={t('vaccination.batchHelper')}
           fullWidth
         />
       </Stack>
