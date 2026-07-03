@@ -160,6 +160,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           icon={<DietIcon />}
           label={t('overview.diet')}
           status={currentDiet ? 'VALID' : 'UNKNOWN'}
+          headline={currentDiet ? t('overview.dietActive') : undefined}
           accentColor={theme.palette.diet.main}
           detail={currentDiet?.foodName ?? t('overview.dietNotSet')}
           lastDate={currentDiet?.startedAt}
