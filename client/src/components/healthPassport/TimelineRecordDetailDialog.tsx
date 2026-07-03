@@ -50,17 +50,20 @@ interface VacDraft {
   dateApplied: string;
   validUntil: string;
   batchNumber: string;
+  note: string;
 }
 interface DewDraft {
   productName: string;
   dateGiven: string;
   nextDueDate: string;
+  note: string;
 }
 interface EctoDraft {
   productName: string;
   form: EctoparasiteRecord['form'];
   dateGiven: string;
   nextDueDate: string;
+  note: string;
 }
 interface MedDraft {
   name: string;
@@ -132,17 +135,20 @@ export default function TimelineRecordDetailDialog({
     dateApplied: today(),
     validUntil: '',
     batchNumber: '',
+    note: '',
   });
   const [dewDraft, setDewDraft] = useState<DewDraft>({
     productName: '',
     dateGiven: today(),
     nextDueDate: '',
+    note: '',
   });
   const [ectoDraft, setEctoDraft] = useState<EctoDraft>({
     productName: '',
     form: 'TABLET',
     dateGiven: today(),
     nextDueDate: '',
+    note: '',
   });
   const [medDraft, setMedDraft] = useState<MedDraft>({
     name: '',
@@ -176,12 +182,14 @@ export default function TimelineRecordDetailDialog({
         dateApplied: vaccination.dateApplied,
         validUntil: vaccination.validUntil,
         batchNumber: vaccination.batchNumber ?? '',
+        note: vaccination.note ?? '',
       });
     if (deworming)
       setDewDraft({
         productName: deworming.productName,
         dateGiven: deworming.dateGiven,
         nextDueDate: deworming.nextDueDate,
+        note: deworming.note ?? '',
       });
     if (ectoparasite)
       setEctoDraft({
@@ -189,6 +197,7 @@ export default function TimelineRecordDetailDialog({
         form: ectoparasite.form,
         dateGiven: ectoparasite.dateGiven,
         nextDueDate: ectoparasite.nextDueDate,
+        note: ectoparasite.note ?? '',
       });
     if (medication)
       setMedDraft({
@@ -324,6 +333,14 @@ export default function TimelineRecordDetailDialog({
             onChange={(e) => setVacDraft((p) => ({ ...p, batchNumber: e.target.value }))}
             size="small"
           />
+          <TextField
+            label={t('detail.note')}
+            value={vacDraft.note}
+            onChange={(e) => setVacDraft((p) => ({ ...p, note: e.target.value }))}
+            size="small"
+            multiline
+            minRows={2}
+          />
         </Stack>
       ) : (
         <Stack spacing={1.5}>
@@ -358,6 +375,13 @@ export default function TimelineRecordDetailDialog({
               </Typography>
             </FieldRow>
           )}
+          {vacDraft.note && (
+            <FieldRow label={t('detail.note')}>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {vacDraft.note}
+              </Typography>
+            </FieldRow>
+          )}
         </Stack>
       );
     }
@@ -389,6 +413,14 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
           </Box>
+          <TextField
+            label={t('detail.note')}
+            value={dewDraft.note}
+            onChange={(e) => setDewDraft((p) => ({ ...p, note: e.target.value }))}
+            size="small"
+            multiline
+            minRows={2}
+          />
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
@@ -407,6 +439,15 @@ export default function TimelineRecordDetailDialog({
               {dewDraft.nextDueDate || '–'}
             </Typography>
           </FieldRow>
+          {dewDraft.note && (
+            <Box sx={{ gridColumn: '1 / -1' }}>
+              <FieldRow label={t('detail.note')}>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {dewDraft.note}
+                </Typography>
+              </FieldRow>
+            </Box>
+          )}
         </Box>
       );
     }
@@ -452,6 +493,14 @@ export default function TimelineRecordDetailDialog({
               size="small"
             />
           </Box>
+          <TextField
+            label={t('detail.note')}
+            value={ectoDraft.note}
+            onChange={(e) => setEctoDraft((p) => ({ ...p, note: e.target.value }))}
+            size="small"
+            multiline
+            minRows={2}
+          />
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
@@ -483,6 +532,15 @@ export default function TimelineRecordDetailDialog({
               {ectoDraft.nextDueDate || '–'}
             </Typography>
           </FieldRow>
+          {ectoDraft.note && (
+            <Box sx={{ gridColumn: '1 / -1' }}>
+              <FieldRow label={t('detail.note')}>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {ectoDraft.note}
+                </Typography>
+              </FieldRow>
+            </Box>
+          )}
         </Box>
       );
     }

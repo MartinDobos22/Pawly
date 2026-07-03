@@ -39,6 +39,7 @@ export const vaccinationMapper: EntityMapper<VaccinationRecord> = {
       ['date_applied', d.dateApplied],
       ['valid_until', d.validUntil],
       ['batch_number', d.batchNumber],
+      ['note', d.note],
       ['attachments', d.attachments],
     ]),
   toDto: (r) => ({
@@ -49,6 +50,7 @@ export const vaccinationMapper: EntityMapper<VaccinationRecord> = {
     dateApplied: str(r.date_applied) ?? '',
     validUntil: str(r.valid_until) ?? '',
     batchNumber: str(r.batch_number),
+    note: str(r.note),
     attachments: (r.attachments as VaccinationRecord['attachments']) ?? [],
   }),
 };
@@ -61,6 +63,7 @@ export const dewormingMapper: EntityMapper<DewormingRecord> = {
       ['date_given', d.dateGiven],
       ['interval_days', d.intervalDays],
       ['next_due_date', d.nextDueDate],
+      ['note', d.note],
       ['attachments', d.attachments],
     ]),
   toDto: (r) => ({
@@ -70,6 +73,7 @@ export const dewormingMapper: EntityMapper<DewormingRecord> = {
     dateGiven: str(r.date_given) ?? '',
     intervalDays: num(r.interval_days) ?? 0,
     nextDueDate: str(r.next_due_date) ?? '',
+    note: str(r.note),
     attachments: (r.attachments as DewormingRecord['attachments']) ?? [],
   }),
 };
@@ -84,6 +88,7 @@ export const ectoparasiteMapper: EntityMapper<EctoparasiteRecord> = {
       ['interval_days', d.intervalDays],
       ['duration_days', d.durationDays],
       ['next_due_date', d.nextDueDate],
+      ['note', d.note],
       ['attachments', d.attachments],
     ]),
   toDto: (r) => ({
@@ -95,6 +100,7 @@ export const ectoparasiteMapper: EntityMapper<EctoparasiteRecord> = {
     intervalDays: num(r.interval_days),
     durationDays: num(r.duration_days),
     nextDueDate: str(r.next_due_date) ?? '',
+    note: str(r.note),
     attachments: (r.attachments as EctoparasiteRecord['attachments']) ?? [],
   }),
 };

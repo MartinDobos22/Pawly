@@ -34,6 +34,9 @@ interface HealthStatusOverviewProps {
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
   onOpenDiet?: () => void;
+  onHistoryVaccination?: () => void;
+  onHistoryDeworming?: () => void;
+  onHistoryEcto?: () => void;
 }
 
 export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
@@ -64,6 +67,9 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     onOpenDeworming,
     onOpenEcto,
     onOpenDiet,
+    onHistoryVaccination,
+    onHistoryDeworming,
+    onHistoryEcto,
   } = props;
 
   return (
@@ -116,6 +122,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           }
           onPrimaryAction={onAddVaccination}
           onOpen={vaccinationStatus !== 'UNKNOWN' ? onOpenVaccination : undefined}
+          onHistory={vaccinationStatus !== 'UNKNOWN' ? onHistoryVaccination : undefined}
         />
         <HealthMetricCard
           icon={<DewormIcon />}
@@ -132,6 +139,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           }
           onPrimaryAction={onAddDeworming}
           onOpen={dewormingStatus !== 'UNKNOWN' ? onOpenDeworming : undefined}
+          onHistory={dewormingStatus !== 'UNKNOWN' ? onHistoryDeworming : undefined}
         />
         <HealthMetricCard
           icon={<EctoIcon />}
@@ -146,6 +154,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           primaryActionLabel={ectoStatus === 'UNKNOWN' ? t('overview.add') : t('overview.schedule')}
           onPrimaryAction={onAddEcto}
           onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
+          onHistory={ectoStatus !== 'UNKNOWN' ? onHistoryEcto : undefined}
         />
         <HealthMetricCard
           icon={<DietIcon />}

@@ -10,6 +10,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
+import { HistoryOutlined as HistoryIcon } from '@mui/icons-material';
 import type { ValidityStatus } from '../../types/petHealth';
 import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 import HelpHint from '../HelpHint';
@@ -28,6 +29,7 @@ interface Props {
   primaryActionLabel?: string;
   onPrimaryAction?: () => void;
   onOpen?: () => void;
+  onHistory?: () => void;
 }
 
 export default function HealthMetricCard({
@@ -43,6 +45,7 @@ export default function HealthMetricCard({
   primaryActionLabel,
   onPrimaryAction,
   onOpen,
+  onHistory,
 }: Props) {
   const theme = useTheme();
   const { t } = useTranslation('healthPassport');
@@ -167,6 +170,22 @@ export default function HealthMetricCard({
           }}
         >
           {primaryActionLabel ?? t('status.schedule')}
+        </Button>
+      )}
+
+      {onHistory && (
+        <Button
+          fullWidth
+          variant="text"
+          size="small"
+          startIcon={<HistoryIcon sx={{ fontSize: 18 }} />}
+          onClick={(e) => {
+            e.stopPropagation();
+            onHistory();
+          }}
+          sx={{ color: 'text.secondary', mt: -0.5 }}
+        >
+          {t('history.button')}
         </Button>
       )}
     </Card>
