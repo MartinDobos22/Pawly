@@ -261,6 +261,13 @@
     "kindMedication": "Liek",
     "kindDiet": "Diéta",
     "kindLabel": "Typ záznamu",
+    "dateByKind": {
+      "vaccination": "Dátum očkovania",
+      "deworming": "Dátum odčervenia",
+      "ecto": "Dátum aplikácie",
+      "medication": "Dátum začiatku",
+      "diet": "Dátum začiatku"
+    },
     "ownRecord": "Vlastný záznam",
     "errorVaccineName": "Zadaj názov vakcíny",
     "errorProduct": "Zadaj názov prípravku",
