@@ -394,7 +394,7 @@ export function QuickEntryBody() {
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="flex-start">
         <DateField
-          label={t('addRecord.basics.date')}
+          label={t(`addRecord.dateByKind.${kind}`)}
           value={date}
           onChange={setDate}
           sx={{ width: { xs: '100%', sm: 220 } }}

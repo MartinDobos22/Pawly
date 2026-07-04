@@ -256,6 +256,13 @@
     "kindMedication": "Medication",
     "kindDiet": "Diet",
     "kindLabel": "Record type",
+    "dateByKind": {
+      "vaccination": "Vaccination date",
+      "deworming": "Deworming date",
+      "ecto": "Application date",
+      "medication": "Start date",
+      "diet": "Start date"
+    },
     "ownRecord": "Custom record",
     "errorVaccineName": "Enter vaccine name",
     "errorProduct": "Enter product name",
@@ -630,6 +637,9 @@
     "ecto": "Ectoparasites",
     "diet": "Diet",
     "dietNotSet": "Not set",
+    "dietActive": "Active diet",
+    "vaccinationOthers_one": "{{type}} + {{count}} more",
+    "vaccinationOthers_other": "{{type}} + {{count}} more",
     "add": "Add",
     "schedule": "Schedule",
     "viewSchedule": "View Schedule",

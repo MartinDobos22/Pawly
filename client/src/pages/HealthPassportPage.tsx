@@ -21,6 +21,7 @@ import type {
   TimelineEvent,
   ValidityStatus,
   VaccinationRecord,
+  VaccineType,
   VetVisitRecord,
 } from '../types/petHealth';
 
@@ -120,10 +121,27 @@ export default function HealthPassportPage() {
   // ── Latest records per domain (for metric cards) ───────────────────────────
   // Sort by date administered (dateApplied / dateGiven), nie validUntil — historický
   // import s pomýleným validUntil by inak prebil reálne novší záznam.
-  const latestVaccination = useMemo(
-    () => [...dogVaccinations].sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))[0],
-    [dogVaccinations]
-  );
+  const latestVaccineByType = useMemo(() => {
+    const map = new Map<VaccineType, VaccinationRecord>();
+    [...dogVaccinations]
+      .sort((a, b) => b.dateApplied.localeCompare(a.dateApplied))
+      .forEach((v) => {
+        if (!map.has(v.type)) map.set(v.type, v);
+      });
+    return map;
+  }, [dogVaccinations]);
+
+  // „Najurgentnejšia" vakcína = najskôr expirujúca (bez validUntil ide na koniec).
+  // Dlaždica Očkovanie tak ukazuje konkrétnu vakcínu, ktorá potrebuje pozornosť,
+  // nie náhodne poslednú zadanú — pes má vakcín viac, každú s vlastnou platnosťou.
+  const urgentVaccination = useMemo(() => {
+    const records = [...latestVaccineByType.values()];
+    return records.sort((a, b) => {
+      if (!a.validUntil) return 1;
+      if (!b.validUntil) return -1;
+      return a.validUntil.localeCompare(b.validUntil);
+    })[0];
+  }, [latestVaccineByType]);
   const latestDeworming = useMemo(
     () => [...dogDewormings].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
     [dogDewormings]
@@ -134,9 +152,20 @@ export default function HealthPassportPage() {
   );
 
   // ── Status semaphores ──────────────────────────────────────────────────────
-  const vaccinationStatus = latestVaccination
-    ? statusByDate(latestVaccination.validUntil, 30)
+  const vaccinationStatus = urgentVaccination
+    ? statusByDate(urgentVaccination.validUntil, 30)
     : 'UNKNOWN';
+
+  // Popis pomenuje konkrétnu vakcínu (chorobu) + koľko ďalších sledujeme,
+  // aby dlaždica nebola generické „Očkovanie".
+  const vaccinationDetail = urgentVaccination
+    ? latestVaccineByType.size > 1
+      ? t('overview.vaccinationOthers', {
+          type: t(`vaccineTypes.${urgentVaccination.type}`),
+          count: latestVaccineByType.size - 1,
+        })
+      : t(`vaccineTypes.${urgentVaccination.type}`)
+    : undefined;
   const dewormingStatus = latestDeworming
     ? statusByDate(latestDeworming.nextDueDate, 7)
     : 'UNKNOWN';
@@ -628,10 +657,10 @@ export default function HealthPassportPage() {
       key: 'vaccination',
       icon: <VaccinationIcon />,
       label: t('overview.vaccination'),
-      value: valueOrNotSet(latestVaccination?.validUntil),
+      value: valueOrNotSet(urgentVaccination?.validUntil),
       accent: theme.palette.success.main,
-      onClick: latestVaccination
-        ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+      onClick: urgentVaccination
+        ? () => setSelectedRecord({ id: urgentVaccination.id, type: 'VACCINATION' })
         : () => setWizardOpen(true),
     },
     {
@@ -665,7 +694,7 @@ export default function HealthPassportPage() {
 
   // ── Pawly Insight (heuristic, no AI call) ────────────────────────────────────
   const upcomingEvents: { label: string; days: number }[] = [
-    { label: t('overview.vaccination'), date: latestVaccination?.validUntil },
+    { label: t('overview.vaccination'), date: urgentVaccination?.validUntil },
     { label: t('overview.deworming'), date: latestDeworming?.nextDueDate },
     { label: t('overview.ecto'), date: latestEcto?.nextDueDate },
   ]
@@ -764,14 +793,14 @@ export default function HealthPassportPage() {
         dewormingStatus={dewormingStatus}
         ectoStatus={ectoStatus}
         currentDiet={currentDiet}
-        vaccinationNextDate={latestVaccination?.validUntil}
-        vaccinationLastDate={latestVaccination?.dateApplied}
-        vaccinationDetail={latestVaccination?.name}
+        vaccinationNextDate={urgentVaccination?.validUntil}
+        vaccinationLastDate={urgentVaccination?.dateApplied}
+        vaccinationDetail={vaccinationDetail}
         vaccinationIntervalDays={
-          latestVaccination
+          urgentVaccination
             ? computeIntervalDaysFromDates(
-                latestVaccination.dateApplied,
-                latestVaccination.validUntil,
+                urgentVaccination.dateApplied,
+                urgentVaccination.validUntil,
                 365
               )
             : undefined
@@ -803,8 +832,8 @@ export default function HealthPassportPage() {
         onAddEcto={() => setWizardOpen(true)}
         onAddDiet={() => setWizardOpen(true)}
         onOpenVaccination={
-          latestVaccination
-            ? () => setSelectedRecord({ id: latestVaccination.id, type: 'VACCINATION' })
+          urgentVaccination
+            ? () => setSelectedRecord({ id: urgentVaccination.id, type: 'VACCINATION' })
             : undefined
         }
         onOpenDeworming={

@@ -261,6 +261,13 @@
     "kindMedication": "Liek",
     "kindDiet": "Diéta",
     "kindLabel": "Typ záznamu",
+    "dateByKind": {
+      "vaccination": "Dátum očkovania",
+      "deworming": "Dátum odčervenia",
+      "ecto": "Dátum aplikácie",
+      "medication": "Dátum začiatku",
+      "diet": "Dátum začiatku"
+    },
     "ownRecord": "Vlastný záznam",
     "errorVaccineName": "Zadaj názov vakcíny",
     "errorProduct": "Zadaj názov prípravku",
@@ -648,6 +655,11 @@
     "ecto": "Kliešte / blchy",
     "diet": "Diéta",
     "dietNotSet": "Nie je nastavená",
+    "dietActive": "Aktívna diéta",
+    "vaccinationOthers_one": "{{type}} + {{count}} ďalšia",
+    "vaccinationOthers_few": "{{type}} + {{count}} ďalšie",
+    "vaccinationOthers_many": "{{type}} + {{count}} ďalších",
+    "vaccinationOthers_other": "{{type}} + {{count}} ďalších",
     "add": "Pridať",
     "schedule": "Naplánovať",
     "viewSchedule": "Zobraziť plán",
@@ -821,7 +833,7 @@
     "cancel": "Späť do formulára",
     "confirm": "Uložiť napriek tomu",
     "types": {
-      "vaccination": "Vakcinácia",
+      "vaccination": "Očkovanie",
       "deworming": "Odčervenie",
       "ectoparasite": "Ektoparazity",
       "medication": "Liek"

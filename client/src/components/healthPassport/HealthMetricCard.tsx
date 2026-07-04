@@ -20,6 +20,8 @@ interface Props {
   label: string;
   hint?: string;
   status: ValidityStatus;
+  /** Overrides the computed headline for statuses without a due date (e.g. active diet). */
+  headline?: string;
   /** Resolved theme color used for the icon tile, progress bar and action button. */
   accentColor: string;
   nextDate?: string;
@@ -37,6 +39,7 @@ export default function HealthMetricCard({
   label,
   hint,
   status,
+  headline: headlineOverride,
   accentColor,
   nextDate,
   lastDate,
@@ -69,7 +72,7 @@ export default function HealthMetricCard({
       ? t('status.overdueHeadline', { count: overdueDays })
       : rel
         ? rel.text
-        : detail || t('status.valid');
+        : (headlineOverride ?? detail) || t('status.valid');
 
   const headlineColor = isEmpty ? 'text.secondary' : isOverdue ? 'error.main' : 'text.primary';
   const subtitle = lastDate
