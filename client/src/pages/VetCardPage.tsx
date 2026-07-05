@@ -377,6 +377,7 @@ export default function VetCardPage() {
     vaccinations,
     dewormings,
     ectos,
+    treatments,
     visits,
     medications,
     dietEntries,
@@ -396,6 +397,7 @@ export default function VetCardPage() {
     const dogVaccines = vaccinations.filter((x) => x.petId === petId);
     const dogDeworm = dewormings.filter((x) => x.petId === petId);
     const dogEctos = ectos.filter((x) => x.petId === petId);
+    const dogTreatments = treatments.filter((x) => x.petId === petId);
     const dogVisits = visits.filter((x) => x.petId === petId);
     const activeMeds = medications.filter(
       (x) => x.petId === petId && (x.longTerm || !x.endDate || x.endDate >= today())
@@ -416,6 +418,9 @@ export default function VetCardPage() {
 
     const lastDeworming = [...dogDeworm].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0];
     const lastEcto = [...dogEctos].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0];
+    const activeTreatments = [...dogTreatments].sort((a, b) =>
+      b.dateGiven.localeCompare(a.dateGiven)
+    );
     const latestDiet = [...dogDiet].sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
 
     const significantVisits = dogVisits
@@ -448,6 +453,16 @@ export default function VetCardPage() {
         petId,
         type: 'ECTOPARASITE' as const,
         title: t('timeline.titleEcto', { product: x.productName }),
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
+        date: x.dateGiven,
+      })),
+      ...dogTreatments.map((x) => ({
+        id: `trt-${x.id}`,
+        petId,
+        type: 'TREATMENT' as const,
+        title: t('timeline.titleTreatment', { name: x.name }),
         subtitle: x.nextDueDate
           ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
           : undefined,
@@ -489,12 +504,24 @@ export default function VetCardPage() {
       vaccineList,
       lastDeworming,
       lastEcto,
+      activeTreatments,
       latestDiet,
       activeMeds,
       significantVisits,
       timeline,
     };
-  }, [petId, vaccinations, dewormings, ectos, visits, medications, dietEntries, t, fmtDateShort]);
+  }, [
+    petId,
+    vaccinations,
+    dewormings,
+    ectos,
+    treatments,
+    visits,
+    medications,
+    dietEntries,
+    t,
+    fmtDateShort,
+  ]);
 
   const handlePrint = () => {
     if (!dog || !data) return;
@@ -682,6 +709,7 @@ export default function VetCardPage() {
     const dogVaccinesAll = vaccinations.filter((x) => x.petId === petId);
     const dogDewormAll = dewormings.filter((x) => x.petId === petId);
     const dogEctosAll = ectos.filter((x) => x.petId === petId);
+    const dogTreatmentsAll = treatments.filter((x) => x.petId === petId);
     const dogVisitsAll = visits.filter((x) => x.petId === petId);
     const dogDietAll = dietEntries.filter((x) => x.petId === petId);
 
@@ -705,6 +733,14 @@ export default function VetCardPage() {
       ...dogEctosAll.map((x) => ({
         type: 'ECTOPARASITE' as const,
         title: t('timeline.titleEcto', { product: x.productName }),
+        subtitle: x.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
+          : undefined,
+        date: x.dateGiven,
+      })),
+      ...dogTreatmentsAll.map((x) => ({
+        type: 'TREATMENT' as const,
+        title: t('timeline.titleTreatment', { name: x.name }),
         subtitle: x.nextDueDate
           ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
           : undefined,
@@ -794,6 +830,16 @@ export default function VetCardPage() {
             ecto
           )
         : '',
+      ...data.activeTreatments.map((trt) =>
+        vaccineRow(
+          t('overview.treatment'),
+          trt.reason ? `${trt.name} · ${trt.reason}` : trt.name,
+          undefined,
+          trt.dateGiven,
+          trt.nextDueDate,
+          statusBadge(trt.nextDueDate, trt.dateGiven, 7)
+        )
+      ),
     ]
       .filter(Boolean)
       .join('');
@@ -1141,6 +1187,16 @@ export default function VetCardPage() {
       status: ectoStatus.status,
       statusLabel: ectoStatus.detail,
     });
+  data.activeTreatments.forEach((trt) => {
+    const trtStatus = vetStatusFor(trt.nextDueDate, 7, tVetCard, lang);
+    preventiveItems.push({
+      name: trt.reason ? `${trt.name} · ${trt.reason}` : trt.name,
+      dateGiven: trt.dateGiven,
+      validUntil: trt.nextDueDate,
+      status: trtStatus.status,
+      statusLabel: trtStatus.detail,
+    });
+  });
 
   return (
     <Box sx={{ maxWidth: '100%', overflowX: 'clip' }}>
