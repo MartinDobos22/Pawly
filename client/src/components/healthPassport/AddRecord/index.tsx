@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
+import type { TreatmentRecord } from '../../../types/petHealth';
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
 import ManualEntryProvider from './ManualEntry';
 import ManualEntryBody from './ManualEntryBody';
@@ -37,6 +38,7 @@ interface AddRecordProps {
   currentDietEntryId?: string;
   onClose: () => void;
   onSave: (bundle: VisitBundle) => void;
+  onSaveTreatment: (payload: Partial<TreatmentRecord>) => void;
 }
 
 type ModeIcon = typeof EditIcon;
@@ -119,6 +121,7 @@ export default function AddRecord({
   currentDietEntryId,
   onClose,
   onSave,
+  onSaveTreatment,
 }: AddRecordProps) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
@@ -138,6 +141,11 @@ export default function AddRecord({
 
   const handleSave = (bundle: VisitBundle) => {
     onSave(bundle);
+    handleClose();
+  };
+
+  const handleSaveTreatment = (payload: Partial<TreatmentRecord>) => {
+    onSaveTreatment(payload);
     handleClose();
   };
 
@@ -166,6 +174,7 @@ export default function AddRecord({
           petId={petId}
           currentDietEntryId={currentDietEntryId}
           onSave={handleSave}
+          onSaveTreatment={handleSaveTreatment}
           onCancel={handleClose}
         >
           {dialogTitle}

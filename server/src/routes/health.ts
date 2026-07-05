@@ -9,6 +9,7 @@ import {
   episodeMapper,
   expenseMapper,
   medicationMapper,
+  treatmentMapper,
   vaccinationMapper,
   vetVisitMapper,
   weightLogMapper,
@@ -140,6 +141,14 @@ router.use(
     'Ďalšia dávka antiparazitika musí byť rovnaká alebo neskôr ako dátum podania.'
   )
 );
+router.use(
+  '/treatments',
+  dateRangeGuard(
+    'dateGiven',
+    'nextDueDate',
+    'Ďalší termín liečby musí byť rovnaký alebo neskôr ako dátum podania.'
+  )
+);
 
 router.post('/attachments/upload', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -177,6 +186,7 @@ router.delete('/attachments', async (req: Request, res: Response, next: NextFunc
 registerCrud('vaccinations', makeCrud(vaccinationMapper));
 registerCrud('dewormings', makeCrud(dewormingMapper));
 registerCrud('ectoparasites', makeCrud(ectoparasiteMapper));
+registerCrud('treatments', makeCrud(treatmentMapper));
 registerCrud('vet-visits', makeCrud(vetVisitMapper));
 registerCrud('medications', makeCrud(medicationMapper), { skipDelete: true });
 registerCrud('dose-logs', makeCrud(doseLogMapper));

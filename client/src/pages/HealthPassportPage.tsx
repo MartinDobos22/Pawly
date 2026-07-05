@@ -19,6 +19,7 @@ import type {
   EctoparasiteRecord,
   ExpenseCategory,
   TimelineEvent,
+  TreatmentRecord,
   ValidityStatus,
   VaccinationRecord,
   VaccineType,
@@ -78,6 +79,7 @@ export default function HealthPassportPage() {
     vaccinations,
     dewormings,
     ectos,
+    treatments,
     visits,
     medications,
     dietEntries,
@@ -85,18 +87,21 @@ export default function HealthPassportPage() {
     episodes,
     weightLogs,
     addVisitBundle,
+    addTreatment,
     addVisit,
     updateVisit,
     removeVisit,
     updateVaccination,
     updateDeworming,
     updateEcto,
+    updateTreatment,
     updateMedication,
     updateDietEntry,
     updateExpense,
     removeVaccination,
     removeDeworming,
     removeEcto,
+    removeTreatment,
     removeDietEntry,
     removeExpense,
     removeMedication,
@@ -109,6 +114,7 @@ export default function HealthPassportPage() {
   const dogVaccinations = vaccinations.filter((v) => v.petId === selectedDogId);
   const dogDewormings = dewormings.filter((v) => v.petId === selectedDogId);
   const dogEctos = ectos.filter((v) => v.petId === selectedDogId);
+  const dogTreatments = treatments.filter((v) => v.petId === selectedDogId);
   const dogVisits = visits.filter((v) => v.petId === selectedDogId);
   const dogMeds = medications.filter((v) => v.petId === selectedDogId);
   const dogDiet = dietEntries.filter((v) => v.petId === selectedDogId);
@@ -150,6 +156,10 @@ export default function HealthPassportPage() {
     () => [...dogEctos].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
     [dogEctos]
   );
+  const latestTreatment = useMemo(
+    () => [...dogTreatments].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
+    [dogTreatments]
+  );
 
   // ── Status semaphores ──────────────────────────────────────────────────────
   const vaccinationStatus = urgentVaccination
@@ -170,6 +180,10 @@ export default function HealthPassportPage() {
     ? statusByDate(latestDeworming.nextDueDate, 7)
     : 'UNKNOWN';
   const ectoStatus = latestEcto ? statusByDate(latestEcto.nextDueDate, 7) : 'UNKNOWN';
+  const treatmentStatus =
+    latestTreatment && latestTreatment.nextDueDate
+      ? statusByDate(latestTreatment.nextDueDate, 7)
+      : 'UNKNOWN';
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
@@ -204,6 +218,18 @@ export default function HealthPassportPage() {
         petId: v.petId,
         type: 'ECTOPARASITE',
         title: t('timeline.titleEcto', { product: v.productName }),
+        subtitle: v.nextDueDate
+          ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
+          : undefined,
+        date: v.dateGiven,
+      })
+    );
+    dogTreatments.forEach((v) =>
+      items.push({
+        id: `trt-${v.id}`,
+        petId: v.petId,
+        type: 'TREATMENT',
+        title: t('timeline.titleTreatment', { name: v.name }),
         subtitle: v.nextDueDate
           ? t('timeline.subtitleNextDue', { date: v.nextDueDate })
           : undefined,
@@ -251,7 +277,17 @@ export default function HealthPassportPage() {
       })
     );
     return items.sort((a, b) => b.date.localeCompare(a.date));
-  }, [dogVaccinations, dogDewormings, dogEctos, dogVisits, dogMeds, dogDiet, dogExpenses, t]);
+  }, [
+    dogVaccinations,
+    dogDewormings,
+    dogEctos,
+    dogTreatments,
+    dogVisits,
+    dogMeds,
+    dogDiet,
+    dogExpenses,
+    t,
+  ]);
 
   // ── Wizard / dialog state ──────────────────────────────────────────────────
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -449,6 +485,46 @@ export default function HealthPassportPage() {
     [updateEcto, tCommon]
   );
 
+  const handleSaveTreatment = useCallback(
+    async (
+      id: string,
+      draft: {
+        name: string;
+        reason: string;
+        dateGiven: string;
+        nextDueDate: string;
+        note: string;
+      }
+    ) => {
+      try {
+        await updateTreatment(id, {
+          ...draft,
+          reason: draft.reason || undefined,
+          note: draft.note || undefined,
+          intervalDays: draft.nextDueDate
+            ? computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 28)
+            : undefined,
+        });
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
+    },
+    [updateTreatment, tCommon]
+  );
+
+  const handleAddTreatment = useCallback(
+    async (payload: Partial<TreatmentRecord>) => {
+      try {
+        await addTreatment(payload);
+        setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+      } catch {
+        setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+      }
+    },
+    [addTreatment, tCommon]
+  );
+
   const handleSaveMedication = useCallback(
     async (
       id: string,
@@ -533,6 +609,7 @@ export default function HealthPassportPage() {
     if (selectedRecord.type === 'VACCINATION') void removeVaccination(selectedRecord.id);
     else if (selectedRecord.type === 'DEWORMING') void removeDeworming(selectedRecord.id);
     else if (selectedRecord.type === 'ECTOPARASITE') void removeEcto(selectedRecord.id);
+    else if (selectedRecord.type === 'TREATMENT') void removeTreatment(selectedRecord.id);
     else if (selectedRecord.type === 'MEDICATION') void removeMedication(selectedRecord.id);
     else if (selectedRecord.type === 'DIET') void removeDietEntry(selectedRecord.id);
     else if (selectedRecord.type === 'EXPENSE') void removeExpense(selectedRecord.id);
@@ -542,6 +619,7 @@ export default function HealthPassportPage() {
     removeVaccination,
     removeDeworming,
     removeEcto,
+    removeTreatment,
     removeMedication,
     removeDietEntry,
     removeExpense,
@@ -827,9 +905,15 @@ export default function HealthPassportPage() {
             : undefined
         }
         ectoPreparation={latestEcto?.productName}
+        treatmentStatus={treatmentStatus}
+        treatmentNextDate={latestTreatment?.nextDueDate}
+        treatmentLastDate={latestTreatment?.dateGiven}
+        treatmentIntervalDays={latestTreatment?.intervalDays}
+        treatmentDetail={latestTreatment?.name}
         onAddVaccination={() => setWizardOpen(true)}
         onAddDeworming={() => setWizardOpen(true)}
         onAddEcto={() => setWizardOpen(true)}
+        onAddTreatment={() => setWizardOpen(true)}
         onAddDiet={() => setWizardOpen(true)}
         onOpenVaccination={
           urgentVaccination
@@ -844,6 +928,11 @@ export default function HealthPassportPage() {
         onOpenEcto={
           latestEcto
             ? () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' })
+            : undefined
+        }
+        onOpenTreatment={
+          latestTreatment
+            ? () => setSelectedRecord({ id: latestTreatment.id, type: 'TREATMENT' })
             : undefined
         }
         onOpenDiet={
@@ -912,6 +1001,7 @@ export default function HealthPassportPage() {
         currentDietEntryId={latestDietId}
         onClose={() => setWizardOpen(false)}
         onSave={dispatchBundle}
+        onSaveTreatment={handleAddTreatment}
       />
 
       {/* ── Visit detail dialog ──────────────────────────────────────────── */}
@@ -942,6 +1032,11 @@ export default function HealthPassportPage() {
             ? (dogEctos.find((x) => x.id === selectedRecord.id) ?? null)
             : null
         }
+        treatment={
+          selectedRecord?.type === 'TREATMENT'
+            ? (dogTreatments.find((x) => x.id === selectedRecord.id) ?? null)
+            : null
+        }
         medication={
           selectedRecord?.type === 'MEDICATION'
             ? (dogMeds.find((x) => x.id === selectedRecord.id) ?? null)
@@ -961,6 +1056,7 @@ export default function HealthPassportPage() {
         onSaveVaccination={handleSaveVaccination}
         onSaveDeworming={handleSaveDeworming}
         onSaveEcto={handleSaveEcto}
+        onSaveTreatment={handleSaveTreatment}
         onSaveMedication={handleSaveMedication}
         onSaveDiet={handleSaveDiet}
         onSaveExpense={handleSaveExpense}

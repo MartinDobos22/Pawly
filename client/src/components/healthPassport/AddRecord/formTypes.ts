@@ -40,6 +40,12 @@ export interface EctoFieldsValues {
   intervalDays: number;
 }
 
+export interface TreatmentFieldsValues {
+  name: string;
+  reason: string;
+  intervalDays: number;
+}
+
 export interface MedicationFieldsValues {
   name: string;
   reason: string;

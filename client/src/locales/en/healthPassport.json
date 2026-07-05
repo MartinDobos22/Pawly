@@ -5,7 +5,8 @@
     "healthConditions": "Long-term conditions such as obesity, diabetes or a sensitive stomach. They help the AI tailor food recommendations to your pet.",
     "vaccination": "Regular vaccinations against infectious diseases. We track the expiry date and remind you when a booster is due.",
     "deworming": "Regular deworming against internal parasites. The interval is usually 3–6 months depending on the pet's age and lifestyle.",
-    "ectoparasite": "Protection against ticks and fleas (spot-on, tablets, collar). We track how long the last application stays effective."
+    "ectoparasite": "Protection against ticks and fleas (spot-on, tablets, collar). We track how long the last application stays effective.",
+    "treatment": "Recurring injections and treatments that aren't infectious-disease vaccines — e.g. Cytopoint for allergy. We track the next due date."
   },
   "page": {
     "noPetSelected": "Select a pet",
@@ -57,7 +58,9 @@
     "titleVisit": "Vet: {{clinic}}",
     "titleMedication": "Medication: {{name}}",
     "titleDiet": "Diet: {{food}}",
-    "titleExpense": "Expense {{amount}} €"
+    "titleExpense": "Expense {{amount}} €",
+    "TREATMENT": "Injections",
+    "titleTreatment": "Injection: {{name}}"
   },
   "detail": {
     "title": "Record detail",
@@ -123,7 +126,8 @@
     "MEDICATION": "Medications",
     "DIET": "Diet",
     "EXPENSE": "Expenses",
-    "NOTE": "Notes"
+    "NOTE": "Notes",
+    "TREATMENT": "Injections"
   },
   "status": {
     "valid": "Valid",
@@ -261,7 +265,8 @@
       "deworming": "Deworming date",
       "ecto": "Application date",
       "medication": "Start date",
-      "diet": "Start date"
+      "diet": "Start date",
+      "treatment": "Date given"
     },
     "ownRecord": "Custom record",
     "errorVaccineName": "Enter vaccine name",
@@ -278,7 +283,9 @@
     "clinicOptional": "Clinic / vet (optional)",
     "diagnosisOptional": "Diagnosis (optional)",
     "recommendationsOptional": "Recommendations (optional)",
-    "unknownRecord": "Unknown record"
+    "unknownRecord": "Unknown record",
+    "kindTreatment": "Injections",
+    "errorTreatmentName": "Enter the injection or treatment name"
   },
   "attachmentUpload": {
     "docLabel": "Document description (optional)",
@@ -553,8 +560,23 @@
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
     "saveUpdate": "Save",
-    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
-    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
+    "allergySuggestions": [
+      "Chicken",
+      "Beef",
+      "Lamb",
+      "Fish",
+      "Eggs",
+      "Wheat",
+      "Corn",
+      "Soy"
+    ],
+    "intoleranceSuggestions": [
+      "Gluten",
+      "Lactose",
+      "Corn",
+      "Soy",
+      "Grains"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Kidney problems",
@@ -646,7 +668,8 @@
     "viewDiet": "View Diet",
     "renew": "Renew",
     "edit": "Edit",
-    "setup": "Set up"
+    "setup": "Set up",
+    "treatment": "Injections"
   },
   "upcoming": {
     "title": "Upcoming tasks",
@@ -809,5 +832,15 @@
       "ectoparasite": "Ectoparasite",
       "medication": "Medication"
     }
+  },
+  "treatment": {
+    "name": "Injection / treatment name",
+    "namePlaceholder": "e.g. Cytopoint",
+    "reason": "Reason (optional)",
+    "reasonPlaceholder": "e.g. allergy",
+    "intervalDays": "Interval (days)",
+    "nextDue": "Next due: {{date}}",
+    "dateGiven": "Date given",
+    "nextDueDate": "Next due"
   }
 }

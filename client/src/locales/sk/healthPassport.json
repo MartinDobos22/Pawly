@@ -5,7 +5,8 @@
     "healthConditions": "Dlhodobé stavy ako obezita, cukrovka či citlivé trávenie. Pomáhajú AI prispôsobiť odporúčania ku krmivu tvojmu zvieraťu.",
     "vaccination": "Pravidelné očkovania proti nákazlivým chorobám. Sledujeme dátum platnosti a upozorníme, keď sa blíži preočkovanie.",
     "deworming": "Pravidelné odčervenie proti vnútorným parazitom. Interval býva 3–6 mesiacov podľa veku a životného štýlu zvieraťa.",
-    "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná."
+    "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná.",
+    "treatment": "Opakované injekcie a liečba, ktoré nie sú očkovaním proti nákaze — napr. Cytopoint proti alergii. Sledujeme ďalší termín podania."
   },
   "page": {
     "noPetSelected": "Vyber zviera",
@@ -59,7 +60,9 @@
     "titleMedication": "Liek: {{name}}",
     "titleDiet": "Diéta: {{food}}",
     "titleExpense": "Výdavok {{amount}} €",
-    "inDays_other": "o {{count}} dní"
+    "inDays_other": "o {{count}} dní",
+    "TREATMENT": "Injekcie",
+    "titleTreatment": "Injekcia: {{name}}"
   },
   "detail": {
     "title": "Detail záznamu",
@@ -125,7 +128,8 @@
     "MEDICATION": "Lieky",
     "DIET": "Diéta",
     "EXPENSE": "Výdavky",
-    "NOTE": "Poznámky"
+    "NOTE": "Poznámky",
+    "TREATMENT": "Injekcie"
   },
   "status": {
     "valid": "Platné",
@@ -266,7 +270,8 @@
       "deworming": "Dátum odčervenia",
       "ecto": "Dátum aplikácie",
       "medication": "Dátum začiatku",
-      "diet": "Dátum začiatku"
+      "diet": "Dátum začiatku",
+      "treatment": "Dátum podania"
     },
     "ownRecord": "Vlastný záznam",
     "errorVaccineName": "Zadaj názov vakcíny",
@@ -284,7 +289,9 @@
     "diagnosisOptional": "Diagnóza (voliteľné)",
     "recommendationsOptional": "Odporúčania (voliteľné)",
     "unknownRecord": "Neznámy záznam",
-    "required_other": "Doplňte {{count}} povinných polí"
+    "required_other": "Doplňte {{count}} povinných polí",
+    "kindTreatment": "Injekcie",
+    "errorTreatmentName": "Zadaj názov injekcie alebo liečby"
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",
@@ -570,7 +577,13 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
+    "intoleranceSuggestions": [
+      "Lepok",
+      "Laktóza",
+      "Kukurica",
+      "Sója",
+      "Obilniny"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
@@ -666,7 +679,8 @@
     "viewDiet": "Zobraziť diétu",
     "renew": "Obnoviť",
     "edit": "Upraviť",
-    "setup": "Nastaviť"
+    "setup": "Nastaviť",
+    "treatment": "Injekcie"
   },
   "upcoming": {
     "title": "Najbližšie úlohy",
@@ -838,5 +852,15 @@
       "ectoparasite": "Ektoparazity",
       "medication": "Liek"
     }
+  },
+  "treatment": {
+    "name": "Názov injekcie / liečby",
+    "namePlaceholder": "napr. Cytopoint",
+    "reason": "Dôvod (voliteľné)",
+    "reasonPlaceholder": "napr. alergia",
+    "intervalDays": "Interval (dni)",
+    "nextDue": "Ďalší termín: {{date}}",
+    "dateGiven": "Dátum podania",
+    "nextDueDate": "Ďalší termín"
   }
 }

@@ -4,6 +4,7 @@ import {
   Vaccines as VaccinesIcon,
   Biotech as DewormIcon,
   PestControl as EctoIcon,
+  Healing as TreatmentIcon,
   Restaurant as DietIcon,
 } from '@mui/icons-material';
 import type { ValidityStatus, DietEntry } from '../../types/petHealth';
@@ -13,6 +14,7 @@ interface HealthStatusOverviewProps {
   vaccinationStatus: ValidityStatus;
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
+  treatmentStatus: ValidityStatus;
   currentDiet?: DietEntry;
   vaccinationNextDate?: string;
   vaccinationLastDate?: string;
@@ -26,13 +28,19 @@ interface HealthStatusOverviewProps {
   ectoLastDate?: string;
   ectoIntervalDays?: number;
   ectoPreparation?: string;
+  treatmentNextDate?: string;
+  treatmentLastDate?: string;
+  treatmentIntervalDays?: number;
+  treatmentDetail?: string;
   onAddVaccination?: () => void;
   onAddDeworming?: () => void;
   onAddEcto?: () => void;
+  onAddTreatment?: () => void;
   onAddDiet?: () => void;
   onOpenVaccination?: () => void;
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
+  onOpenTreatment?: () => void;
   onOpenDiet?: () => void;
   onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
@@ -46,6 +54,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     vaccinationStatus,
     dewormingStatus,
     ectoStatus,
+    treatmentStatus,
     currentDiet,
     vaccinationNextDate,
     vaccinationLastDate,
@@ -59,13 +68,19 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     ectoLastDate,
     ectoIntervalDays,
     ectoPreparation,
+    treatmentNextDate,
+    treatmentLastDate,
+    treatmentIntervalDays,
+    treatmentDetail,
     onAddVaccination,
     onAddDeworming,
     onAddEcto,
+    onAddTreatment,
     onAddDiet,
     onOpenVaccination,
     onOpenDeworming,
     onOpenEcto,
+    onOpenTreatment,
     onOpenDiet,
     onHistoryVaccination,
     onHistoryDeworming,
@@ -155,6 +170,22 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           onPrimaryAction={onAddEcto}
           onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
           onHistory={ectoStatus !== 'UNKNOWN' ? onHistoryEcto : undefined}
+        />
+        <HealthMetricCard
+          icon={<TreatmentIcon />}
+          label={t('overview.treatment')}
+          hint={t('hints.treatment')}
+          status={treatmentStatus}
+          accentColor={theme.palette.warning.main}
+          nextDate={treatmentNextDate}
+          lastDate={treatmentLastDate}
+          intervalDays={treatmentIntervalDays}
+          detail={treatmentDetail}
+          primaryActionLabel={
+            treatmentStatus === 'UNKNOWN' ? t('overview.add') : t('overview.schedule')
+          }
+          onPrimaryAction={onAddTreatment}
+          onOpen={treatmentStatus !== 'UNKNOWN' ? onOpenTreatment : undefined}
         />
         <HealthMetricCard
           icon={<DietIcon />}

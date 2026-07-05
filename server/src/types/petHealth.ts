@@ -17,6 +17,7 @@ export type TimelineType =
   | 'VACCINATION'
   | 'DEWORMING'
   | 'ECTOPARASITE'
+  | 'TREATMENT'
   | 'VET_VISIT'
   | 'MEDICATION'
   | 'DIET'
@@ -75,6 +76,18 @@ export interface EctoparasiteRecord {
   dateGiven: string;
   intervalDays?: number;
   durationDays?: number;
+  nextDueDate: string;
+  note?: string;
+  attachments?: AttachmentRef[];
+}
+
+export interface TreatmentRecord {
+  id: string;
+  petId: string;
+  name: string;
+  reason?: string;
+  dateGiven: string;
+  intervalDays?: number;
   nextDueDate: string;
   note?: string;
   attachments?: AttachmentRef[];
