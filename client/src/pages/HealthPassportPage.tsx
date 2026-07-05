@@ -873,7 +873,6 @@ export default function HealthPassportPage() {
         vaccinationStatus={vaccinationStatus}
         dewormingStatus={dewormingStatus}
         ectoStatus={ectoStatus}
-        currentDiet={currentDiet}
         vaccinationNextDate={urgentVaccination?.validUntil}
         vaccinationLastDate={urgentVaccination?.dateApplied}
         vaccinationDetail={vaccinationDetail}
@@ -917,7 +916,6 @@ export default function HealthPassportPage() {
         onAddDeworming={() => setWizardOpen(true)}
         onAddEcto={() => setWizardOpen(true)}
         onAddTreatment={() => setWizardOpen(true)}
-        onAddDiet={() => setWizardOpen(true)}
         onOpenVaccination={
           urgentVaccination
             ? () => setSelectedRecord({ id: urgentVaccination.id, type: 'VACCINATION' })
@@ -937,9 +935,6 @@ export default function HealthPassportPage() {
           latestTreatment
             ? () => setSelectedRecord({ id: latestTreatment.id, type: 'TREATMENT' })
             : undefined
-        }
-        onOpenDiet={
-          currentDiet ? () => setSelectedRecord({ id: currentDiet.id, type: 'DIET' }) : undefined
         }
         onHistoryVaccination={() => setHistoryCategory('VACCINATION')}
         onHistoryDeworming={() => setHistoryCategory('DEWORMING')}

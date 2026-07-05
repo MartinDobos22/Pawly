@@ -5,9 +5,8 @@ import {
   Biotech as DewormIcon,
   PestControl as EctoIcon,
   Healing as TreatmentIcon,
-  Restaurant as DietIcon,
 } from '@mui/icons-material';
-import type { ValidityStatus, DietEntry } from '../../types/petHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import HealthMetricCard from './HealthMetricCard';
 
 interface HealthStatusOverviewProps {
@@ -15,7 +14,6 @@ interface HealthStatusOverviewProps {
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
   treatmentStatus: ValidityStatus;
-  currentDiet?: DietEntry;
   vaccinationNextDate?: string;
   vaccinationLastDate?: string;
   vaccinationDetail?: string;
@@ -36,12 +34,10 @@ interface HealthStatusOverviewProps {
   onAddDeworming?: () => void;
   onAddEcto?: () => void;
   onAddTreatment?: () => void;
-  onAddDiet?: () => void;
   onOpenVaccination?: () => void;
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
   onOpenTreatment?: () => void;
-  onOpenDiet?: () => void;
   onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
   onHistoryEcto?: () => void;
@@ -55,7 +51,6 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     dewormingStatus,
     ectoStatus,
     treatmentStatus,
-    currentDiet,
     vaccinationNextDate,
     vaccinationLastDate,
     vaccinationDetail,
@@ -76,12 +71,10 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     onAddDeworming,
     onAddEcto,
     onAddTreatment,
-    onAddDiet,
     onOpenVaccination,
     onOpenDeworming,
     onOpenEcto,
     onOpenTreatment,
-    onOpenDiet,
     onHistoryVaccination,
     onHistoryDeworming,
     onHistoryEcto,
@@ -120,8 +113,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           gridTemplateColumns: {
             xs: '1fr',
             sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(5, 1fr)',
+            lg: 'repeat(4, 1fr)',
           },
           alignItems: 'stretch',
           gap: 2,
@@ -191,18 +183,6 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           }
           onPrimaryAction={onAddTreatment}
           onOpen={treatmentStatus !== 'UNKNOWN' ? onOpenTreatment : undefined}
-        />
-        <HealthMetricCard
-          icon={<DietIcon />}
-          label={t('overview.diet')}
-          status={currentDiet ? 'VALID' : 'UNKNOWN'}
-          headline={currentDiet ? t('overview.dietActive') : undefined}
-          accentColor={theme.palette.diet.main}
-          detail={currentDiet?.foodName ?? t('overview.dietNotSet')}
-          lastDate={currentDiet?.startedAt}
-          primaryActionLabel={currentDiet ? t('overview.viewDiet') : t('overview.setup')}
-          onPrimaryAction={onAddDiet}
-          onOpen={currentDiet ? onOpenDiet : undefined}
         />
       </Box>
     </Card>
