@@ -110,7 +110,9 @@ export const treatmentMapper: EntityMapper<TreatmentRecord> = {
   table: 'treatments',
   toRow: (d) =>
     build([
+      ['category', d.category],
       ['name', d.name],
+      ['form', d.form],
       ['reason', d.reason],
       ['date_given', d.dateGiven],
       ['interval_days', d.intervalDays],
@@ -121,7 +123,9 @@ export const treatmentMapper: EntityMapper<TreatmentRecord> = {
   toDto: (r) => ({
     id: String(r.id),
     petId: String(r.pet_id),
+    category: (r.category as TreatmentRecord['category']) ?? 'OTHER',
     name: String(r.name),
+    form: (r.form as TreatmentRecord['form']) ?? undefined,
     reason: str(r.reason),
     dateGiven: str(r.date_given) ?? '',
     intervalDays: num(r.interval_days),

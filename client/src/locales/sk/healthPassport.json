@@ -6,7 +6,7 @@
     "vaccination": "Pravidelné očkovania proti nákazlivým chorobám. Sledujeme dátum platnosti a upozorníme, keď sa blíži preočkovanie.",
     "deworming": "Pravidelné odčervenie proti vnútorným parazitom. Interval býva 3–6 mesiacov podľa veku a životného štýlu zvieraťa.",
     "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná.",
-    "treatment": "Opakované injekcie a liečba, ktoré nie sú očkovaním proti nákaze — napr. Cytopoint proti alergii. Sledujeme ďalší termín podania."
+    "treatment": "Chronická a opakovaná liečba podľa zdravotného problému (alergia, srdce, kĺby…). Zadáš liečivo v akejkoľvek forme (tableta, injekcia, kvapky) a ďalší termín."
   },
   "page": {
     "noPetSelected": "Vyber zviera",
@@ -26,7 +26,7 @@
     "DEWORMING": "Odčervenie",
     "ECTOPARASITE": "Ektoparazity",
     "VET_VISIT": "Veterinár",
-    "MEDICATION": "Liečba",
+    "MEDICATION": "Liek",
     "DIET": "Diéta",
     "EXPENSE": "Výdavok",
     "NOTE": "Poznámka",
@@ -61,8 +61,8 @@
     "titleDiet": "Diéta: {{food}}",
     "titleExpense": "Výdavok {{amount}} €",
     "inDays_other": "o {{count}} dní",
-    "TREATMENT": "Injekcie",
-    "titleTreatment": "Injekcia: {{name}}"
+    "TREATMENT": "Liečba",
+    "titleTreatment": "Liečba: {{name}}"
   },
   "detail": {
     "title": "Detail záznamu",
@@ -129,7 +129,7 @@
     "DIET": "Diéta",
     "EXPENSE": "Výdavky",
     "NOTE": "Poznámky",
-    "TREATMENT": "Injekcie"
+    "TREATMENT": "Liečba"
   },
   "status": {
     "valid": "Platné",
@@ -290,7 +290,7 @@
     "recommendationsOptional": "Odporúčania (voliteľné)",
     "unknownRecord": "Neznámy záznam",
     "required_other": "Doplňte {{count}} povinných polí",
-    "kindTreatment": "Injekcie",
+    "kindTreatment": "Liečba",
     "errorTreatmentName": "Zadaj názov injekcie alebo liečby"
   },
   "attachmentUpload": {
@@ -680,7 +680,7 @@
     "renew": "Obnoviť",
     "edit": "Upraviť",
     "setup": "Nastaviť",
-    "treatment": "Injekcie"
+    "treatment": "Liečba"
   },
   "upcoming": {
     "title": "Najbližšie úlohy",
@@ -854,13 +854,39 @@
     }
   },
   "treatment": {
-    "name": "Názov injekcie / liečby",
-    "namePlaceholder": "napr. Cytopoint",
+    "name": "Liečivo / terapia",
+    "namePlaceholder": "napr. Apoquel",
     "reason": "Dôvod (voliteľné)",
     "reasonPlaceholder": "napr. alergia",
     "intervalDays": "Interval (dni)",
     "nextDue": "Ďalší termín: {{date}}",
     "dateGiven": "Dátum podania",
-    "nextDueDate": "Ďalší termín"
+    "nextDueDate": "Ďalší termín",
+    "category": "Skupina / problém",
+    "form": "Forma"
+  },
+  "treatmentCategories": {
+    "ALLERGY_SKIN": "Alergie a koža",
+    "PAIN_JOINTS": "Bolesť, kĺby a pohyb",
+    "HEART": "Srdce a obeh",
+    "ENDOCRINE": "Hormóny / endokrinné",
+    "NEURO": "Epilepsia a nervy",
+    "DIGESTIVE": "Tráviaci trakt",
+    "RENAL_URINARY": "Obličky a močové cesty",
+    "EYES": "Oči",
+    "EARS": "Uši",
+    "BEHAVIOR": "Správanie / psychika",
+    "INFECTION": "Infekcie (dlhodobé)",
+    "IMMUNE": "Imunitné / autoimunitné",
+    "ONCOLOGY": "Onkológia",
+    "OTHER": "Iné"
+  },
+  "treatmentForms": {
+    "TABLET": "Tableta",
+    "INJECTION": "Injekcia",
+    "DROPS": "Kvapky",
+    "TOPICAL": "Masť / šampón",
+    "DIET": "Diéta",
+    "OTHER": "Iné"
   }
 }

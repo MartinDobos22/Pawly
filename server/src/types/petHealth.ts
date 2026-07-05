@@ -81,10 +81,30 @@ export interface EctoparasiteRecord {
   attachments?: AttachmentRef[];
 }
 
+export type TreatmentCategory =
+  | 'ALLERGY_SKIN'
+  | 'PAIN_JOINTS'
+  | 'HEART'
+  | 'ENDOCRINE'
+  | 'NEURO'
+  | 'DIGESTIVE'
+  | 'RENAL_URINARY'
+  | 'EYES'
+  | 'EARS'
+  | 'BEHAVIOR'
+  | 'INFECTION'
+  | 'IMMUNE'
+  | 'ONCOLOGY'
+  | 'OTHER';
+
+export type TreatmentForm = 'TABLET' | 'INJECTION' | 'DROPS' | 'TOPICAL' | 'DIET' | 'OTHER';
+
 export interface TreatmentRecord {
   id: string;
   petId: string;
+  category: TreatmentCategory;
   name: string;
+  form?: TreatmentForm;
   reason?: string;
   dateGiven: string;
   intervalDays?: number;

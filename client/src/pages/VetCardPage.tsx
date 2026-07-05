@@ -832,8 +832,8 @@ export default function VetCardPage() {
         : '',
       ...data.activeTreatments.map((trt) =>
         vaccineRow(
-          t('overview.treatment'),
-          trt.reason ? `${trt.name} · ${trt.reason}` : trt.name,
+          t(`treatmentCategories.${trt.category}` as never),
+          trt.form ? `${trt.name} · ${t(`treatmentForms.${trt.form}` as never)}` : trt.name,
           undefined,
           trt.dateGiven,
           trt.nextDueDate,
@@ -1190,7 +1190,7 @@ export default function VetCardPage() {
   data.activeTreatments.forEach((trt) => {
     const trtStatus = vetStatusFor(trt.nextDueDate, 7, tVetCard, lang);
     preventiveItems.push({
-      name: trt.reason ? `${trt.name} · ${trt.reason}` : trt.name,
+      name: `${t(`treatmentCategories.${trt.category}` as never)} · ${trt.name}`,
       dateGiven: trt.dateGiven,
       validUntil: trt.nextDueDate,
       status: trtStatus.status,

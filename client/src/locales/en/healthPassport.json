@@ -6,7 +6,7 @@
     "vaccination": "Regular vaccinations against infectious diseases. We track the expiry date and remind you when a booster is due.",
     "deworming": "Regular deworming against internal parasites. The interval is usually 3–6 months depending on the pet's age and lifestyle.",
     "ectoparasite": "Protection against ticks and fleas (spot-on, tablets, collar). We track how long the last application stays effective.",
-    "treatment": "Recurring injections and treatments that aren't infectious-disease vaccines — e.g. Cytopoint for allergy. We track the next due date."
+    "treatment": "Chronic and recurring treatment by health problem (allergy, heart, joints…). Enter the medication in any form (tablet, injection, drops) and the next due date."
   },
   "page": {
     "noPetSelected": "Select a pet",
@@ -26,7 +26,7 @@
     "DEWORMING": "Deworming",
     "ECTOPARASITE": "Ectoparasites",
     "VET_VISIT": "Vet visit",
-    "MEDICATION": "Treatment",
+    "MEDICATION": "Medication",
     "DIET": "Diet",
     "EXPENSE": "Expense",
     "NOTE": "Note",
@@ -59,8 +59,8 @@
     "titleMedication": "Medication: {{name}}",
     "titleDiet": "Diet: {{food}}",
     "titleExpense": "Expense {{amount}} €",
-    "TREATMENT": "Injections",
-    "titleTreatment": "Injection: {{name}}"
+    "TREATMENT": "Treatment",
+    "titleTreatment": "Treatment: {{name}}"
   },
   "detail": {
     "title": "Record detail",
@@ -127,7 +127,7 @@
     "DIET": "Diet",
     "EXPENSE": "Expenses",
     "NOTE": "Notes",
-    "TREATMENT": "Injections"
+    "TREATMENT": "Treatment"
   },
   "status": {
     "valid": "Valid",
@@ -284,7 +284,7 @@
     "diagnosisOptional": "Diagnosis (optional)",
     "recommendationsOptional": "Recommendations (optional)",
     "unknownRecord": "Unknown record",
-    "kindTreatment": "Injections",
+    "kindTreatment": "Treatment",
     "errorTreatmentName": "Enter the injection or treatment name"
   },
   "attachmentUpload": {
@@ -669,7 +669,7 @@
     "renew": "Renew",
     "edit": "Edit",
     "setup": "Set up",
-    "treatment": "Injections"
+    "treatment": "Treatment"
   },
   "upcoming": {
     "title": "Upcoming tasks",
@@ -834,13 +834,39 @@
     }
   },
   "treatment": {
-    "name": "Injection / treatment name",
-    "namePlaceholder": "e.g. Cytopoint",
+    "name": "Medication / therapy",
+    "namePlaceholder": "e.g. Apoquel",
     "reason": "Reason (optional)",
     "reasonPlaceholder": "e.g. allergy",
     "intervalDays": "Interval (days)",
     "nextDue": "Next due: {{date}}",
     "dateGiven": "Date given",
-    "nextDueDate": "Next due"
+    "nextDueDate": "Next due",
+    "category": "Group / problem",
+    "form": "Form"
+  },
+  "treatmentCategories": {
+    "ALLERGY_SKIN": "Allergy & skin",
+    "PAIN_JOINTS": "Pain, joints & mobility",
+    "HEART": "Heart & circulation",
+    "ENDOCRINE": "Hormonal / endocrine",
+    "NEURO": "Epilepsy & nervous system",
+    "DIGESTIVE": "Digestive tract",
+    "RENAL_URINARY": "Kidneys & urinary",
+    "EYES": "Eyes",
+    "EARS": "Ears",
+    "BEHAVIOR": "Behaviour / mental",
+    "INFECTION": "Infections (long-term)",
+    "IMMUNE": "Immune / autoimmune",
+    "ONCOLOGY": "Oncology",
+    "OTHER": "Other"
+  },
+  "treatmentForms": {
+    "TABLET": "Tablet",
+    "INJECTION": "Injection",
+    "DROPS": "Drops",
+    "TOPICAL": "Ointment / shampoo",
+    "DIET": "Diet",
+    "OTHER": "Other"
   }
 }

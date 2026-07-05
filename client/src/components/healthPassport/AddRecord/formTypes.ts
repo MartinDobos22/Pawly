@@ -2,6 +2,8 @@ import type {
   AttachmentRef,
   DietEntry,
   EctoparasiteRecord,
+  TreatmentCategory,
+  TreatmentForm,
   VaccinationRecord,
 } from '../../../types/petHealth';
 import type { AiDetectedDraftRecord } from '../hpTypes';
@@ -41,8 +43,9 @@ export interface EctoFieldsValues {
 }
 
 export interface TreatmentFieldsValues {
+  category: TreatmentCategory;
   name: string;
-  reason: string;
+  form: TreatmentForm;
   intervalDays: number;
 }
 

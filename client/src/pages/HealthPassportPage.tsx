@@ -184,6 +184,9 @@ export default function HealthPassportPage() {
     latestTreatment && latestTreatment.nextDueDate
       ? statusByDate(latestTreatment.nextDueDate, 7)
       : 'UNKNOWN';
+  const treatmentDetail = latestTreatment
+    ? `${t(`treatmentCategories.${latestTreatment.category}`)} · ${latestTreatment.name}`
+    : undefined;
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
@@ -489,8 +492,9 @@ export default function HealthPassportPage() {
     async (
       id: string,
       draft: {
+        category: TreatmentRecord['category'];
         name: string;
-        reason: string;
+        form: NonNullable<TreatmentRecord['form']>;
         dateGiven: string;
         nextDueDate: string;
         note: string;
@@ -499,7 +503,6 @@ export default function HealthPassportPage() {
       try {
         await updateTreatment(id, {
           ...draft,
-          reason: draft.reason || undefined,
           note: draft.note || undefined,
           intervalDays: draft.nextDueDate
             ? computeIntervalDaysFromDates(draft.dateGiven, draft.nextDueDate, 28)
@@ -909,7 +912,7 @@ export default function HealthPassportPage() {
         treatmentNextDate={latestTreatment?.nextDueDate}
         treatmentLastDate={latestTreatment?.dateGiven}
         treatmentIntervalDays={latestTreatment?.intervalDays}
-        treatmentDetail={latestTreatment?.name}
+        treatmentDetail={treatmentDetail}
         onAddVaccination={() => setWizardOpen(true)}
         onAddDeworming={() => setWizardOpen(true)}
         onAddEcto={() => setWizardOpen(true)}

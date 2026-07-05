@@ -54,7 +54,12 @@ const DEFAULTS = {
   } as VaccinationFieldsValues,
   deworming: { product: '', validUntil: '', intervalDays: 90 } as DewormingFieldsValues,
   ecto: { product: '', form: 'TABLET', validUntil: '', intervalDays: 30 } as EctoFieldsValues,
-  treatment: { name: '', reason: '', intervalDays: 28 } as TreatmentFieldsValues,
+  treatment: {
+    category: 'ALLERGY_SKIN',
+    name: '',
+    form: 'TABLET',
+    intervalDays: 28,
+  } as TreatmentFieldsValues,
   medication: {
     name: '',
     reason: '',
@@ -203,8 +208,9 @@ export default function QuickEntryProvider({
     if (kind === 'treatment') {
       onSaveTreatment({
         petId,
+        category: treatment.category,
         name: treatment.name.trim(),
-        reason: treatment.reason.trim() || undefined,
+        form: treatment.form,
         dateGiven: date,
         intervalDays: treatment.intervalDays > 0 ? treatment.intervalDays : undefined,
         nextDueDate: treatment.intervalDays > 0 ? plusDays(date, treatment.intervalDays) : '',

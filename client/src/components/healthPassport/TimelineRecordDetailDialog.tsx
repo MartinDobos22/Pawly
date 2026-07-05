@@ -31,6 +31,7 @@ import type {
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 import { today } from './utils.ts';
 import { VACCINE_TYPE_ORDER } from '../../utils/vaccineTypes';
+import { TREATMENT_CATEGORY_ORDER, TREATMENT_FORM_ORDER } from '../../utils/treatmentCategories';
 
 export type RecordDetailType =
   | 'VACCINATION'
@@ -69,8 +70,9 @@ interface EctoDraft {
   note: string;
 }
 interface TreatDraft {
+  category: TreatmentRecord['category'];
   name: string;
-  reason: string;
+  form: NonNullable<TreatmentRecord['form']>;
   dateGiven: string;
   nextDueDate: string;
   note: string;
@@ -165,8 +167,9 @@ export default function TimelineRecordDetailDialog({
     note: '',
   });
   const [treatDraft, setTreatDraft] = useState<TreatDraft>({
+    category: 'OTHER',
     name: '',
-    reason: '',
+    form: 'TABLET',
     dateGiven: today(),
     nextDueDate: '',
     note: '',
@@ -222,8 +225,9 @@ export default function TimelineRecordDetailDialog({
       });
     if (treatment)
       setTreatDraft({
+        category: treatment.category,
         name: treatment.name,
-        reason: treatment.reason ?? '',
+        form: treatment.form ?? 'TABLET',
         dateGiven: treatment.dateGiven,
         nextDueDate: treatment.nextDueDate,
         note: treatment.note ?? '',
@@ -492,6 +496,25 @@ export default function TimelineRecordDetailDialog({
     if (state.type === 'TREATMENT') {
       return editing ? (
         <Stack spacing={1.5}>
+          <FormControl size="small" fullWidth>
+            <InputLabel>{t('treatment.category')}</InputLabel>
+            <Select
+              label={t('treatment.category')}
+              value={treatDraft.category}
+              onChange={(e) =>
+                setTreatDraft((p) => ({
+                  ...p,
+                  category: e.target.value as TreatDraft['category'],
+                }))
+              }
+            >
+              {TREATMENT_CATEGORY_ORDER.map((c) => (
+                <MenuItem key={c} value={c}>
+                  {t(`treatmentCategories.${c}`)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             label={t('treatment.name')}
             placeholder={t('treatment.namePlaceholder')}
@@ -499,12 +522,22 @@ export default function TimelineRecordDetailDialog({
             onChange={(e) => setTreatDraft((p) => ({ ...p, name: e.target.value }))}
             size="small"
           />
-          <TextField
-            label={t('treatment.reason')}
-            value={treatDraft.reason}
-            onChange={(e) => setTreatDraft((p) => ({ ...p, reason: e.target.value }))}
-            size="small"
-          />
+          <FormControl size="small" fullWidth>
+            <InputLabel>{t('treatment.form')}</InputLabel>
+            <Select
+              label={t('treatment.form')}
+              value={treatDraft.form}
+              onChange={(e) =>
+                setTreatDraft((p) => ({ ...p, form: e.target.value as TreatDraft['form'] }))
+              }
+            >
+              {TREATMENT_FORM_ORDER.map((f) => (
+                <MenuItem key={f} value={f}>
+                  {t(`treatmentForms.${f}`)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <TextField
               label={t('treatment.dateGiven')}
@@ -534,14 +567,19 @@ export default function TimelineRecordDetailDialog({
         </Stack>
       ) : (
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+          <FieldRow label={t('treatment.category')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {t(`treatmentCategories.${treatDraft.category}`)}
+            </Typography>
+          </FieldRow>
           <FieldRow label={t('treatment.name')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {treatDraft.name || '–'}
             </Typography>
           </FieldRow>
-          <FieldRow label={t('detail.reason')}>
+          <FieldRow label={t('treatment.form')}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {treatDraft.reason || '–'}
+              {t(`treatmentForms.${treatDraft.form}`)}
             </Typography>
           </FieldRow>
           <FieldRow label={t('detail.date')}>

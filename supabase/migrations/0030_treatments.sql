@@ -8,7 +8,9 @@
 create table if not exists treatments (
   id            uuid primary key default gen_random_uuid(),
   pet_id        uuid not null references pets(id) on delete cascade,
-  name          text not null,
+  category      text,                     -- skupina/problém (ALLERGY_SKIN, HEART, …)
+  name          text not null,            -- konkrétne liečivo / terapia
+  form          text,                     -- TABLET | INJECTION | DROPS | TOPICAL | DIET | OTHER
   reason        text,
   date_given    text,
   interval_days integer,
@@ -18,6 +20,10 @@ create table if not exists treatments (
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
+
+-- idempotentné pre prípad, že staršia verzia 0030 už tabuľku vytvorila
+alter table treatments add column if not exists category text;
+alter table treatments add column if not exists form text;
 
 create index if not exists treatments_pet_id_idx on treatments(pet_id);
 
