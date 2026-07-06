@@ -670,7 +670,9 @@
     "edit": "Edit",
     "setup": "Set up",
     "treatment": "Treatment",
-    "examCheck": "Examination / check-up"
+    "examCheck": "Examination / check-up",
+    "treatmentOthers_one": "{{name}} + {{count}} more",
+    "treatmentOthers_other": "{{name}} + {{count}} more"
   },
   "upcoming": {
     "title": "Upcoming",

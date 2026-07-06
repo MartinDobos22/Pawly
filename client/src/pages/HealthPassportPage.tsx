@@ -161,8 +161,15 @@ export default function HealthPassportPage() {
     () => [...dogEctos].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
     [dogEctos]
   );
-  const latestTreatment = useMemo(
-    () => [...dogTreatments].sort((a, b) => b.dateGiven.localeCompare(a.dateGiven))[0],
+  // Najurgentnejšia liečba = najbližší „ďalší termín" (bez termínu ide na koniec).
+  // Pes môže mať viac súbežných liečob, preto dlaždica ukazuje najurgentnejšiu + počet.
+  const urgentTreatment = useMemo(
+    () =>
+      [...dogTreatments].sort((a, b) => {
+        if (!a.nextDueDate) return 1;
+        if (!b.nextDueDate) return -1;
+        return a.nextDueDate.localeCompare(b.nextDueDate);
+      })[0],
     [dogTreatments]
   );
 
@@ -186,11 +193,16 @@ export default function HealthPassportPage() {
     : 'UNKNOWN';
   const ectoStatus = latestEcto ? statusByDate(latestEcto.nextDueDate, 7) : 'UNKNOWN';
   const treatmentStatus =
-    latestTreatment && latestTreatment.nextDueDate
-      ? statusByDate(latestTreatment.nextDueDate, 7)
+    urgentTreatment && urgentTreatment.nextDueDate
+      ? statusByDate(urgentTreatment.nextDueDate, 7)
       : 'UNKNOWN';
-  const treatmentDetail = latestTreatment
-    ? `${t(`treatmentCategories.${latestTreatment.category}`)} · ${latestTreatment.name}`
+  const treatmentDetail = urgentTreatment
+    ? (() => {
+        const label = `${t(`treatmentCategories.${urgentTreatment.category}`)} · ${urgentTreatment.name}`;
+        return dogTreatments.length > 1
+          ? t('overview.treatmentOthers', { name: label, count: dogTreatments.length - 1 })
+          : label;
+      })()
     : undefined;
 
   // ── Timeline ───────────────────────────────────────────────────────────────
@@ -877,17 +889,17 @@ export default function HealthPassportPage() {
           onClick: () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' }),
         }
       : null,
-    latestTreatment?.nextDueDate
-      ? {
-          key: 'treatment',
-          icon: <HealingIcon />,
-          label: t('overview.treatment'),
-          detail: treatmentDetail,
-          date: latestTreatment.nextDueDate,
-          accentColor: theme.palette.warning.main,
-          onClick: () => setSelectedRecord({ id: latestTreatment.id, type: 'TREATMENT' }),
-        }
-      : null,
+    ...dogTreatments
+      .filter((trt) => trt.nextDueDate)
+      .map((trt) => ({
+        key: `treatment-${trt.id}`,
+        icon: <HealingIcon />,
+        label: t('overview.treatment'),
+        detail: `${t(`treatmentCategories.${trt.category}`)} · ${trt.name}`,
+        date: trt.nextDueDate,
+        accentColor: theme.palette.warning.main,
+        onClick: () => setSelectedRecord({ id: trt.id, type: 'TREATMENT' as const }),
+      })),
     examVisit?.nextCheckDate
       ? {
           key: 'exam',
@@ -984,9 +996,9 @@ export default function HealthPassportPage() {
         }
         ectoPreparation={latestEcto?.productName}
         treatmentStatus={treatmentStatus}
-        treatmentNextDate={latestTreatment?.nextDueDate}
-        treatmentLastDate={latestTreatment?.dateGiven}
-        treatmentIntervalDays={latestTreatment?.intervalDays}
+        treatmentNextDate={urgentTreatment?.nextDueDate}
+        treatmentLastDate={urgentTreatment?.dateGiven}
+        treatmentIntervalDays={urgentTreatment?.intervalDays}
         treatmentDetail={treatmentDetail}
         onAddVaccination={() => setWizardOpen(true)}
         onAddDeworming={() => setWizardOpen(true)}
@@ -1008,8 +1020,8 @@ export default function HealthPassportPage() {
             : undefined
         }
         onOpenTreatment={
-          latestTreatment
-            ? () => setSelectedRecord({ id: latestTreatment.id, type: 'TREATMENT' })
+          urgentTreatment
+            ? () => setSelectedRecord({ id: urgentTreatment.id, type: 'TREATMENT' })
             : undefined
         }
         onHistoryVaccination={() => setHistoryCategory('VACCINATION')}

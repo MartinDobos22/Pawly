@@ -681,7 +681,11 @@
     "edit": "Upraviť",
     "setup": "Nastaviť",
     "treatment": "Liečba",
-    "examCheck": "Vyšetrenie / kontrola"
+    "examCheck": "Vyšetrenie / kontrola",
+    "treatmentOthers_one": "{{name}} + {{count}} ďalšia",
+    "treatmentOthers_few": "{{name}} + {{count}} ďalšie",
+    "treatmentOthers_many": "{{name}} + {{count}} ďalších",
+    "treatmentOthers_other": "{{name}} + {{count}} ďalších"
   },
   "upcoming": {
     "title": "Najbližšie termíny",
