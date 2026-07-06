@@ -669,10 +669,11 @@
     "renew": "Renew",
     "edit": "Edit",
     "setup": "Set up",
-    "treatment": "Treatment"
+    "treatment": "Treatment",
+    "examCheck": "Examination / check-up"
   },
   "upcoming": {
-    "title": "Upcoming tasks",
+    "title": "Upcoming",
     "allGood": "All good",
     "noTasks": "No scheduled tasks.",
     "overdue": "Overdue",
@@ -684,7 +685,8 @@
     "deworming": "Deworming – {{product}}",
     "antiparasitic": "Antiparasitic – {{product}}",
     "todayDoses": "Today's doses",
-    "medicationFallback": "Medication"
+    "medicationFallback": "Medication",
+    "empty": "No scheduled dates yet."
   },
   "expenseCard": {
     "title": "Expenses",

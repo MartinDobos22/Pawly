@@ -12,6 +12,8 @@ import {
   RamenDining as DietIcon,
   Vaccines as VaccinesIcon,
   Biotech as BiotechIcon,
+  Healing as HealingIcon,
+  MedicalServices as ExamIcon,
 } from '@mui/icons-material';
 
 import type {
@@ -40,6 +42,9 @@ import PageContainer from '../components/ui/PageContainer';
 import PassportHero, { type HeroInfoCard } from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
 import PawlyInsightCard from '../components/healthPassport/PawlyInsightCard';
+import UpcomingRemindersCard, {
+  type UpcomingReminderItem,
+} from '../components/healthPassport/UpcomingRemindersCard';
 import ExpenseSummaryCard from '../components/healthPassport/ExpenseSummaryCard';
 import HealthTimeline from '../components/healthPassport/HealthTimeline';
 import AddRecord from '../components/healthPassport/AddRecord';
@@ -825,6 +830,77 @@ export default function HealthPassportPage() {
     : t('insight.headlineAttention', { name: selectedDog?.name ?? '' });
   const insightFooter = insightPositive ? t('insight.footer') : t('insight.footerAttention');
 
+  // ── Najbližšie termíny a kontroly (vrátane vyšetrení z „Ďalšia kontrola") ────
+  const examVisit = (() => {
+    const withCheck = dogVisits.filter((v) => v.nextCheckDate);
+    if (withCheck.length === 0) return undefined;
+    const sorted = [...withCheck].sort((a, b) =>
+      (a.nextCheckDate ?? '').localeCompare(b.nextCheckDate ?? '')
+    );
+    return (
+      sorted.find((v) => (relativeDate(v.nextCheckDate as string)?.diffDays ?? -1) >= 0) ??
+      sorted[sorted.length - 1]
+    );
+  })();
+
+  const upcomingReminders: UpcomingReminderItem[] = [
+    urgentVaccination?.validUntil
+      ? {
+          key: 'vaccination',
+          icon: <VaccinesIcon />,
+          label: t('overview.vaccination'),
+          detail: vaccinationDetail,
+          date: urgentVaccination.validUntil,
+          accentColor: theme.palette.success.main,
+          onClick: () => setSelectedRecord({ id: urgentVaccination.id, type: 'VACCINATION' }),
+        }
+      : null,
+    latestDeworming?.nextDueDate
+      ? {
+          key: 'deworming',
+          icon: <BiotechIcon />,
+          label: t('overview.deworming'),
+          detail: latestDeworming.productName,
+          date: latestDeworming.nextDueDate,
+          accentColor: theme.palette.secondary.main,
+          onClick: () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' }),
+        }
+      : null,
+    latestEcto?.nextDueDate
+      ? {
+          key: 'ecto',
+          icon: <DewormingIcon />,
+          label: t('overview.ecto'),
+          detail: latestEcto.productName,
+          date: latestEcto.nextDueDate,
+          accentColor: theme.palette.info.main,
+          onClick: () => setSelectedRecord({ id: latestEcto.id, type: 'ECTOPARASITE' }),
+        }
+      : null,
+    latestTreatment?.nextDueDate
+      ? {
+          key: 'treatment',
+          icon: <HealingIcon />,
+          label: t('overview.treatment'),
+          detail: treatmentDetail,
+          date: latestTreatment.nextDueDate,
+          accentColor: theme.palette.warning.main,
+          onClick: () => setSelectedRecord({ id: latestTreatment.id, type: 'TREATMENT' }),
+        }
+      : null,
+    examVisit?.nextCheckDate
+      ? {
+          key: 'exam',
+          icon: <ExamIcon />,
+          label: t('overview.examCheck'),
+          detail: examVisit.reason || examVisit.clinicName,
+          date: examVisit.nextCheckDate,
+          accentColor: theme.palette.primary.main,
+          onClick: () => setSelectedVisitId(examVisit.id),
+        }
+      : null,
+  ].filter((x): x is NonNullable<typeof x> => x !== null);
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <PageContainer>
@@ -940,6 +1016,9 @@ export default function HealthPassportPage() {
         onHistoryDeworming={() => setHistoryCategory('DEWORMING')}
         onHistoryEcto={() => setHistoryCategory('ECTOPARASITE')}
       />
+
+      {/* ── Najbližšie termíny a kontroly (vrátane vyšetrení) ───────────────── */}
+      <UpcomingRemindersCard items={upcomingReminders} />
 
       {/* ── Pawly Insight ──────────────────────────────────────────────────── */}
       <PawlyInsightCard

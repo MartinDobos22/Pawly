@@ -1,0 +1,125 @@
+import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Box, Card, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { EventAvailable as UpcomingIcon } from '@mui/icons-material';
+
+import { relativeDate } from '../../utils/relativeDate';
+
+export interface UpcomingReminderItem {
+  key: string;
+  icon: ReactElement;
+  label: string;
+  detail?: string;
+  /** ISO date the reminder is due. */
+  date: string;
+  accentColor: string;
+  onClick?: () => void;
+}
+
+interface Props {
+  items: UpcomingReminderItem[];
+}
+
+export default function UpcomingRemindersCard({ items }: Props) {
+  const theme = useTheme();
+  const { t } = useTranslation('healthPassport');
+
+  const rows = items
+    .map((item) => {
+      const rel = relativeDate(item.date);
+      return rel ? { ...item, rel } : null;
+    })
+    .filter((x): x is UpcomingReminderItem & { rel: NonNullable<ReturnType<typeof relativeDate>> } =>
+      x !== null
+    )
+    .sort((a, b) => a.rel.diffDays - b.rel.diffDays);
+
+  return (
+    <Card
+      sx={{
+        p: { xs: 2, md: 3 },
+        mb: 2.5,
+        borderRadius: 0,
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+        bgcolor: 'background.default',
+      }}
+    >
+      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 2 }}>
+        <UpcomingIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+        <Typography variant="h3" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
+          {t('upcoming.title')}
+        </Typography>
+      </Stack>
+
+      {rows.length === 0 ? (
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {t('upcoming.empty')}
+        </Typography>
+      ) : (
+        <Stack spacing={1}>
+          {rows.map((item) => {
+            const overdue = item.rel.diffDays < 0;
+            const color = overdue ? theme.palette.error.main : item.accentColor;
+            return (
+              <Box
+                key={item.key}
+                onClick={item.onClick}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  py: 1,
+                  px: 1,
+                  borderRadius: 2,
+                  cursor: item.onClick ? 'pointer' : 'default',
+                  transition: 'background-color 120ms ease',
+                  '&:hover': item.onClick
+                    ? { bgcolor: alpha(theme.palette.text.primary, 0.04) }
+                    : undefined,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 2,
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    bgcolor: alpha(color, 0.12),
+                    color,
+                    '& svg': { fontSize: 18 },
+                  }}
+                >
+                  {item.icon}
+                </Box>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                    {item.label}
+                  </Typography>
+                  {item.detail && (
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+                      {item.detail}
+                    </Typography>
+                  )}
+                </Box>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 700,
+                    color: overdue ? 'error.main' : 'text.primary',
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.rel.text}
+                </Typography>
+              </Box>
+            );
+          })}
+        </Stack>
+      )}
+    </Card>
+  );
+}

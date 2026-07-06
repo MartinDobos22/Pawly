@@ -680,10 +680,11 @@
     "renew": "Obnoviť",
     "edit": "Upraviť",
     "setup": "Nastaviť",
-    "treatment": "Liečba"
+    "treatment": "Liečba",
+    "examCheck": "Vyšetrenie / kontrola"
   },
   "upcoming": {
-    "title": "Najbližšie úlohy",
+    "title": "Najbližšie termíny",
     "allGood": "Všetko v poriadku",
     "noTasks": "Žiadne plánované úlohy.",
     "overdue": "Po termíne",
@@ -695,7 +696,8 @@
     "deworming": "Odčervenie – {{product}}",
     "antiparasitic": "Antiparazitikum – {{product}}",
     "todayDoses": "Dnešné dávky",
-    "medicationFallback": "Liek"
+    "medicationFallback": "Liek",
+    "empty": "Zatiaľ žiadne naplánované termíny."
   },
   "expenseCard": {
     "title": "Výdavky",
