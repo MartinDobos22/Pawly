@@ -687,7 +687,8 @@
     "treatmentOthers_many": "{{name}} + {{count}} ďalších",
     "treatmentOthers_other": "{{name}} + {{count}} ďalších",
     "treatmentEmpty": "Zatiaľ žiadna liečba",
-    "treatmentAddMore": "Pridať ďalšiu liečbu"
+    "treatmentAddMore": "Pridať ďalšiu liečbu",
+    "vaccinationEmpty": "Zatiaľ žiadne očkovanie"
   },
   "upcoming": {
     "title": "Najbližšie termíny",

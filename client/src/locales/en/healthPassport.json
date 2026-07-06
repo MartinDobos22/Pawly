@@ -674,7 +674,8 @@
     "treatmentOthers_one": "{{name}} + {{count}} more",
     "treatmentOthers_other": "{{name}} + {{count}} more",
     "treatmentEmpty": "No treatment yet",
-    "treatmentAddMore": "Add another treatment"
+    "treatmentAddMore": "Add another treatment",
+    "vaccinationEmpty": "No vaccination yet"
   },
   "upcoming": {
     "title": "Upcoming",

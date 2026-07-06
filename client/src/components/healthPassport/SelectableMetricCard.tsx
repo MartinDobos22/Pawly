@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box,
@@ -12,61 +12,78 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import { Healing as TreatmentIcon, Add as AddIcon } from '@mui/icons-material';
 
-import type { TreatmentRecord } from '../../types/petHealth';
-import { relativeDate, formatDateShort } from '../../utils/relativeDate';
+import { relativeDate } from '../../utils/relativeDate';
 import { statusByDate } from './utils.ts';
 import HelpHint from '../HelpHint';
 
+export interface MetricOption {
+  id: string;
+  label: string;
+  /** Due date the status/headline is derived from (validUntil / nextDueDate). */
+  dueDate?: string;
+  intervalDays?: number;
+}
+
 interface Props {
-  treatments: TreatmentRecord[];
+  icon: ReactElement;
+  label: string;
   hint?: string;
   accentColor: string;
+  options: MetricOption[];
+  soonDays: number;
+  emptyText: string;
   onAdd?: () => void;
   onOpen?: (id: string) => void;
 }
 
-export default function TreatmentMetricCard({ treatments, hint, accentColor, onAdd, onOpen }: Props) {
+export default function SelectableMetricCard({
+  icon,
+  label,
+  hint,
+  accentColor,
+  options,
+  soonDays,
+  emptyText,
+  onAdd,
+  onOpen,
+}: Props) {
   const theme = useTheme();
   const { t } = useTranslation('healthPassport');
 
-  // Zoradené podľa najbližšieho termínu (bez termínu na koniec) — default je najurgentnejšia.
+  // Zoradené podľa najbližšieho termínu (bez termínu na koniec) — default je najurgentnejší.
   const sorted = useMemo(
     () =>
-      [...treatments].sort((a, b) => {
-        if (!a.nextDueDate) return 1;
-        if (!b.nextDueDate) return -1;
-        return a.nextDueDate.localeCompare(b.nextDueDate);
+      [...options].sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.localeCompare(b.dueDate);
       }),
-    [treatments]
+    [options]
   );
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = sorted.find((x) => x.id === selectedId) ?? sorted[0];
-
+  const selected = sorted.find((o) => o.id === selectedId) ?? sorted[0];
   const isEmpty = !selected;
-  const rel = selected?.nextDueDate ? relativeDate(selected.nextDueDate) : null;
-  const status = selected?.nextDueDate ? statusByDate(selected.nextDueDate, 7) : 'UNKNOWN';
+
+  const rel = selected?.dueDate ? relativeDate(selected.dueDate) : null;
+  const status = selected?.dueDate ? statusByDate(selected.dueDate, soonDays) : 'UNKNOWN';
   const isOverdue = status === 'EXPIRED';
   const overdueDays = isOverdue && rel ? Math.abs(rel.diffDays) : 0;
 
   let progress: number | null = null;
-  if (selected?.nextDueDate && selected.intervalDays && selected.intervalDays > 0 && rel) {
+  if (selected?.dueDate && selected.intervalDays && selected.intervalDays > 0 && rel) {
     const used = selected.intervalDays - rel.diffDays;
     progress = Math.max(0, Math.min(100, (used / selected.intervalDays) * 100));
   }
 
-  const headlineColor = isEmpty ? 'text.secondary' : isOverdue ? 'error.main' : 'text.primary';
   const headline = isEmpty
     ? t('status.notSetHeadline')
     : isOverdue
       ? t('status.overdueHeadline', { count: overdueDays })
       : (rel?.text ?? t('status.valid'));
+  const headlineColor = isEmpty ? 'text.secondary' : isOverdue ? 'error.main' : 'text.primary';
   const barColor = isOverdue ? theme.palette.error.main : accentColor;
-
-  const optionLabel = (trt: TreatmentRecord) =>
-    `${t(`treatmentCategories.${trt.category}`)} · ${trt.name}`;
 
   return (
     <Card
@@ -77,7 +94,7 @@ export default function TreatmentMetricCard({ treatments, hint, accentColor, onA
         borderStyle: isEmpty ? 'dashed' : 'solid',
         display: 'flex',
         flexDirection: 'column',
-        gap: 1.5,
+        gap: 1.25,
       }}
     >
       <Stack direction="row" gap={1.5} alignItems="flex-start">
@@ -95,12 +112,12 @@ export default function TreatmentMetricCard({ treatments, hint, accentColor, onA
             '& svg': { fontSize: 21 },
           }}
         >
-          <TreatmentIcon />
+          {icon}
         </Box>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Stack direction="row" alignItems="center" gap={0.25} sx={{ minWidth: 0 }}>
             <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
-              {t('overview.treatment')}
+              {label}
             </Typography>
             {hint && <HelpHint text={hint} size={14} />}
           </Stack>
@@ -115,26 +132,32 @@ export default function TreatmentMetricCard({ treatments, hint, accentColor, onA
 
       {isEmpty ? (
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {t('overview.treatmentEmpty')}
+          {emptyText}
         </Typography>
+      ) : sorted.length > 1 ? (
+        <Select
+          variant="standard"
+          disableUnderline
+          value={selected.id}
+          onChange={(e) => setSelectedId(e.target.value)}
+          sx={{
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            color: accentColor,
+            '& .MuiSelect-select': { py: 0, pr: '20px !important' },
+            '& .MuiSvgIcon-root': { color: accentColor },
+          }}
+        >
+          {sorted.map((o) => (
+            <MenuItem key={o.id} value={o.id} sx={{ fontSize: '0.9rem' }}>
+              {o.label}
+            </MenuItem>
+          ))}
+        </Select>
       ) : (
-        <>
-          <Select
-            size="small"
-            value={selected.id}
-            onChange={(e) => setSelectedId(e.target.value)}
-            sx={{ '& .MuiSelect-select': { py: 0.75, fontSize: '0.85rem' } }}
-          >
-            {sorted.map((trt) => (
-              <MenuItem key={trt.id} value={trt.id} sx={{ fontSize: '0.85rem' }}>
-                {optionLabel(trt)}
-              </MenuItem>
-            ))}
-          </Select>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {t('detail.last', { date: formatDateShort(selected.dateGiven) })}
-          </Typography>
-        </>
+        <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+          {selected.label}
+        </Typography>
       )}
 
       <Box sx={{ flex: 1 }} />
@@ -162,21 +185,8 @@ export default function TreatmentMetricCard({ treatments, hint, accentColor, onA
           '&:hover': { borderColor: accentColor, bgcolor: alpha(accentColor, 0.06) },
         }}
       >
-        {isEmpty ? t('overview.add') : t('overview.schedule')}
+        {isEmpty ? t('overview.add') : t('overview.viewSchedule')}
       </Button>
-
-      {!isEmpty && onAdd && (
-        <Button
-          fullWidth
-          variant="text"
-          size="small"
-          startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-          onClick={onAdd}
-          sx={{ color: 'text.secondary', mt: -0.5 }}
-        >
-          {t('overview.treatmentAddMore')}
-        </Button>
-      )}
     </Card>
   );
 }

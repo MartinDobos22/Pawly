@@ -41,6 +41,8 @@ import FeatureIntro from '../components/FeatureIntro';
 import PageContainer from '../components/ui/PageContainer';
 import PassportHero, { type HeroInfoCard } from '../components/healthPassport/PassportHero';
 import HealthStatusOverview from '../components/healthPassport/HealthStatusOverview.tsx';
+import { type MetricOption } from '../components/healthPassport/SelectableMetricCard';
+import { VACCINE_TYPE_ORDER } from '../utils/vaccineTypes';
 import PawlyInsightCard from '../components/healthPassport/PawlyInsightCard';
 import UpcomingRemindersCard, {
   type UpcomingReminderItem,
@@ -181,6 +183,26 @@ export default function HealthPassportPage() {
     ? statusByDate(latestDeworming.nextDueDate, 7)
     : 'UNKNOWN';
   const ectoStatus = latestEcto ? statusByDate(latestEcto.nextDueDate, 7) : 'UNKNOWN';
+
+  // Dropdown možnosti pre dlaždice: očkovanie podľa typu (proti čomu), liečba podľa záznamu.
+  const vaccinationOptions: MetricOption[] = VACCINE_TYPE_ORDER.filter((type) =>
+    latestVaccineByType.has(type)
+  ).map((type) => {
+    const r = latestVaccineByType.get(type)!;
+    return {
+      id: r.id,
+      label: t(`vaccineTypes.${type}`),
+      dueDate: r.validUntil,
+      intervalDays: computeIntervalDaysFromDates(r.dateApplied, r.validUntil, 365),
+    };
+  });
+
+  const treatmentOptions: MetricOption[] = dogTreatments.map((trt) => ({
+    id: trt.id,
+    label: `${t(`treatmentCategories.${trt.category}`)} · ${trt.name}`,
+    dueDate: trt.nextDueDate,
+    intervalDays: trt.intervalDays,
+  }));
 
   // ── Timeline ───────────────────────────────────────────────────────────────
   const timeline: TimelineEvent[] = useMemo(() => {
@@ -939,21 +961,10 @@ export default function HealthPassportPage() {
 
       {/* ── Status overview ────────────────────────────────────────────────── */}
       <HealthStatusOverview
-        vaccinationStatus={vaccinationStatus}
+        vaccinationOptions={vaccinationOptions}
+        treatmentOptions={treatmentOptions}
         dewormingStatus={dewormingStatus}
         ectoStatus={ectoStatus}
-        vaccinationNextDate={urgentVaccination?.validUntil}
-        vaccinationLastDate={urgentVaccination?.dateApplied}
-        vaccinationDetail={vaccinationDetail}
-        vaccinationIntervalDays={
-          urgentVaccination
-            ? computeIntervalDaysFromDates(
-                urgentVaccination.dateApplied,
-                urgentVaccination.validUntil,
-                365
-              )
-            : undefined
-        }
         dewormingNextDate={latestDeworming?.nextDueDate}
         dewormingLastDate={latestDeworming?.dateGiven}
         dewormingIntervalDays={
@@ -976,16 +987,11 @@ export default function HealthPassportPage() {
             : undefined
         }
         ectoPreparation={latestEcto?.productName}
-        treatments={dogTreatments}
         onAddVaccination={() => setWizardOpen(true)}
         onAddDeworming={() => setWizardOpen(true)}
         onAddEcto={() => setWizardOpen(true)}
         onAddTreatment={() => setWizardOpen(true)}
-        onOpenVaccination={
-          urgentVaccination
-            ? () => setSelectedRecord({ id: urgentVaccination.id, type: 'VACCINATION' })
-            : undefined
-        }
+        onOpenVaccination={(id) => setSelectedRecord({ id, type: 'VACCINATION' })}
         onOpenDeworming={
           latestDeworming
             ? () => setSelectedRecord({ id: latestDeworming.id, type: 'DEWORMING' })
@@ -997,7 +1003,6 @@ export default function HealthPassportPage() {
             : undefined
         }
         onOpenTreatment={(id) => setSelectedRecord({ id, type: 'TREATMENT' })}
-        onHistoryVaccination={() => setHistoryCategory('VACCINATION')}
         onHistoryDeworming={() => setHistoryCategory('DEWORMING')}
         onHistoryEcto={() => setHistoryCategory('ECTOPARASITE')}
       />

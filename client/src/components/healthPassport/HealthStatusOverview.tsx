@@ -4,20 +4,17 @@ import {
   Vaccines as VaccinesIcon,
   Biotech as DewormIcon,
   PestControl as EctoIcon,
+  Healing as TreatmentIcon,
 } from '@mui/icons-material';
-import type { TreatmentRecord, ValidityStatus } from '../../types/petHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import HealthMetricCard from './HealthMetricCard';
-import TreatmentMetricCard from './TreatmentMetricCard';
+import SelectableMetricCard, { type MetricOption } from './SelectableMetricCard';
 
 interface HealthStatusOverviewProps {
-  vaccinationStatus: ValidityStatus;
+  vaccinationOptions: MetricOption[];
+  treatmentOptions: MetricOption[];
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
-  treatments: TreatmentRecord[];
-  vaccinationNextDate?: string;
-  vaccinationLastDate?: string;
-  vaccinationDetail?: string;
-  vaccinationIntervalDays?: number;
   dewormingNextDate?: string;
   dewormingLastDate?: string;
   dewormingIntervalDays?: number;
@@ -30,11 +27,10 @@ interface HealthStatusOverviewProps {
   onAddDeworming?: () => void;
   onAddEcto?: () => void;
   onAddTreatment?: () => void;
-  onOpenVaccination?: () => void;
+  onOpenVaccination?: (id: string) => void;
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
   onOpenTreatment?: (id: string) => void;
-  onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
   onHistoryEcto?: () => void;
 }
@@ -43,14 +39,10 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const {
-    vaccinationStatus,
+    vaccinationOptions,
+    treatmentOptions,
     dewormingStatus,
     ectoStatus,
-    treatments,
-    vaccinationNextDate,
-    vaccinationLastDate,
-    vaccinationDetail,
-    vaccinationIntervalDays,
     dewormingNextDate,
     dewormingLastDate,
     dewormingIntervalDays,
@@ -67,7 +59,6 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     onOpenDeworming,
     onOpenEcto,
     onOpenTreatment,
-    onHistoryVaccination,
     onHistoryDeworming,
     onHistoryEcto,
   } = props;
@@ -111,22 +102,16 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           gap: 2,
         }}
       >
-        <HealthMetricCard
+        <SelectableMetricCard
           icon={<VaccinesIcon />}
           label={t('overview.vaccination')}
           hint={t('hints.vaccination')}
-          status={vaccinationStatus}
           accentColor={theme.palette.success.main}
-          nextDate={vaccinationNextDate}
-          lastDate={vaccinationLastDate}
-          detail={vaccinationDetail}
-          intervalDays={vaccinationIntervalDays}
-          primaryActionLabel={
-            vaccinationStatus === 'UNKNOWN' ? t('overview.add') : t('overview.viewSchedule')
-          }
-          onPrimaryAction={onAddVaccination}
-          onOpen={vaccinationStatus !== 'UNKNOWN' ? onOpenVaccination : undefined}
-          onHistory={vaccinationStatus !== 'UNKNOWN' ? onHistoryVaccination : undefined}
+          options={vaccinationOptions}
+          soonDays={30}
+          emptyText={t('overview.vaccinationEmpty')}
+          onAdd={onAddVaccination}
+          onOpen={onOpenVaccination}
         />
         <HealthMetricCard
           icon={<DewormIcon />}
@@ -160,10 +145,14 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
           onHistory={ectoStatus !== 'UNKNOWN' ? onHistoryEcto : undefined}
         />
-        <TreatmentMetricCard
-          treatments={treatments}
+        <SelectableMetricCard
+          icon={<TreatmentIcon />}
+          label={t('overview.treatment')}
           hint={t('hints.treatment')}
           accentColor={theme.palette.warning.main}
+          options={treatmentOptions}
+          soonDays={7}
+          emptyText={t('overview.treatmentEmpty')}
           onAdd={onAddTreatment}
           onOpen={onOpenTreatment}
         />
