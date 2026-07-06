@@ -131,6 +131,7 @@ export const treatmentMapper: EntityMapper<TreatmentRecord> = {
     intervalDays: num(r.interval_days),
     nextDueDate: str(r.next_due_date) ?? '',
     note: str(r.note),
+    createdAt: str(r.created_at),
     attachments: (r.attachments as TreatmentRecord['attachments']) ?? [],
   }),
 };

@@ -110,6 +110,7 @@ export interface TreatmentRecord {
   intervalDays?: number;
   nextDueDate: string;
   note?: string;
+  createdAt?: string;
   attachments?: AttachmentRef[];
 }
 
@@ -187,6 +188,8 @@ export interface TimelineEvent {
   title: string;
   subtitle?: string;
   date: string;
+  /** Creation timestamp — same-day tiebreak so newest-entered shows first. */
+  createdAt?: string;
 }
 
 export interface WeightLog {

@@ -4,16 +4,16 @@ import {
   Vaccines as VaccinesIcon,
   Biotech as DewormIcon,
   PestControl as EctoIcon,
-  Healing as TreatmentIcon,
 } from '@mui/icons-material';
-import type { ValidityStatus } from '../../types/petHealth';
+import type { TreatmentRecord, ValidityStatus } from '../../types/petHealth';
 import HealthMetricCard from './HealthMetricCard';
+import TreatmentMetricCard from './TreatmentMetricCard';
 
 interface HealthStatusOverviewProps {
   vaccinationStatus: ValidityStatus;
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
-  treatmentStatus: ValidityStatus;
+  treatments: TreatmentRecord[];
   vaccinationNextDate?: string;
   vaccinationLastDate?: string;
   vaccinationDetail?: string;
@@ -26,10 +26,6 @@ interface HealthStatusOverviewProps {
   ectoLastDate?: string;
   ectoIntervalDays?: number;
   ectoPreparation?: string;
-  treatmentNextDate?: string;
-  treatmentLastDate?: string;
-  treatmentIntervalDays?: number;
-  treatmentDetail?: string;
   onAddVaccination?: () => void;
   onAddDeworming?: () => void;
   onAddEcto?: () => void;
@@ -37,7 +33,7 @@ interface HealthStatusOverviewProps {
   onOpenVaccination?: () => void;
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
-  onOpenTreatment?: () => void;
+  onOpenTreatment?: (id: string) => void;
   onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
   onHistoryEcto?: () => void;
@@ -50,7 +46,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     vaccinationStatus,
     dewormingStatus,
     ectoStatus,
-    treatmentStatus,
+    treatments,
     vaccinationNextDate,
     vaccinationLastDate,
     vaccinationDetail,
@@ -63,10 +59,6 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     ectoLastDate,
     ectoIntervalDays,
     ectoPreparation,
-    treatmentNextDate,
-    treatmentLastDate,
-    treatmentIntervalDays,
-    treatmentDetail,
     onAddVaccination,
     onAddDeworming,
     onAddEcto,
@@ -168,21 +160,12 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
           onHistory={ectoStatus !== 'UNKNOWN' ? onHistoryEcto : undefined}
         />
-        <HealthMetricCard
-          icon={<TreatmentIcon />}
-          label={t('overview.treatment')}
+        <TreatmentMetricCard
+          treatments={treatments}
           hint={t('hints.treatment')}
-          status={treatmentStatus}
           accentColor={theme.palette.warning.main}
-          nextDate={treatmentNextDate}
-          lastDate={treatmentLastDate}
-          intervalDays={treatmentIntervalDays}
-          detail={treatmentDetail}
-          primaryActionLabel={
-            treatmentStatus === 'UNKNOWN' ? t('overview.add') : t('overview.schedule')
-          }
-          onPrimaryAction={onAddTreatment}
-          onOpen={treatmentStatus !== 'UNKNOWN' ? onOpenTreatment : undefined}
+          onAdd={onAddTreatment}
+          onOpen={onOpenTreatment}
         />
       </Box>
     </Card>

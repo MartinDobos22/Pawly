@@ -672,7 +672,9 @@
     "treatment": "Treatment",
     "examCheck": "Examination / check-up",
     "treatmentOthers_one": "{{name}} + {{count}} more",
-    "treatmentOthers_other": "{{name}} + {{count}} more"
+    "treatmentOthers_other": "{{name}} + {{count}} more",
+    "treatmentEmpty": "No treatment yet",
+    "treatmentAddMore": "Add another treatment"
   },
   "upcoming": {
     "title": "Upcoming",

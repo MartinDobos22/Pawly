@@ -110,6 +110,7 @@ export interface TreatmentRecord {
   intervalDays?: number;
   nextDueDate: string;
   note?: string;
+  createdAt?: string;
   attachments?: AttachmentRef[];
 }
 
