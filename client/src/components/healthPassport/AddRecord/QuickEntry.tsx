@@ -41,8 +41,8 @@ import type {
   VaccinationFieldsValues,
 } from './formTypes';
 
-// Quick entry pridáva aj „Injekcie" (opakovaná liečba), ktoré nie sú súčasťou
-// visit-bundle linked records — preto vlastný QuickKind namiesto LinkedKind.
+// Quick entry pridáva aj „Liečba" (chronická/opakovaná liečba), ktorá nie je
+// súčasťou visit-bundle linked records — preto vlastný QuickKind namiesto LinkedKind.
 type QuickKind = LinkedKind | 'treatment';
 
 const DEFAULTS = {

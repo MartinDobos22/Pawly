@@ -285,7 +285,7 @@
     "recommendationsOptional": "Recommendations (optional)",
     "unknownRecord": "Unknown record",
     "kindTreatment": "Treatment",
-    "errorTreatmentName": "Enter the injection or treatment name"
+    "errorTreatmentName": "Enter the medication name"
   },
   "attachmentUpload": {
     "docLabel": "Document description (optional)",

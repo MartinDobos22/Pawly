@@ -291,7 +291,7 @@
     "unknownRecord": "Neznámy záznam",
     "required_other": "Doplňte {{count}} povinných polí",
     "kindTreatment": "Liečba",
-    "errorTreatmentName": "Zadaj názov injekcie alebo liečby"
+    "errorTreatmentName": "Zadaj názov liečiva"
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",
