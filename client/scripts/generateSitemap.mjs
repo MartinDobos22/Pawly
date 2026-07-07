@@ -17,14 +17,18 @@ const OUT_PATH = resolve(clientRoot, 'dist/sitemap.xml');
 
 // Statické verejné routy (mimo poradne). changefreq/priority zachované z pôvodnej
 // ručnej sitemap.
+// Prerendrované routy (dist/<path>/index.html) majú koncovú lomku — Netlify na ňu
+// 301-uje z verzie bez lomky, takže do sitemap patrí priamo 200-URL s lomkou.
+// '/' (root) a SPA routy (/login, /register — nie sú prerendrované, neredirectujú)
+// ostávajú bez lomky.
 const STATIC_ROUTES = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/poradna', changefreq: 'weekly', priority: '0.8' },
-  { path: '/info', changefreq: 'monthly', priority: '0.4' },
-  { path: '/kontakt', changefreq: 'yearly', priority: '0.3' },
+  { path: '/poradna/', changefreq: 'weekly', priority: '0.8' },
+  { path: '/info/', changefreq: 'monthly', priority: '0.4' },
+  { path: '/kontakt/', changefreq: 'yearly', priority: '0.3' },
   { path: '/login', changefreq: 'monthly', priority: '0.3' },
   { path: '/register', changefreq: 'monthly', priority: '0.5' },
-  { path: '/ochrana-sukromia', changefreq: 'yearly', priority: '0.3' },
+  { path: '/ochrana-sukromia/', changefreq: 'yearly', priority: '0.3' },
 ];
 
 function readArticles() {
@@ -57,7 +61,7 @@ const articleEntries = readArticles()
   .filter((a) => typeof a?.slug === 'string' && a.slug.length > 0)
   .map((a) =>
     urlEntry({
-      path: `/poradna/${a.slug}`,
+      path: `/poradna/${a.slug}/`,
       changefreq: 'monthly',
       priority: '0.8',
       lastmod: isIsoDate(a.updated) ? a.updated.slice(0, 10) : undefined,
