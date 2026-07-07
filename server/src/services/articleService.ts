@@ -41,7 +41,7 @@ export function isTransitionAllowed(from: ArticleStatus, to: ArticleStatus): boo
 }
 
 const SELECT_COLUMNS =
-  'slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cta_intent, author, sources, updated, position, reviewed_by, reviewed_at, reviewer_title, medical_reviewed_at, disclaimer';
+  'slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, position, reviewed_by, reviewed_at, reviewer_title, medical_reviewed_at, disclaimer';
 
 const SELECT_COLUMNS_ADMIN = `${SELECT_COLUMNS}, published, status, assigned_editor, editorial_notes, publish_at, unpublish_at, submitted_for_review_at, submitted_for_review_by, approved_at, approved_by, published_at, published_by, archived_at, archived_by, risk_level, fact_checked_by, fact_checked_at, medical_reviewed_by, last_content_review_at, next_review_due_at`;
 
@@ -74,6 +74,7 @@ function rowToArticle(row: Row): Article {
     updated: asString(row.updated),
     coverImage: asOptionalString(row.cover_image),
     coverAlt: asOptionalString(row.cover_alt),
+    coverCredit: asOptionalString(row.cover_credit),
     ctaIntent: asString(row.cta_intent),
     reviewedBy: asOptionalString(row.reviewed_by),
     reviewedAt: asOptionalString(row.reviewed_at),
@@ -274,6 +275,7 @@ interface ContentRow {
   assigned_editor: string | null;
   editorial_notes: string | null;
   cover_alt: string | null;
+  cover_credit: string | null;
   risk_level: RiskLevel | null;
   reviewed_by: string | null;
   reviewed_at: string | null;
@@ -334,6 +336,7 @@ function toRow(input: unknown): ContentRow {
         : null,
     cover_alt:
       typeof a.coverAlt === 'string' && a.coverAlt.trim().length > 0 ? a.coverAlt.trim() : null,
+    cover_credit: optionalStr(a.coverCredit),
     cta_intent: reqStr(a.ctaIntent, 'ctaIntent'),
     author: typeof a.author === 'string' && a.author.trim().length > 0 ? a.author.trim() : null,
     sources: validateSources(a.sources),
