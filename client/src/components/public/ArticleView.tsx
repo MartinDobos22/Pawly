@@ -63,22 +63,9 @@ export default function ArticleView({ article, preview = false }: Props) {
 
   return (
     <>
-      <Box
-        component="header"
-        sx={{
-          position: 'relative',
-          color: theme.palette.common.white,
-          bgcolor: theme.palette[color].dark,
-          backgroundImage: `linear-gradient(180deg, ${alpha(theme.palette.common.black, 0.35)} 0%, ${alpha(theme.palette.common.black, 0.7)} 100%)${
-            article.coverImage ? `, url(${article.coverImage})` : ''
-          }`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          py: { xs: 6, md: 10 },
-        }}
-      >
-        <Container maxWidth="md">
-          <Breadcrumbs sx={{ mb: theme.spacing(2), color: 'inherit' }}>
+      <Box component="header" sx={{ bgcolor: theme.palette.background.default }}>
+        <Container maxWidth="md" sx={{ pt: { xs: 3, md: 5 } }}>
+          <Breadcrumbs sx={{ mb: theme.spacing(3) }}>
             <Link component={RouterLink} to="/" underline="hover" color="inherit" variant="body2">
               Pawly
             </Link>
@@ -91,29 +78,37 @@ export default function ArticleView({ article, preview = false }: Props) {
             >
               Poradňa
             </Link>
-            <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.75) }}>
+            <Typography variant="body2" color="text.secondary">
               {article.title}
             </Typography>
           </Breadcrumbs>
 
-          <Chip
-            label={CATEGORY_LABELS[article.category]}
-            color={color}
-            size="small"
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            flexWrap="wrap"
+            useFlexGap
             sx={{ mb: theme.spacing(2) }}
-          />
+          >
+            <Chip label={CATEGORY_LABELS[article.category]} color={color} size="small" />
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <ScheduleIcon sx={{ fontSize: theme.typography.body2.fontSize }} color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {author} · Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min
+                čítania
+              </Typography>
+            </Stack>
+          </Stack>
 
-          <Typography variant="h3" component="h1" sx={{ mb: theme.spacing(2) }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            color="text.primary"
+            sx={{ fontWeight: 700, mb: theme.spacing(2) }}
+          >
             {article.title}
           </Typography>
-
-          <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="wrap" useFlexGap>
-            <ScheduleIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-            <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
-              {author} · Aktualizované {formatUpdated(article.updated)} · {readingMinutes} min
-              čítania
-            </Typography>
-          </Stack>
 
           {article.medicalReviewedAt && (
             <Stack
@@ -122,16 +117,46 @@ export default function ArticleView({ article, preview = false }: Props) {
               alignItems="center"
               flexWrap="wrap"
               useFlexGap
-              sx={{ mt: theme.spacing(1) }}
+              sx={{ mb: theme.spacing(1) }}
             >
-              <VerifiedIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-              <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
+              <VerifiedIcon sx={{ fontSize: theme.typography.body2.fontSize }} color="success" />
+              <Typography variant="body2" color="text.secondary">
                 Odborne skontrolované {formatUpdated(article.medicalReviewedAt)}
                 {article.reviewerTitle ? ` · ${article.reviewerTitle}` : ''}
               </Typography>
             </Stack>
           )}
         </Container>
+
+        {article.coverImage && (
+          <Container maxWidth="md" sx={{ mt: { xs: 2, md: 3 } }}>
+            <Box component="figure" sx={{ m: 0 }}>
+              <Box
+                component="img"
+                src={article.coverImage}
+                alt={article.coverAlt ?? article.title}
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  aspectRatio: '16 / 9',
+                  objectFit: 'cover',
+                  borderRadius: `${theme.shape.borderRadius}px`,
+                  bgcolor: alpha(theme.palette[color].main, 0.12),
+                }}
+              />
+              {article.coverAlt && (
+                <Typography
+                  component="figcaption"
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mt: theme.spacing(1) }}
+                >
+                  {article.coverAlt}
+                </Typography>
+              )}
+            </Box>
+          </Container>
+        )}
       </Box>
 
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
