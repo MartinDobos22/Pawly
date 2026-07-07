@@ -31,6 +31,7 @@ function parsePreferencesBody(body: unknown): Partial<NotificationPreferences> {
     'notifyDewormings',
     'notifyEctoparasites',
     'notifyVetChecks',
+    'notifyTreatments',
     'notifyMedications',
   ] as const) {
     if (key in b) {

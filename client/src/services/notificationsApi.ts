@@ -10,6 +10,7 @@ export interface NotificationPreferences {
   notifyDewormings: boolean;
   notifyEctoparasites: boolean;
   notifyVetChecks: boolean;
+  notifyTreatments: boolean;
   notifyMedications: boolean;
 }
 
@@ -18,6 +19,7 @@ export type NotificationRecordType =
   | 'DEWORMING'
   | 'ECTOPARASITE'
   | 'VET_CHECK'
+  | 'TREATMENT'
   | 'MEDICATION';
 
 export interface UpcomingItem {
