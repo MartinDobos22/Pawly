@@ -144,15 +144,27 @@ export default function ArticleView({ article, preview = false }: Props) {
                   bgcolor: alpha(theme.palette[color].main, 0.12),
                 }}
               />
-              {article.coverAlt && (
-                <Typography
+              {(article.coverAlt || article.coverCredit) && (
+                <Stack
                   component="figcaption"
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ display: 'block', mt: theme.spacing(1) }}
+                  direction="row"
+                  spacing={1}
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                  useFlexGap
+                  sx={{ mt: theme.spacing(1) }}
                 >
-                  {article.coverAlt}
-                </Typography>
+                  {article.coverAlt && (
+                    <Typography variant="caption" color="text.secondary">
+                      {article.coverAlt}
+                    </Typography>
+                  )}
+                  {article.coverCredit && (
+                    <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+                      Zdroj: {article.coverCredit}
+                    </Typography>
+                  )}
+                </Stack>
               )}
             </Box>
           </Container>

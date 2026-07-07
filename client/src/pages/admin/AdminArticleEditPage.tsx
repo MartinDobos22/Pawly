@@ -106,6 +106,7 @@ function emptyArticle(): AdminArticle {
     internalNotes: '',
     scheduledFor: '',
     coverAlt: '',
+    coverCredit: '',
   };
 }
 
@@ -661,6 +662,15 @@ export default function AdminArticleEditPage() {
                       size="small"
                       fullWidth
                       helperText="Popis obrázka pre prístupnosť a zdieľanie (og:image:alt)."
+                    />
+                    <TextField
+                      id="field-coverCredit"
+                      label="Zdroj titulného obrázka"
+                      value={form.coverCredit ?? ''}
+                      onChange={(e) => set('coverCredit', e.target.value)}
+                      size="small"
+                      fullWidth
+                      helperText={'Popisok pod obrázkom, napr. „Zdroj: Unsplash". Nepovinné.'}
                     />
                     <Button
                       component="label"

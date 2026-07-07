@@ -47,6 +47,8 @@ export interface Article {
   coverImage?: string;
   /** Alt text titulného obrázka (prístupnosť + og:image:alt). */
   coverAlt?: string;
+  /** Zdroj/kredit titulného obrázka — popisok pod obrázkom (napr. „Zdroj: Unsplash"). */
+  coverCredit?: string;
   /** CTA na konci článku → registrácia s daným intentom. */
   ctaIntent: OnboardingIntent;
   // Odborná kontrola — verejne zobraziteľné.
