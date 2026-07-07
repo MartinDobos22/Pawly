@@ -285,7 +285,15 @@
     "recommendationsOptional": "Recommendations (optional)",
     "unknownRecord": "Unknown record",
     "kindTreatment": "Treatment",
-    "errorTreatmentName": "Enter the medication name"
+    "errorTreatmentName": "Enter the medication name",
+    "kindDesc": {
+      "vaccination": "Vaccination against a disease (rabies, combined…) with an expiry date.",
+      "deworming": "Deworming – product against intestinal parasites with a repeat interval.",
+      "ecto": "Protection against ticks and fleas (spot-on, tablet, collar).",
+      "treatment": "Chronic or recurring treatment of a condition (allergy, heart, joints…) with a next-due reminder.",
+      "medication": "One-off or short-term medication with dosing – no next-due reminder.",
+      "diet": "Food and how the animal tolerates it."
+    }
   },
   "attachmentUpload": {
     "docLabel": "Document description (optional)",
@@ -363,6 +371,10 @@
     "ecto": {
       "label": "Ectoparasites (ticks / fleas)",
       "hint": "Antiparasitics, spot-on or tablets"
+    },
+    "treatment": {
+      "label": "Treatment",
+      "hint": "Chronic or recurring treatment with a next-due reminder"
     },
     "medication": {
       "label": "Medication",
@@ -560,23 +572,8 @@
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
     "saveUpdate": "Save",
-    "allergySuggestions": [
-      "Chicken",
-      "Beef",
-      "Lamb",
-      "Fish",
-      "Eggs",
-      "Wheat",
-      "Corn",
-      "Soy"
-    ],
-    "intoleranceSuggestions": [
-      "Gluten",
-      "Lactose",
-      "Corn",
-      "Soy",
-      "Grains"
-    ],
+    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
+    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
     "healthSuggestions": [
       "Diabetes",
       "Kidney problems",
@@ -819,6 +816,7 @@
     "vaccinationNameRequired": "Enter the vaccine name.",
     "productRequired": "Enter the product name.",
     "medicationNameRequired": "Enter the medication name.",
+    "treatmentNameRequired": "Enter the medication name.",
     "foodNameRequired": "Enter the food name.",
     "nonNegativeRequired": "Enter a non-negative number.",
     "vaccinationValidUntilBeforeApplied": "Valid-until date must be on or after the application date.",

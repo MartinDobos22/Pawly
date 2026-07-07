@@ -192,6 +192,7 @@ export default function AddRecord({
           petId={petId}
           currentDietEntryId={currentDietEntryId}
           onSave={handleSave}
+          onSaveTreatment={handleSaveTreatment}
           onCancel={handleClose}
         >
           {dialogTitle}

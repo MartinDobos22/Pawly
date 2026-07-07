@@ -22,6 +22,7 @@ import type {
   LinkedKind,
   ManualFormState,
   MedicationFieldsValues,
+  TreatmentFieldsValues,
   VaccinationFieldsValues,
   VisitBasicsValues,
 } from './formTypes';
@@ -44,6 +45,13 @@ const DEFAULT_ECTO: EctoFieldsValues = {
   form: 'TABLET',
   validUntil: '',
   intervalDays: 30,
+};
+
+const DEFAULT_TREATMENT: TreatmentFieldsValues = {
+  category: 'ALLERGY_SKIN',
+  name: '',
+  form: 'TABLET',
+  intervalDays: 28,
 };
 
 const DEFAULT_MEDICATION: MedicationFieldsValues = {
@@ -103,6 +111,11 @@ export type ManualFormAction =
       value: string | number | EctoparasiteRecord['form'];
     }
   | {
+      type: 'SET_TREATMENT_FIELD';
+      field: keyof TreatmentFieldsValues;
+      value: string | number | TreatmentFieldsValues['category'] | TreatmentFieldsValues['form'];
+    }
+  | {
       type: 'SET_MEDICATION_FIELD';
       field: keyof MedicationFieldsValues;
       value: string;
@@ -120,6 +133,7 @@ const defaultsByKind = {
   vaccination: DEFAULT_VACCINATION,
   deworming: DEFAULT_DEWORMING,
   ecto: DEFAULT_ECTO,
+  treatment: DEFAULT_TREATMENT,
   medication: DEFAULT_MEDICATION,
   diet: DEFAULT_DIET,
 } as const;
@@ -137,6 +151,7 @@ function reducer(state: ManualFormState, action: ManualFormAction): ManualFormSt
           next.vaccination = next.vaccination ?? DEFAULT_VACCINATION;
         if (action.kind === 'deworming') next.deworming = next.deworming ?? DEFAULT_DEWORMING;
         if (action.kind === 'ecto') next.ecto = next.ecto ?? DEFAULT_ECTO;
+        if (action.kind === 'treatment') next.treatment = next.treatment ?? DEFAULT_TREATMENT;
         if (action.kind === 'medication') next.medication = next.medication ?? DEFAULT_MEDICATION;
         if (action.kind === 'diet') next.diet = next.diet ?? DEFAULT_DIET;
       } else {
@@ -163,6 +178,13 @@ function reducer(state: ManualFormState, action: ManualFormAction): ManualFormSt
       return {
         ...state,
         linked: { ...state.linked, ecto: { ...current, [action.field]: action.value } },
+      };
+    }
+    case 'SET_TREATMENT_FIELD': {
+      const current = state.linked.treatment ?? defaultsByKind.treatment;
+      return {
+        ...state,
+        linked: { ...state.linked, treatment: { ...current, [action.field]: action.value } },
       };
     }
     case 'SET_MEDICATION_FIELD': {
@@ -239,6 +261,9 @@ export function validateManualForm(state: ManualFormState): ErrorMap {
   if (state.linked.ecto && isInvalidDateRange(state.basics.date, state.linked.ecto.validUntil)) {
     errors['linked.ecto.validUntil'] = t('validation.ectoNextDueBeforeGiven');
   }
+  if (state.linked.treatment && !state.linked.treatment.name.trim()) {
+    errors['linked.treatment.name'] = t('validation.treatmentNameRequired');
+  }
   if (state.linked.medication && !state.linked.medication.name.trim()) {
     errors['linked.medication.name'] = t('validation.medicationNameRequired');
   }
@@ -266,6 +291,7 @@ export const sectionsWithErrors = (errors: ErrorMap) => ({
     errors['linked.deworming.validUntil'] ||
     errors['linked.ecto.product'] ||
     errors['linked.ecto.validUntil'] ||
+    errors['linked.treatment.name'] ||
     errors['linked.medication.name'] ||
     errors['linked.diet.foodName']
   ),

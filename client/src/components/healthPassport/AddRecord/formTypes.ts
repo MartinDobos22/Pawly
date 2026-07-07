@@ -63,12 +63,13 @@ export interface DietFieldsValues {
   suitabilityStatus: NonNullable<DietEntry['suitabilityStatus']>;
 }
 
-export type LinkedKind = 'vaccination' | 'deworming' | 'ecto' | 'medication' | 'diet';
+export type LinkedKind = 'vaccination' | 'deworming' | 'ecto' | 'treatment' | 'medication' | 'diet';
 
 export interface LinkedRecordsValues {
   vaccination?: VaccinationFieldsValues;
   deworming?: DewormingFieldsValues;
   ecto?: EctoFieldsValues;
+  treatment?: TreatmentFieldsValues;
   medication?: MedicationFieldsValues;
   diet?: DietFieldsValues;
 }
@@ -89,6 +90,7 @@ export type FieldKey =
   | 'linked.deworming.validUntil'
   | 'linked.ecto.product'
   | 'linked.ecto.validUntil'
+  | 'linked.treatment.name'
   | 'linked.medication.name'
   | 'linked.diet.foodName'
   | 'expenses.totalExpense'

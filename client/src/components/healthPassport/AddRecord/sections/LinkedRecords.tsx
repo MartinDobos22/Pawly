@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Collapse, Stack, Switch, Typography } from '@mui/material';
 import {
   Biotech as DewormIcon,
+  Healing as HealingIcon,
   Link as LinkIcon,
   Medication as MedIcon,
   PestControl as EctoIcon,
@@ -19,12 +20,14 @@ import type {
   LinkedKind,
   LinkedRecordsValues,
   MedicationFieldsValues,
+  TreatmentFieldsValues,
   VaccinationFieldsValues,
 } from '../formTypes';
 import type { ManualFormAction } from '../useAddRecordForm';
 import VaccinationFields from './linked/VaccinationFields';
 import DewormingFields from './linked/DewormingFields';
 import EctoFields from './linked/EctoFields';
+import TreatmentFields from './linked/TreatmentFields';
 import MedicationFields from './linked/MedicationFields';
 import DietFields from './linked/DietFields';
 import SectionCard from './SectionCard';
@@ -95,6 +98,11 @@ export default function LinkedRecords({
   const setEctoField = <K extends keyof EctoFieldsValues>(field: K, value: EctoFieldsValues[K]) =>
     dispatch({ type: 'SET_ECTO_FIELD', field, value });
 
+  const setTreatmentField = <K extends keyof TreatmentFieldsValues>(
+    field: K,
+    value: TreatmentFieldsValues[K]
+  ) => dispatch({ type: 'SET_TREATMENT_FIELD', field, value });
+
   const setMedicationField = <K extends keyof MedicationFieldsValues>(
     field: K,
     value: MedicationFieldsValues[K]
@@ -161,6 +169,23 @@ export default function LinkedRecords({
               baseDate={baseDate}
               errorProduct={errors['linked.ecto.product']}
               onChange={setEctoField}
+            />
+          )}
+        </Row>
+
+        <Row
+          icon={<HealingIcon fontSize="small" />}
+          label={t('linkedRecords.treatment.label')}
+          hint={t('linkedRecords.treatment.hint')}
+          on={Boolean(values.treatment)}
+          onToggle={(next) => toggle('treatment', next)}
+        >
+          {values.treatment && (
+            <TreatmentFields
+              values={values.treatment}
+              baseDate={baseDate}
+              errorName={errors['linked.treatment.name']}
+              onChange={setTreatmentField}
             />
           )}
         </Row>

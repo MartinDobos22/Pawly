@@ -291,7 +291,15 @@
     "unknownRecord": "Neznámy záznam",
     "required_other": "Doplňte {{count}} povinných polí",
     "kindTreatment": "Liečba",
-    "errorTreatmentName": "Zadaj názov liečiva"
+    "errorTreatmentName": "Zadaj názov liečiva",
+    "kindDesc": {
+      "vaccination": "Očkovanie proti chorobe (besnota, kombinovaná…) s dátumom platnosti.",
+      "deworming": "Odčervenie – prípravok proti črevným parazitom s intervalom opakovania.",
+      "ecto": "Ochrana proti kliešťom a blchám (pipeta, tabletka, obojok).",
+      "treatment": "Chronická alebo opakovaná liečba problému (alergia, srdce, kĺby…) s pripomienkou ďalšieho termínu.",
+      "medication": "Jednorazový alebo krátkodobý liek s dávkovaním – bez pripomienky ďalšieho termínu.",
+      "diet": "Krmivo a jeho znášanlivosť u zvieraťa."
+    }
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",
@@ -369,6 +377,10 @@
     "ecto": {
       "label": "Ektoparazity (kliešte / blchy)",
       "hint": "Antiparazitiká, spot-on alebo tablety"
+    },
+    "treatment": {
+      "label": "Liečba",
+      "hint": "Chronická alebo opakovaná liečba s pripomienkou ďalšieho termínu"
     },
     "medication": {
       "label": "Liek",
@@ -577,13 +589,7 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": [
-      "Lepok",
-      "Laktóza",
-      "Kukurica",
-      "Sója",
-      "Obilniny"
-    ],
+    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
@@ -840,6 +846,7 @@
     "vaccinationNameRequired": "Zadajte názov vakcíny.",
     "productRequired": "Zadajte názov prípravku.",
     "medicationNameRequired": "Zadajte názov lieku.",
+    "treatmentNameRequired": "Zadajte názov liečiva.",
     "foodNameRequired": "Zadajte názov krmiva.",
     "nonNegativeRequired": "Zadajte nezáporné číslo.",
     "vaccinationValidUntilBeforeApplied": "Dátum platnosti musí byť rovnaký alebo neskôr ako dátum aplikácie.",

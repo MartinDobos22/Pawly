@@ -41,9 +41,9 @@ import type {
   VaccinationFieldsValues,
 } from './formTypes';
 
-// Quick entry pridáva aj „Liečba" (chronická/opakovaná liečba), ktorá nie je
-// súčasťou visit-bundle linked records — preto vlastný QuickKind namiesto LinkedKind.
-type QuickKind = LinkedKind | 'treatment';
+// „Liečba" (chronická/opakovaná liečba) sa neukladá cez visit-bundle, ale
+// priamym addTreatment — preto ju submit vetví zvlášť (viď onSaveTreatment nižšie).
+type QuickKind = LinkedKind;
 
 const DEFAULTS = {
   vaccination: {
@@ -453,6 +453,17 @@ export function QuickEntryBody() {
             );
           })}
         </Stack>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 1.25,
+            fontSize: '0.8rem',
+            lineHeight: 1.4,
+          }}
+        >
+          {t(`addRecord.kindDesc.${kind}`)}
+        </Typography>
       </Box>
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="flex-start">

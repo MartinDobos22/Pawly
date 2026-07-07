@@ -20,7 +20,9 @@ import {
   ListItemText,
 } from '@mui/material';
 
+import type { TreatmentRecord } from '../../../types/petHealth';
 import type { VisitBundle } from '../../../utils/vetVisitHelper';
+import { plusDays } from '../utils';
 import { findBundleDuplicates, type DuplicateMatch } from '../../../utils/duplicateDetection';
 import { useHealthData } from '../../../hooks/useHealthData';
 import type { ErrorMap, ManualFormState } from './formTypes';
@@ -58,6 +60,7 @@ interface ManualEntryProviderProps {
   petId: string;
   currentDietEntryId?: string;
   onSave: (bundle: VisitBundle) => void;
+  onSaveTreatment: (payload: Partial<TreatmentRecord>) => void;
   onCancel: () => void;
   children: ReactNode;
 }
@@ -66,6 +69,7 @@ export default function ManualEntryProvider({
   petId,
   currentDietEntryId,
   onSave,
+  onSaveTreatment,
   onCancel,
   children,
 }: ManualEntryProviderProps) {
@@ -92,6 +96,18 @@ export default function ManualEntryProvider({
   }, [state.submitAttempted, sectionErrors.linked, sectionErrors.expenses]);
 
   const finalize = (bundle: VisitBundle): void => {
+    const tr = state.linked.treatment;
+    if (tr && tr.name.trim()) {
+      onSaveTreatment({
+        petId,
+        category: tr.category,
+        name: tr.name.trim(),
+        form: tr.form,
+        dateGiven: state.basics.date,
+        intervalDays: tr.intervalDays > 0 ? tr.intervalDays : undefined,
+        nextDueDate: tr.intervalDays > 0 ? plusDays(state.basics.date, tr.intervalDays) : '',
+      });
+    }
     onSave(bundle);
     reset();
   };
