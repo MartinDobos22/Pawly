@@ -18,6 +18,14 @@ function escapeAttr(value) {
     .replace(/"/g, '&quot;');
 }
 
+// Netlify servíruje adresárový index (dist/<path>/index.html) na URL s koncovou
+// lomkou a bez nej 301-uje. Canonical/og:url preto musia sedieť s 200-URL, inak
+// Google fetchuje redirect. Root ('/') ostáva bez zmeny.
+function withTrailingSlash(path) {
+  if (path === '/' || path.endsWith('/')) return path;
+  return `${path}/`;
+}
+
 function replaceTag(html, regex, replacement) {
   if (!regex.test(html)) {
     throw new Error(`Prerender: pattern nenájdený v index.html → ${regex}`);
@@ -26,7 +34,7 @@ function replaceTag(html, regex, replacement) {
 }
 
 function buildHtml(template, seo, bodyHtml) {
-  const canonical = `${SITE_URL}${seo.path}`;
+  const canonical = `${SITE_URL}${withTrailingSlash(seo.path)}`;
   let html = template;
 
   html = replaceTag(html, /<title>[\s\S]*?<\/title>/, `<title>${escapeAttr(seo.title)}</title>`);
