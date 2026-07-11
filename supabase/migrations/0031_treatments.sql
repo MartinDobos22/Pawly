@@ -21,7 +21,7 @@ create table if not exists treatments (
   updated_at    timestamptz not null default now()
 );
 
--- idempotentné pre prípad, že staršia verzia 0030 už tabuľku vytvorila
+-- idempotentné pre prípad, že staršia verzia migrácie už tabuľku vytvorila
 alter table treatments add column if not exists category text;
 alter table treatments add column if not exists form text;
 
