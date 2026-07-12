@@ -8,9 +8,15 @@ import '@fontsource/roboto/700.css';
 import './i18n/index';
 import './i18n/types';
 import App from './App';
+import { isAdsenseEnabled, loadAdsenseScript } from './utils/adsense';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>
 );
+
+// Reklamy načítaj len v produkcii a len keď je nastavené VITE_ADSENSE_CLIENT.
+if (import.meta.env.PROD && isAdsenseEnabled()) {
+  loadAdsenseScript();
+}
