@@ -17,6 +17,7 @@ import {
   VerifiedOutlined as VerifiedIcon,
 } from '@mui/icons-material';
 import ArticleBody from './ArticleBody';
+import AdUnit from '../AdUnit';
 import Callout from './Callout';
 import LandingFaq from './LandingFaq';
 import LandingCta from './LandingCta';
@@ -258,6 +259,8 @@ export default function ArticleView({ article, preview = false }: Props) {
             </Typography>
           </Box>
         </Box>
+
+        {!preview && <AdUnit />}
 
         <Box onClick={() => track('cta_click', { ctaIntent: article.ctaIntent })}>
           <LandingCta
