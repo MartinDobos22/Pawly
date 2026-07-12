@@ -33,5 +33,8 @@ export function articleReadingMinutes(article: Article): number {
       }
     }
   }
+  for (const faq of article.faqs ?? []) {
+    words += countWords(faq.q) + countWords(faq.a);
+  }
   return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
 }
