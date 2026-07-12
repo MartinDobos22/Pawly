@@ -2,4 +2,4 @@
 # NAHRAĎ pub-0000000000000000 svojím AdSense Publisher ID.
 # Nájdeš ho v AdSense → Account → Account information (začína "pub-").
 # Súbor musí byť dostupný na https://pawly.sk/ads.txt (bez neho AdSense hlási "Earnings at risk").
-google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+google.com, pub-9039248840631459, DIRECT, f08c47fec0942fa0
