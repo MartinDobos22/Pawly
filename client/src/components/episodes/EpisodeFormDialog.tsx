@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import StringListEditor from './StringListEditor';
 import AttachmentGallery from './AttachmentGallery';
+import StatusUpdateEditor from './StatusUpdateEditor';
 import {
   EPISODE_CATEGORIES,
   EPISODE_OUTCOMES,
@@ -29,9 +30,11 @@ import {
   type EpisodeCategory,
   type EpisodeOutcome,
   type EpisodeSeverity,
+  type EpisodeStatusUpdate,
   type HealthEpisodeRecord,
 } from '../../types/healthEpisode';
 import type { MedicationRecord, VetVisitRecord } from '../../types/petHealth';
+import { applyStatusUpdatesToOutcome, formatEpisodeDate } from '../../utils/episodeDisplay';
 
 interface EpisodeFormDialogProps {
   open: boolean;
@@ -65,6 +68,7 @@ interface FormState {
   severity: EpisodeSeverity;
   lessonsLearned: string;
   attachments: EpisodeAttachment[];
+  statusUpdates: EpisodeStatusUpdate[];
 }
 
 function todayIso() {
@@ -90,6 +94,7 @@ function emptyState(): FormState {
     severity: 'moderate',
     lessonsLearned: '',
     attachments: [],
+    statusUpdates: [],
   };
 }
 
@@ -112,6 +117,7 @@ function fromRecord(record: HealthEpisodeRecord): FormState {
     severity: record.severity,
     lessonsLearned: record.lessonsLearned ?? '',
     attachments: record.attachments ?? [],
+    statusUpdates: record.statusUpdates ?? [],
   };
 }
 
@@ -155,6 +161,11 @@ export default function EpisodeFormDialog({
     if (!canSave || isSaving) return;
     setIsSaving(true);
     try {
+      const { outcome, endedAt } = applyStatusUpdatesToOutcome(
+        state.statusUpdates,
+        state.outcome,
+        state.endedAt || undefined
+      );
       await onSave(
         {
           petId,
@@ -162,7 +173,7 @@ export default function EpisodeFormDialog({
           symptomDescription: state.symptomDescription.trim(),
           category: state.category,
           startedAt: state.startedAt || todayIso(),
-          endedAt: state.endedAt || undefined,
+          endedAt,
           location: state.location.trim() || undefined,
           triggers: state.triggers.length > 0 ? state.triggers : undefined,
           diagnosis: state.diagnosis.trim() || undefined,
@@ -171,10 +182,11 @@ export default function EpisodeFormDialog({
           treatmentNotes: state.treatmentNotes.trim() || undefined,
           whatWorked: state.whatWorked,
           whatDidntWork: state.whatDidntWork,
-          outcome: state.outcome,
+          outcome,
           severity: state.severity,
           lessonsLearned: state.lessonsLearned.trim() || undefined,
           attachments: state.attachments.length > 0 ? state.attachments : undefined,
+          statusUpdates: state.statusUpdates.length > 0 ? state.statusUpdates : undefined,
         },
         initial?.id
       );
@@ -283,6 +295,11 @@ export default function EpisodeFormDialog({
                   fullWidth
                 />
               </Stack>
+              {initial?.createdAt && (
+                <Typography variant="caption" color="text.secondary">
+                  {t('form.recordedOn')}: {formatEpisodeDate(initial.createdAt)}
+                </Typography>
+              )}
               <StringListEditor
                 label={t('form.triggers')}
                 placeholder={t('form.triggersPlaceholder')}
@@ -393,6 +410,21 @@ export default function EpisodeFormDialog({
                 chipColor="error"
               />
             </Stack>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+              {t('form.statusSection')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+              {t('form.statusHint')}
+            </Typography>
+            <StatusUpdateEditor
+              values={state.statusUpdates}
+              onChange={(v) => update('statusUpdates', v)}
+            />
           </Box>
 
           <Divider />

@@ -52,7 +52,8 @@
     "category": "Category",
     "severity": "Severity",
     "outcome": "Status",
-    "startedAt": "Date logged",
+    "startedAt": "When it started",
+    "recordedOn": "Recorded on",
     "endedAt": "End (optional)",
     "location": "Location",
     "locationPlaceholder": "e.g. hiking trip in the mountains",
@@ -75,7 +76,17 @@
     "lessonsFieldLabel": "What to remember next time",
     "lessonsPlaceholder": "e.g. for reflux give Y immediately, avoid Z",
     "lessonsLearned": "Lessons learned",
-    "attachments": "Attachments"
+    "attachments": "Attachments",
+    "statusSection": "Status progress",
+    "statusHint": "Track how the condition develops over time — pick a date and describe the current state. Setting a status change overwrites the record's main status.",
+    "statusUpdateDate": "Date",
+    "statusUpdateNote": "Current state",
+    "statusUpdateNotePlaceholder": "e.g. slightly better, still limping on the left",
+    "statusUpdateOutcome": "Status change (optional)",
+    "statusUpdateOutcomeNone": "No status change",
+    "addStatusUpdate": "Add update",
+    "statusUpdatesEmpty": "No progress updates yet.",
+    "removeStatusUpdate": "Remove update"
   },
   "filter": {
     "all": "All",
@@ -101,7 +112,16 @@
     "deletedMed": "Medication was deleted",
     "medsUsed": "Medications used",
     "lessonsTitle": "Lessons for the future",
-    "attachment": "Attachment"
+    "attachment": "Attachment",
+    "statusProgressTitle": "Status progress",
+    "viewFull": "View full record",
+    "quickStatusUpdate": "Add status update"
+  },
+  "detail": {
+    "title": "Full record"
+  },
+  "quickStatus": {
+    "title": "Status update"
   },
   "attachments": {
     "title": "Photo attachments",

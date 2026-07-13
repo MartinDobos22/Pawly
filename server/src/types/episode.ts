@@ -34,6 +34,13 @@ export interface EpisodeAttachment {
   createdAt: string;
 }
 
+export interface EpisodeStatusUpdate {
+  date: string;
+  note: string;
+  outcome?: EpisodeOutcome;
+  createdAt: string;
+}
+
 export interface HealthEpisodeRecord {
   id: string;
   petId: string;
@@ -56,6 +63,7 @@ export interface HealthEpisodeRecord {
   severity: EpisodeSeverity;
   lessonsLearned?: string;
   attachments?: EpisodeAttachment[];
+  statusUpdates?: EpisodeStatusUpdate[];
 }
 
 export interface PastEpisodeInput {

@@ -52,7 +52,8 @@
     "category": "Kategória",
     "severity": "Závažnosť",
     "outcome": "Stav",
-    "startedAt": "Deň zápisu",
+    "startedAt": "Začiatok problému",
+    "recordedOn": "Zapísané dňa",
     "endedAt": "Koniec (voliteľné)",
     "location": "Miesto",
     "locationPlaceholder": "napr. na výlete v Tatrách",
@@ -75,7 +76,17 @@
     "lessonsFieldLabel": "Čo si nabudúce zapamätať",
     "lessonsPlaceholder": "napr. pri reflukse hneď podať Y, vyhnúť sa Z",
     "lessonsLearned": "Ponaučenia",
-    "attachments": "Prílohy"
+    "attachments": "Prílohy",
+    "statusSection": "Priebeh stavu",
+    "statusHint": "Zaznamenaj ako sa stav vyvíja v čase — vyber dátum a napíš aktuálny stav. Ak nastavíš zmenu stavu, prepíše sa hlavný stav záznamu.",
+    "statusUpdateDate": "Dátum",
+    "statusUpdateNote": "Aktuálny stav",
+    "statusUpdateNotePlaceholder": "napr. mierne zlepšenie, stále kríva na ľavú",
+    "statusUpdateOutcome": "Zmena stavu (voliteľné)",
+    "statusUpdateOutcomeNone": "Bez zmeny stavu",
+    "addStatusUpdate": "Pridať aktualizáciu",
+    "statusUpdatesEmpty": "Zatiaľ žiadne aktualizácie priebehu.",
+    "removeStatusUpdate": "Odstrániť aktualizáciu"
   },
   "filter": {
     "all": "Všetky",
@@ -101,7 +112,16 @@
     "deletedMed": "Liek bol vymazaný",
     "medsUsed": "Použité lieky",
     "lessonsTitle": "Poučenie pre budúcnosť",
-    "attachment": "Príloha"
+    "attachment": "Príloha",
+    "statusProgressTitle": "Priebeh stavu",
+    "viewFull": "Zobraziť celý záznam",
+    "quickStatusUpdate": "Pridať aktualizáciu stavu"
+  },
+  "detail": {
+    "title": "Celý záznam"
+  },
+  "quickStatus": {
+    "title": "Aktualizácia stavu"
   },
   "attachments": {
     "title": "Foto prílohy",

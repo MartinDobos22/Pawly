@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Accordion,
@@ -11,7 +10,6 @@ import {
   IconButton,
   Stack,
   Typography,
-  alpha,
   useTheme,
 } from '@mui/material';
 import {
@@ -21,16 +19,17 @@ import {
   AutoAwesome as AutoAwesomeIcon,
   PlaceOutlined as PlaceIcon,
   CalendarMonth as CalendarMonthIcon,
+  Timeline as TimelineIcon,
+  Article as ArticleIcon,
 } from '@mui/icons-material';
-import ProsConsCard from '../ProsConsCard';
-import {
-  type EpisodeOutcome,
-  type EpisodeSeverity,
-  type HealthEpisodeRecord,
-} from '../../types/healthEpisode';
+import EpisodeDetailContent from './EpisodeDetailContent';
+import { type HealthEpisodeRecord } from '../../types/healthEpisode';
 import type { MedicationRecord, VetVisitRecord } from '../../types/petHealth';
-import { getHealthAttachmentSignedUrls } from '../../services/healthApi';
-import { logger } from '../../utils/logger';
+import {
+  OUTCOME_CHIP_COLOR,
+  SEVERITY_CHIP_COLOR,
+  formatEpisodeDate,
+} from '../../utils/episodeDisplay';
 
 interface EpisodeListItemProps {
   episode: HealthEpisodeRecord;
@@ -39,30 +38,10 @@ interface EpisodeListItemProps {
   onEdit: () => void;
   onDelete: () => void;
   onFindSimilar: () => void;
+  onViewFull: () => void;
+  onQuickStatus: () => void;
   medications: MedicationRecord[];
   vetVisits: VetVisitRecord[];
-}
-
-const OUTCOME_CHIP_COLOR: Record<EpisodeOutcome, 'success' | 'warning' | 'error' | 'default'> = {
-  unspecified: 'default',
-  resolved: 'success',
-  ongoing: 'warning',
-  recurring: 'error',
-};
-
-const SEVERITY_CHIP_COLOR: Record<EpisodeSeverity, 'info' | 'warning' | 'error'> = {
-  mild: 'info',
-  moderate: 'warning',
-  severe: 'error',
-};
-
-function formatDate(iso: string | undefined) {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('sk-SK', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
 }
 
 export default function EpisodeListItem({
@@ -72,49 +51,17 @@ export default function EpisodeListItem({
   onEdit,
   onDelete,
   onFindSimilar,
+  onViewFull,
+  onQuickStatus,
   medications,
   vetVisits,
 }: EpisodeListItemProps) {
   const theme = useTheme();
   const { t } = useTranslation('episodes');
 
-  const linkedMeds = episode.medicationIds
-    .map((id) => medications.find((m) => m.id === id))
-    .map(
-      (m, i) =>
-        m ?? { id: episode.medicationIds[i], name: t('item.deletedMed'), dose: '', frequency: '' }
-    );
-
-  const linkedVisit = episode.vetVisitId
-    ? vetVisits.find((v) => v.id === episode.vetVisitId)
-    : undefined;
-  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const objectPaths = episode.attachments?.map((a) => a.objectPath).filter(Boolean) ?? [];
-    if (objectPaths.length === 0) {
-      setSignedUrls({});
-      return;
-    }
-
-    let cancelled = false;
-    getHealthAttachmentSignedUrls(episode.petId, objectPaths)
-      .then((urls) => {
-        if (!cancelled) setSignedUrls(urls);
-      })
-      .catch((err) => {
-        logger.warn('Nepodarilo sa vytvoriť signed URL pre prílohy epizódy', {
-          error: err instanceof Error ? err.message : 'unknown',
-        });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [episode.attachments, episode.petId]);
-
   return (
     <Accordion
+      id={`episode-${episode.id}`}
       expanded={expanded}
       onChange={onToggle}
       sx={{
@@ -154,8 +101,8 @@ export default function EpisodeListItem({
               <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
                 <CalendarMonthIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                 <Typography variant="caption" color="text.secondary">
-                  {formatDate(episode.startedAt)}
-                  {episode.endedAt ? ` – ${formatDate(episode.endedAt)}` : ''}
+                  {formatEpisodeDate(episode.startedAt)}
+                  {episode.endedAt ? ` – ${formatEpisodeDate(episode.endedAt)}` : ''}
                 </Typography>
               </Box>
               {episode.location && (
@@ -183,137 +130,37 @@ export default function EpisodeListItem({
         </Box>
       </AccordionSummary>
       <AccordionDetails sx={{ pt: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-          {episode.symptomDescription}
-        </Typography>
-
-        {episode.triggers && episode.triggers.length > 0 && (
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              {t('form.triggers')}
-            </Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
-              {episode.triggers.map((t) => (
-                <Chip key={t} size="small" label={t} variant="outlined" />
-              ))}
-            </Stack>
-          </Box>
-        )}
-
-        {(episode.diagnosis || linkedVisit || linkedMeds.length > 0 || episode.treatmentNotes) && (
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              {t('form.diagnosisTreatment')}
-            </Typography>
-            {episode.diagnosis && (
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', mb: 1 }}>
-                <strong>{t('form.diagnosis')}:</strong> {episode.diagnosis}
-              </Typography>
-            )}
-            {linkedVisit && (
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>{t('form.vetVisit')}:</strong> {linkedVisit.clinicName}
-                {linkedVisit.date ? ` (${formatDate(linkedVisit.date)})` : ''}
-              </Typography>
-            )}
-            {linkedMeds.length > 0 && (
-              <Box sx={{ mb: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {t('item.medsUsed')}:
-                </Typography>
-                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 0.5 }}>
-                  {linkedMeds.map((m) => (
-                    <Chip
-                      key={m.id}
-                      size="small"
-                      label={m.dose ? `${m.name} (${m.dose})` : m.name}
-                      color={m.name === t('item.deletedMed') ? 'default' : 'primary'}
-                      variant="outlined"
-                    />
-                  ))}
-                </Stack>
-              </Box>
-            )}
-            {episode.treatmentNotes && (
-              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                <strong>{t('form.treatmentNotes')}:</strong> {episode.treatmentNotes}
-              </Typography>
-            )}
-          </Box>
-        )}
-
-        <ProsConsCard pros={episode.whatWorked} cons={episode.whatDidntWork} />
-
-        {episode.lessonsLearned && (
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: alpha(theme.palette.primary.main, 0.06),
-              border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{ fontWeight: 700, mb: 0.5, color: theme.palette.primary.main }}
-            >
-              {t('item.lessonsTitle')}
-            </Typography>
-            <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-              {episode.lessonsLearned}
-            </Typography>
-          </Box>
-        )}
-
-        {episode.attachments && episode.attachments.length > 0 && (
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-              {t('form.attachments')}
-            </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gap: 1,
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(2, 1fr)' },
-              }}
-            >
-              {episode.attachments.map((a) => (
-                <Box
-                  key={a.objectPath}
-                  sx={{
-                    border: `1px solid ${theme.palette.divider}`,
-                    borderRadius: 1.5,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={signedUrls[a.objectPath] ?? ''}
-                    alt={a.caption ?? t('item.attachment')}
-                    sx={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }}
-                  />
-                  {a.caption && (
-                    <Typography variant="caption" sx={{ p: 0.5, display: 'block' }}>
-                      {a.caption}
-                    </Typography>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        )}
+        <EpisodeDetailContent episode={episode} medications={medications} vetVisits={vetVisits} />
 
         <Divider />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<AutoAwesomeIcon />}
-            onClick={onFindSimilar}
-          >
-            {t('similar.findSimilar')}
-          </Button>
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<ArticleIcon />}
+              onClick={onViewFull}
+            >
+              {t('item.viewFull')}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<TimelineIcon />}
+              onClick={onQuickStatus}
+            >
+              {t('item.quickStatusUpdate')}
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<AutoAwesomeIcon />}
+              onClick={onFindSimilar}
+            >
+              {t('similar.findSimilar')}
+            </Button>
+          </Stack>
           <Stack direction="row" spacing={0.5}>
             <IconButton
               size="small"

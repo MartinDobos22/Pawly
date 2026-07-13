@@ -340,6 +340,7 @@ export const episodeMapper: EntityMapper<HealthEpisodeRecord> = {
       ['severity', d.severity],
       ['lessons_learned', d.lessonsLearned],
       ['attachments', d.attachments],
+      ['status_updates', d.statusUpdates],
     ]),
   toDto: (r) => ({
     id: String(r.id),
@@ -363,5 +364,6 @@ export const episodeMapper: EntityMapper<HealthEpisodeRecord> = {
     severity: r.severity as HealthEpisodeRecord['severity'],
     lessonsLearned: str(r.lessons_learned),
     attachments: (r.attachments as HealthEpisodeRecord['attachments']) ?? [],
+    statusUpdates: (r.status_updates as HealthEpisodeRecord['statusUpdates']) ?? [],
   }),
 };

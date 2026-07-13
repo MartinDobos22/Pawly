@@ -30,13 +30,21 @@ import { useConfirm } from '../hooks/useConfirm';
 import EpisodeFiltersBar from '../components/episodes/EpisodeFiltersBar';
 import EpisodeListItem from '../components/episodes/EpisodeListItem';
 import EpisodeFormDialog from '../components/episodes/EpisodeFormDialog';
+import EpisodeDetailDialog from '../components/episodes/EpisodeDetailDialog';
+import QuickStatusUpdateDialog from '../components/episodes/QuickStatusUpdateDialog';
 import SimilarEpisodesDialog from '../components/episodes/SimilarEpisodesDialog';
 import { useHealthEpisodes } from '../hooks/useHealthEpisodes';
 import { useEpisodeStorageSize } from '../hooks/useEpisodeStorageSize';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
 import { filterEpisodes, sortEpisodesNewestFirst } from '../utils/episodeFilters';
-import type { EpisodeCategory, EpisodeOutcome, HealthEpisodeRecord } from '../types/healthEpisode';
+import { applyStatusUpdatesToOutcome } from '../utils/episodeDisplay';
+import type {
+  EpisodeCategory,
+  EpisodeOutcome,
+  EpisodeStatusUpdate,
+  HealthEpisodeRecord,
+} from '../types/healthEpisode';
 
 export default function EpisodeDiaryPage() {
   const { t } = useTranslation('episodes');
@@ -62,6 +70,8 @@ export default function EpisodeDiaryPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<HealthEpisodeRecord | undefined>(undefined);
+  const [viewing, setViewing] = useState<HealthEpisodeRecord | null>(null);
+  const [quickStatusFor, setQuickStatusFor] = useState<HealthEpisodeRecord | null>(null);
   const [similarFor, setSimilarFor] = useState<HealthEpisodeRecord | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
     {
@@ -138,6 +148,31 @@ export default function EpisodeDiaryPage() {
 
   const handleFindSimilar = (episode: HealthEpisodeRecord) => {
     setSimilarFor(episode);
+  };
+
+  const handleEditFromDetail = () => {
+    if (!viewing) return;
+    setEditing(viewing);
+    setViewing(null);
+    setFormOpen(true);
+  };
+
+  const handleQuickStatusSave = async (statusUpdate: EpisodeStatusUpdate) => {
+    const episode = quickStatusFor;
+    if (!episode) return;
+    const nextUpdates = [...(episode.statusUpdates ?? []), statusUpdate];
+    const { outcome, endedAt } = applyStatusUpdatesToOutcome(
+      nextUpdates,
+      episode.outcome,
+      episode.endedAt
+    );
+    try {
+      await update(episode.id, { statusUpdates: nextUpdates, outcome, endedAt });
+      setQuickStatusFor(null);
+      setSnack({ open: true, msg: tCommon('saved'), severity: 'success' });
+    } catch {
+      setSnack({ open: true, msg: tCommon('saveFailed'), severity: 'error' });
+    }
   };
 
   const storageWarning = storage.isCritical
@@ -251,6 +286,8 @@ export default function EpisodeDiaryPage() {
               onEdit={() => handleEdit(episode)}
               onDelete={() => handleDelete(episode)}
               onFindSimilar={() => handleFindSimilar(episode)}
+              onViewFull={() => setViewing(episode)}
+              onQuickStatus={() => setQuickStatusFor(episode)}
               medications={medications}
               vetVisits={vetVisits}
             />
@@ -270,6 +307,22 @@ export default function EpisodeDiaryPage() {
           setEditing(undefined);
         }}
         onSave={handleSave}
+      />
+
+      <EpisodeDetailDialog
+        open={Boolean(viewing)}
+        episode={viewing}
+        medications={medications}
+        vetVisits={vetVisits}
+        onClose={() => setViewing(null)}
+        onEdit={handleEditFromDetail}
+      />
+
+      <QuickStatusUpdateDialog
+        open={Boolean(quickStatusFor)}
+        episode={quickStatusFor}
+        onClose={() => setQuickStatusFor(null)}
+        onSave={handleQuickStatusSave}
       />
 
       <SimilarEpisodesDialog
