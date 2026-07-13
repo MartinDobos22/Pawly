@@ -8,6 +8,7 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -152,6 +153,7 @@ export default function App() {
       <CssBaseline />
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Suspense fallback={suspenseFallback}>
             <AppRoutes darkMode={darkMode} onToggleTheme={onToggleTheme} language={language} />
           </Suspense>
