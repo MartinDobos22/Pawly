@@ -86,19 +86,22 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
               maxWidth: 1200,
               width: '100%',
               mx: 'auto',
-              px: { xs: 2.5, md: 4 },
-              gap: 1,
+              px: { xs: 1.5, md: 4 },
+              gap: { xs: 0.5, sm: 1 },
             }}
           >
-            <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1 }}>
+            <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1, minWidth: 0 }}>
               <PawlyLogo size="md" glow onClick={() => navigate('/')} />
-              <PublicHeaderNav />
+              <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                <PublicHeaderNav />
+              </Box>
             </Stack>
-            <LanguageSwitcher variant="compact" />
+            <LanguageSwitcher variant="compact" sx={{ flexShrink: 0 }} />
             <IconButton
               onClick={onToggleTheme}
               color="inherit"
               aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
+              sx={{ flexShrink: 0 }}
             >
               {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
