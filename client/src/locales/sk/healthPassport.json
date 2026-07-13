@@ -659,7 +659,10 @@
     "bulletWeightNoData": "Pridajte váženia a začnite sledovať vývoj hmotnosti.",
     "bulletPreventiveUpToDate": "Všetka preventívna starostlivosť je aktuálna.",
     "bulletOverdue": "{{item}} je po termíne — čoskoro naplánujte.",
-    "bulletExpiringSoon": "{{item}} čoskoro končí — naplánujte vopred."
+    "bulletExpiringSoon": "{{item}} čoskoro končí — naplánujte vopred.",
+    "bulletOpenEpisodes_one": "V denníku máte {{count}} otvorenú epizódu — sledujte ju.",
+    "bulletOpenEpisodes_few": "V denníku máte {{count}} otvorené epizódy — sledujte ich.",
+    "bulletOpenEpisodes_other": "V denníku máte {{count}} otvorených epizód — sledujte ich."
   },
   "history": {
     "button": "História",

@@ -846,6 +846,9 @@ export default function HealthPassportPage() {
 
   const insightBullets: string[] = [];
   if (overdueItem) insightBullets.push(t('insight.bulletOverdue', { item: overdueItem.label }));
+  if (activeEpisodeCount > 0) {
+    insightBullets.push(t('insight.bulletOpenEpisodes', { count: activeEpisodeCount }));
+  }
   if (upcomingEvents[0]) {
     insightBullets.push(
       t('insight.bulletNextEvent', {
@@ -868,7 +871,8 @@ export default function HealthPassportPage() {
   }
   if (allPreventiveValid) insightBullets.push(t('insight.bulletPreventiveUpToDate'));
 
-  const insightPositive = !overdueItem && (healthScore == null || healthScore >= 70);
+  const insightPositive =
+    !overdueItem && activeEpisodeCount === 0 && (healthScore == null || healthScore >= 70);
   const insightHeadline = insightPositive
     ? t('insight.headlineGreat', { name: selectedDog?.name ?? '' })
     : t('insight.headlineAttention', { name: selectedDog?.name ?? '' });

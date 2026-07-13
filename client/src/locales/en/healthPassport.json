@@ -641,7 +641,9 @@
     "bulletWeightNoData": "Add weigh-ins to start tracking weight trends.",
     "bulletPreventiveUpToDate": "All preventive care is up to date.",
     "bulletOverdue": "{{item}} is overdue — schedule it soon.",
-    "bulletExpiringSoon": "{{item}} is due soon — plan ahead."
+    "bulletExpiringSoon": "{{item}} is due soon — plan ahead.",
+    "bulletOpenEpisodes_one": "You have {{count}} open episode in the diary — keep an eye on it.",
+    "bulletOpenEpisodes_other": "You have {{count}} open episodes in the diary — keep an eye on them."
   },
   "history": {
     "button": "History",
