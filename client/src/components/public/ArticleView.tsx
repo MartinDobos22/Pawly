@@ -19,6 +19,7 @@ import {
 import ArticleBody from './ArticleBody';
 import AdUnit from '../AdUnit';
 import Callout from './Callout';
+import RichText from './RichText';
 import LandingFaq from './LandingFaq';
 import LandingCta from './LandingCta';
 import ArticleCard from './ArticleCard';
@@ -83,6 +84,19 @@ export default function ArticleView({ article, preview = false }: Props) {
               {article.title}
             </Typography>
           </Breadcrumbs>
+
+          <Box sx={{ mb: theme.spacing(3) }}>
+            <Link
+              component={RouterLink}
+              to="/poradna"
+              underline="hover"
+              variant="body2"
+              sx={{ display: 'inline-flex', alignItems: 'center', gap: theme.spacing(0.5) }}
+            >
+              <ArrowBackIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
+              Späť na Poradňu
+            </Link>
+          </Box>
 
           <Stack
             direction="row"
@@ -173,19 +187,6 @@ export default function ArticleView({ article, preview = false }: Props) {
       </Box>
 
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-        <Box sx={{ mb: theme.spacing(3) }}>
-          <Link
-            component={RouterLink}
-            to="/poradna"
-            underline="hover"
-            variant="body2"
-            sx={{ display: 'inline-flex', alignItems: 'center', gap: theme.spacing(0.5) }}
-          >
-            <ArrowBackIcon sx={{ fontSize: theme.typography.body2.fontSize }} />
-            Späť na Poradňu
-          </Link>
-        </Box>
-
         {article.intro?.trim() && (
           <Typography
             variant="h6"
@@ -193,7 +194,7 @@ export default function ArticleView({ article, preview = false }: Props) {
             color="text.primary"
             sx={{ fontWeight: 400, lineHeight: 1.6, mb: theme.spacing(4) }}
           >
-            {article.intro}
+            <RichText text={article.intro} />
           </Typography>
         )}
 

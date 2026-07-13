@@ -112,6 +112,7 @@ export default function ArticleBody({ sections }: Props) {
                   <Callout key={j} variant={block.variant} title={block.title} text={block.text} />
                 );
               case 'image':
+                if (!block.src?.trim()) return null;
                 return (
                   <Box
                     key={j}

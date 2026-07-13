@@ -40,7 +40,7 @@ export default function Callout({ variant, title, text }: Props) {
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: theme.spacing(1) }}>
         <Icon sx={{ color: accent, fontSize: theme.typography.h6.fontSize }} />
         <Typography variant="subtitle2" sx={{ color: accent }}>
-          {title ?? defaultTitle}
+          {title ? <RichText text={title} /> : defaultTitle}
         </Typography>
       </Stack>
       <Typography variant="body1" color="text.primary" sx={{ lineHeight: 1.8 }}>
