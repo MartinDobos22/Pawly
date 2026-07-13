@@ -123,6 +123,11 @@ export default function OverviewPage() {
     return { red, orange };
   }, [profiles, statusByPet]);
 
+  const totalOpenItems = useMemo(
+    () => statuses.reduce((sum, s) => (s.status === 'green' ? sum : sum + s.reasons.length), 0),
+    [statuses]
+  );
+
   const summaryText =
     aggregateLevel === 'red'
       ? t('overview.summaryRed', { pets: petNamesByLevel.red.join(', ') })
@@ -205,7 +210,10 @@ export default function OverviewPage() {
             >
               <Box>
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <CareStatusChip level={aggregateLevel} />
+                  <CareStatusChip
+                    level={aggregateLevel}
+                    count={aggregateLevel === 'green' ? undefined : totalOpenItems}
+                  />
                   <Tooltip title={t('overview.whatChecked')} enterTouchDelay={0} arrow>
                     <InfoOutlinedIcon
                       fontSize="small"

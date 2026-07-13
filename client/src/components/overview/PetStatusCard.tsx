@@ -90,7 +90,12 @@ export default function PetStatusCard({
             </Typography>
           )}
         </Box>
-        {status && <CareStatusChip level={status.status} />}
+        {status && (
+          <CareStatusChip
+            level={status.status}
+            count={status.status === 'green' ? undefined : status.reasons.length}
+          />
+        )}
       </Stack>
 
       {status && status.reasons.length > 0 && (
