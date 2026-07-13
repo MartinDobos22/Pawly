@@ -112,11 +112,22 @@ export default function OverviewPage() {
     return statuses.map((s) => s.status).sort((a, b) => LEVEL_PRIORITY[a] - LEVEL_PRIORITY[b])[0];
   }, [statuses]);
 
+  const petNamesByLevel = useMemo(() => {
+    const red: string[] = [];
+    const orange: string[] = [];
+    for (const pet of profiles) {
+      const level = statusByPet.get(pet.id)?.status;
+      if (level === 'red') red.push(pet.name);
+      else if (level === 'orange') orange.push(pet.name);
+    }
+    return { red, orange };
+  }, [profiles, statusByPet]);
+
   const summaryText =
     aggregateLevel === 'red'
-      ? t('overview.summaryRed')
+      ? t('overview.summaryRed', { pets: petNamesByLevel.red.join(', ') })
       : aggregateLevel === 'orange'
-        ? t('overview.summaryOrange')
+        ? t('overview.summaryOrange', { pets: petNamesByLevel.orange.join(', ') })
         : t('overview.summaryGreen');
 
   const levelColor =
