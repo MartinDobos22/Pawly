@@ -29,9 +29,9 @@ interface Props {
 type Filter = 'all' | ArticleCategory;
 
 export const seo = {
-  title: 'Poradňa o psoch — krmivo, zdravie, prevencia | Pawly',
+  title: 'Poradňa o zvieratách — krmivo, zdravie, prevencia | Pawly',
   description:
-    'Praktické články o starostlivosti o psa: ako čítať zloženie krmiva, očkovací kalendár, alergie a ďalšie. Poradňa Pawly.',
+    'Praktické články o starostlivosti o psa, mačku aj ďalšie zvieratá: krmivo, očkovanie, odčervenie, prvá pomoc a prevencia. Poradňa Pawly.',
   path: '/poradna',
   jsonLd: collectionJsonLd({
     items: articles.map((a) => ({ name: a.title, path: `/poradna/${a.slug}` })),
@@ -141,10 +141,10 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
             Poradňa Pawly
           </Typography>
           <Typography variant="h2" component="h1" sx={{ mb: theme.spacing(2), maxWidth: 720 }}>
-            Praktické rady o psoch
+            Praktické rady o domácich zvieratách
           </Typography>
           <Typography variant="h6" component="p" sx={{ fontWeight: 400, opacity: 0.9, maxWidth: 640 }}>
-            Krmivo, zdravie a prevencia — aby si sa o svojho psa staral s istotou.
+            Krmivo, zdravie a prevencia — aby si sa o svojho miláčika staral s istotou.
           </Typography>
         </Container>
       </Box>
