@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { lazyWithRetry as lazy } from './utils/lazyWithRetry';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CircularProgress, CssBaseline, ThemeProvider } from '@mui/material';
@@ -126,6 +126,12 @@ export default function App() {
   const theme = useMemo(() => (darkMode ? darkTheme : lightTheme), [darkMode]);
   const onToggleTheme = () => setDarkMode((prev) => !prev);
   const language = i18n.language;
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', theme.palette.background.default);
+  }, [theme]);
 
   const suspenseFallback = (
     <Box

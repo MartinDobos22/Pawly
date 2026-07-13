@@ -1,4 +1,4 @@
-import { AppBar, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
+import { AppBar, Box, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
   DarkMode as DarkModeIcon,
@@ -35,16 +35,27 @@ export default function PublicHeader({ darkMode, onToggleTheme }: Props) {
         borderBottom: `1px solid ${theme.palette.divider}`,
       }}
     >
-      <Toolbar sx={{ maxWidth: 1200, width: '100%', mx: 'auto', px: { xs: 2, md: 4 }, gap: 1 }}>
-        <Stack direction="row" alignItems="center" gap={1} sx={{ flex: 1 }}>
+      <Toolbar
+        sx={{
+          maxWidth: 1200,
+          width: '100%',
+          mx: 'auto',
+          px: { xs: 1.5, md: 4 },
+          gap: { xs: 0.5, sm: 1 },
+        }}
+      >
+        <Stack direction="row" alignItems="center" gap={1} sx={{ flex: 1, minWidth: 0 }}>
           <PawlyLogo size="sm" onClick={() => navigate('/')} />
-          <PublicHeaderNav />
+          <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+            <PublicHeaderNav />
+          </Box>
         </Stack>
-        <LanguageSwitcher variant="compact" />
+        <LanguageSwitcher variant="compact" sx={{ flexShrink: 0 }} />
         <IconButton
           onClick={onToggleTheme}
           color="inherit"
           aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
+          sx={{ flexShrink: 0 }}
         >
           {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
