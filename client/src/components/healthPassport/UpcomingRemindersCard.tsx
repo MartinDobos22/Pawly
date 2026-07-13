@@ -1,9 +1,11 @@
-import { type ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Card, Stack, Typography, alpha, useTheme } from '@mui/material';
-import { EventAvailable as UpcomingIcon } from '@mui/icons-material';
+import { Box, Button, Card, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { EventAvailable as UpcomingIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
 import { relativeDate } from '../../utils/relativeDate';
+
+const COLLAPSED_LIMIT = 4;
 
 export interface UpcomingReminderItem {
   key: string;
@@ -23,16 +25,21 @@ interface Props {
 export default function UpcomingRemindersCard({ items }: Props) {
   const theme = useTheme();
   const { t } = useTranslation('healthPassport');
+  const [expanded, setExpanded] = useState(false);
 
   const rows = items
     .map((item) => {
       const rel = relativeDate(item.date);
       return rel ? { ...item, rel } : null;
     })
-    .filter((x): x is UpcomingReminderItem & { rel: NonNullable<ReturnType<typeof relativeDate>> } =>
-      x !== null
+    .filter(
+      (x): x is UpcomingReminderItem & { rel: NonNullable<ReturnType<typeof relativeDate>> } =>
+        x !== null
     )
     .sort((a, b) => a.rel.diffDays - b.rel.diffDays);
+
+  const hasOverflow = rows.length > COLLAPSED_LIMIT;
+  const visibleRows = expanded ? rows : rows.slice(0, COLLAPSED_LIMIT);
 
   return (
     <Card
@@ -58,7 +65,7 @@ export default function UpcomingRemindersCard({ items }: Props) {
         </Typography>
       ) : (
         <Stack spacing={1}>
-          {rows.map((item) => {
+          {visibleRows.map((item) => {
             const overdue = item.rel.diffDays < 0;
             const color = overdue ? theme.palette.error.main : item.accentColor;
             return (
@@ -118,6 +125,26 @@ export default function UpcomingRemindersCard({ items }: Props) {
               </Box>
             );
           })}
+          {hasOverflow && (
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setExpanded((v) => !v)}
+              endIcon={
+                <ExpandMoreIcon
+                  sx={{
+                    transition: 'transform 150ms ease',
+                    transform: expanded ? 'rotate(180deg)' : 'none',
+                  }}
+                />
+              }
+              sx={{ alignSelf: 'center', color: 'text.secondary', mt: 0.5 }}
+            >
+              {expanded
+                ? t('upcoming.showLess')
+                : t('upcoming.showAll', { count: rows.length - COLLAPSED_LIMIT })}
+            </Button>
+          )}
         </Stack>
       )}
     </Card>

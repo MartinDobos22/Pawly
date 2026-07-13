@@ -297,8 +297,7 @@ export default function HealthPassportPage() {
       })
     );
     return items.sort(
-      (a, b) =>
-        b.date.localeCompare(a.date) || (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
+      (a, b) => b.date.localeCompare(a.date) || (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
     );
   }, [
     dogVaccinations,
@@ -317,7 +316,7 @@ export default function HealthPassportPage() {
   const [selectedVisitId, setSelectedVisitId] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<RecordDetailState | null>(null);
   const [historyCategory, setHistoryCategory] = useState<
-    'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | null
+    'VACCINATION' | 'DEWORMING' | 'ECTOPARASITE' | 'TREATMENT' | null
   >(null);
 
   const vaccinationHistory = useMemo<CategoryHistoryEntry[]>(
@@ -352,6 +351,17 @@ export default function HealthPassportPage() {
         note: e.note,
       })),
     [dogEctos, t]
+  );
+  const treatmentHistory = useMemo<CategoryHistoryEntry[]>(
+    () =>
+      dogTreatments.map((trt) => ({
+        id: trt.id,
+        date: trt.dateGiven,
+        product: `${t(`treatmentCategories.${trt.category}`)} · ${trt.name}`,
+        meta: trt.nextDueDate ? `${t('detail.nextDue')}: ${trt.nextDueDate}` : undefined,
+        note: trt.note,
+      })),
+    [dogTreatments, t]
   );
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' }>(
     {
@@ -793,11 +803,26 @@ export default function HealthPassportPage() {
     },
   ];
 
+  // Najbližšia budúca kontrola z „Ďalšia kontrola" — používa insight aj karta termínov.
+  const examVisit = (() => {
+    const withCheck = dogVisits.filter((v) => v.nextCheckDate);
+    if (withCheck.length === 0) return undefined;
+    const sorted = [...withCheck].sort((a, b) =>
+      (a.nextCheckDate ?? '').localeCompare(b.nextCheckDate ?? '')
+    );
+    return (
+      sorted.find((v) => (relativeDate(v.nextCheckDate as string)?.diffDays ?? -1) >= 0) ??
+      sorted[sorted.length - 1]
+    );
+  })();
+
   // ── Pawly Insight (heuristic, no AI call) ────────────────────────────────────
   const upcomingEvents: { label: string; days: number }[] = [
     { label: t('overview.vaccination'), date: urgentVaccination?.validUntil },
     { label: t('overview.deworming'), date: latestDeworming?.nextDueDate },
     { label: t('overview.ecto'), date: latestEcto?.nextDueDate },
+    ...dogTreatments.map((trt) => ({ label: t('overview.treatment'), date: trt.nextDueDate })),
+    { label: t('overview.examCheck'), date: examVisit?.nextCheckDate },
   ]
     .map((e) => {
       const rel = e.date ? relativeDate(e.date) : null;
@@ -810,6 +835,10 @@ export default function HealthPassportPage() {
     { label: t('overview.vaccination'), status: vaccinationStatus },
     { label: t('overview.deworming'), status: dewormingStatus },
     { label: t('overview.ecto'), status: ectoStatus },
+    ...dogTreatments.map((trt) => ({
+      label: t('overview.treatment'),
+      status: statusByDate(trt.nextDueDate, 7),
+    })),
   ].find((e) => e.status === 'EXPIRED');
 
   const allPreventiveValid =
@@ -846,18 +875,6 @@ export default function HealthPassportPage() {
   const insightFooter = insightPositive ? t('insight.footer') : t('insight.footerAttention');
 
   // ── Najbližšie termíny a kontroly (vrátane vyšetrení z „Ďalšia kontrola") ────
-  const examVisit = (() => {
-    const withCheck = dogVisits.filter((v) => v.nextCheckDate);
-    if (withCheck.length === 0) return undefined;
-    const sorted = [...withCheck].sort((a, b) =>
-      (a.nextCheckDate ?? '').localeCompare(b.nextCheckDate ?? '')
-    );
-    return (
-      sorted.find((v) => (relativeDate(v.nextCheckDate as string)?.diffDays ?? -1) >= 0) ??
-      sorted[sorted.length - 1]
-    );
-  })();
-
   const upcomingReminders: UpcomingReminderItem[] = [
     urgentVaccination?.validUntil
       ? {
@@ -1003,8 +1020,10 @@ export default function HealthPassportPage() {
             : undefined
         }
         onOpenTreatment={(id) => setSelectedRecord({ id, type: 'TREATMENT' })}
+        onHistoryVaccination={() => setHistoryCategory('VACCINATION')}
         onHistoryDeworming={() => setHistoryCategory('DEWORMING')}
         onHistoryEcto={() => setHistoryCategory('ECTOPARASITE')}
+        onHistoryTreatment={() => setHistoryCategory('TREATMENT')}
       />
 
       {/* ── Najbližšie termíny a kontroly (vrátane vyšetrení) ───────────────── */}
@@ -1138,20 +1157,26 @@ export default function HealthPassportPage() {
             ? t('history.vaccinationTitle')
             : historyCategory === 'DEWORMING'
               ? t('history.dewormingTitle')
-              : t('history.ectoTitle')
+              : historyCategory === 'TREATMENT'
+                ? t('history.treatmentTitle')
+                : t('history.ectoTitle')
         }
         accentColor={
           historyCategory === 'VACCINATION'
             ? theme.palette.success.main
             : historyCategory === 'DEWORMING'
               ? theme.palette.secondary.main
-              : theme.palette.info.main
+              : historyCategory === 'TREATMENT'
+                ? theme.palette.warning.main
+                : theme.palette.info.main
         }
         icon={
           historyCategory === 'VACCINATION' ? (
             <VaccinesIcon />
           ) : historyCategory === 'DEWORMING' ? (
             <BiotechIcon />
+          ) : historyCategory === 'TREATMENT' ? (
+            <HealingIcon />
           ) : (
             <DewormingIcon />
           )
@@ -1161,7 +1186,9 @@ export default function HealthPassportPage() {
             ? vaccinationHistory
             : historyCategory === 'DEWORMING'
               ? dewormingHistory
-              : ectoHistory
+              : historyCategory === 'TREATMENT'
+                ? treatmentHistory
+                : ectoHistory
         }
         onOpenEntry={(id) =>
           historyCategory &&

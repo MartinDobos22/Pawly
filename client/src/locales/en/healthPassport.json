@@ -648,6 +648,7 @@
     "vaccinationTitle": "Vaccination history",
     "dewormingTitle": "Deworming history",
     "ectoTitle": "Tick & flea protection history",
+    "treatmentTitle": "Treatment history",
     "empty": "No records yet."
   },
   "overview": {
@@ -676,6 +677,8 @@
   },
   "upcoming": {
     "title": "Upcoming",
+    "showAll": "Show more ({{count}})",
+    "showLess": "Show less",
     "allGood": "All good",
     "noTasks": "No scheduled tasks.",
     "overdue": "Overdue",

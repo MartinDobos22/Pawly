@@ -666,6 +666,7 @@
     "vaccinationTitle": "História očkovaní",
     "dewormingTitle": "História odčervení",
     "ectoTitle": "História ochrany proti kliešťom",
+    "treatmentTitle": "História liečby",
     "empty": "Zatiaľ žiadne záznamy."
   },
   "overview": {
@@ -698,6 +699,8 @@
   },
   "upcoming": {
     "title": "Najbližšie termíny",
+    "showAll": "Zobraziť ďalšie ({{count}})",
+    "showLess": "Zobraziť menej",
     "allGood": "Všetko v poriadku",
     "noTasks": "Žiadne plánované úlohy.",
     "overdue": "Po termíne",

@@ -13,6 +13,8 @@ import {
   useTheme,
 } from '@mui/material';
 
+import { HistoryOutlined as HistoryIcon } from '@mui/icons-material';
+
 import { relativeDate } from '../../utils/relativeDate';
 import { statusByDate } from './utils.ts';
 import HelpHint from '../HelpHint';
@@ -35,6 +37,7 @@ interface Props {
   emptyText: string;
   onAdd?: () => void;
   onOpen?: (id: string) => void;
+  onHistory?: () => void;
 }
 
 export default function SelectableMetricCard({
@@ -47,6 +50,7 @@ export default function SelectableMetricCard({
   emptyText,
   onAdd,
   onOpen,
+  onHistory,
 }: Props) {
   const theme = useTheme();
   const { t } = useTranslation('healthPassport');
@@ -116,7 +120,11 @@ export default function SelectableMetricCard({
         </Box>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Stack direction="row" alignItems="center" gap={0.25} sx={{ minWidth: 0 }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0 }}
+              noWrap
+            >
               {label}
             </Typography>
             {hint && <HelpHint text={hint} size={14} />}
@@ -187,6 +195,19 @@ export default function SelectableMetricCard({
       >
         {isEmpty ? t('overview.add') : t('overview.viewSchedule')}
       </Button>
+
+      {!isEmpty && onHistory && (
+        <Button
+          fullWidth
+          variant="text"
+          size="small"
+          startIcon={<HistoryIcon sx={{ fontSize: 18 }} />}
+          onClick={onHistory}
+          sx={{ color: 'text.secondary', mt: -0.5 }}
+        >
+          {t('history.button')}
+        </Button>
+      )}
     </Card>
   );
 }

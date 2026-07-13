@@ -31,8 +31,10 @@ interface HealthStatusOverviewProps {
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
   onOpenTreatment?: (id: string) => void;
+  onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
   onHistoryEcto?: () => void;
+  onHistoryTreatment?: () => void;
 }
 
 export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
@@ -59,8 +61,10 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     onOpenDeworming,
     onOpenEcto,
     onOpenTreatment,
+    onHistoryVaccination,
     onHistoryDeworming,
     onHistoryEcto,
+    onHistoryTreatment,
   } = props;
 
   return (
@@ -112,6 +116,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           emptyText={t('overview.vaccinationEmpty')}
           onAdd={onAddVaccination}
           onOpen={onOpenVaccination}
+          onHistory={onHistoryVaccination}
         />
         <HealthMetricCard
           icon={<DewormIcon />}
@@ -155,6 +160,7 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           emptyText={t('overview.treatmentEmpty')}
           onAdd={onAddTreatment}
           onOpen={onOpenTreatment}
+          onHistory={onHistoryTreatment}
         />
       </Box>
     </Card>
