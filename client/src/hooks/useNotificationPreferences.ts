@@ -19,7 +19,7 @@ interface State {
 }
 
 export function useNotificationPreferences() {
-  const { vaccinations, dewormings, ectos, visits, medications } = useHealthData();
+  const { vaccinations, dewormings, ectos, visits, treatments, medications } = useHealthData();
   const { activePetId } = useActivePet();
 
   const [state, setState] = useState<State>({
@@ -63,10 +63,12 @@ export function useNotificationPreferences() {
       if (e.petId === activePetId) parts.push(`e:${e.id}:${e.nextDueDate ?? ''}`);
     for (const vi of visits)
       if (vi.petId === activePetId) parts.push(`vi:${vi.id}:${vi.nextCheckDate ?? ''}`);
+    for (const tr of treatments)
+      if (tr.petId === activePetId) parts.push(`tr:${tr.id}:${tr.nextDueDate ?? ''}`);
     for (const m of medications)
       if (m.petId === activePetId) parts.push(`m:${m.id}:${m.endDate ?? ''}`);
     return parts.join('|');
-  }, [vaccinations, dewormings, ectos, visits, medications, activePetId]);
+  }, [vaccinations, dewormings, ectos, visits, treatments, medications, activePetId]);
 
   useEffect(() => {
     let active = true;

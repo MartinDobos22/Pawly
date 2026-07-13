@@ -21,6 +21,7 @@ export type NotificationRecordType =
   | 'DEWORMING'
   | 'ECTOPARASITE'
   | 'VET_CHECK'
+  | 'TREATMENT'
   | 'MEDICATION';
 
 export interface NotificationPreferences {
@@ -30,6 +31,7 @@ export interface NotificationPreferences {
   notifyDewormings: boolean;
   notifyEctoparasites: boolean;
   notifyVetChecks: boolean;
+  notifyTreatments: boolean;
   notifyMedications: boolean;
 }
 
@@ -40,6 +42,7 @@ export const DEFAULT_PREFERENCES: NotificationPreferences = {
   notifyDewormings: true,
   notifyEctoparasites: true,
   notifyVetChecks: true,
+  notifyTreatments: true,
   notifyMedications: true,
 };
 
@@ -67,6 +70,7 @@ interface SourceConfig {
     | 'notifyDewormings'
     | 'notifyEctoparasites'
     | 'notifyVetChecks'
+    | 'notifyTreatments'
     | 'notifyMedications'
   >;
 }
@@ -105,6 +109,14 @@ const SOURCES: SourceConfig[] = [
     prefKey: 'notifyVetChecks',
   },
   {
+    type: 'TREATMENT',
+    table: 'treatments',
+    dateCol: 'next_due_date',
+    labelCol: 'name',
+    typeLabel: 'Liečba',
+    prefKey: 'notifyTreatments',
+  },
+  {
     type: 'MEDICATION',
     table: 'medications',
     dateCol: 'end_date',
@@ -128,6 +140,7 @@ function rowToPreferences(row: Row): NotificationPreferences {
     notifyDewormings: row.notify_dewormings !== false,
     notifyEctoparasites: row.notify_ectoparasites !== false,
     notifyVetChecks: row.notify_vet_checks !== false,
+    notifyTreatments: row.notify_treatments !== false,
     notifyMedications: row.notify_medications !== false,
   };
 }
@@ -163,6 +176,7 @@ export async function upsertPreferences(
         notify_dewormings: next.notifyDewormings,
         notify_ectoparasites: next.notifyEctoparasites,
         notify_vet_checks: next.notifyVetChecks,
+        notify_treatments: next.notifyTreatments,
         notify_medications: next.notifyMedications,
       },
       { onConflict: 'user_id' }

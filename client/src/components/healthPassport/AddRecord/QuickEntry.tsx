@@ -11,12 +11,14 @@ import { Box, Button, Chip, Stack, Tooltip, Typography, alpha, useTheme } from '
 import { useTranslation } from 'react-i18next';
 import {
   Biotech as DewormIcon,
+  Healing as HealingIcon,
   Medication as MedIcon,
   PestControl as EctoIcon,
   Restaurant as DietIcon,
   Vaccines as VaccinesIcon,
 } from '@mui/icons-material';
 
+import type { TreatmentRecord } from '../../../types/petHealth';
 import type { VisitBundle, WizardVisitDraft } from '../../../utils/vetVisitHelper';
 import { VetVisitHelper } from '../../../utils/vetVisitHelper';
 import { plusDays, today, uid } from '../utils';
@@ -25,6 +27,7 @@ import DateField from '../../DateField';
 import VaccinationFields from './sections/linked/VaccinationFields';
 import DewormingFields from './sections/linked/DewormingFields';
 import EctoFields from './sections/linked/EctoFields';
+import TreatmentFields from './sections/linked/TreatmentFields';
 import MedicationFields from './sections/linked/MedicationFields';
 import DietFields from './sections/linked/DietFields';
 
@@ -34,8 +37,13 @@ import type {
   EctoFieldsValues,
   LinkedKind,
   MedicationFieldsValues,
+  TreatmentFieldsValues,
   VaccinationFieldsValues,
 } from './formTypes';
+
+// „Liečba" (chronická/opakovaná liečba) sa neukladá cez visit-bundle, ale
+// priamym addTreatment — preto ju submit vetví zvlášť (viď onSaveTreatment nižšie).
+type QuickKind = LinkedKind;
 
 const DEFAULTS = {
   vaccination: {
@@ -46,6 +54,12 @@ const DEFAULTS = {
   } as VaccinationFieldsValues,
   deworming: { product: '', validUntil: '', intervalDays: 90 } as DewormingFieldsValues,
   ecto: { product: '', form: 'TABLET', validUntil: '', intervalDays: 30 } as EctoFieldsValues,
+  treatment: {
+    category: 'ALLERGY_SKIN',
+    name: '',
+    form: 'TABLET',
+    intervalDays: 28,
+  } as TreatmentFieldsValues,
   medication: {
     name: '',
     reason: '',
@@ -56,15 +70,23 @@ const DEFAULTS = {
   diet: { foodName: '', reactionNotes: '', suitabilityStatus: 'SUITABLE' } as DietFieldsValues,
 };
 
-const KIND_META: Record<LinkedKind, { labelKey: string; icon: typeof VaccinesIcon }> = {
+const KIND_META: Record<QuickKind, { labelKey: string; icon: typeof VaccinesIcon }> = {
   vaccination: { labelKey: 'addRecord.kindVaccination', icon: VaccinesIcon },
   deworming: { labelKey: 'addRecord.kindDeworming', icon: DewormIcon },
   ecto: { labelKey: 'addRecord.kindEcto', icon: EctoIcon },
+  treatment: { labelKey: 'addRecord.kindTreatment', icon: HealingIcon },
   medication: { labelKey: 'addRecord.kindMedication', icon: MedIcon },
   diet: { labelKey: 'addRecord.kindDiet', icon: DietIcon },
 };
 
-const KIND_ORDER: LinkedKind[] = ['vaccination', 'deworming', 'ecto', 'medication', 'diet'];
+const KIND_ORDER: QuickKind[] = [
+  'vaccination',
+  'deworming',
+  'ecto',
+  'treatment',
+  'medication',
+  'diet',
+];
 
 interface ContextValue {
   submit: () => void;
@@ -83,6 +105,7 @@ interface ProviderProps {
   petId: string;
   currentDietEntryId?: string;
   onSave: (bundle: VisitBundle) => void;
+  onSaveTreatment: (payload: Partial<TreatmentRecord>) => void;
   onCancel: () => void;
   children: ReactNode;
 }
@@ -90,8 +113,8 @@ interface ProviderProps {
 const PROVIDER_DATA = createContext<{
   date: string;
   setDate: (d: string) => void;
-  kind: LinkedKind;
-  setKind: (k: LinkedKind) => void;
+  kind: QuickKind;
+  setKind: (k: QuickKind) => void;
   vaccination: VaccinationFieldsValues;
   setVaccination: <K extends keyof VaccinationFieldsValues>(
     f: K,
@@ -101,6 +124,8 @@ const PROVIDER_DATA = createContext<{
   setDeworming: <K extends keyof DewormingFieldsValues>(f: K, v: DewormingFieldsValues[K]) => void;
   ecto: EctoFieldsValues;
   setEcto: <K extends keyof EctoFieldsValues>(f: K, v: EctoFieldsValues[K]) => void;
+  treatment: TreatmentFieldsValues;
+  setTreatment: <K extends keyof TreatmentFieldsValues>(f: K, v: TreatmentFieldsValues[K]) => void;
   medication: MedicationFieldsValues;
   setMedication: <K extends keyof MedicationFieldsValues>(
     f: K,
@@ -122,16 +147,18 @@ export default function QuickEntryProvider({
   petId,
   currentDietEntryId,
   onSave,
+  onSaveTreatment,
   onCancel,
   children,
 }: ProviderProps) {
   const { t } = useTranslation('healthPassport');
   const [date, setDate] = useState(today());
-  const [kind, setKind] = useState<LinkedKind>('vaccination');
+  const [kind, setKind] = useState<QuickKind>('vaccination');
   const [showErrors, setShowErrors] = useState(false);
   const [vaccination, _setVaccination] = useState<VaccinationFieldsValues>(DEFAULTS.vaccination);
   const [deworming, _setDeworming] = useState<DewormingFieldsValues>(DEFAULTS.deworming);
   const [ecto, _setEcto] = useState<EctoFieldsValues>(DEFAULTS.ecto);
+  const [treatment, _setTreatment] = useState<TreatmentFieldsValues>(DEFAULTS.treatment);
   const [medication, _setMedication] = useState<MedicationFieldsValues>(DEFAULTS.medication);
   const [diet, _setDiet] = useState<DietFieldsValues>(DEFAULTS.diet);
 
@@ -150,6 +177,11 @@ export default function QuickEntryProvider({
       _setEcto((prev) => ({ ...prev, [f]: v })),
     []
   );
+  const setTreatment = useCallback(
+    <K extends keyof TreatmentFieldsValues>(f: K, v: TreatmentFieldsValues[K]) =>
+      _setTreatment((prev) => ({ ...prev, [f]: v })),
+    []
+  );
   const setMedication = useCallback(
     <K extends keyof MedicationFieldsValues>(f: K, v: MedicationFieldsValues[K]) =>
       _setMedication((prev) => ({ ...prev, [f]: v })),
@@ -165,12 +197,26 @@ export default function QuickEntryProvider({
     (kind === 'vaccination' && vaccination.name.trim().length > 0) ||
     (kind === 'deworming' && deworming.product.trim().length > 0) ||
     (kind === 'ecto' && ecto.product.trim().length > 0) ||
+    (kind === 'treatment' && treatment.name.trim().length > 0) ||
     (kind === 'medication' && medication.name.trim().length > 0) ||
     (kind === 'diet' && diet.foodName.trim().length > 0);
 
   const submit = useCallback(() => {
     setShowErrors(true);
     if (!primaryFieldFilled) return;
+
+    if (kind === 'treatment') {
+      onSaveTreatment({
+        petId,
+        category: treatment.category,
+        name: treatment.name.trim(),
+        form: treatment.form,
+        dateGiven: date,
+        intervalDays: treatment.intervalDays > 0 ? treatment.intervalDays : undefined,
+        nextDueDate: treatment.intervalDays > 0 ? plusDays(date, treatment.intervalDays) : '',
+      });
+      return;
+    }
 
     const draft: WizardVisitDraft = {
       date,
@@ -226,11 +272,13 @@ export default function QuickEntryProvider({
     vaccination,
     deworming,
     ecto,
+    treatment,
     medication,
     diet,
     petId,
     currentDietEntryId,
     onSave,
+    onSaveTreatment,
   ]);
 
   useEffect(() => {
@@ -257,6 +305,8 @@ export default function QuickEntryProvider({
     setDeworming,
     ecto,
     setEcto,
+    treatment,
+    setTreatment,
     medication,
     setMedication,
     diet,
@@ -286,6 +336,8 @@ export function QuickEntryBody() {
     setDeworming,
     ecto,
     setEcto,
+    treatment,
+    setTreatment,
     medication,
     setMedication,
     diet,
@@ -314,6 +366,17 @@ export function QuickEntryBody() {
             onChange={setDeworming}
             errorProduct={
               showErrors && !primaryFieldFilled ? t('addRecord.errorProduct') : undefined
+            }
+          />
+        );
+      case 'treatment':
+        return (
+          <TreatmentFields
+            values={treatment}
+            baseDate={date}
+            onChange={setTreatment}
+            errorName={
+              showErrors && !primaryFieldFilled ? t('addRecord.errorTreatmentName') : undefined
             }
           />
         );
@@ -390,6 +453,17 @@ export function QuickEntryBody() {
             );
           })}
         </Stack>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mt: 1.25,
+            fontSize: '0.8rem',
+            lineHeight: 1.4,
+          }}
+        >
+          {t(`addRecord.kindDesc.${kind}`)}
+        </Typography>
       </Box>
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="flex-start">

@@ -7,6 +7,7 @@ import type {
   ExpenseRecord,
   MedicationDoseLog,
   MedicationRecord,
+  TreatmentRecord,
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
@@ -23,6 +24,7 @@ import {
   episodesApi,
   expensesApi,
   medicationsApi,
+  treatmentsApi,
   savedAnalysesApi,
   vaccinationsApi,
   vetVisitsApi,
@@ -76,6 +78,7 @@ export interface HealthDataContextValue {
   vaccinations: VaccinationRecord[];
   dewormings: DewormingRecord[];
   ectos: EctoparasiteRecord[];
+  treatments: TreatmentRecord[];
   visits: VetVisitRecord[];
   medications: MedicationRecord[];
   doseLogs: MedicationDoseLog[];
@@ -95,6 +98,9 @@ export interface HealthDataContextValue {
   addEcto: Collection<EctoparasiteRecord>['add'];
   updateEcto: Collection<EctoparasiteRecord>['update'];
   removeEcto: Collection<EctoparasiteRecord>['remove'];
+  addTreatment: Collection<TreatmentRecord>['add'];
+  updateTreatment: Collection<TreatmentRecord>['update'];
+  removeTreatment: Collection<TreatmentRecord>['remove'];
   addVisit: Collection<VetVisitRecord>['add'];
   updateVisit: Collection<VetVisitRecord>['update'];
   removeVisit: Collection<VetVisitRecord>['remove'];
@@ -131,6 +137,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
   const vaccinations = useCollection<VaccinationRecord>(vaccinationsApi);
   const dewormings = useCollection<DewormingRecord>(dewormingsApi);
   const ectos = useCollection<EctoparasiteRecord>(ectoparasitesApi);
+  const treatments = useCollection<TreatmentRecord>(treatmentsApi);
   const visits = useCollection<VetVisitRecord>(vetVisitsApi);
   const medications = useCollection<MedicationRecord>(medicationsApi);
   const doseLogs = useCollection<MedicationDoseLog>(doseLogsApi);
@@ -148,10 +155,11 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const [v, d, e, vi, m, dl, di, ex, ep, wl, ci, sa] = await Promise.all([
+      const [v, d, e, tr, vi, m, dl, di, ex, ep, wl, ci, sa] = await Promise.all([
         vaccinationsApi.list(),
         dewormingsApi.list(),
         ectoparasitesApi.list(),
+        treatmentsApi.list(),
         vetVisitsApi.list(),
         medicationsApi.list(),
         doseLogsApi.list(),
@@ -165,6 +173,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       vaccinations.setItems(v);
       dewormings.setItems(d);
       ectos.setItems(e);
+      treatments.setItems(tr);
       visits.setItems(vi);
       medications.setItems(m);
       doseLogs.setItems(dl);
@@ -253,6 +262,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       vaccinations: vaccinations.items,
       dewormings: dewormings.items,
       ectos: ectos.items,
+      treatments: treatments.items,
       visits: visits.items,
       medications: medications.items,
       doseLogs: doseLogs.items,
@@ -271,6 +281,9 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       addEcto: ectos.add,
       updateEcto: ectos.update,
       removeEcto: ectos.remove,
+      addTreatment: treatments.add,
+      updateTreatment: treatments.update,
+      removeTreatment: treatments.remove,
       addVisit: visits.add,
       updateVisit: visits.update,
       removeVisit: visits.remove,
@@ -303,6 +316,7 @@ export function HealthDataProvider({ children }: { children: ReactNode }) {
       vaccinations,
       dewormings,
       ectos,
+      treatments,
       visits,
       medications,
       doseLogs,

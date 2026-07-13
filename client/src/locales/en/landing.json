@@ -402,6 +402,7 @@
       "notifyDewormings": "Deworming",
       "notifyEctoparasites": "Ectoparasites (ticks/fleas)",
       "notifyVetChecks": "Vet check-ups",
+      "notifyTreatments": "Treatment (next due)",
       "notifyMedications": "End of medications"
     },
     "status": {

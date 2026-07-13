@@ -6,6 +6,7 @@ import type {
   ExpenseRecord,
   MedicationDoseLog,
   MedicationRecord,
+  TreatmentRecord,
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
@@ -102,6 +103,36 @@ export const ectoparasiteMapper: EntityMapper<EctoparasiteRecord> = {
     nextDueDate: str(r.next_due_date) ?? '',
     note: str(r.note),
     attachments: (r.attachments as EctoparasiteRecord['attachments']) ?? [],
+  }),
+};
+
+export const treatmentMapper: EntityMapper<TreatmentRecord> = {
+  table: 'treatments',
+  toRow: (d) =>
+    build([
+      ['category', d.category],
+      ['name', d.name],
+      ['form', d.form],
+      ['reason', d.reason],
+      ['date_given', d.dateGiven],
+      ['interval_days', d.intervalDays],
+      ['next_due_date', d.nextDueDate],
+      ['note', d.note],
+      ['attachments', d.attachments],
+    ]),
+  toDto: (r) => ({
+    id: String(r.id),
+    petId: String(r.pet_id),
+    category: (r.category as TreatmentRecord['category']) ?? 'OTHER',
+    name: String(r.name),
+    form: (r.form as TreatmentRecord['form']) ?? undefined,
+    reason: str(r.reason),
+    dateGiven: str(r.date_given) ?? '',
+    intervalDays: num(r.interval_days),
+    nextDueDate: str(r.next_due_date) ?? '',
+    note: str(r.note),
+    createdAt: str(r.created_at),
+    attachments: (r.attachments as TreatmentRecord['attachments']) ?? [],
   }),
 };
 

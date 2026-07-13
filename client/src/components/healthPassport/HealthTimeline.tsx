@@ -113,7 +113,10 @@ export default function HealthTimeline({
     const list = dayFilter
       ? filteredBase.filter((e) => e.date.slice(0, 10) === dayFilter)
       : filteredBase;
-    return [...list].sort((a, b) => b.date.localeCompare(a.date));
+    return [...list].sort(
+      (a, b) =>
+        b.date.localeCompare(a.date) || (b.createdAt ?? '').localeCompare(a.createdAt ?? '')
+    );
   }, [filteredBase, dayFilter]);
 
   // reset to the first page whenever the result set changes

@@ -2,6 +2,8 @@ import type {
   AttachmentRef,
   DietEntry,
   EctoparasiteRecord,
+  TreatmentCategory,
+  TreatmentForm,
   VaccinationRecord,
 } from '../../../types/petHealth';
 import type { AiDetectedDraftRecord } from '../hpTypes';
@@ -40,6 +42,13 @@ export interface EctoFieldsValues {
   intervalDays: number;
 }
 
+export interface TreatmentFieldsValues {
+  category: TreatmentCategory;
+  name: string;
+  form: TreatmentForm;
+  intervalDays: number;
+}
+
 export interface MedicationFieldsValues {
   name: string;
   reason: string;
@@ -54,12 +63,13 @@ export interface DietFieldsValues {
   suitabilityStatus: NonNullable<DietEntry['suitabilityStatus']>;
 }
 
-export type LinkedKind = 'vaccination' | 'deworming' | 'ecto' | 'medication' | 'diet';
+export type LinkedKind = 'vaccination' | 'deworming' | 'ecto' | 'treatment' | 'medication' | 'diet';
 
 export interface LinkedRecordsValues {
   vaccination?: VaccinationFieldsValues;
   deworming?: DewormingFieldsValues;
   ecto?: EctoFieldsValues;
+  treatment?: TreatmentFieldsValues;
   medication?: MedicationFieldsValues;
   diet?: DietFieldsValues;
 }
@@ -80,6 +90,7 @@ export type FieldKey =
   | 'linked.deworming.validUntil'
   | 'linked.ecto.product'
   | 'linked.ecto.validUntil'
+  | 'linked.treatment.name'
   | 'linked.medication.name'
   | 'linked.diet.foodName'
   | 'expenses.totalExpense'

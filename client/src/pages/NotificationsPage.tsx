@@ -29,6 +29,7 @@ const TYPE_TOGGLE_KEYS: Array<keyof NotificationPreferences> = [
   'notifyDewormings',
   'notifyEctoparasites',
   'notifyVetChecks',
+  'notifyTreatments',
   'notifyMedications',
 ];
 

@@ -4,20 +4,17 @@ import {
   Vaccines as VaccinesIcon,
   Biotech as DewormIcon,
   PestControl as EctoIcon,
-  Restaurant as DietIcon,
+  Healing as TreatmentIcon,
 } from '@mui/icons-material';
-import type { ValidityStatus, DietEntry } from '../../types/petHealth';
+import type { ValidityStatus } from '../../types/petHealth';
 import HealthMetricCard from './HealthMetricCard';
+import SelectableMetricCard, { type MetricOption } from './SelectableMetricCard';
 
 interface HealthStatusOverviewProps {
-  vaccinationStatus: ValidityStatus;
+  vaccinationOptions: MetricOption[];
+  treatmentOptions: MetricOption[];
   dewormingStatus: ValidityStatus;
   ectoStatus: ValidityStatus;
-  currentDiet?: DietEntry;
-  vaccinationNextDate?: string;
-  vaccinationLastDate?: string;
-  vaccinationDetail?: string;
-  vaccinationIntervalDays?: number;
   dewormingNextDate?: string;
   dewormingLastDate?: string;
   dewormingIntervalDays?: number;
@@ -29,28 +26,25 @@ interface HealthStatusOverviewProps {
   onAddVaccination?: () => void;
   onAddDeworming?: () => void;
   onAddEcto?: () => void;
-  onAddDiet?: () => void;
-  onOpenVaccination?: () => void;
+  onAddTreatment?: () => void;
+  onOpenVaccination?: (id: string) => void;
   onOpenDeworming?: () => void;
   onOpenEcto?: () => void;
-  onOpenDiet?: () => void;
+  onOpenTreatment?: (id: string) => void;
   onHistoryVaccination?: () => void;
   onHistoryDeworming?: () => void;
   onHistoryEcto?: () => void;
+  onHistoryTreatment?: () => void;
 }
 
 export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
   const { t } = useTranslation('healthPassport');
   const theme = useTheme();
   const {
-    vaccinationStatus,
+    vaccinationOptions,
+    treatmentOptions,
     dewormingStatus,
     ectoStatus,
-    currentDiet,
-    vaccinationNextDate,
-    vaccinationLastDate,
-    vaccinationDetail,
-    vaccinationIntervalDays,
     dewormingNextDate,
     dewormingLastDate,
     dewormingIntervalDays,
@@ -62,14 +56,15 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
     onAddVaccination,
     onAddDeworming,
     onAddEcto,
-    onAddDiet,
+    onAddTreatment,
     onOpenVaccination,
     onOpenDeworming,
     onOpenEcto,
-    onOpenDiet,
+    onOpenTreatment,
     onHistoryVaccination,
     onHistoryDeworming,
     onHistoryEcto,
+    onHistoryTreatment,
   } = props;
 
   return (
@@ -102,27 +97,26 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            lg: 'repeat(4, 1fr)',
+          },
           alignItems: 'stretch',
           gap: 2,
         }}
       >
-        <HealthMetricCard
+        <SelectableMetricCard
           icon={<VaccinesIcon />}
           label={t('overview.vaccination')}
           hint={t('hints.vaccination')}
-          status={vaccinationStatus}
           accentColor={theme.palette.success.main}
-          nextDate={vaccinationNextDate}
-          lastDate={vaccinationLastDate}
-          detail={vaccinationDetail}
-          intervalDays={vaccinationIntervalDays}
-          primaryActionLabel={
-            vaccinationStatus === 'UNKNOWN' ? t('overview.add') : t('overview.viewSchedule')
-          }
-          onPrimaryAction={onAddVaccination}
-          onOpen={vaccinationStatus !== 'UNKNOWN' ? onOpenVaccination : undefined}
-          onHistory={vaccinationStatus !== 'UNKNOWN' ? onHistoryVaccination : undefined}
+          options={vaccinationOptions}
+          soonDays={30}
+          emptyText={t('overview.vaccinationEmpty')}
+          onAdd={onAddVaccination}
+          onOpen={onOpenVaccination}
+          onHistory={onHistoryVaccination}
         />
         <HealthMetricCard
           icon={<DewormIcon />}
@@ -156,17 +150,17 @@ export default function HealthStatusOverview(props: HealthStatusOverviewProps) {
           onOpen={ectoStatus !== 'UNKNOWN' ? onOpenEcto : undefined}
           onHistory={ectoStatus !== 'UNKNOWN' ? onHistoryEcto : undefined}
         />
-        <HealthMetricCard
-          icon={<DietIcon />}
-          label={t('overview.diet')}
-          status={currentDiet ? 'VALID' : 'UNKNOWN'}
-          headline={currentDiet ? t('overview.dietActive') : undefined}
-          accentColor={theme.palette.diet.main}
-          detail={currentDiet?.foodName ?? t('overview.dietNotSet')}
-          lastDate={currentDiet?.startedAt}
-          primaryActionLabel={currentDiet ? t('overview.viewDiet') : t('overview.setup')}
-          onPrimaryAction={onAddDiet}
-          onOpen={currentDiet ? onOpenDiet : undefined}
+        <SelectableMetricCard
+          icon={<TreatmentIcon />}
+          label={t('overview.treatment')}
+          hint={t('hints.treatment')}
+          accentColor={theme.palette.warning.main}
+          options={treatmentOptions}
+          soonDays={7}
+          emptyText={t('overview.treatmentEmpty')}
+          onAdd={onAddTreatment}
+          onOpen={onOpenTreatment}
+          onHistory={onHistoryTreatment}
         />
       </Box>
     </Card>

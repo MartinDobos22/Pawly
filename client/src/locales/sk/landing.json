@@ -400,6 +400,7 @@
       "notifyDewormings": "Odčervenie",
       "notifyEctoparasites": "Ektoparazity (kliešte/blchy)",
       "notifyVetChecks": "Kontroly u veterinára",
+      "notifyTreatments": "Liečba (ďalší termín)",
       "notifyMedications": "Koniec liekov"
     },
     "status": {

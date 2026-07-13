@@ -5,7 +5,8 @@
     "healthConditions": "Dlhodobé stavy ako obezita, cukrovka či citlivé trávenie. Pomáhajú AI prispôsobiť odporúčania ku krmivu tvojmu zvieraťu.",
     "vaccination": "Pravidelné očkovania proti nákazlivým chorobám. Sledujeme dátum platnosti a upozorníme, keď sa blíži preočkovanie.",
     "deworming": "Pravidelné odčervenie proti vnútorným parazitom. Interval býva 3–6 mesiacov podľa veku a životného štýlu zvieraťa.",
-    "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná."
+    "ectoparasite": "Ochrana proti kliešťom a blchám (spot-on, tablety, obojok). Sledujeme, dokedy je posledná aplikácia účinná.",
+    "treatment": "Chronická a opakovaná liečba podľa zdravotného problému (alergia, srdce, kĺby…). Zadáš liečivo v akejkoľvek forme (tableta, injekcia, kvapky) a ďalší termín."
   },
   "page": {
     "noPetSelected": "Vyber zviera",
@@ -25,7 +26,7 @@
     "DEWORMING": "Odčervenie",
     "ECTOPARASITE": "Ektoparazity",
     "VET_VISIT": "Veterinár",
-    "MEDICATION": "Liečba",
+    "MEDICATION": "Liek",
     "DIET": "Diéta",
     "EXPENSE": "Výdavok",
     "NOTE": "Poznámka",
@@ -59,7 +60,9 @@
     "titleMedication": "Liek: {{name}}",
     "titleDiet": "Diéta: {{food}}",
     "titleExpense": "Výdavok {{amount}} €",
-    "inDays_other": "o {{count}} dní"
+    "inDays_other": "o {{count}} dní",
+    "TREATMENT": "Liečba",
+    "titleTreatment": "Liečba: {{name}}"
   },
   "detail": {
     "title": "Detail záznamu",
@@ -125,7 +128,8 @@
     "MEDICATION": "Lieky",
     "DIET": "Diéta",
     "EXPENSE": "Výdavky",
-    "NOTE": "Poznámky"
+    "NOTE": "Poznámky",
+    "TREATMENT": "Liečba"
   },
   "status": {
     "valid": "Platné",
@@ -196,7 +200,8 @@
       "reasonPlaceholder": "napr. preventívna prehliadka, akútne vracanie…",
       "mainCategory": "Hlavná kategória",
       "subcategory": "Podkategória",
-      "mainCategoryOptional": "Hlavná kategória (voliteľné)"
+      "mainCategoryOptional": "Hlavná kategória (voliteľné)",
+      "categoryHint": "Ak návšteva zahŕňala vyšetrenie (krv, RTG, USG, EKG, očné…), vyber jeho typ tu. Voliteľné."
     },
     "required_one": "Doplňte {{count}} povinné pole",
     "required_few": "Doplňte {{count}} povinné polia",
@@ -252,7 +257,7 @@
     "modeManual": "Manuálna návšteva",
     "modeAi": "Z dokumentu (AI)",
     "subtitleQuick": "Rýchle zalogovanie jedného typu záznamu (bez detailov o návšteve).",
-    "subtitleManual": "Vyplň formulár návštevy veterinára manuálne.",
+    "subtitleManual": "Kompletná návšteva — vrátane vyšetrení (krv, RTG, USG…), diagnózy a súvisiacich záznamov.",
     "subtitleAi": "AI extrahuje vakcinácie a záznamy z nahraných dokumentov.",
     "addTitle": "Pridať záznam",
     "kindVaccination": "Očkovanie",
@@ -266,14 +271,15 @@
       "deworming": "Dátum odčervenia",
       "ecto": "Dátum aplikácie",
       "medication": "Dátum začiatku",
-      "diet": "Dátum začiatku"
+      "diet": "Dátum začiatku",
+      "treatment": "Dátum podania"
     },
     "ownRecord": "Vlastný záznam",
     "errorVaccineName": "Zadaj názov vakcíny",
     "errorProduct": "Zadaj názov prípravku",
     "errorDrugName": "Zadaj názov lieku",
     "errorFoodName": "Zadaj názov krmiva",
-    "quickHint": "Rýchly záznam sa uloží bez detailov o návšteve a kliniky. Pre kompletnú návštevu prepni na „Manuálna návšteva\".",
+    "quickHint": "Rýchly záznam je bez kliniky a detailov. Vyšetrenie (krv, RTG, USG…), diagnózu alebo celú návštevu zapíšeš cez „Manuálna návšteva\".",
     "cancel": "Zrušiť",
     "save": "Uložiť",
     "tipShortcut": "Tip: {{modKey}} + Enter pre uloženie",
@@ -284,7 +290,17 @@
     "diagnosisOptional": "Diagnóza (voliteľné)",
     "recommendationsOptional": "Odporúčania (voliteľné)",
     "unknownRecord": "Neznámy záznam",
-    "required_other": "Doplňte {{count}} povinných polí"
+    "required_other": "Doplňte {{count}} povinných polí",
+    "kindTreatment": "Liečba",
+    "errorTreatmentName": "Zadaj názov liečiva",
+    "kindDesc": {
+      "vaccination": "Očkovanie proti chorobe (besnota, kombinovaná…) s dátumom platnosti.",
+      "deworming": "Odčervenie – prípravok proti črevným parazitom s intervalom opakovania.",
+      "ecto": "Ochrana proti kliešťom a blchám (pipeta, tabletka, obojok).",
+      "treatment": "Chronická alebo opakovaná liečba problému (alergia, srdce, kĺby…) s pripomienkou ďalšieho termínu.",
+      "medication": "Jednorazový alebo krátkodobý liek s dávkovaním – bez pripomienky ďalšieho termínu.",
+      "diet": "Krmivo a jeho znášanlivosť u zvieraťa."
+    }
   },
   "attachmentUpload": {
     "docLabel": "Popis dokumentu (voliteľné)",
@@ -360,8 +376,12 @@
       "hint": "Odčervovací prípravok a interval ďalšej aplikácie"
     },
     "ecto": {
-      "label": "Ektoparazity (kliešte / blchy)",
+      "label": "Kliešte / blchy",
       "hint": "Antiparazitiká, spot-on alebo tablety"
+    },
+    "treatment": {
+      "label": "Liečba",
+      "hint": "Chronická alebo opakovaná liečba s pripomienkou ďalšieho termínu"
     },
     "medication": {
       "label": "Liek",
@@ -640,13 +660,17 @@
     "bulletWeightNoData": "Pridajte váženia a začnite sledovať vývoj hmotnosti.",
     "bulletPreventiveUpToDate": "Všetka preventívna starostlivosť je aktuálna.",
     "bulletOverdue": "{{item}} je po termíne — čoskoro naplánujte.",
-    "bulletExpiringSoon": "{{item}} čoskoro končí — naplánujte vopred."
+    "bulletExpiringSoon": "{{item}} čoskoro končí — naplánujte vopred.",
+    "bulletOpenEpisodes_one": "V denníku máte {{count}} otvorenú epizódu — sledujte ju.",
+    "bulletOpenEpisodes_few": "V denníku máte {{count}} otvorené epizódy — sledujte ich.",
+    "bulletOpenEpisodes_other": "V denníku máte {{count}} otvorených epizód — sledujte ich."
   },
   "history": {
     "button": "História",
     "vaccinationTitle": "História očkovaní",
     "dewormingTitle": "História odčervení",
     "ectoTitle": "História ochrany proti kliešťom",
+    "treatmentTitle": "História liečby",
     "empty": "Zatiaľ žiadne záznamy."
   },
   "overview": {
@@ -666,10 +690,21 @@
     "viewDiet": "Zobraziť diétu",
     "renew": "Obnoviť",
     "edit": "Upraviť",
-    "setup": "Nastaviť"
+    "setup": "Nastaviť",
+    "treatment": "Liečba",
+    "examCheck": "Vyšetrenie / kontrola",
+    "treatmentOthers_one": "{{name}} + {{count}} ďalšia",
+    "treatmentOthers_few": "{{name}} + {{count}} ďalšie",
+    "treatmentOthers_many": "{{name}} + {{count}} ďalších",
+    "treatmentOthers_other": "{{name}} + {{count}} ďalších",
+    "treatmentEmpty": "Zatiaľ žiadna liečba",
+    "treatmentAddMore": "Pridať ďalšiu liečbu",
+    "vaccinationEmpty": "Zatiaľ žiadne očkovanie"
   },
   "upcoming": {
-    "title": "Najbližšie úlohy",
+    "title": "Najbližšie termíny",
+    "showAll": "Zobraziť ďalšie ({{count}})",
+    "showLess": "Zobraziť menej",
     "allGood": "Všetko v poriadku",
     "noTasks": "Žiadne plánované úlohy.",
     "overdue": "Po termíne",
@@ -681,7 +716,8 @@
     "deworming": "Odčervenie – {{product}}",
     "antiparasitic": "Antiparazitikum – {{product}}",
     "todayDoses": "Dnešné dávky",
-    "medicationFallback": "Liek"
+    "medicationFallback": "Liek",
+    "empty": "Zatiaľ žiadne naplánované termíny."
   },
   "expenseCard": {
     "title": "Výdavky",
@@ -817,6 +853,7 @@
     "vaccinationNameRequired": "Zadajte názov vakcíny.",
     "productRequired": "Zadajte názov prípravku.",
     "medicationNameRequired": "Zadajte názov lieku.",
+    "treatmentNameRequired": "Zadajte názov liečiva.",
     "foodNameRequired": "Zadajte názov krmiva.",
     "nonNegativeRequired": "Zadajte nezáporné číslo.",
     "vaccinationValidUntilBeforeApplied": "Dátum platnosti musí byť rovnaký alebo neskôr ako dátum aplikácie.",
@@ -838,5 +875,41 @@
       "ectoparasite": "Ektoparazity",
       "medication": "Liek"
     }
+  },
+  "treatment": {
+    "name": "Liečivo / terapia",
+    "namePlaceholder": "napr. Apoquel",
+    "reason": "Dôvod (voliteľné)",
+    "reasonPlaceholder": "napr. alergia",
+    "intervalDays": "Interval (dni)",
+    "nextDue": "Ďalší termín: {{date}}",
+    "dateGiven": "Dátum podania",
+    "nextDueDate": "Ďalší termín",
+    "category": "Skupina / problém",
+    "form": "Forma"
+  },
+  "treatmentCategories": {
+    "ALLERGY_SKIN": "Alergie a koža",
+    "PAIN_JOINTS": "Bolesť, kĺby a pohyb",
+    "HEART": "Srdce a obeh",
+    "ENDOCRINE": "Hormóny / endokrinné",
+    "NEURO": "Epilepsia a nervy",
+    "DIGESTIVE": "Tráviaci trakt",
+    "RENAL_URINARY": "Obličky a močové cesty",
+    "EYES": "Oči",
+    "EARS": "Uši",
+    "BEHAVIOR": "Správanie / psychika",
+    "INFECTION": "Infekcie (dlhodobé)",
+    "IMMUNE": "Imunitné / autoimunitné",
+    "ONCOLOGY": "Onkológia",
+    "OTHER": "Iné"
+  },
+  "treatmentForms": {
+    "TABLET": "Tableta",
+    "INJECTION": "Injekcia",
+    "DROPS": "Kvapky",
+    "TOPICAL": "Masť / šampón",
+    "DIET": "Diéta",
+    "OTHER": "Iné"
   }
 }

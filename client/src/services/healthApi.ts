@@ -8,6 +8,7 @@ import type {
   MedicationDoseLog,
   MedicationRecord,
   PetCareStatus,
+  TreatmentRecord,
   VaccinationRecord,
   VetVisitRecord,
   WeightLog,
@@ -71,6 +72,7 @@ function crudApi<T>(path: string): CrudApi<T> {
 export const vaccinationsApi = crudApi<VaccinationRecord>('vaccinations');
 export const dewormingsApi = crudApi<DewormingRecord>('dewormings');
 export const ectoparasitesApi = crudApi<EctoparasiteRecord>('ectoparasites');
+export const treatmentsApi = crudApi<TreatmentRecord>('treatments');
 export const vetVisitsApi = crudApi<VetVisitRecord>('vet-visits');
 export const medicationsApi = crudApi<MedicationRecord>('medications');
 export const doseLogsApi = crudApi<MedicationDoseLog>('dose-logs');

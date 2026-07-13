@@ -22,6 +22,7 @@ import type {
   VaccinationRecord,
   DewormingRecord,
   EctoparasiteRecord,
+  TreatmentRecord,
   MedicationRecord,
   DietEntry,
   ExpenseRecord,
@@ -30,11 +31,13 @@ import type {
 import { TIMELINE_ICON_MAP, TIMELINE_TYPE_META } from './constants.ts';
 import { today } from './utils.ts';
 import { VACCINE_TYPE_ORDER } from '../../utils/vaccineTypes';
+import { TREATMENT_CATEGORY_ORDER, TREATMENT_FORM_ORDER } from '../../utils/treatmentCategories';
 
 export type RecordDetailType =
   | 'VACCINATION'
   | 'DEWORMING'
   | 'ECTOPARASITE'
+  | 'TREATMENT'
   | 'MEDICATION'
   | 'DIET'
   | 'EXPENSE';
@@ -62,6 +65,14 @@ interface DewDraft {
 interface EctoDraft {
   productName: string;
   form: EctoparasiteRecord['form'];
+  dateGiven: string;
+  nextDueDate: string;
+  note: string;
+}
+interface TreatDraft {
+  category: TreatmentRecord['category'];
+  name: string;
+  form: NonNullable<TreatmentRecord['form']>;
   dateGiven: string;
   nextDueDate: string;
   note: string;
@@ -95,6 +106,7 @@ interface TimelineRecordDetailDialogProps {
   vaccination?: VaccinationRecord | null;
   deworming?: DewormingRecord | null;
   ectoparasite?: EctoparasiteRecord | null;
+  treatment?: TreatmentRecord | null;
   medication?: MedicationRecord | null;
   diet?: DietEntry | null;
   expense?: ExpenseRecord | null;
@@ -102,6 +114,7 @@ interface TimelineRecordDetailDialogProps {
   onSaveVaccination: (id: string, draft: VacDraft) => void;
   onSaveDeworming: (id: string, draft: DewDraft) => void;
   onSaveEcto: (id: string, draft: EctoDraft) => void;
+  onSaveTreatment: (id: string, draft: TreatDraft) => void;
   onSaveMedication: (id: string, draft: MedDraft) => void;
   onSaveDiet: (id: string, draft: DietDraft) => void;
   onSaveExpense: (id: string, draft: ExpDraft) => void;
@@ -114,6 +127,7 @@ export default function TimelineRecordDetailDialog({
   vaccination,
   deworming,
   ectoparasite,
+  treatment,
   medication,
   diet,
   expense,
@@ -121,6 +135,7 @@ export default function TimelineRecordDetailDialog({
   onSaveVaccination,
   onSaveDeworming,
   onSaveEcto,
+  onSaveTreatment,
   onSaveMedication,
   onSaveDiet,
   onSaveExpense,
@@ -146,6 +161,14 @@ export default function TimelineRecordDetailDialog({
   });
   const [ectoDraft, setEctoDraft] = useState<EctoDraft>({
     productName: '',
+    form: 'TABLET',
+    dateGiven: today(),
+    nextDueDate: '',
+    note: '',
+  });
+  const [treatDraft, setTreatDraft] = useState<TreatDraft>({
+    category: 'OTHER',
+    name: '',
     form: 'TABLET',
     dateGiven: today(),
     nextDueDate: '',
@@ -200,6 +223,15 @@ export default function TimelineRecordDetailDialog({
         nextDueDate: ectoparasite.nextDueDate,
         note: ectoparasite.note ?? '',
       });
+    if (treatment)
+      setTreatDraft({
+        category: treatment.category,
+        name: treatment.name,
+        form: treatment.form ?? 'TABLET',
+        dateGiven: treatment.dateGiven,
+        nextDueDate: treatment.nextDueDate,
+        note: treatment.note ?? '',
+      });
     if (medication)
       setMedDraft({
         name: medication.name,
@@ -225,7 +257,7 @@ export default function TimelineRecordDetailDialog({
         category: expense.category,
         note: expense.note ?? '',
       });
-  }, [vaccination, deworming, ectoparasite, medication, diet, expense]);
+  }, [vaccination, deworming, ectoparasite, treatment, medication, diet, expense]);
 
   if (!state) return null;
 
@@ -233,6 +265,7 @@ export default function TimelineRecordDetailDialog({
     state.type !== 'VACCINATION' &&
     state.type !== 'DEWORMING' &&
     state.type !== 'ECTOPARASITE' &&
+    state.type !== 'TREATMENT' &&
     state.type !== 'MEDICATION' &&
     state.type !== 'DIET' &&
     state.type !== 'EXPENSE'
@@ -258,6 +291,7 @@ export default function TimelineRecordDetailDialog({
       onSaveVaccination(state.id, vacDraft);
     } else if (state.type === 'DEWORMING') onSaveDeworming(state.id, dewDraft);
     else if (state.type === 'ECTOPARASITE') onSaveEcto(state.id, ectoDraft);
+    else if (state.type === 'TREATMENT') onSaveTreatment(state.id, treatDraft);
     else if (state.type === 'MEDICATION') onSaveMedication(state.id, medDraft);
     else if (state.type === 'DIET') onSaveDiet(state.id, dietDraft);
     else if (state.type === 'EXPENSE') onSaveExpense(state.id, expDraft);
@@ -451,6 +485,118 @@ export default function TimelineRecordDetailDialog({
               <FieldRow label={t('detail.note')}>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {dewDraft.note}
+                </Typography>
+              </FieldRow>
+            </Box>
+          )}
+        </Box>
+      );
+    }
+
+    if (state.type === 'TREATMENT') {
+      return editing ? (
+        <Stack spacing={1.5}>
+          <FormControl size="small" fullWidth>
+            <InputLabel>{t('treatment.category')}</InputLabel>
+            <Select
+              label={t('treatment.category')}
+              value={treatDraft.category}
+              onChange={(e) =>
+                setTreatDraft((p) => ({
+                  ...p,
+                  category: e.target.value as TreatDraft['category'],
+                }))
+              }
+            >
+              {TREATMENT_CATEGORY_ORDER.map((c) => (
+                <MenuItem key={c} value={c}>
+                  {t(`treatmentCategories.${c}`)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label={t('treatment.name')}
+            placeholder={t('treatment.namePlaceholder')}
+            value={treatDraft.name}
+            onChange={(e) => setTreatDraft((p) => ({ ...p, name: e.target.value }))}
+            size="small"
+          />
+          <FormControl size="small" fullWidth>
+            <InputLabel>{t('treatment.form')}</InputLabel>
+            <Select
+              label={t('treatment.form')}
+              value={treatDraft.form}
+              onChange={(e) =>
+                setTreatDraft((p) => ({ ...p, form: e.target.value as TreatDraft['form'] }))
+              }
+            >
+              {TREATMENT_FORM_ORDER.map((f) => (
+                <MenuItem key={f} value={f}>
+                  {t(`treatmentForms.${f}`)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+            <TextField
+              label={t('treatment.dateGiven')}
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={treatDraft.dateGiven}
+              onChange={(e) => setTreatDraft((p) => ({ ...p, dateGiven: e.target.value }))}
+              size="small"
+            />
+            <TextField
+              label={t('treatment.nextDueDate')}
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={treatDraft.nextDueDate}
+              onChange={(e) => setTreatDraft((p) => ({ ...p, nextDueDate: e.target.value }))}
+              size="small"
+            />
+          </Box>
+          <TextField
+            label={t('detail.note')}
+            value={treatDraft.note}
+            onChange={(e) => setTreatDraft((p) => ({ ...p, note: e.target.value }))}
+            size="small"
+            multiline
+            minRows={2}
+          />
+        </Stack>
+      ) : (
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
+          <FieldRow label={t('treatment.category')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {t(`treatmentCategories.${treatDraft.category}`)}
+            </Typography>
+          </FieldRow>
+          <FieldRow label={t('treatment.name')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {treatDraft.name || '–'}
+            </Typography>
+          </FieldRow>
+          <FieldRow label={t('treatment.form')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {t(`treatmentForms.${treatDraft.form}`)}
+            </Typography>
+          </FieldRow>
+          <FieldRow label={t('detail.date')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {treatDraft.dateGiven}
+            </Typography>
+          </FieldRow>
+          <FieldRow label={t('detail.nextDue')}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {treatDraft.nextDueDate || '–'}
+            </Typography>
+          </FieldRow>
+          {treatDraft.note && (
+            <Box sx={{ gridColumn: '1 / -1' }}>
+              <FieldRow label={t('detail.note')}>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {treatDraft.note}
                 </Typography>
               </FieldRow>
             </Box>
