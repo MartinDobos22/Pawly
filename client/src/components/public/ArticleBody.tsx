@@ -144,22 +144,27 @@ export default function ArticleBody({ sections }: Props) {
                       my: 3,
                     }}
                   >
-                    {block.images.map((img, k) => (
-                      <Box
-                        key={k}
-                        component="img"
-                        src={img.src}
-                        alt={img.alt ?? ''}
-                        loading="lazy"
-                        sx={{
-                          width: '100%',
-                          aspectRatio: '1 / 1',
-                          objectFit: 'cover',
-                          borderRadius: (t) => `${t.shape.borderRadius}px`,
-                          display: 'block',
-                        }}
-                      />
-                    ))}
+                    {block.images
+                      .filter((img) => img.src?.trim())
+                      .map((img, k) => (
+                        <Box
+                          key={k}
+                          component="img"
+                          src={img.src}
+                          alt={img.alt ?? ''}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          sx={{
+                            width: '100%',
+                            aspectRatio: '1 / 1',
+                            objectFit: 'cover',
+                            borderRadius: (t) => `${t.shape.borderRadius}px`,
+                            display: 'block',
+                          }}
+                        />
+                      ))}
                   </Box>
                 );
               default:
