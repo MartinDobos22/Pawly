@@ -1,4 +1,13 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { InfoOutlined as InfoIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
@@ -49,6 +58,12 @@ export default function VisitBasics({ values, errors, onChange }: VisitBasicsPro
           onChange={(e) => onChange('reason', e.target.value)}
           fullWidth
         />
+        <Typography
+          variant="caption"
+          sx={{ color: 'text.secondary', textTransform: 'none', letterSpacing: 0, mt: -0.5 }}
+        >
+          {t('addRecord.basics.categoryHint')}
+        </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
           <FormControl size="small">
             <InputLabel>{t('addRecord.basics.mainCategory')}</InputLabel>

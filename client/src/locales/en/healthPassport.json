@@ -196,7 +196,8 @@
       "reasonPlaceholder": "e.g. routine check-up, acute vomiting…",
       "mainCategory": "Main category",
       "subcategory": "Subcategory",
-      "mainCategoryOptional": "Main category (optional)"
+      "mainCategoryOptional": "Main category (optional)",
+      "categoryHint": "If the visit included an examination (blood, X-ray, ultrasound, ECG, eye…), pick its type here. Optional."
     },
     "required_one": "Fill in {{count}} required field",
     "required_other": "Fill in {{count}} required fields",
@@ -251,7 +252,7 @@
     "modeManual": "Manual visit",
     "modeAi": "From document (AI)",
     "subtitleQuick": "Quickly log a single record type (without full visit details).",
-    "subtitleManual": "Fill in the vet visit form manually.",
+    "subtitleManual": "A full visit — including examinations (blood, X-ray, ultrasound…), diagnosis and linked records.",
     "subtitleAi": "AI extracts vaccinations and records from uploaded documents.",
     "addTitle": "Add record",
     "kindVaccination": "Vaccination",
@@ -273,7 +274,7 @@
     "errorProduct": "Enter product name",
     "errorDrugName": "Enter medication name",
     "errorFoodName": "Enter food name",
-    "quickHint": "Quick record is saved without visit details or clinic. For a full visit, switch to \"Manual visit\".",
+    "quickHint": "Quick record has no clinic or details. Record an examination (blood, X-ray, ultrasound…), a diagnosis or a full visit via \"Manual visit\".",
     "cancel": "Cancel",
     "save": "Save",
     "tipShortcut": "Tip: {{modKey}} + Enter to save",
@@ -369,7 +370,7 @@
       "hint": "Deworming product and next application interval"
     },
     "ecto": {
-      "label": "Ectoparasites (ticks / fleas)",
+      "label": "Ticks / fleas",
       "hint": "Antiparasitics, spot-on or tablets"
     },
     "treatment": {

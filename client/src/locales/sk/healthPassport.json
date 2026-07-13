@@ -200,7 +200,8 @@
       "reasonPlaceholder": "napr. preventívna prehliadka, akútne vracanie…",
       "mainCategory": "Hlavná kategória",
       "subcategory": "Podkategória",
-      "mainCategoryOptional": "Hlavná kategória (voliteľné)"
+      "mainCategoryOptional": "Hlavná kategória (voliteľné)",
+      "categoryHint": "Ak návšteva zahŕňala vyšetrenie (krv, RTG, USG, EKG, očné…), vyber jeho typ tu. Voliteľné."
     },
     "required_one": "Doplňte {{count}} povinné pole",
     "required_few": "Doplňte {{count}} povinné polia",
@@ -256,7 +257,7 @@
     "modeManual": "Manuálna návšteva",
     "modeAi": "Z dokumentu (AI)",
     "subtitleQuick": "Rýchle zalogovanie jedného typu záznamu (bez detailov o návšteve).",
-    "subtitleManual": "Vyplň formulár návštevy veterinára manuálne.",
+    "subtitleManual": "Kompletná návšteva — vrátane vyšetrení (krv, RTG, USG…), diagnózy a súvisiacich záznamov.",
     "subtitleAi": "AI extrahuje vakcinácie a záznamy z nahraných dokumentov.",
     "addTitle": "Pridať záznam",
     "kindVaccination": "Očkovanie",
@@ -278,7 +279,7 @@
     "errorProduct": "Zadaj názov prípravku",
     "errorDrugName": "Zadaj názov lieku",
     "errorFoodName": "Zadaj názov krmiva",
-    "quickHint": "Rýchly záznam sa uloží bez detailov o návšteve a kliniky. Pre kompletnú návštevu prepni na „Manuálna návšteva\".",
+    "quickHint": "Rýchly záznam je bez kliniky a detailov. Vyšetrenie (krv, RTG, USG…), diagnózu alebo celú návštevu zapíšeš cez „Manuálna návšteva\".",
     "cancel": "Zrušiť",
     "save": "Uložiť",
     "tipShortcut": "Tip: {{modKey}} + Enter pre uloženie",
@@ -375,7 +376,7 @@
       "hint": "Odčervovací prípravok a interval ďalšej aplikácie"
     },
     "ecto": {
-      "label": "Ektoparazity (kliešte / blchy)",
+      "label": "Kliešte / blchy",
       "hint": "Antiparazitiká, spot-on alebo tablety"
     },
     "treatment": {
