@@ -8,13 +8,16 @@ interface Props {
   buttonLabel: string;
   to: string;
   intent?: OnboardingIntent;
+  /** Zavolá sa pri kliknutí na samotné tlačidlo (napr. analytics tracking). */
+  onClick?: () => void;
 }
 
-export default function LandingCta({ heading, buttonLabel, to, intent }: Props) {
+export default function LandingCta({ heading, buttonLabel, to, intent, onClick }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
 
   const handleClick = () => {
+    onClick?.();
     if (intent) setOnboardingIntent(intent);
     navigate(to);
   };

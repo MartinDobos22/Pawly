@@ -217,9 +217,11 @@ app.use('/api/auth', authEmailsRouter);
 // PRED firebaseAuth). Pokrytý globalLimiterom.
 app.use('/api/articles', articlesRouter);
 
-// /api/analytics — verejný tracking eventov z poradne (bez tokenu, PRED
-// firebaseAuth). Vlastný rate limit proti spamu.
-app.use('/api/analytics', analyticsLimiter, analyticsRouter);
+// /api/events — verejný tracking eventov z poradne (bez tokenu, PRED
+// firebaseAuth). Vlastný rate limit proti spamu. Cesta je zámerne neutrálna
+// (nie „/analytics") — adblock filtre blokujú URL s „analytics" a tichým
+// dropom by podhodnocovali metriky článkov. Nepremenúvaj späť.
+app.use('/api/events', analyticsLimiter, analyticsRouter);
 
 // Všetky ostatné /api/ endpointy vyžadujú platný Firebase ID token + email verified gate
 app.use('/api/', firebaseAuth());

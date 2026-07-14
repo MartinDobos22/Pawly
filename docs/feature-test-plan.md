@@ -155,12 +155,14 @@ _Migrácia `0026` (`article_medical_review`)._
 
 ## T11 — Analytika výkonu článkov
 
-_Nové: `routes/analytics.ts` (verejný `POST /api/analytics/article-event` za `analyticsLimiter`), `articleAnalyticsService`; admin `GET /api/admin/articles/metrics`, `.../:slug/metrics`; migrácia `0025` (`article_events`)._
+_Nové: `routes/analytics.ts` (verejný `POST /api/events/article-event` za `analyticsLimiter`, cesta zámerne neutrálna kvôli adblockom), `articleAnalyticsService`; admin `GET /api/admin/articles/metrics`, `.../:slug/metrics` (oboje `?period=30d|90d|all`); migrácie `0025` (`article_events`) + `0033` (all-time metriky). View/scroll/CTA sa počítajú ako unikát za deň (dedup na klientovi)._
 
-- [ ] **T11.1** — Návšteva/čítanie verejného článku. (`POST /api/analytics/article-event` v Network bez tokenu → 2xx.)
-- [ ] **T11.2** — `[ADMIN]` Prehľad metrík. (`GET /articles/metrics` — zobrazenia/dočítania per článok.)
+- [ ] **T11.1** — Návšteva/čítanie verejného článku. (`POST /api/events/article-event` v Network bez tokenu → 2xx; sendBeacon alebo fetch.)
+- [ ] **T11.2** — `[ADMIN]` Prehľad metrík + súhrnná dlaždica. (`GET /articles/metrics` — zobrazenia/dočítania per článok + totals.)
 - [ ] **T11.3** — `[ADMIN]` Detail metrík článku. (`GET /:slug/metrics`.)
 - [ ] **T11.4** — Rate limit na analytics. (Bežná prevádzka neblokovaná; excesívny spam → 429.)
+- [ ] **T11.5** — Prepínač obdobia (30d/90d/celé) na zozname aj v editore mení čísla.
+- [ ] **T11.6** — Dedup: refresh článku nezvýši views; klik do prázdna pri CTA nezvýši CTA.
 
 ---
 

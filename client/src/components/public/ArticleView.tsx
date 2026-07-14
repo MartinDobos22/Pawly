@@ -25,6 +25,7 @@ import LandingCta from './LandingCta';
 import ArticleCard from './ArticleCard';
 import { articleReadingMinutes } from '../../utils/readingTime';
 import { trackArticleEvent } from '../../services/analyticsApi';
+import { shouldSendOncePerDay } from '../../utils/articleViewDedup';
 import {
   ARTICLE_DISCLAIMER,
   CATEGORY_COLORS,
@@ -52,6 +53,14 @@ export default function ArticleView({ article, preview = false }: Props) {
   const theme = useTheme();
   const track = (type: Parameters<typeof trackArticleEvent>[1], meta?: Record<string, unknown>) => {
     if (!preview) trackArticleEvent(article.slug, type, meta);
+  };
+  // Konverzné metriky (CTR) chceme na unikátneho čitateľa za deň, nie na každý
+  // klik pri refreshi — inak by CTR mohol prekročiť 100 %.
+  const trackOncePerDay = (
+    type: Parameters<typeof trackArticleEvent>[1],
+    meta?: Record<string, unknown>
+  ) => {
+    if (!preview && shouldSendOncePerDay(article.slug, type)) trackArticleEvent(article.slug, type, meta);
   };
 
   const related = (article.relatedSlugs ?? [])
@@ -263,14 +272,13 @@ export default function ArticleView({ article, preview = false }: Props) {
 
         {!preview && <AdUnit />}
 
-        <Box onClick={() => track('cta_click', { ctaIntent: article.ctaIntent })}>
-          <LandingCta
-            heading="Začni sa o psa starať s Pawly"
-            buttonLabel={ctaLabel}
-            to="/register"
-            intent={article.ctaIntent}
-          />
-        </Box>
+        <LandingCta
+          heading="Začni sa o psa starať s Pawly"
+          buttonLabel={ctaLabel}
+          to="/register"
+          intent={article.ctaIntent}
+          onClick={() => trackOncePerDay('cta_click', { ctaIntent: article.ctaIntent })}
+        />
 
         {article.faqs && article.faqs.length > 0 && (
           <LandingFaq title="Časté otázky" faqs={article.faqs} />
