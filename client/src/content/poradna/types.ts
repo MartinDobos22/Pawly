@@ -139,6 +139,20 @@ export interface ArticleMetrics {
   ctr: number;
 }
 
+export type ArticleMetricsPeriod = '30d' | '90d' | 'all';
+
+export interface ArticleMetricsSummary {
+  views: number;
+  ctaClicks: number;
+  scroll50: number;
+  scroll90: number;
+  relatedClicks: number;
+  sourceClicks: number;
+  ctr: number;
+  readThroughRate: number;
+  articlesWithViews: number;
+}
+
 export type ArticleAiType =
   | 'outline'
   | 'rewrite'

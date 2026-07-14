@@ -4,6 +4,8 @@ import type {
   ArticleAiResult,
   ArticleAiType,
   ArticleMetrics,
+  ArticleMetricsPeriod,
+  ArticleMetricsSummary,
   ArticleValidation,
   ArticleVersion,
   ArticleVersionMeta,
@@ -59,7 +61,10 @@ export async function createAdminArticle(article: AdminArticle): Promise<AdminAr
   return data.article;
 }
 
-export async function updateAdminArticle(slug: string, article: AdminArticle): Promise<AdminArticle> {
+export async function updateAdminArticle(
+  slug: string,
+  article: AdminArticle
+): Promise<AdminArticle> {
   const data = await request<{ article: AdminArticle }>(`/articles/${encodeURIComponent(slug)}`, {
     method: 'PUT',
     body: JSON.stringify(article),
@@ -107,14 +112,21 @@ export async function getArticleAiLog(slug: string): Promise<AiGenerationLog[]> 
   return data.generations;
 }
 
-export async function getArticlesMetrics(): Promise<ArticleMetrics[]> {
-  const data = await request<{ metrics: ArticleMetrics[] }>('/articles/metrics');
-  return data.metrics;
+export async function getArticlesMetrics(
+  period: ArticleMetricsPeriod = '30d'
+): Promise<{ metrics: ArticleMetrics[]; summary: ArticleMetricsSummary }> {
+  const data = await request<{ metrics: ArticleMetrics[]; summary: ArticleMetricsSummary }>(
+    `/articles/metrics?period=${period}`
+  );
+  return { metrics: data.metrics, summary: data.summary };
 }
 
-export async function getArticleMetric(slug: string): Promise<ArticleMetrics> {
+export async function getArticleMetric(
+  slug: string,
+  period: ArticleMetricsPeriod = '30d'
+): Promise<ArticleMetrics> {
   const data = await request<{ metrics: ArticleMetrics }>(
-    `/articles/${encodeURIComponent(slug)}/metrics`
+    `/articles/${encodeURIComponent(slug)}/metrics?period=${period}`
   );
   return data.metrics;
 }

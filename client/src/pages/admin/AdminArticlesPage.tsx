@@ -23,6 +23,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import PageContainer from '../../components/ui/PageContainer';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminArticleCard from '../../components/admin/AdminArticleCard';
+import ArticleMetricsSummaryCard from '../../components/admin/ArticleMetricsSummaryCard';
 import {
   changeArticleStatus,
   deleteAdminArticle,
@@ -35,7 +36,14 @@ import {
   STATUS_LABELS,
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
-import type { AdminArticle, ArticleMetrics, ArticleStatus } from '../../content/poradna/types';
+import { METRICS_PERIOD_OPTIONS, metricsPeriodShort } from '../../utils/articleMetricsPeriod';
+import type {
+  AdminArticle,
+  ArticleMetrics,
+  ArticleMetricsPeriod,
+  ArticleMetricsSummary,
+  ArticleStatus,
+} from '../../content/poradna/types';
 
 type Filter = 'all' | ArticleStatus;
 
@@ -65,6 +73,8 @@ export default function AdminArticlesPage() {
     article: AdminArticle;
   } | null>(null);
   const [metrics, setMetrics] = useState<Record<string, ArticleMetrics>>({});
+  const [summary, setSummary] = useState<ArticleMetricsSummary | null>(null);
+  const [period, setPeriod] = useState<ArticleMetricsPeriod>('30d');
 
   const load = () => {
     setLoading(true);
@@ -75,12 +85,21 @@ export default function AdminArticlesPage() {
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
-    getArticlesMetrics()
-      .then((rows) => setMetrics(Object.fromEntries(rows.map((m) => [m.slug, m]))))
-      .catch(() => setMetrics({}));
   };
 
   useEffect(load, []);
+
+  useEffect(() => {
+    getArticlesMetrics(period)
+      .then(({ metrics: rows, summary: s }) => {
+        setMetrics(Object.fromEntries(rows.map((m) => [m.slug, m])));
+        setSummary(s);
+      })
+      .catch(() => {
+        setMetrics({});
+        setSummary(null);
+      });
+  }, [period]);
 
   const visible = useMemo(
     () => (filter === 'all' ? articles : articles.filter((a) => a.status === filter)),
@@ -165,6 +184,41 @@ export default function AdminArticlesPage() {
         </Alert>
       )}
 
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={1}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        justifyContent="space-between"
+        sx={{ mb: theme.spacing(1.5) }}
+      >
+        <Typography variant="subtitle2" color="text.secondary">
+          Štatistiky za obdobie
+        </Typography>
+        <ToggleButtonGroup
+          value={period}
+          exclusive
+          size="small"
+          onChange={(_, v) => v && setPeriod(v as ArticleMetricsPeriod)}
+          sx={{ flexWrap: 'wrap' }}
+        >
+          {METRICS_PERIOD_OPTIONS.map((p) => (
+            <ToggleButton key={p.value} value={p.value} sx={{ borderRadius: 2 }}>
+              {p.label}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Stack>
+
+      {summary && (
+        <Box sx={{ mb: theme.spacing(2.5) }}>
+          <ArticleMetricsSummaryCard
+            summary={summary}
+            period={period}
+            totalArticles={articles.length}
+          />
+        </Box>
+      )}
+
       <ToggleButtonGroup
         value={filter}
         exclusive
@@ -174,7 +228,9 @@ export default function AdminArticlesPage() {
       >
         {FILTERS.map((f) => {
           const count =
-            f.value === 'all' ? articles.length : articles.filter((a) => a.status === f.value).length;
+            f.value === 'all'
+              ? articles.length
+              : articles.filter((a) => a.status === f.value).length;
           return (
             <ToggleButton key={f.value} value={f.value} sx={{ borderRadius: 2 }}>
               {f.label} ({count})
@@ -198,6 +254,7 @@ export default function AdminArticlesPage() {
               key={a.slug}
               article={a}
               metrics={metrics[a.slug]}
+              periodShort={metricsPeriodShort(period)}
               onEdit={() => navigate(`/admin/clanky/${a.slug}`)}
               onDelete={() => setToDelete(a)}
               onStatusMenu={(anchor) => setStatusMenu({ anchor, article: a })}

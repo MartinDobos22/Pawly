@@ -21,6 +21,8 @@ import type { AdminArticle, ArticleMetrics } from '../../content/poradna/types';
 interface Props {
   article: AdminArticle;
   metrics?: ArticleMetrics;
+  /** Krátky suffix obdobia k „Views", napr. „30d" / „celkovo". */
+  periodShort: string;
   onEdit: () => void;
   onDelete: () => void;
   onStatusMenu: (anchor: HTMLElement) => void;
@@ -51,6 +53,7 @@ function Stat({ label, value }: StatProps) {
 export default function AdminArticleCard({
   article,
   metrics,
+  periodShort,
   onEdit,
   onDelete,
   onStatusMenu,
@@ -105,7 +108,7 @@ export default function AdminArticleCard({
           </Typography>
 
           <Stack direction="row" spacing={3} sx={{ mt: 1.5 }}>
-            <Stat label="Views 30d" value={String(metrics?.views ?? 0)} />
+            <Stat label={`Views ${periodShort}`} value={String(metrics?.views ?? 0)} />
             <Stat label="CTA" value={String(metrics?.ctaClicks ?? 0)} />
             <Stat label="CTR" value={`${((metrics?.ctr ?? 0) * 100).toFixed(1)} %`} />
           </Stack>

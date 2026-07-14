@@ -23,6 +23,8 @@ import {
   Stack,
   Tab,
   Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
   TextField,
   Typography,
   useTheme,
@@ -74,11 +76,13 @@ import {
   transitionActionLabel,
 } from '../../utils/articleWorkflow';
 import { ARTICLE_DISCLAIMER } from '../../content/poradna/articles';
+import { METRICS_PERIOD_OPTIONS } from '../../utils/articleMetricsPeriod';
 import type {
   AdminArticle,
   AiGenerationLog,
   ArticleAiType,
   ArticleMetrics,
+  ArticleMetricsPeriod,
   ArticleStatus,
   ArticleValidation,
 } from '../../content/poradna/types';
@@ -186,6 +190,7 @@ export default function AdminArticleEditPage() {
   const [validation, setValidation] = useState<ArticleValidation | null>(null);
   const [validationLoading, setValidationLoading] = useState(false);
   const [metric, setMetric] = useState<ArticleMetrics | null>(null);
+  const [metricPeriod, setMetricPeriod] = useState<ArticleMetricsPeriod>('30d');
   const [aiBusy, setAiBusy] = useState<ArticleAiType | null>(null);
   const [aiLog, setAiLog] = useState<AiGenerationLog[]>([]);
   const [aiNote, setAiNote] = useState<string | null>(null);
@@ -215,13 +220,17 @@ export default function AdminArticleEditPage() {
       .then(setValidation)
       .catch(() => setValidation(null))
       .finally(() => setValidationLoading(false));
-    getArticleMetric(slug)
-      .then(setMetric)
-      .catch(() => setMetric(null));
     getArticleAiLog(slug)
       .then(setAiLog)
       .catch(() => setAiLog([]));
   }, [slug, isNew]);
+
+  useEffect(() => {
+    if (isNew) return;
+    getArticleMetric(slug, metricPeriod)
+      .then(setMetric)
+      .catch(() => setMetric(null));
+  }, [slug, isNew, metricPeriod]);
 
   // Autosave konceptu: po 8 s nečinnosti uloží snapshot verzie, ak nastala
   // zmena. Nemení živý článok — len zachová rozpracovanú prácu vo verziách.
@@ -842,7 +851,21 @@ export default function AdminArticleEditPage() {
                 <SectionCardHeader
                   icon={<BarChartIcon />}
                   accent={theme.palette.info.main}
-                  title="Výkon článku (30 dní)"
+                  title="Výkon článku"
+                  action={
+                    <ToggleButtonGroup
+                      value={metricPeriod}
+                      exclusive
+                      size="small"
+                      onChange={(_, v) => v && setMetricPeriod(v as ArticleMetricsPeriod)}
+                    >
+                      {METRICS_PERIOD_OPTIONS.map((p) => (
+                        <ToggleButton key={p.value} value={p.value} sx={{ borderRadius: 2 }}>
+                          {p.label}
+                        </ToggleButton>
+                      ))}
+                    </ToggleButtonGroup>
+                  }
                 />
                 <Stack direction="row" spacing={3} flexWrap="wrap" sx={{ mb: theme.spacing(1) }}>
                   <Typography variant="body2">

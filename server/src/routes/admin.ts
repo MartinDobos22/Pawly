@@ -11,7 +11,13 @@ import {
   updateArticle,
 } from '../services/articleService';
 import { groupValidation, validateArticleForPublish } from '../services/articleValidation';
-import { getArticleMetric, getArticleMetrics } from '../services/articleAnalyticsService';
+import {
+  getArticleMetric,
+  getArticleMetrics,
+  parseMetricsPeriod,
+  periodToSinceDays,
+  summarizeMetrics,
+} from '../services/articleAnalyticsService';
 import { listAiGenerations } from '../services/articleAiService';
 import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
@@ -44,9 +50,11 @@ articles.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-articles.get('/metrics', async (_req: Request, res: Response, next: NextFunction) => {
+articles.get('/metrics', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json({ metrics: await getArticleMetrics(30) });
+    const period = parseMetricsPeriod(req.query.period);
+    const metrics = await getArticleMetrics(periodToSinceDays(period));
+    res.json({ metrics, summary: summarizeMetrics(metrics), period });
   } catch (err) {
     next(err);
   }
@@ -64,7 +72,9 @@ articles.get('/:slug', async (req: Request, res: Response, next: NextFunction) =
 
 articles.get('/:slug/metrics', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json({ metrics: await getArticleMetric(String(req.params.slug), 30) });
+    const period = parseMetricsPeriod(req.query.period);
+    const metrics = await getArticleMetric(String(req.params.slug), periodToSinceDays(period));
+    res.json({ metrics, period });
   } catch (err) {
     next(err);
   }

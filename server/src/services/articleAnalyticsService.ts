@@ -24,6 +24,44 @@ export interface ArticleMetrics {
   ctr: number;
 }
 
+/** Súhrnné čísla naprieč všetkými článkami za dané obdobie. */
+export interface ArticleMetricsSummary {
+  views: number;
+  ctaClicks: number;
+  scroll50: number;
+  scroll90: number;
+  relatedClicks: number;
+  sourceClicks: number;
+  /** ctaClicks / views (0 ak žiadne zobrazenia). */
+  ctr: number;
+  /** scroll90 / views — miera dočítania (0 ak žiadne zobrazenia). */
+  readThroughRate: number;
+  /** Počet článkov s aspoň jedným zobrazením v danom období. */
+  articlesWithViews: number;
+}
+
+export const METRICS_PERIODS = ['30d', '90d', 'all'] as const;
+export type MetricsPeriod = (typeof METRICS_PERIODS)[number];
+
+/** Prevedie obdobie na počet dní späť; `null` = celá história (bez filtra). */
+export function periodToSinceDays(period: MetricsPeriod): number | null {
+  switch (period) {
+    case '30d':
+      return 30;
+    case '90d':
+      return 90;
+    case 'all':
+      return null;
+  }
+}
+
+/** Bezpečne rozparsuje query param na `MetricsPeriod` (default `30d`). */
+export function parseMetricsPeriod(value: unknown): MetricsPeriod {
+  return typeof value === 'string' && (METRICS_PERIODS as readonly string[]).includes(value)
+    ? (value as MetricsPeriod)
+    : '30d';
+}
+
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 type Row = Record<string, unknown>;
 
@@ -73,8 +111,14 @@ export async function recordArticleEvent(input: unknown): Promise<void> {
   if (error) throw error;
 }
 
-export async function getArticleMetrics(sinceDays = 30, slug?: string): Promise<ArticleMetrics[]> {
-  const since = new Date(Date.now() - sinceDays * 24 * 60 * 60 * 1000).toISOString();
+export async function getArticleMetrics(
+  sinceDays: number | null = 30,
+  slug?: string
+): Promise<ArticleMetrics[]> {
+  const since =
+    sinceDays === null
+      ? null
+      : new Date(Date.now() - sinceDays * 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await getSupabase().rpc('article_metrics', {
     p_since: since,
     p_slug: slug ?? null,
@@ -83,7 +127,39 @@ export async function getArticleMetrics(sinceDays = 30, slug?: string): Promise<
   return ((data as Row[] | null) ?? []).map(rowToMetrics);
 }
 
-export async function getArticleMetric(slug: string, sinceDays = 30): Promise<ArticleMetrics> {
+export function summarizeMetrics(rows: ArticleMetrics[]): ArticleMetricsSummary {
+  const totals = rows.reduce(
+    (acc, m) => {
+      acc.views += m.views;
+      acc.ctaClicks += m.ctaClicks;
+      acc.scroll50 += m.scroll50;
+      acc.scroll90 += m.scroll90;
+      acc.relatedClicks += m.relatedClicks;
+      acc.sourceClicks += m.sourceClicks;
+      if (m.views > 0) acc.articlesWithViews += 1;
+      return acc;
+    },
+    {
+      views: 0,
+      ctaClicks: 0,
+      scroll50: 0,
+      scroll90: 0,
+      relatedClicks: 0,
+      sourceClicks: 0,
+      articlesWithViews: 0,
+    }
+  );
+  return {
+    ...totals,
+    ctr: totals.views > 0 ? totals.ctaClicks / totals.views : 0,
+    readThroughRate: totals.views > 0 ? totals.scroll90 / totals.views : 0,
+  };
+}
+
+export async function getArticleMetric(
+  slug: string,
+  sinceDays: number | null = 30
+): Promise<ArticleMetrics> {
   const rows = await getArticleMetrics(sinceDays, slug);
   return (
     rows[0] ?? {
