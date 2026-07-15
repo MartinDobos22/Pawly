@@ -14,7 +14,7 @@
     "forPet": "Pre {{petName}}"
   },
   "form": {
-    "analyzeComposition": "Analyzuj kompozíciu",
+    "analyzeComposition": "Analyzuj zloženie",
     "placeholder": "Vlož zloženie krmiva alebo naskenuj obal…",
     "scanLabel": "Naskenovať obal",
     "scanning": "Načítavam text…",
@@ -69,7 +69,7 @@
   "history": {
     "title": "História hodnotení",
     "emptyTitle": "Žiadna história",
-    "emptyDescription": "Zatiaľ si neuložil žiadne hodnotenia. Analyzuj krmivo v sekcii Analýza a výsledok uložíš sem.",
+    "emptyDescription": "Zatiaľ tu nemáš uložené žiadne hodnotenia. Analyzuj krmivo v sekcii Analýza a výsledok uložíš sem.",
     "runAnalysis": "Spustiť analýzu"
   },
   "snack": {
