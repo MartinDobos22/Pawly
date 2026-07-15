@@ -238,7 +238,7 @@ export default function AppPreview() {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const { t } = useTranslation('landing');
-  const statValues = ['6', 'PDF', 'AI', 'PWA'];
+  const statValues = ['6', 'PDF', 'AI', 'APP'];
   const statItems = t('appPreview.stats', { returnObjects: true }) as Array<{ label: string }>;
 
   return (
