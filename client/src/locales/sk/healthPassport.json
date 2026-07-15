@@ -736,7 +736,7 @@
     "title": "Hmotnosť",
     "addLog": "Pridať váženie",
     "addLogAria": "Pridať váženie",
-    "emptyDescription": "Pridaj prvé váženie aby si videl trend hmotnosti v čase.",
+    "emptyDescription": "Pridaj prvé váženie a uvidíš trend hmotnosti v čase.",
     "stable": "stabilná",
     "vsLastMonth": "oproti min. mesiacu",
     "lastEntry": "Posledné {{date}}",

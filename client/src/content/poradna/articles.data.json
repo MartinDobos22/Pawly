@@ -141,10 +141,7 @@
         "a": "Nie automaticky. Pomenovaná múčka (napr. „kuracia múčka\") je koncentrovaný zdroj bielkovín. Problém je skôr nekonkrétne označenie bez druhu mäsa."
       }
     ],
-    "relatedSlugs": [
-      "analyza-krmiva-pre-psa",
-      "prve-priznaky-alergie-na-krmivo"
-    ],
+    "relatedSlugs": ["analyza-krmiva-pre-psa", "prve-priznaky-alergie-na-krmivo"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "food",
@@ -292,10 +289,7 @@
         "a": "Besnotu nie — je povinná zo zákona. Pri ostatných vakcínach rozhoduje veterinár podľa rizika; core vakcíny sa však dôrazne odporúčajú pre každého psa."
       }
     ],
-    "relatedSlugs": [
-      "ockovanie-psa",
-      "digitalny-zdravotny-pas-pre-psa"
-    ],
+    "relatedSlugs": ["ockovanie-psa", "digitalny-zdravotny-pas-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1612531385446-f7e6d131e1d0?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "passport",
@@ -458,10 +452,7 @@
         "a": "Áno. Alergia sa vyvíja na zložky, s ktorými mal pes opakovaný kontakt, takže sa môže objaviť aj na dlhodobo podávané krmivo. Preto zmena príznakov v čase nevylučuje potravinovú príčinu."
       }
     ],
-    "relatedSlugs": [
-      "alergia-na-krmivo-u-psa",
-      "ako-citat-zlozenie-psieho-krmiva"
-    ],
+    "relatedSlugs": ["alergia-na-krmivo-u-psa", "ako-citat-zlozenie-psieho-krmiva"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1518155317743-a8ff43ea6a5f?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "food",
@@ -492,7 +483,7 @@
           },
           {
             "type": "paragraph",
-            "text": "Na obale sa však bežný majiteľ orientuje ťažko — poradie zložiek, presný zdroj bielkovín, skryté obilniny rozpísané na viac položiek či typ konzervantov veľa napovedia o tom, či je krmivo vhodné, no nie je ľahké to všetko podchytiť ručne. Ak si nie si istý, ako etiketu čítať, pomôže náš návod [ako čítať zloženie psieho krmiva](/poradna/ako-citat-zlozenie-psieho-krmiva)."
+            "text": "Na obale sa však bežný majiteľ orientuje ťažko — poradie zložiek, presný zdroj bielkovín, skryté obilniny rozpísané na viac položiek či typ konzervantov veľa napovedia o tom, či je krmivo vhodné, no nie je ľahké to všetko podchytiť ručne. Ak nevieš, ako etiketu čítať, pomôže náš návod [ako čítať zloženie psieho krmiva](/poradna/ako-citat-zlozenie-psieho-krmiva)."
           }
         ]
       },
@@ -621,10 +612,7 @@
         "a": "Áno, základná analýza krmiva v Pawly je zadarmo."
       }
     ],
-    "relatedSlugs": [
-      "ako-citat-zlozenie-psieho-krmiva",
-      "digitalny-zdravotny-pas-pre-psa"
-    ],
+    "relatedSlugs": ["ako-citat-zlozenie-psieho-krmiva", "digitalny-zdravotny-pas-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "food",
@@ -693,7 +681,7 @@
         ]
       },
       {
-        "heading": "Pripomienky, aby si nezmeškal termín",
+        "heading": "Pripomienky, aby ti neušiel termín",
         "blocks": [
           {
             "type": "paragraph",
@@ -794,11 +782,7 @@
         "a": "Dáta sú uložené zabezpečene a viazané na tvoj účet. Prístup k nim máš len ty."
       }
     ],
-    "relatedSlugs": [
-      "ockovanie-psa",
-      "odcervenie-psa",
-      "analyza-krmiva-pre-psa"
-    ],
+    "relatedSlugs": ["ockovanie-psa", "odcervenie-psa", "analyza-krmiva-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "passport",
@@ -961,11 +945,7 @@
         "a": "V digitálnom zdravotnom pase Pawly. Záznamy si pridáš ručne alebo importuješ z fotky očkovacieho preukazu."
       }
     ],
-    "relatedSlugs": [
-      "ockovaci-kalendar-psa",
-      "odcervenie-psa",
-      "digitalny-zdravotny-pas-pre-psa"
-    ],
+    "relatedSlugs": ["ockovaci-kalendar-psa", "odcervenie-psa", "digitalny-zdravotny-pas-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1597633425046-08f5110420b5?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "passport",
@@ -1126,10 +1106,7 @@
         "a": "Záznamy o odčervení a ošetreniach proti parazitom si vedieš v zdravotnom pase Pawly, ktorý ti pripomenie ďalší termín."
       }
     ],
-    "relatedSlugs": [
-      "ockovanie-psa",
-      "digitalny-zdravotny-pas-pre-psa"
-    ],
+    "relatedSlugs": ["ockovanie-psa", "digitalny-zdravotny-pas-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1444212477490-ca407925329e?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "passport",
@@ -1456,10 +1433,7 @@
         "a": "V profile psa si vedieš viesť alergie a intolerancie a pri analýze krmiva ťa Pawly upozorní na rizikové zložky voči jeho profilu."
       }
     ],
-    "relatedSlugs": [
-      "alergia-na-krmivo-u-psa",
-      "analyza-krmiva-pre-psa"
-    ],
+    "relatedSlugs": ["alergia-na-krmivo-u-psa", "analyza-krmiva-pre-psa"],
     "updated": "2026-06-21",
     "coverImage": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=70",
     "ctaIntent": "food",

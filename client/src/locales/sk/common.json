@@ -325,7 +325,7 @@
   },
   "notFound": {
     "title": "Stránka sa nenašla",
-    "subtitle": "Adresa, ktorú si zadal, neexistuje alebo bola presunutá.",
+    "subtitle": "Zadaná adresa neexistuje alebo bola presunutá.",
     "backHome": "Späť na zdravotný pas",
     "backAnalyze": "Prejsť na analýzu"
   },
