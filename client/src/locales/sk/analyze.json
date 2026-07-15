@@ -14,7 +14,7 @@
     "forPet": "Pre {{petName}}"
   },
   "form": {
-    "analyzeComposition": "Analyzuj kompozíciu",
+    "analyzeComposition": "Analyzuj zloženie",
     "placeholder": "Vlož zloženie krmiva alebo naskenuj obal…",
     "scanLabel": "Naskenovať obal",
     "scanning": "Načítavam text…",

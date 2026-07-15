@@ -120,7 +120,7 @@
     "title1": "Zdravie tvojho miláčika,",
     "title2": "vždy po ruke",
     "description": "Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva, denník zdravotných epizód a PDF karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani kontrolu.",
-    "ctaStart": "Začať zadarmo",
+    "ctaStart": "Vyskúšať zadarmo",
     "ctaHowItWorks": "Ako to funguje",
     "statFree": "Zadarmo",
     "statAiScan": "Skenovanie pasu",
@@ -162,7 +162,7 @@
     "items": [
       {
         "title": "Zdravotný pas",
-        "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednom prehľadnom timeline."
+        "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednej prehľadnej časovej osi."
       },
       {
         "title": "AI analýza krmiva",
