@@ -118,13 +118,13 @@
   "hero": {
     "chip": "Pre psy, mačky a ďalšie domáce zvieratá",
     "title1": "Zdravie tvojho miláčika,",
-    "title2": "vždy po ruke",
-    "description": "Digitálny zdravotný pas pre psy, mačky a ďalšie domáce zvieratá. AI analýza krmiva, denník zdravotných epizód a PDF karta pre veterinára na jednom mieste. Nikdy nezabudni na očkovanie, odčervenie ani kontrolu.",
-    "ctaStart": "Vyskúšať zadarmo",
+    "title2": "konečne pod kontrolou",
+    "description": "Očkovania, odčervenia, krmivo aj návštevy veterinára — všetko pohromade v telefóne. Pawly ti včas pripomenie, čo sa blíži, a AI ti poradí, či krmivo tvojmu psovi či mačke naozaj sedí.",
+    "ctaStart": "Vyskúšať zdarma",
     "ctaHowItWorks": "Ako to funguje",
     "statFree": "Zadarmo",
     "statAiScan": "Skenovanie pasu",
-    "statOffline": "Offline-ready",
+    "statOffline": "Appka do mobilu",
     "statVetCard": "Karta pre veterinára",
     "dogPhotoAlt": "Domáci miláčik sa pozerá do kamery",
     "floatingVaccination": "Očkovanie",
@@ -138,78 +138,78 @@
     "navMenu": "Menu"
   },
   "howItWorks": {
-    "title": "3 kroky a máš zdravotný pas v mobile",
-    "subtitle": "Žiadne komplikované formuláre, žiadne mesačné poplatky. Začni za pár minút.",
+    "title": "Tri kroky a pas máš v telefóne",
+    "subtitle": "Jednoducho a zdarma — prvý zdravotný pas máš hotový za pár minút.",
     "steps": [
       {
-        "title": "Vytvor profil zvieraťa",
-        "text": "Pridaj meno, plemeno, vek, váhu, alergie a zdravotné stavy. Trvá to 60 sekúnd."
+        "title": "Založ profil",
+        "text": "Meno, plemeno, vek, alergie. Za minútu hotovo."
       },
       {
-        "title": "Naskenuj zdravotný pas",
-        "text": "AI extrahuje očkovania, odčervenia a ďalšie záznamy z fotky pasu alebo PDF."
+        "title": "Odfoť starý preukaz",
+        "text": "AI z fotky vytiahne očkovania aj odčervenia — nič neprepisuješ ručne."
       },
       {
-        "title": "Karta pre veterinára",
-        "text": "Pri každej návšteve veterinára exportuj prehľadnú PDF kartu so všetkým podstatným."
+        "title": "A máš prehľad",
+        "text": "Pawly ti stráži termíny a pred veterinárom vytlačíš kartu so všetkým podstatným."
       }
     ]
   },
   "features": {
     "title1": "Všetko pre zdravie tvojho miláčika",
     "title2": "na jednom mieste",
-    "subtitle": "Šesť funkcií, ktoré ti pokryjú celú starostlivosť o zdravie tvojho miláčika.",
+    "subtitle": "Šesť vecí, s ktorými ti Pawly pomôže — od misky až po ordináciu.",
     "items": [
       {
         "title": "Zdravotný pas",
-        "text": "Vakcinácie, odčervenia, ektoparazity a chronické diagnózy v jednej prehľadnej časovej osi."
+        "text": "Očkovania, odčervenia, kliešte aj chronické diagnózy prehľadne na časovej osi."
       },
       {
         "title": "AI analýza krmiva",
-        "text": "Vlož zloženie alebo vyfoť obal — AI vyhodnotí kvalitu a alergény pre tvoje konkrétne zviera."
+        "text": "Odfoť obal a o pár sekúnd vieš, či krmivo sedí práve tvojmu zvieraťu."
       },
       {
         "title": "Pripomienky",
-        "text": "Karta vždy ukáže, čo treba urobiť: odčervenie po termíne, blížiace sa očkovanie či kontrolu."
+        "text": "Pawly ti povie, čo sa blíži — odčervenie, očkovanie aj kontrola u veterinára."
       },
       {
         "title": "Karta pre veterinára",
-        "text": "Profesionálny PDF dokument so všetkým — identitou, diagnózami, vakcináciami, históriou."
+        "text": "Všetko podstatné na jednom PDF. Vytlačíš ho alebo ukážeš rovno na mobile."
       },
       {
         "title": "Môže môj miláčik jesť…?",
-        "text": "Rýchla AI otázka pre jednu potravinu. Čokoláda? Jablko? Dostaneš zrozumiteľnú odpoveď."
+        "text": "Čokoláda? Hrozno? Napíš potravinu a AI ti hneď povie, či je bezpečná."
       },
       {
         "title": "Denník epizód",
-        "text": "Zapisuj zdravotné príhody a z minulých záznamov hneď vidíš, čo zabralo a čo nie."
+        "text": "Zapíš, čo sa dialo a čo zabralo. Keď sa to zopakuje, máš návod od seba samého."
       }
     ]
   },
   "comparison": {
-    "title": "Papierový pas verzus Pawly",
-    "subtitle": "Prečo vymeniť otrhaný papier za digitálny zdravotný pas.",
-    "paperTitle": "Papierový pas",
+    "title": "Papierový preukaz verzus Pawly",
+    "subtitle": "Prečo sa oplatí odložiť ošúchaný papier do šuflíka.",
+    "paperTitle": "Papierový preukaz",
     "pawlyTitle": "Pawly",
     "recommended": "Odporúčané",
     "paperPoints": [
       "Ľahko sa stratí alebo zničí",
-      "Žiadne pripomienky termínov",
-      "Musíš ho stále nosiť so sebou",
-      "Nečitateľný rukopis veterinára",
-      "Žiadna analýza krmiva"
+      "Na termíny ti nepripomenie nič",
+      "Musíš ho všade nosiť so sebou",
+      "Rukopis veterinára často neprečítaš",
+      "O kvalite krmiva ti nepovie nič"
     ],
     "pawlyPoints": [
-      "Vždy v mobile, nikdy sa nestratí",
-      "Automatické pripomienky očkovania a odčervenia",
-      "AI skenovanie pasu aj analýza krmiva",
-      "Prehľadná karta pre veterinára na jeden klik",
-      "Funguje offline a úplne zadarmo"
+      "Vždy v telefóne, nikdy sa nestratí",
+      "Sám ti pripomenie očkovanie aj odčervenie",
+      "AI prečíta preukaz aj posúdi krmivo",
+      "Karta pre veterinára na jeden klik",
+      "Nainštaluješ z prehliadača do mobilu aj počítača"
     ]
   },
   "cta": {
-    "title": "Začni sa starať o zdravie svojho miláčika ešte dnes",
-    "subtitle": "Zadarmo a bez reklám. Stačí pridať profil zvieraťa a môžeš naplno využívať digitálny zdravotný pas.",
+    "title": "Daj zdravie svojho miláčika do poriadku ešte dnes",
+    "subtitle": "Zadarmo a bez reklám. Pridáš profil a môžeš hneď začať.",
     "btnStart": "Vstúpiť do aplikácie",
     "btnProfile": "Vytvoriť profil",
     "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
@@ -242,7 +242,7 @@
       { "label": "Hlavných sekcií" },
       { "label": "Export pre veterinára" },
       { "label": "Skenovanie dokumentov" },
-      { "label": "Funguje offline" }
+      { "label": "Inštalácia z prehliadača" }
     ],
     "vetCardLabel": "Karta pre veterinára",
     "clinicalHistory": "Klinická história",
@@ -283,7 +283,7 @@
     ]
   },
   "demo": {
-    "badge": "Vyskúšaj rovno tu, bez prihlásenia",
+    "badge": "Skús to hneď, netreba účet",
     "title": "Spýtaj sa AI, čo môže tvoj miláčik jesť",
     "subtitle": "Napíš potravinu alebo ingredienciu — okamžite uvidíš, či je pre tvojho miláčika bezpečná.",
     "placeholder": "napr. čokoláda, mrkva, jablko, hrozno…",

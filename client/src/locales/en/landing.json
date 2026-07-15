@@ -118,13 +118,13 @@
   "hero": {
     "chip": "For dogs, cats and other pets",
     "title1": "Your pet's health,",
-    "title2": "always at hand",
-    "description": "A digital health passport for dogs, cats and other pets. AI food analysis, a health episode diary and a PDF vet card all in one place. Never miss a vaccination, deworming or check-up.",
+    "title2": "finally under control",
+    "description": "Vaccinations, dewormings, food and vet visits — all together on your phone. Pawly reminds you what's coming up, and AI tells you whether a food really suits your dog or cat.",
     "ctaStart": "Try it free",
     "ctaHowItWorks": "How it works",
     "statFree": "Free",
     "statAiScan": "Passport scan",
-    "statOffline": "Offline-ready",
+    "statOffline": "Installable app",
     "statVetCard": "Vet card",
     "dogPhotoAlt": "Golden retriever looking at the camera",
     "floatingVaccination": "Vaccination",
@@ -138,78 +138,78 @@
     "navMenu": "Menu"
   },
   "howItWorks": {
-    "title": "3 steps and your health passport is on your phone",
-    "subtitle": "No complicated forms, no monthly fees. Get started in a few minutes.",
+    "title": "Three steps and the passport's on your phone",
+    "subtitle": "Simple and free — your first health passport is ready in minutes.",
     "steps": [
       {
-        "title": "Create a pet profile",
-        "text": "Add name, breed, age, weight, allergies and health conditions. Takes 60 seconds."
+        "title": "Set up a profile",
+        "text": "Name, breed, age, allergies. Done in a minute."
       },
       {
-        "title": "Scan the health passport",
-        "text": "AI extracts vaccinations, deworming and other records from a photo of the passport or a PDF."
+        "title": "Photograph the old passport",
+        "text": "AI pulls the vaccinations and dewormings from the photo — no retyping."
       },
       {
-        "title": "Vet card",
-        "text": "Before every vet visit, export a clear PDF card with everything that matters."
+        "title": "And you're covered",
+        "text": "Pawly tracks your due dates and prints a vet card with everything that matters."
       }
     ]
   },
   "features": {
     "title1": "Everything for your pet's health",
     "title2": "in one place",
-    "subtitle": "Six features that together cover every part of your pet's health care.",
+    "subtitle": "Six things Pawly helps you with — from the bowl to the vet's office.",
     "items": [
       {
         "title": "Health passport",
-        "text": "Vaccinations, deworming, ectoparasites and chronic diagnoses in one clear timeline."
+        "text": "Vaccinations, dewormings, ticks and chronic diagnoses, clearly on one timeline."
       },
       {
         "title": "AI food analysis",
-        "text": "Enter ingredients or photograph the packaging — AI evaluates quality and allergens for your specific pet."
+        "text": "Snap the packaging and in seconds you know whether the food suits your pet."
       },
       {
         "title": "Reminders",
-        "text": "Your card always shows what's due: overdue deworming, upcoming vaccinations, check-ups."
+        "text": "Pawly tells you what's coming up — deworming, vaccinations and vet check-ups."
       },
       {
         "title": "Vet card",
-        "text": "A professional PDF document with everything — identity, diagnoses, vaccinations, history."
+        "text": "Everything that matters on one PDF. Print it or show it right on your phone."
       },
       {
         "title": "Can my pet eat…?",
-        "text": "A quick AI question for one food item. Chocolate? Apple? You'll get a clear answer."
+        "text": "Chocolate? Grapes? Type a food and AI tells you right away if it's safe."
       },
       {
         "title": "Health diary",
-        "text": "Log health episodes and instantly see from past entries what worked and what didn't."
+        "text": "Note what happened and what worked. Next time, you've got advice from yourself."
       }
     ]
   },
   "comparison": {
     "title": "Paper passport vs Pawly",
-    "subtitle": "Why swap a worn paper passport for a digital one.",
+    "subtitle": "Why the worn paper booklet belongs in a drawer.",
     "paperTitle": "Paper passport",
     "pawlyTitle": "Pawly",
     "recommended": "Recommended",
     "paperPoints": [
       "Easily lost or damaged",
-      "No deadline reminders",
+      "Reminds you of nothing",
       "You have to carry it everywhere",
-      "Unreadable vet handwriting",
-      "No food analysis"
+      "Vet handwriting you often can't read",
+      "Tells you nothing about food quality"
     ],
     "pawlyPoints": [
       "Always on your phone, never lost",
-      "Automatic vaccination and deworming reminders",
-      "AI passport scanning and food analysis",
-      "A clear vet card in one click",
-      "Works offline and completely free"
+      "Reminds you of vaccinations and dewormings itself",
+      "AI reads the passport and checks the food",
+      "A vet card in one click",
+      "Installs from your browser to phone and desktop"
     ]
   },
   "cta": {
-    "title": "Start caring for your pet's health today",
-    "subtitle": "Free and ad-free. Just add a pet profile and you're ready to use the digital health passport.",
+    "title": "Get your pet's health in order today",
+    "subtitle": "Free and ad-free. Add a profile and you can start right away.",
     "btnStart": "Open app",
     "btnProfile": "Create profile",
     "vetPhotoAlt": "Veterinary check-up of a pet"
@@ -242,7 +242,7 @@
       { "label": "Main sections" },
       { "label": "PDF export for vet" },
       { "label": "Document scanning" },
-      { "label": "Works offline" }
+      { "label": "Install from browser" }
     ],
     "vetCardLabel": "Vet card",
     "clinicalHistory": "Clinical history",
@@ -283,7 +283,7 @@
     ]
   },
   "demo": {
-    "badge": "Try it right here, no sign-in needed",
+    "badge": "Try it now — no account needed",
     "title": "Ask AI what your pet can eat",
     "subtitle": "Type a food or ingredient — instantly see if it's safe for your dog, cat or other pet.",
     "placeholder": "e.g. chocolate, carrot, apple, grapes…",
