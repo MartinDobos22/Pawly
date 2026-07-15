@@ -1,8 +1,27 @@
-import { alpha, AppBar, Box, Button, IconButton, Stack, Toolbar, useTheme } from '@mui/material';
+import { useState } from 'react';
+import {
+  alpha,
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
+  Toolbar,
+  useTheme,
+} from '@mui/material';
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   ArrowForward as ArrowIcon,
+  Menu as MenuIcon,
+  Language as LanguageIcon,
+  MenuBook as MenuBookIcon,
+  Login as LoginIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -40,8 +59,14 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const { t: tLanding } = useTranslation('landing');
+
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(menuAnchor);
+  const closeMenu = () => setMenuAnchor(null);
+  const nextLanguage = i18n.language === 'sk' ? 'en' : 'sk';
+  const nextLanguageLabel = i18n.language === 'sk' ? t('language.en') : t('language.sk');
 
   return (
     <>
@@ -86,56 +111,153 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
               maxWidth: 1200,
               width: '100%',
               mx: 'auto',
-              px: { xs: 1.5, md: 4 },
-              gap: { xs: 0.5, sm: 1 },
+              px: { xs: 2, md: 4 },
+              gap: 1,
             }}
           >
             <Stack direction="row" alignItems="center" gap={1.25} sx={{ flex: 1, minWidth: 0 }}>
               <PawlyLogo size="md" glow onClick={() => navigate('/')} />
-              <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+              <Box sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
                 <PublicHeaderNav />
               </Box>
             </Stack>
-            <LanguageSwitcher variant="compact" sx={{ flexShrink: 0 }} />
-            <IconButton
-              onClick={onToggleTheme}
-              color="inherit"
-              aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
-              sx={{ flexShrink: 0 }}
+
+            <Stack
+              direction="row"
+              alignItems="center"
+              gap={1}
+              sx={{ display: { xs: 'none', md: 'flex' }, flexShrink: 0 }}
             >
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {!loading &&
-              (user ? (
-                <Button
-                  variant="contained"
-                  size="small"
-                  endIcon={<ArrowIcon />}
-                  onClick={() => navigate('/prehlad')}
-                  sx={{ minHeight: { sm: 40 }, whiteSpace: 'nowrap', flexShrink: 0 }}
-                >
-                  {tLanding('hero.navEnter')}
-                </Button>
-              ) : (
-                <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} sx={{ flexShrink: 0 }}>
-                  <Button
-                    variant="text"
-                    size="small"
-                    onClick={() => navigate('/login')}
-                    sx={{ whiteSpace: 'nowrap', flexShrink: 0, px: { xs: 1, sm: 1.5 } }}
-                  >
-                    {tLanding('hero.navLogin')}
-                  </Button>
+              <LanguageSwitcher variant="compact" />
+              <IconButton
+                onClick={onToggleTheme}
+                color="inherit"
+                aria-label={darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
+              >
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              {!loading &&
+                (user ? (
                   <Button
                     variant="contained"
                     size="small"
-                    onClick={() => navigate('/register')}
-                    sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                    endIcon={<ArrowIcon />}
+                    onClick={() => navigate('/prehlad')}
+                    sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
                   >
-                    {tLanding('hero.navRegister')}
+                    {tLanding('hero.navEnter')}
                   </Button>
-                </Stack>
-              ))}
+                ) : (
+                  <>
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => navigate('/login')}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      {tLanding('hero.navLogin')}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => navigate('/register')}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      {tLanding('hero.navRegister')}
+                    </Button>
+                  </>
+                ))}
+            </Stack>
+
+            <Stack
+              direction="row"
+              alignItems="center"
+              gap={0.5}
+              sx={{ display: { xs: 'flex', md: 'none' }, flexShrink: 0 }}
+            >
+              {!loading && (
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => navigate(user ? '/prehlad' : '/register')}
+                  sx={{ whiteSpace: 'nowrap' }}
+                >
+                  {user ? tLanding('hero.navEnter') : tLanding('hero.navRegister')}
+                </Button>
+              )}
+              <IconButton
+                onClick={(e) => setMenuAnchor(e.currentTarget)}
+                color="inherit"
+                aria-label={t('openMenu')}
+                aria-haspopup="true"
+                aria-expanded={menuOpen}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Stack>
+
+            <Menu
+              anchorEl={menuAnchor}
+              open={menuOpen}
+              onClose={closeMenu}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              slotProps={{ paper: { sx: { minWidth: 200, mt: 0.5 } } }}
+            >
+              <MenuItem
+                onClick={() => {
+                  closeMenu();
+                  navigate('/poradna');
+                }}
+              >
+                <ListItemIcon>
+                  <MenuBookIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{tLanding('hero.navAdvice')}</ListItemText>
+              </MenuItem>
+              {!user && (
+                <MenuItem
+                  onClick={() => {
+                    closeMenu();
+                    navigate('/login');
+                  }}
+                >
+                  <ListItemIcon>
+                    <LoginIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{tLanding('hero.navLogin')}</ListItemText>
+                </MenuItem>
+              )}
+              <Divider />
+              <MenuItem
+                onClick={() => {
+                  closeMenu();
+                  void i18n.changeLanguage(nextLanguage);
+                }}
+              >
+                <ListItemIcon>
+                  <LanguageIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{nextLanguageLabel}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  closeMenu();
+                  onToggleTheme();
+                }}
+              >
+                <ListItemIcon>
+                  {darkMode ? (
+                    <LightModeIcon fontSize="small" />
+                  ) : (
+                    <DarkModeIcon fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {darkMode ? t('theme.toggleLight') : t('theme.toggleDark')}
+                </ListItemText>
+              </MenuItem>
+            </Menu>
           </Toolbar>
         </AppBar>
 
