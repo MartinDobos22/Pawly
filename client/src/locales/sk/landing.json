@@ -209,7 +209,7 @@
   },
   "cta": {
     "title": "Daj zdravie svojho miláčika do poriadku ešte dnes",
-    "subtitle": "Zadarmo a bez reklám. Pridáš profil a môžeš hneď začať.",
+    "subtitle": "Aplikácia je zadarmo a bez reklám. Pridáš profil a môžeš hneď začať.",
     "btnStart": "Vstúpiť do aplikácie",
     "btnProfile": "Vytvoriť profil",
     "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
@@ -229,7 +229,7 @@
       { "label": "hlavných funkcií" },
       { "label": "druhov zvierat" },
       { "label": "na pridanie profilu" },
-      { "label": "zadarmo, bez reklám" }
+      { "label": "zadarmo" }
     ]
   },
   "appPreview": {
@@ -374,6 +374,70 @@
         "explanation": "Losos je výborný zdroj omega-3 mastných kyselín. Surový môže obsahovať parazity."
       }
     }
+  },
+  "productDemo": {
+    "badge": "UKÁŽKA ANALÝZY",
+    "title": "Pozri, čo AI vytiahne z obalu krmiva",
+    "subtitle": "Vyber vzorové krmivo a uvidíš presne to, čo dostaneš v aplikácii — skóre kvality, rozbor zložiek aj upozornenie na alergén podľa profilu tvojho zvieraťa.",
+    "profileLabel": "Napojené na profil",
+    "profileName": "Nalina · alergia na kuracie",
+    "ingredientsLabel": "Kľúčové zložky",
+    "allergenLabel": "Upozornenie na alergén",
+    "prosLabel": "Plusy",
+    "consLabel": "Mínusy",
+    "analyzingLabel": "Analyzujem…",
+    "cta": "Analyzovať vlastné krmivo",
+    "ctaNote": "Zadarmo, stačí založiť profil zvieraťa.",
+    "samples": [
+      {
+        "id": "salmon",
+        "name": "Losos & sladké zemiaky",
+        "tagline": "bezobilné, prémiová trieda",
+        "score": 88,
+        "summary": "Kvalitné bezobilné krmivo s jasným zdrojom bielkovín na prvom mieste. Vhodné aj pre psy s citlivým trávením.",
+        "ingredients": [
+          { "name": "Losos 32 %", "quality": "excellent" },
+          { "name": "Sladké zemiaky", "quality": "good" },
+          { "name": "Hrachový proteín", "quality": "good" },
+          { "name": "Ľanové semienko", "quality": "good" }
+        ],
+        "pros": ["Konkrétny zdroj mäsa na prvom mieste", "Bez obilnín a umelých farbív"],
+        "cons": ["Vyššia cena za kilogram", "Nižší obsah vlákniny"]
+      },
+      {
+        "id": "economy",
+        "name": "Kuracie granule",
+        "tagline": "ekonomická trieda",
+        "score": 26,
+        "summary": "Prevažujú obilniny a nekonkrétne mäsové múčky. Nízky podiel kvalitných živočíšnych bielkovín.",
+        "ingredients": [
+          { "name": "Kukurica", "quality": "poor" },
+          { "name": "Mäsová múčka (nekonkrétna)", "quality": "poor" },
+          { "name": "Kuracie mäso", "quality": "average" },
+          { "name": "Živočíšny tuk", "quality": "average" }
+        ],
+        "allergen": {
+          "message": "Obsahuje kuracie mäso — Nalina má naň v profile zapísanú alergiu."
+        },
+        "pros": ["Nízka cena"],
+        "cons": ["Obilnina na prvom mieste", "Nekonkrétna „mäsová múčka“"]
+      },
+      {
+        "id": "midrange",
+        "name": "Hovädzie & ryža",
+        "tagline": "stredná trieda",
+        "score": 58,
+        "summary": "Slušný pomer ceny a kvality. Obsahuje obilniny, no s konkrétnym druhom mäsa a pridanými probiotikami.",
+        "ingredients": [
+          { "name": "Hovädzie 20 %", "quality": "good" },
+          { "name": "Ryža", "quality": "average" },
+          { "name": "Repný rezok", "quality": "good" },
+          { "name": "Kuracia múčka", "quality": "average" }
+        ],
+        "pros": ["Konkrétny druh mäsa", "Pridané probiotiká"],
+        "cons": ["Obsahuje obilniny", "Priemerný obsah bielkovín"]
+      }
+    ]
   },
   "notifications": {
     "title": "Notifikácie",

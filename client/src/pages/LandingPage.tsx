@@ -31,6 +31,7 @@ import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
+import ProductAnalysisDemo from '../components/landing/ProductAnalysisDemo';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
@@ -264,6 +265,9 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         <LandingHero />
         <RevealOnScroll>
           <HowItWorks />
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <ProductAnalysisDemo />
         </RevealOnScroll>
         <RevealOnScroll>
           <InteractiveAiDemo />

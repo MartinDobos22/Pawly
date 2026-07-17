@@ -209,7 +209,7 @@
   },
   "cta": {
     "title": "Get your pet's health in order today",
-    "subtitle": "Free and ad-free. Add a profile and you can start right away.",
+    "subtitle": "The app is free and ad-free. Add a profile and you can start right away.",
     "btnStart": "Open app",
     "btnProfile": "Create profile",
     "vetPhotoAlt": "Veterinary check-up of a pet"
@@ -229,7 +229,7 @@
       { "label": "main features" },
       { "label": "supported species" },
       { "label": "to add a profile" },
-      { "label": "free, no ads" }
+      { "label": "free" }
     ]
   },
   "appPreview": {
@@ -377,6 +377,70 @@
         "explanation": "Salmon is an excellent source of omega-3 fatty acids. Raw salmon may contain parasites."
       }
     }
+  },
+  "productDemo": {
+    "badge": "ANALYSIS PREVIEW",
+    "title": "See what the AI pulls from a food label",
+    "subtitle": "Pick a sample food and see exactly what you get inside the app — a quality score, an ingredient breakdown, and an allergen warning based on your pet's profile.",
+    "profileLabel": "Linked to profile",
+    "profileName": "Nalina · chicken allergy",
+    "ingredientsLabel": "Key ingredients",
+    "allergenLabel": "Allergen warning",
+    "prosLabel": "Pros",
+    "consLabel": "Cons",
+    "analyzingLabel": "Analyzing…",
+    "cta": "Analyze your own food",
+    "ctaNote": "Free — just create a pet profile.",
+    "samples": [
+      {
+        "id": "salmon",
+        "name": "Salmon & sweet potato",
+        "tagline": "grain-free, premium",
+        "score": 88,
+        "summary": "A quality grain-free food with a clear protein source listed first. Suitable even for dogs with sensitive digestion.",
+        "ingredients": [
+          { "name": "Salmon 32%", "quality": "excellent" },
+          { "name": "Sweet potato", "quality": "good" },
+          { "name": "Pea protein", "quality": "good" },
+          { "name": "Flaxseed", "quality": "good" }
+        ],
+        "pros": ["A named meat source listed first", "No grains or artificial colours"],
+        "cons": ["Higher price per kilogram", "Lower fibre content"]
+      },
+      {
+        "id": "economy",
+        "name": "Chicken kibble",
+        "tagline": "economy class",
+        "score": 26,
+        "summary": "Grains and unnamed meat meals dominate. A low share of quality animal protein.",
+        "ingredients": [
+          { "name": "Corn", "quality": "poor" },
+          { "name": "Meat meal (unnamed)", "quality": "poor" },
+          { "name": "Chicken", "quality": "average" },
+          { "name": "Animal fat", "quality": "average" }
+        ],
+        "allergen": {
+          "message": "Contains chicken — Nalina has a chicken allergy recorded in the profile."
+        },
+        "pros": ["Low price"],
+        "cons": ["A grain listed first", "Unnamed “meat meal”"]
+      },
+      {
+        "id": "midrange",
+        "name": "Beef & rice",
+        "tagline": "mid range",
+        "score": 58,
+        "summary": "A decent price-to-quality ratio. Contains grains, but with a named meat source and added probiotics.",
+        "ingredients": [
+          { "name": "Beef 20%", "quality": "good" },
+          { "name": "Rice", "quality": "average" },
+          { "name": "Beet pulp", "quality": "good" },
+          { "name": "Chicken meal", "quality": "average" }
+        ],
+        "pros": ["A named meat source", "Added probiotics"],
+        "cons": ["Contains grains", "Average protein content"]
+      }
+    ]
   },
   "notifications": {
     "title": "Notifications",
