@@ -61,7 +61,10 @@ export default function InteractiveAiDemo() {
     setResult(null);
     setTimeout(() => {
       const key = q.toLowerCase();
-      const matched = Object.keys(responses).find((k) => key.includes(k));
+      // Match longer, more specific keys first ("pineapple" before "apple").
+      const matched = Object.keys(responses)
+        .sort((a, b) => b.length - a.length)
+        .find((k) => key.includes(k));
       const data = matched ? responses[matched] : fallback;
       setResult({ query: q, data });
       setLoading(false);
