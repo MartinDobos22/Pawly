@@ -20,6 +20,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { scoreColor } from '../../utils/scoreColor';
+import { track } from '../../utils/analytics';
 
 type Quality = 'excellent' | 'good' | 'average' | 'poor';
 
@@ -61,6 +62,7 @@ export default function ProductAnalysisDemo() {
 
   const handleSelect = (id: string) => {
     if (id === activeId || analyzing) return;
+    track('demo_sample', { sample: id });
     setAnalyzing(true);
     setActiveId(id);
     window.setTimeout(() => setAnalyzing(false), 420);
@@ -358,7 +360,10 @@ export default function ProductAnalysisDemo() {
             variant="contained"
             size="large"
             endIcon={<ArrowIcon />}
-            onClick={() => navigate('/register')}
+            onClick={() => {
+              track('cta_register', { location: 'product_demo' });
+              navigate('/register');
+            }}
             sx={{ fontSize: '1rem', px: 4 }}
           >
             {t('productDemo.cta')}

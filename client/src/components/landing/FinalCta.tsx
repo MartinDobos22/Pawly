@@ -2,6 +2,7 @@ import { Box, Button, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { ArrowForward as ArrowIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { track } from '../../utils/analytics';
 
 const CTA_PHOTO =
   'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1400&q=80';
@@ -86,7 +87,10 @@ export default function FinalCta() {
                 variant="contained"
                 size="large"
                 endIcon={<ArrowIcon />}
-                onClick={() => navigate('/analyza')}
+                onClick={() => {
+                  track('cta_start', { location: 'final' });
+                  navigate('/analyza');
+                }}
                 sx={{
                   px: 3,
                   py: 1.25,
@@ -101,7 +105,10 @@ export default function FinalCta() {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() => navigate('/profily')}
+                onClick={() => {
+                  track('cta_profile', { location: 'final' });
+                  navigate('/profily');
+                }}
                 sx={{
                   px: 3,
                   py: 1.25,
