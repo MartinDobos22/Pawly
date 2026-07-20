@@ -1,15 +1,19 @@
 // Privacy-friendly analytika (Plausible) — cookieless, GDPR-friendly, žiadny cookie
-// banner. Vypnutá, kým nie je nastavené VITE_PLAUSIBLE_DOMAIN. Bez neho sa skript
-// neinjektuje a track() je no-op — nasadenie je bezpečné aj bez analytického účtu.
+// banner. Vypnutá, kým nie je nastavené VITE_PLAUSIBLE_SRC (URL skriptu z Plausible
+// dashboardu, formát .../js/pa-XXXX.js). Bez neho sa skript neinjektuje a track()
+// je no-op — nasadenie je bezpečné aj bez analytického účtu.
 //
-// Prepnutie na iný nástroj (Umami, GA4) = zmena len v tomto súbore; volania track()
-// na jednotlivých CTA ostávajú nezmenené.
+// track() no-opuje, kým nie je Plausible načítané, takže funguje aj keď skript
+// vložíš priamo do index.html namiesto tohto loadera. Prepnutie na iný nástroj
+// (Umami, GA4) = zmena len v tomto súbore; volania track() na CTA ostávajú.
 
 type AnalyticsProps = Record<string, string | number | boolean>;
 
 interface PlausibleFn {
   (event: string, options?: { props?: AnalyticsProps }): void;
   q?: unknown[];
+  init?: (config?: Record<string, unknown>) => void;
+  o?: Record<string, unknown>;
 }
 
 declare global {
@@ -18,38 +22,46 @@ declare global {
   }
 }
 
-const PLAUSIBLE_DOMAIN = (import.meta.env.VITE_PLAUSIBLE_DOMAIN ?? '').trim();
-const PLAUSIBLE_SRC = (
-  import.meta.env.VITE_PLAUSIBLE_SRC ?? 'https://plausible.io/js/script.js'
-).trim();
+// Master flag: URL Plausible skriptu z dashboardu (napr. https://plausible.io/js/pa-XXXX.js).
+// Doména je v novom Plausible skripte zabudovaná — samostatná env netreba.
+const PLAUSIBLE_SRC = (import.meta.env.VITE_PLAUSIBLE_SRC ?? '').trim();
 
 export function isAnalyticsEnabled(): boolean {
-  return PLAUSIBLE_DOMAIN.length > 0;
+  return PLAUSIBLE_SRC.length > 0;
 }
 
 let loaderInjected = false;
 
-// Injektuje Plausible skript do <head>. Idempotentné — druhé volanie je no-op.
+// Injektuje Plausible skript do <head> a naštartuje meranie pageviews.
+// Idempotentné — druhé volanie je no-op.
 export function loadAnalyticsScript(): void {
   if (loaderInjected || !isAnalyticsEnabled() || typeof document === 'undefined') return;
   loaderInjected = true;
 
-  // Queue stub — event zaznamenaný cez track() pred načítaním skriptu sa nestratí.
+  // Queue stub — pageview aj eventy volané pred načítaním skriptu sa nestratia.
   window.plausible =
     window.plausible ||
     function (...args: unknown[]) {
       (window.plausible!.q = window.plausible!.q || []).push(args);
     };
+  const p = window.plausible;
+  p.init =
+    p.init ||
+    function (config?: Record<string, unknown>) {
+      p.o = config || {};
+    };
 
   const script = document.createElement('script');
   script.defer = true;
-  script.setAttribute('data-domain', PLAUSIBLE_DOMAIN);
   script.src = PLAUSIBLE_SRC;
   document.head.appendChild(script);
+
+  p.init();
 }
 
-// Zaznamená named event (goal). No-op ak analytika nie je zapnutá alebo beží na serveri.
+// Zaznamená named event (goal). No-op ak Plausible nie je načítané (dev, alebo flag
+// nenastavený). Nezávisí od loadera — funguje aj so snippetom vloženým do index.html.
 export function track(event: string, props?: AnalyticsProps): void {
-  if (!isAnalyticsEnabled() || typeof window === 'undefined') return;
-  window.plausible?.(event, props ? { props } : undefined);
+  if (typeof window === 'undefined' || typeof window.plausible !== 'function') return;
+  window.plausible(event, props ? { props } : undefined);
 }
