@@ -36,6 +36,8 @@ let loaderInjected = false;
 // Idempotentné — druhé volanie je no-op.
 export function loadAnalyticsScript(): void {
   if (loaderInjected || !isAnalyticsEnabled() || typeof document === 'undefined') return;
+  // Ak je Plausible už načítané (napr. snippet priamo v index.html), neduplikuj.
+  if (typeof window.plausible === 'function') return;
   loaderInjected = true;
 
   // Queue stub — pageview aj eventy volané pred načítaním skriptu sa nestratia.
