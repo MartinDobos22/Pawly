@@ -4,11 +4,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'preco-psy-zeru-travu',
     'zdravie',
+    array['dog']::text[],
     'Prečo psy žerú trávu?',
     'Prečo psy žerú trávu a je to dôvod na obavy? Čo hovorí výskum, kedy ide o normálne správanie a kedy spozornieť. Praktické tipy pre majiteľov psov.',
     'Váš pes sa pri prechádzke skloní a so sústredením labužníka začne trhať trávu. Prvá myšlienka väčšiny majiteľov je, že mu niečo je — no dáta hovoria niečo pokojnejšie.',
@@ -68,6 +69,8 @@ values
     ]'::jsonb,
     array['odcervenie-psa', 'co-nesmie-pes-jest']::text[],
     'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=70',
+    'Pes ležiaci v zelenej tráve na slnkom zaliatej lúke.',
+    'Zdroj: Unsplash',
     'passport',
     null,
     '[
@@ -77,10 +80,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     9
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -88,9 +93,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;

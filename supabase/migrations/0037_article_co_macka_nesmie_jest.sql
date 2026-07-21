@@ -4,11 +4,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'co-macka-nesmie-jest',
     'krmivo',
+    array['cat']::text[],
     'Čo mačka nesmie jesť',
     'Zoznam potravín a látok nebezpečných pre mačku: cibuľa, čokoláda, hrozno, mlieko a ľudské lieky. Prečo mačka znáša menej než človek a čo robiť pri otrave.',
     'Mačka je maškrtná, no zároveň prekvapivo dôverčivá — kúsok z taniera si nepýta dvakrát. Problém je, že viaceré bežné potraviny a lieky sú pre ňu oveľa nebezpečnejšie než pre nás, niekedy až smrteľne.',
@@ -62,6 +63,8 @@ values
     ]'::jsonb,
     array['co-nesmie-pes-jest', 'preco-macky-pradu']::text[],
     'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=1200&q=70',
+    'Mačka pri miske s jedlom.',
+    'Zdroj: Unsplash',
     'food',
     null,
     '[
@@ -71,10 +74,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     13
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -82,9 +87,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;

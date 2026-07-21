@@ -4,11 +4,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'preco-psy-naklanaju-hlavu',
     'zdravie',
+    array['dog']::text[],
     'Prečo psy nakláňajú hlavu, keď na ne hovoríte?',
     'Prečo psy nakláňajú hlavu nabok? Čo o tom hovorí výskum, ktoré plemená to robia častejšie a kedy je trvalý náklon hlavy dôvod na návštevu veterinára.',
     'Poviete psovi názov jeho obľúbenej hračky a on nakloní hlavu nabok, akoby chcel lepšie rozumieť. Je to jeden z najroztomilejších psích prejavov — a veda konečne tuší, prečo to robí.',
@@ -66,6 +67,8 @@ values
     ]'::jsonb,
     array['preco-psy-zeru-travu', 'digitalny-zdravotny-pas-pre-psa']::text[],
     'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=70',
+    'Pes s naklonenou hlavou pozorne počúva.',
+    'Zdroj: Unsplash',
     'passport',
     null,
     '[
@@ -75,10 +78,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     10
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -86,9 +91,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;

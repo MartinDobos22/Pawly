@@ -4,11 +4,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'preco-macky-miluju-skatule',
     'zdravie',
+    array['cat']::text[],
     'Prečo mačky milujú škatule?',
     'Prečo si mačka radšej sadne do prázdnej škatule než do drahej hračky? Bezpečie, teplo a inštinkt ohraničeného priestoru — čo o tom hovorí výskum.',
     'Rozbalíš drahú hračku, mačka ju odignoruje a s blaženou istotou sa usadí do prázdnej škatule. Klasika, na ktorej sa smeje celý internet — no za „if it fits, I sits“ je prekvapivo solídna veda.',
@@ -60,6 +61,8 @@ values
     ]'::jsonb,
     array['preco-macky-pradu', 'preco-psy-naklanaju-hlavu']::text[],
     'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=1200&q=70',
+    'Mačka sediaca v kartónovej škatuli.',
+    'Zdroj: Unsplash',
     'passport',
     null,
     '[
@@ -69,10 +72,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     12
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -80,9 +85,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;

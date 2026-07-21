@@ -5,11 +5,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'preco-macky-pradu',
     'zdravie',
+    array['cat']::text[],
     'Prečo mačky pradú?',
     'Prečo mačky pradú a znamená to vždy spokojnosť? Čo hovorí výskum o prosebnom pradení, hojivých frekvenciách a kedy je pradenie signál, že mačke nie je dobre.',
     'Mačka sa ti usadí na kolenách, privrie oči a rozbehne ten typický jemný motor. Pradenie automaticky spájame so spokojnosťou — lenže mačky pradú aj vtedy, keď im vôbec do smiechu nie je.',
@@ -66,6 +67,8 @@ values
     ]'::jsonb,
     array['preco-psy-naklanaju-hlavu', 'preco-psy-zeru-travu']::text[],
     'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=1200&q=70',
+    'Mačka spokojne odpočíva a pradie.',
+    'Zdroj: Unsplash',
     'passport',
     null,
     '[
@@ -75,10 +78,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     11
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -86,9 +91,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;

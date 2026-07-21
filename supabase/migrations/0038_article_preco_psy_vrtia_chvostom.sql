@@ -4,11 +4,12 @@
 -- Vyžaduje 0018_articles.sql.
 
 insert into articles
-  (slug, category, title, description, intro, sections, faqs, related_slugs, cover_image, cta_intent, author, sources, updated, published, position)
+  (slug, category, species, title, description, intro, sections, faqs, related_slugs, cover_image, cover_alt, cover_credit, cta_intent, author, sources, updated, published, status, position)
 values
   (
     'preco-psy-vrtia-chvostom',
     'zdravie',
+    array['dog']::text[],
     'Prečo psy vrtia chvostom (a čo tým hovoria)',
     'Vrtenie chvostom nie je vždy znak radosti. Čo prezrádza výška, rýchlosť a smer kmitu, prečo psy vrtia inak doľava a doprava a ako psovi lepšie rozumieť.',
     'Pes zavrtí chvostom a my automaticky čítame „mám ťa rád“. Lenže vrtenie chvostom nie je jednoznačný úsmev — je to reč, ktorá má smer, výšku aj rýchlosť, a niekedy znamená pravý opak radosti.',
@@ -65,6 +66,8 @@ values
     ]'::jsonb,
     array['preco-psy-naklanaju-hlavu', 'preco-psy-zeru-travu']::text[],
     'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=70',
+    'Pes vrtiaci chvostom vonku v tráve.',
+    'Zdroj: Unsplash',
     'passport',
     null,
     '[
@@ -74,10 +77,12 @@ values
     ]'::jsonb,
     '2026-07-21',
     true,
+    'published',
     14
   )
 on conflict (slug) do update set
   category = excluded.category,
+  species = excluded.species,
   title = excluded.title,
   description = excluded.description,
   intro = excluded.intro,
@@ -85,9 +90,12 @@ on conflict (slug) do update set
   faqs = excluded.faqs,
   related_slugs = excluded.related_slugs,
   cover_image = excluded.cover_image,
+  cover_alt = excluded.cover_alt,
+  cover_credit = excluded.cover_credit,
   cta_intent = excluded.cta_intent,
   author = excluded.author,
   sources = excluded.sources,
   updated = excluded.updated,
   published = excluded.published,
+  status = excluded.status,
   position = excluded.position;
