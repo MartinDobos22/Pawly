@@ -56,6 +56,20 @@ values
           {"type": "callout", "variant": "tip", "text": "Ak si všimneš náhlu zmenu v reči tela alebo v nálade psa, poznač si to do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — súvislosti (napríklad bolesť či stres) sa tak ľahšie odhalia."},
           {"type": "paragraph", "text": "Keď sa nabudúce pes rozvrtí, pozri sa pozornejšie — možno ti hovorí viac než len to, že je rád."}
         ]
+      },
+      {
+        "heading": "Reč tela nekončí pri chvoste",
+        "blocks": [
+          {"type": "paragraph", "text": "Chvost je len jedna veta z celého príbehu, ktorý ti pes rozpráva telom. Aby si mu rozumel, čítaj ho ako celok:"},
+          {"type": "bullets", "items": [
+            "**Uši** — dopredu natočené značia záujem, pritisnuté dozadu strach alebo podriadenie.",
+            "**Postoj** — uvoľnené, mierne prehnuté telo je pohoda; strnulé a nahnuté dopredu napätie.",
+            "**Oči a tlama** — mäkký pohľad a pootvorená papuľa značia pokoj; strnulý pohľad a obnažené zuby varovanie.",
+            "**Srsť** — naježená srsť na chrbte prezrádza silné vzrušenie, príjemné aj nepríjemné."
+          ]},
+          {"type": "paragraph", "text": "Nebezpečné nedorozumenia vznikajú práve vtedy, keď človek vytrhne jeden signál z kontextu. Klasický príklad je dieťa, ktoré vidí vrtiaci chvost a bezhlavo sa vrhne psa objať — hoci zvyšok tela kričí, že pes je vystrašený. Preto uč hlavne deti pravidlo: k cudziemu psovi sa nepribližuj len preto, že vrtí chvostom."},
+          {"type": "paragraph", "text": "Reč tela sa dá čítať aj opačne — pes pozorne sleduje tú tvoju. Pokojný postoj, tichý hlas a žiadne náhle pohyby psovi signalizujú, že sa nemá čoho báť, a uľahčia každé stretnutie. Vzájomné čítanie signálov je základ dôvery medzi psom a človekom — a čím pozornejšie sleduješ celé telo, nielen chvost, tým menej nedorozumení medzi vami vznikne a tým pokojnejší a istejší pes bude."}
+        ]
       }
     ]'::jsonb,
     '[

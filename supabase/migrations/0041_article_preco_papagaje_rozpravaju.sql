@@ -44,6 +44,20 @@ values
           ]},
           {"type": "callout", "variant": "tip", "text": "Zmeny v správaní, hlase či perí si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — u vtákov, ktoré príznaky choroby dlho skrývajú, je každý včasný záznam cenný."}
         ]
+      },
+      {
+        "heading": "Ako podporiť hovorenie a spokojnosť papagája",
+        "blocks": [
+          {"type": "paragraph", "text": "Či papagáj prehovorí, závisí od druhu, povahy aj od toho, koľko sa mu venuješ — nie je to súťaž a netreba to vynucovať. Ak by si ho chcel k reči jemne povzbudiť, pomôže trpezlivosť a pravidelnosť:"},
+          {"type": "bullets", "items": [
+            "**Opakovanie v kontexte** — ten istý pozdrav vždy pri príchode, to isté slovo vždy pri kŕmení.",
+            "**Nadšený tón** — vtáky priťahujú výrazné, veselo znejúce slová viac než monotónnu reč.",
+            "**Krátke, časté chvíle** — pár minút denne funguje lepšie než dlhé, únavné lekcie.",
+            "**Žiadny nátlak** — nikdy vtáka za mlčanie netrestaj; stres hovoreniu bráni."
+          ]},
+          {"type": "paragraph", "text": "Ešte dôležitejšia než reč je celková pohoda. Papagáj je bystrý spoločenský tvor, ktorý sa v izolácii a nude trápi. Dopraj mu dostatok interakcie každý deň, ponúkni hračky, vetvičky na hlodanie a úlohy, pri ktorých si potravu musí vypracovať, a zabezpeč pravidelný režim svetla a spánku."},
+          {"type": "paragraph", "text": "Nudiaci sa alebo osamelý papagáj to dá najavo — kričaním, apatiou alebo vyškubávaním peria. Spokojný vták je zvedavý, aktívny a ukecaný prirodzene, bez toho, aby si ho k tomu musel nútiť. Ak papagáj náhle stíchne, prestane žrať alebo si začne škubať perie, neber to ako vzdor — u vtákov je to častý prvý signál stresu alebo choroby a patrí k veterinárovi so zameraním na exoty."}
+        ]
       }
     ]'::jsonb,
     '[

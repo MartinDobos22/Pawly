@@ -54,6 +54,19 @@ values
           ]},
           {"type": "callout", "variant": "tip", "text": "Stravu, hmotnosť a príznaky si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých zvierat je včasné zachytenie zmeny kľúčové."}
         ]
+      },
+      {
+        "heading": "Ako zostaviť zdravý jedálniček morčaťa",
+        "blocks": [
+          {"type": "paragraph", "text": "Vitamín C je najznámejšia, no nie jediná potreba morčaťa. Zdravý jedálniček stojí na troch pilieroch, ktoré fungujú spolu:"},
+          {"type": "bullets", "items": [
+            "**Seno neobmedzene** — základ trávenia aj obrusovania stále rastúcich zubov; malo by tvoriť väčšinu dennej stravy.",
+            "**Čerstvá zelenina a vňať denne** — zdroj vitamínov vrátane C; ponúkaj pestro a v primeraných porciách.",
+            "**Malé množstvo kvalitných peliet** pre morčatá — doplnok, nie hlavné jedlo."
+          ]},
+          {"type": "paragraph", "text": "K tomu vždy čerstvá voda. Čomu sa vyhnúť: ovocie len ako vzácna maškrta (veľa cukru), žiadne pečivo, sladkosti ani mliečne výrobky — morčatá sú výhradne bylinožravce."},
+          {"type": "paragraph", "text": "Rovnako dôležité ako strava je pravidelné pozorovanie. Morčatá sú korisť a inštinktívne skrývajú slabosť, takže príznaky choroby si všimneš neskoro. Sleduj preto denne, či morča normálne žerie, pije a kálľa a či je čulé. Náhla strata chuti do jedla, chudnutie alebo skrývanie sú varovné signály — a keďže tieto zvieratá chátrajú rýchlo, oplatí sa reagovať skôr než neskôr. Ak si nie si istý dennou dávkou vitamínu C alebo výberom zeleniny, over si to u veterinára so zameraním na drobné cicavce; správne nastavená strava je najlacnejšia prevencia skorbutu aj ďalších problémov."}
+        ]
       }
     ]'::jsonb,
     '[

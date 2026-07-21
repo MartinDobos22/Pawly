@@ -59,6 +59,19 @@ values
           {"type": "callout", "variant": "tip", "text": "Ak máš podozrenie, že za pasením môže byť nevhodné zloženie krmiva alebo alergia, pomôže [analýza krmiva](/poradna/analyza-krmiva-pre-psa) a prehľad [odčervenie psa](/poradna/odcervenie-psa). Pri pretrvávajúcich ťažkostiach vždy konzultuj veterinára."},
           {"type": "paragraph", "text": "Trhanie trávy teda vo väčšine prípadov nie je dráma. Je to len tvoj pes, ktorý zostal v niečom trochu vlkom."}
         ]
+      },
+      {
+        "heading": "Je bezpečné nechať psa pásť sa?",
+        "blocks": [
+          {"type": "paragraph", "text": "Krátka odpoveď znie áno, ak dodržíš pár zásad. Väčšine psov občasné pasenie na čistej lúke nijako neublíži a netreba z neho robiť vedu. Problém nikdy nie je samotná tráva, ale to, čo na nej alebo v nej môže byť."},
+          {"type": "bullets", "items": [
+            "Vyhýbaj sa okrajom polí, parkov a trávnikov, ktoré mohli byť postriekané.",
+            "Po aplikácii hnojiva alebo postreku nechaj plochu aspoň niekoľko dní.",
+            "Sleduj, či pes spolu s trávou nezhltol aj odpadky či ohryzené paličky.",
+            "Ak si nie si istý pôvodom trávy, radšej psa jemne odveď inam."
+          ]},
+          {"type": "paragraph", "text": "Ak sa pes pasie len sem-tam a inak je čulý, má chuť do jedla a normálnu stolicu, nie je dôvod na paniku. Ostražitý buď až vtedy, keď sa z príležitostného maškrtenia stane nutkavý, každodenný rituál sprevádzaný vracaním."}
+        ]
       }
     ]'::jsonb,
     '[

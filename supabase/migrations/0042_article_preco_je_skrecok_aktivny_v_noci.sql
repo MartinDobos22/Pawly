@@ -53,6 +53,20 @@ values
           ]},
           {"type": "callout", "variant": "tip", "text": "Aktivitu, hmotnosť a chuť do jedla si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých hlodavcov choroba postupuje rýchlo a včasný záznam pomáha veterinárovi."}
         ]
+      },
+      {
+        "heading": "Ako škrečkovi prispôsobiť dom a režim",
+        "blocks": [
+          {"type": "paragraph", "text": "Keď rešpektuješ škrečkov nočný režim, odmení sa ti dôverou a pokojnejším správaním. Pár úprav domácnosti aj návykov spraví veľký rozdiel:"},
+          {"type": "bullets", "items": [
+            "**Umiestnenie klietky** — daj ju do tichej miestnosti, kde cez deň nie je ruch ani ostré svetlo, aby škrečok mohol nerušene spať.",
+            "**Večerný rituál** — kŕmenie, čistenie aj hru plánuj na podvečer; škrečok si zvykne a bude ťa vtedy sám vyhľadávať.",
+            "**Priestor a podnety** — dopraj mu veľkú klietku, hlbokú podstielku na hrabanie tunelov, úkryty a materiály na hlodanie.",
+            "**Šetrné budenie** — ak ho naozaj musíš vyrušiť, urob to jemne hlasom, nie náhlym siahnutím do pelieška."
+          ]},
+          {"type": "paragraph", "text": "Nočná aktivita má aj praktickú stránku: koleso môže vŕzgať a rušiť spánok. Vyber preto tiché, kvalitné koleso a klietku umiestni mimo spálne, nie k posteli detí."},
+          {"type": "paragraph", "text": "A ešte jedna dôležitá vec — škrečky sa dožívajú len asi dvoch až troch rokov a starnú rýchlo. Zmeny v aktivite, chudnutie či menší záujem o koleso preto neber na ľahkú váhu; u tohto krátko žijúceho zvieraťa má včasná návšteva veterinára o to väčšiu cenu. Ak si nie si istý, či je škrečkovo správanie ešte normálne, poraď sa s veterinárom so zameraním na drobné cicavce; u tak malého zvieraťa sa oplatí radšej overiť skôr, než čakať."}
+        ]
       }
     ]'::jsonb,
     '[

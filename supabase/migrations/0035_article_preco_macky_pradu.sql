@@ -57,6 +57,19 @@ values
           {"type": "callout", "variant": "tip", "text": "Zmeny v správaní a chuti do jedla si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pri návšteve veterinára pomôžu odlíšiť spokojné pradenie od signálu, že niečo nie je v poriadku."},
           {"type": "paragraph", "text": "Nabudúce, keď sa mačka rozpradie, vypočuj si nielen ten zvuk, ale aj to, čo ti ním hovorí."}
         ]
+      },
+      {
+        "heading": "Ako mačke rozumieť ešte lepšie",
+        "blocks": [
+          {"type": "paragraph", "text": "Pradenie je len jeden z mnohých spôsobov, akými s tebou mačka komunikuje. Aby si jej signálom rozumel správne, sleduj ho vždy spolu s ostatnou rečou tela:"},
+          {"type": "bullets", "items": [
+            "**Chvost** — vztýčený s jemne zahnutou špičkou znamená priateľské naladenie, našponovaný a naježený strach či podráždenie.",
+            "**Uši** — dopredu natočené značia záujem, pritisnuté dozadu tieseň alebo hrozbu.",
+            "**Oči** — pomalé žmurkanie je mačacie vyznanie dôvery; skús mu ho opätovať.",
+            "**Mrnkanie** — dospelé mačky mrnčia takmer výhradne na ľudí, nie medzi sebou; je to naučený spôsob, ako si vypýtať pozornosť."
+          ]},
+          {"type": "paragraph", "text": "Keď tieto signály čítaš spolu, pradenie dostane jasnejší význam. Uvoľnená mačka s privretými očami a pomaly kmitajúcim chvostom, ktorá ti pradie na kolenách, ti hovorí, že sa cíti bezpečne. Naopak mačka, ktorá pradie skrčená v kúte s pritisnutými ušami, sa skôr upokojuje sama. Čím lepšie poznáš celý repertoár, tým skôr zbadáš, keď sa niečo zmení."}
+        ]
       }
     ]'::jsonb,
     '[

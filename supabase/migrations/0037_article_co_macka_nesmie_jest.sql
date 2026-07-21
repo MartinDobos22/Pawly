@@ -52,6 +52,19 @@ values
           {"type": "callout", "variant": "warning", "text": "Nevyvolávaj zvracanie na vlastnú päsť — pri niektorých látkach to škodí viac než pomáha. Postupuj len podľa pokynov veterinára."},
           {"type": "callout", "variant": "tip", "text": "Alergie, intolerancie a zdravotné stavy mačky si vieš viesť v jej profile. Pri [analýze krmiva](/poradna/analyza-krmiva-pre-psa) ťa Pawly upozorní na rizikové zložky voči profilu zvieraťa. Psí náprotivok tejto témy nájdeš v článku [čo nesmie pes jesť](/poradna/co-nesmie-pes-jest)."}
         ]
+      },
+      {
+        "heading": "Ako otrave predísť",
+        "blocks": [
+          {"type": "paragraph", "text": "Najlepšia liečba otravy je tá, ktorá nikdy nie je potrebná. Väčšine problémov predídeš pár jednoduchými návykmi v domácnosti:"},
+          {"type": "bullets", "items": [
+            "**Skladovanie** — rizikové potraviny (cibuľu, cesnak, čokoládu, hrozno) drž v zatvorených skrinkách, nie voľne na linke.",
+            "**Lieky mimo dosahu** — tabletky nikdy nenechávaj na nočnom stolíku; mačka ľahko zhodí a prehryzne blister.",
+            "**Žiadne zvyšky zo stola** — aj s dobrým úmyslom môžeš mačke podať niečo, čo jej uškodí; drž sa krmiva a bezpečných maškŕt.",
+            "**Rastliny** — pozor aj na izbové kvety; viaceré (napríklad ľalie) sú pre mačky vysoko toxické."
+          ]},
+          {"type": "paragraph", "text": "Pouč aj deti a návštevy, čo mačke nesmú dať. A maj po ruke kontakt na svojho veterinára aj na najbližšiu pohotovosť — pri otrave často rozhoduje čas a pár minút hľadania čísla môže byť tých najdôležitejších."}
+        ]
       }
     ]'::jsonb,
     '[

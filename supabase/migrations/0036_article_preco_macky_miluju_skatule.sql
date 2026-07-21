@@ -51,6 +51,19 @@ values
           ]},
           {"type": "callout", "variant": "tip", "text": "Výrazné zmeny v správaní (náhle stále skrývanie, strata chuti do jedla) si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pomôžu veterinárovi odlíšiť pohodu od stresu či bolesti."}
         ]
+      },
+      {
+        "heading": "Ako škatuľu využiť naplno",
+        "blocks": [
+          {"type": "paragraph", "text": "Keď vieš, prečo mačka škatule miluje, môžeš z obyčajného kartónu spraviť užitočný nástroj pohody. Nemusíš kupovať drahé pelechy — často stačí to, čo máš doma:"},
+          {"type": "bullets", "items": [
+            "**Umiestnenie** — polož škatuľu do pokojného kúta s výhľadom do miestnosti, nie do prievanu či rušného priechodu.",
+            "**Vyvýšené miesto** — mačky milujú prehľad zhora, takže škatuľa na poličke alebo parapete boduje dvojnásobne.",
+            "**Viac úkrytov** — v domácnosti s viacerými mačkami daj každej vlastný priestor, predídeš tak napätiu a súbojom o teritórium.",
+            "**Obmena** — občas škatuľu vymeň alebo do nej prerež okienko; novinka mačku zabaví a podnieti prieskum."
+          ]},
+          {"type": "paragraph", "text": "Škatuľa skvele poslúži aj pri stresových situáciách — pri sťahovaní, návšteve, ohňostroji či ceste k veterinárovi. Prenosku, ktorú necháš doma otvorenú ako bežný úkryt, prestane mačka vnímať ako pascu a v deň návštevy sa ti do nej dostane oveľa ľahšie. Z lacného kartónu sa tak stane malý ostrov istoty, ktorý mačke pomáha zvládať zmeny."}
+        ]
       }
     ]'::jsonb,
     '[

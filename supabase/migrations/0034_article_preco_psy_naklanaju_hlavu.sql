@@ -57,6 +57,19 @@ values
           {"type": "callout", "variant": "tip", "text": "Ak si všimneš trvalý náklon alebo problémy s uchom či rovnováhou, zaznamenaj si prvý výskyt a príznaky do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pomôže to veterinárovi pri diagnostike."},
           {"type": "paragraph", "text": "Takže keď na teba pes nabudúce nakloní hlavu, možno naozaj sústredene rozoberá, čo si práve povedal."}
         ]
+      },
+      {
+        "heading": "Ako to využiť pri komunikácii so psom",
+        "blocks": [
+          {"type": "paragraph", "text": "Keď už vieš, že náklon hlavy súvisí so sústredením, môžeš mu vyjsť v ústrety. Psy reagujú najmä na krátke, zreteľné slová a na tón hlasu, nie na dlhé vety. Pár tipov, ktoré tréning uľahčia:"},
+          {"type": "bullets", "items": [
+            "Používaj pre každý povel **jedno stále slovo**, nie zakaždým iné.",
+            "Spájaj slovo vždy s tou istou situáciou, nech si ho pes prepojí s významom.",
+            "Odmeň pozornosť nadšeným tónom alebo maškrtou hneď, ako pes zareaguje.",
+            "Nepreháňaj to — aj pozorný pes sa unaví a potrebuje prestávky."
+          ]},
+          {"type": "paragraph", "text": "Náklon hlavy je pekná pripomienka, že pes ťa naozaj počúva a snaží sa ti porozumieť. Ak mu dáš zrozumiteľné signály, uľahčíš mu prácu a posilníš vaše puto."}
+        ]
       }
     ]'::jsonb,
     '[

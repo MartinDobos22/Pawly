@@ -59,6 +59,20 @@ values
           ]},
           {"type": "callout", "variant": "tip", "text": "Hmotnosť a stravu si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých zvierat sa problém prejaví rýchlo a včasný záznam pomôže veterinárovi."}
         ]
+      },
+      {
+        "heading": "Bežné chyby v kŕmení králika",
+        "blocks": [
+          {"type": "paragraph", "text": "Väčšina problémov s trávením u domácich králikov nepramení zo zlej vôle majiteľa, ale z pár rozšírených omylov. Vyhni sa im a ušetríš králika aj svoju peňaženku za veterinára:"},
+          {"type": "bullets", "items": [
+            "**Müsli zmesi** — farebné zmesi lákajú oko, no králik si z nich vyzobe len sladké kúsky a zvyšok nechá. Voľ radšej jednotné pelety.",
+            "**Priveľa peliet** — pelety majú byť len malý doplnok, nie základ. Priveľa ich potláča príjem sena a vedie k obezite.",
+            "**Náhle zmeny** — nové krmivo či zeleninu zaraď postupne počas niekoľkých dní, inak riskuješ hnačku.",
+            "**Ľudské maškrty** — pečivo, sušienky ani tyčinky s obilím a cukrom do misky nepatria.",
+            "**Málo sena** — ak seno zvlhne alebo zapáchne, králik ho odmietne; dopĺňaj ho čerstvé a dbaj na kvalitu."
+          ]},
+          {"type": "paragraph", "text": "Zdravý králik strávi väčšinu dňa prežúvaním sena a pravidelne kálľa množstvo malých, tuhých bobkov. Práve stály prísun vlákniny a pestrá čerstvá zelenina sú tajomstvom dlhého a zdravého králičieho života — nie plná miska granúl. Ak si nie si istý množstvami sena a zeleniny, poraď sa s veterinárom so zameraním na drobné cicavce — správne nastavený jedálniček je najlacnejšia prevencia väčšiny králičích chorôb."}
+        ]
       }
     ]'::jsonb,
     '[
