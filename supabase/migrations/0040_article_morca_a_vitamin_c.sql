@@ -52,7 +52,7 @@ values
             "Novú zeleninu zaraď postupne, aby si nespôsobil tráviace ťažkosti.",
             "Pri chorobe alebo gravidite sa poraď s veterinárom o zvýšenej potrebe."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Stravu, hmotnosť a príznaky si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých zvierat je včasné zachytenie zmeny kľúčové."}
+          {"type": "callout", "variant": "tip", "text": "Denné pozorovanie má cenu len keď si ho pamätáš — pár slov o strave a hmotnosti do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) ti pri morčati pomôže zachytiť problém včas."}
         ]
       },
       {
@@ -65,7 +65,7 @@ values
             "**Malé množstvo kvalitných peliet** pre morčatá — doplnok, nie hlavné jedlo."
           ]},
           {"type": "paragraph", "text": "K tomu vždy čerstvá voda. Čomu sa vyhnúť: ovocie len ako vzácna maškrta (veľa cukru), žiadne pečivo, sladkosti ani mliečne výrobky — morčatá sú výhradne bylinožravce."},
-          {"type": "paragraph", "text": "Rovnako dôležité ako strava je pravidelné pozorovanie. Morčatá sú korisť a inštinktívne skrývajú slabosť, takže príznaky choroby si všimneš neskoro. Sleduj preto denne, či morča normálne žerie, pije a kálľa a či je čulé. Náhla strata chuti do jedla, chudnutie alebo skrývanie sú varovné signály — a keďže tieto zvieratá chátrajú rýchlo, oplatí sa reagovať skôr než neskôr. Ak si nie si istý dennou dávkou vitamínu C alebo výberom zeleniny, over si to u veterinára so zameraním na drobné cicavce; správne nastavená strava je najlacnejšia prevencia skorbutu aj ďalších problémov."}
+          {"type": "paragraph", "text": "Rovnako dôležité ako strava je pravidelné pozorovanie. Morčatá sú korisť a inštinktívne skrývajú slabosť, takže príznaky choroby si všimneš neskoro. Sleduj preto denne, či morča normálne žerie, pije a kálľa a či je čulé. Náhla strata chuti do jedla, chudnutie alebo skrývanie sú varovné signály — a keďže tieto zvieratá chátrajú rýchlo, oplatí sa reagovať skôr než neskôr. Drobná rada na záver: morčatá sú spoločenské a v samote strádajú, preto sa takmer vždy chovajú aspoň vo dvojici — vo dvojici morča lepšie žerie, je čulejšie a jeho zdravie sa ľahšie ustráži."}
         ]
       }
     ]'::jsonb,

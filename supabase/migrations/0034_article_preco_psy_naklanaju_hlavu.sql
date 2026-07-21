@@ -54,7 +54,7 @@ values
         "heading": "Čo z toho pre majiteľa",
         "blocks": [
           {"type": "paragraph", "text": "Pri bežnom, reakčnom nakláňaní hlavy sa niet čoho báť — je to znak pozornosti a možno aj snahy porozumieť. Pokojne ho využi: krátke, jasné slová a nadšený tón psa motivujú počúvať."},
-          {"type": "callout", "variant": "tip", "text": "Ak si všimneš trvalý náklon alebo problémy s uchom či rovnováhou, zaznamenaj si prvý výskyt a príznaky do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pomôže to veterinárovi pri diagnostike."},
+          {"type": "callout", "variant": "tip", "text": "Trvalý náklon a jeho prvý výskyt patria do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — veterinár tak pri diagnostike rovno vidí, odkedy problém trvá a čo ho sprevádza."},
           {"type": "paragraph", "text": "Takže keď na teba pes nabudúce nakloní hlavu, možno naozaj sústredene rozoberá, čo si práve povedal."}
         ]
       },

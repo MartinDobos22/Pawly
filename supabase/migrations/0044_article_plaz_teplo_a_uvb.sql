@@ -48,7 +48,7 @@ values
             "**Odhad namiesto teplomera** — bez teplomera a termostatu netušíš skutočnú teplotu.",
             "**Jedna teplota v celom teráriu** — plaz potrebuje gradient, nie rovnomerné teplo."
           ]},
-          {"type": "callout", "variant": "info", "text": "Vápnikové a D3 doplnky často treba aj popri UVB, najmä u rastúcich mláďat a gravidných samíc. Konkrétny režim si over pre svoj druh u veterinára so zameraním na plazy."}
+          {"type": "callout", "variant": "info", "text": "Vápnikové a D3 doplnky často treba aj popri UVB, najmä u rastúcich mláďat a gravidných samíc. Konkrétny režim doplnkov sa líši podľa druhu — iné potrebuje bylinožravá korytnačka a iné mäsožravý gekón."}
         ]
       },
       {
@@ -62,13 +62,13 @@ values
             "**Meraj teplotu** teplomermi a riaď ju termostatom, nie odhadom.",
             "Zabezpeč **režim deň a noc** — svetlo a teplo v noci väčšine druhov uber."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Druh, teploty, dátum výmeny UVB a hmotnosť si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u plazov, kde sa problém prejaví pomaly, ti záznamy pomôžu odhaliť zhoršovanie skôr, než bude neskoro."}
+          {"type": "callout", "variant": "tip", "text": "Keďže sa u plazov problém prejaví pomaly, oplatí sa viesť si druh, teploty aj dátum výmeny UVB v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — zhoršovanie tak zbadáš včas."}
         ]
       },
       {
         "heading": "Kedy k veterinárovi",
         "blocks": [
-          {"type": "paragraph", "text": "Plazy sú majstri v skrývaní slabosti, takže príznaky treba brať vážne hneď, ako sa objavia. Poraď sa s veterinárom so zameraním na exoty, keď:"},
+          {"type": "paragraph", "text": "Plazy sú majstri v skrývaní slabosti, takže príznaky treba brať vážne hneď, ako sa objavia. Vyhľadaj veterinára, ktorý ošetruje plazy, keď:"},
           {"type": "bullets", "items": [
             "Plaz **odmieta žrať, chudne** alebo je nezvyčajne apatický.",
             "**Mäkne mu pancier**, deformuje sa čeľusť či končatiny, alebo sa trasie.",

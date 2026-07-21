@@ -59,19 +59,19 @@ values
             "**Vysoká vlhkosť** vzduchu srsti škodí podobne ako priama voda.",
             "Prehriatie spoznáš podľa **ležania na boku, apatie a červených uší** — vtedy koná rýchlo a chinčilu ochlaď."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Teplotu, kúpele aj zmeny stavu srsti si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u chinčily je stav srsti a citlivosť na teplo dobrým ukazovateľom, či je všetko v poriadku."}
+          {"type": "callout", "variant": "tip", "text": "Stav srsti a citlivosť na teplo veľa prezradia — zaznamenávaj si ich spolu s kúpeľmi do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa), nech máš prehľad, či je u chinčily všetko v poriadku."}
         ]
       },
       {
         "heading": "Kedy spozornieť",
         "blocks": [
-          {"type": "paragraph", "text": "Zdravá chinčila má suchú, nadýchanú srsť, je čulá a zvedavá. Poraď sa s veterinárom so zameraním na exoty, keď:"},
+          {"type": "paragraph", "text": "Zdravá chinčila má suchú, nadýchanú srsť, je čulá a zvedavá. Zverolekára vyhľadaj, keď:"},
           {"type": "bullets", "items": [
             "Srsť je **vlhká, zlepená, vypadáva** alebo má holé miesta.",
             "Koža je **červená, šupinatá alebo sa objavia chrasty** (možná pleseň).",
             "Chinčila je **apatická, prehriata alebo prestáva žrať**."
           ]},
-          {"type": "paragraph", "text": "Väčšine kožných problémov predídeš jednoducho: suchý prachový kúpeľ, chladné a suché prostredie a žiadna voda na srsti. Keď rešpektuješ, na čo je chinčila stavaná, odmení sa ti hodvábne jemným kožúškom a rokmi dobrého zdravia. Ak si nie si istý, koľko kúpeľov je akurát alebo aké teploty má tvoja chinčila znášať, poraď sa s veterinárom so zameraním na drobné cicavce — pri tomto citlivom druhu je správne nastavená starostlivosť najlepšia prevencia."}
+          {"type": "paragraph", "text": "Väčšine kožných problémov predídeš jednoducho: suchý prachový kúpeľ, chladné a suché prostredie a žiadna voda na srsti. Keď rešpektuješ, na čo je chinčila stavaná, odmení sa ti hodvábne jemným kožúškom a rokmi dobrého zdravia. A ešte jedna zvláštnosť na záver: chinčily patria medzi najdlhovekejšie drobné hlodavce — pri dobrej starostlivosti sa dožívajú aj pätnásť rokov, takže sa oplatí nastaviť im podmienky správne hneď od začiatku."}
         ]
       }
     ]'::jsonb,

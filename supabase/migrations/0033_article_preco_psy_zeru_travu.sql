@@ -19,9 +19,9 @@ values
         "blocks": [
           {"type": "paragraph", "text": "Najväčší prieskum na túto tému urobil tím veterinárnej fakulty Kalifornskej univerzity v Davise. Oslovil stovky majiteľov psov a výsledky prekvapili aj samotných odborníkov."},
           {"type": "bullets", "items": [
-            "Takmer **80 %** psov, ktoré pravidelne žerú rastliny, je celkovo zdravých.",
-            "Len približne **9 %** z nich pôsobilo pred pasením akokoľvek choro.",
-            "Vracia sa **zhruba každý štvrtý** pes — nie väčšina, ako sa bežne traduje."
+            "Žranie rastlín je úplne bežné — v prieskume ho robilo takmer **80 % psov**.",
+            "Len asi **8 %** psov pôsobilo pred žraním čo i len trochu choro.",
+            "Vracia sa iba **okolo 22 %** — teda menšina, nie väčšina, ako sa bežne traduje."
           ]},
           {"type": "paragraph", "text": "Inými slovami, trhanie trávy je súčasť normálneho psieho správania, nie tichý signál, že je niečo v neporiadku. Predstava, že sa pes takto zámerne lieči, keď mu je zle, platí len pre menšinu prípadov."}
         ]

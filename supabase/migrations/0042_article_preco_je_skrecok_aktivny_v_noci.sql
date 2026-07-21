@@ -51,7 +51,7 @@ values
             "Prestal žrať, hromadiť potravu alebo behať v kolese.",
             "Za chladu môže upadnúť do stavu podobného spánku (torpor) a pôsobiť ako mŕtvy."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Aktivitu, hmotnosť a chuť do jedla si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých hlodavcov choroba postupuje rýchlo a včasný záznam pomáha veterinárovi."}
+          {"type": "callout", "variant": "tip", "text": "Škrečok chorobu skrýva do poslednej chvíle — drobné zmeny v aktivite či chuti do jedla preto zapisuj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa), nech ich zachytíš skôr."}
         ]
       },
       {
@@ -65,7 +65,7 @@ values
             "**Šetrné budenie** — ak ho naozaj musíš vyrušiť, urob to jemne hlasom, nie náhlym siahnutím do pelieška."
           ]},
           {"type": "paragraph", "text": "Nočná aktivita má aj praktickú stránku: koleso môže vŕzgať a rušiť spánok. Vyber preto tiché, kvalitné koleso a klietku umiestni mimo spálne, nie k posteli detí."},
-          {"type": "paragraph", "text": "A ešte jedna dôležitá vec — škrečky sa dožívajú len asi dvoch až troch rokov a starnú rýchlo. Zmeny v aktivite, chudnutie či menší záujem o koleso preto neber na ľahkú váhu; u tohto krátko žijúceho zvieraťa má včasná návšteva veterinára o to väčšiu cenu. Ak si nie si istý, či je škrečkovo správanie ešte normálne, poraď sa s veterinárom so zameraním na drobné cicavce; u tak malého zvieraťa sa oplatí radšej overiť skôr, než čakať."}
+          {"type": "paragraph", "text": "A ešte jedna dôležitá vec — škrečky sa dožívajú len asi dvoch až troch rokov a starnú rýchlo. Zmeny v aktivite, chudnutie či menší záujem o koleso preto neber na ľahkú váhu; u tohto krátko žijúceho zvieraťa má včasná návšteva veterinára o to väčšiu cenu. A ešte drobnosť, ktorá prekvapí: väčšina škrečkov sú samotári a k iným škrečkom bývajú agresívni — na rozdiel od morčiat či potkanov ich preto chovaj radšej po jednom v klietke."}
         ]
       }
     ]'::jsonb,

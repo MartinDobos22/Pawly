@@ -57,7 +57,7 @@ values
             "Mäkká stolica, hnačka alebo zalepené okolie zadku.",
             "Chudnutie, apatia alebo prehnané slinenie (možný zubný problém)."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Hmotnosť a stravu si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — u malých zvierat sa problém prejaví rýchlo a včasný záznam pomôže veterinárovi."}
+          {"type": "callout", "variant": "tip", "text": "Kde sa dá, sleduj hmotnosť a chuť do jedla — u drobných zvierat sa problém prejaví rýchlo a záznam v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) pomôže veterinárovi včas."}
         ]
       },
       {
@@ -71,7 +71,7 @@ values
             "**Ľudské maškrty** — pečivo, sušienky ani tyčinky s obilím a cukrom do misky nepatria.",
             "**Málo sena** — ak seno zvlhne alebo zapáchne, králik ho odmietne; dopĺňaj ho čerstvé a dbaj na kvalitu."
           ]},
-          {"type": "paragraph", "text": "Zdravý králik strávi väčšinu dňa prežúvaním sena a pravidelne kálľa množstvo malých, tuhých bobkov. Práve stály prísun vlákniny a pestrá čerstvá zelenina sú tajomstvom dlhého a zdravého králičieho života — nie plná miska granúl. Ak si nie si istý množstvami sena a zeleniny, poraď sa s veterinárom so zameraním na drobné cicavce — správne nastavený jedálniček je najlacnejšia prevencia väčšiny králičích chorôb."}
+          {"type": "paragraph", "text": "Zdravý králik strávi väčšinu dňa prežúvaním sena a pravidelne kálľa množstvo malých, tuhých bobkov. Práve stály prísun vlákniny a pestrá čerstvá zelenina sú tajomstvom dlhého a zdravého králičieho života — nie plná miska granúl. A ešte jedno: seno musí byť naozaj kvalitné a voňavé — zaprášené či zapáchnuté ho králik odmieta a rovno tým trpí aj jeho trávenie, takže na kvalite základnej suroviny sa neoplatí šetriť."}
         ]
       }
     ]'::jsonb,

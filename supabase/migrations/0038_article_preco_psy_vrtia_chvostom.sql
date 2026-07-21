@@ -53,7 +53,7 @@ values
             "**Rýchlosť a rozsah** kmitu.",
             "**Zvyšok tela** — uvoľnené vs. stuhnuté držanie, uši, tlama."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Ak si všimneš náhlu zmenu v reči tela alebo v nálade psa, poznač si to do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — súvislosti (napríklad bolesť či stres) sa tak ľahšie odhalia."},
+          {"type": "callout", "variant": "tip", "text": "Náhla zmena v reči tela alebo nálade psa stojí za poznámku v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — súvislosti ako bolesť či stres sa tak odhalia skôr."},
           {"type": "paragraph", "text": "Keď sa nabudúce pes rozvrtí, pozri sa pozornejšie — možno ti hovorí viac než len to, že je rád."}
         ]
       },

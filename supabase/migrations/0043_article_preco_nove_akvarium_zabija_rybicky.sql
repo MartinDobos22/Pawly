@@ -60,7 +60,7 @@ values
             "**Priveľké výmeny vody či silné čistenie na začiatku** — zničíš práve budujúcu sa kolóniu baktérií.",
             "**Nepoužitie odchlorovača** — chlór a chloramín z vodovodu sú toxické pre ryby aj baktérie."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Záznamy o nasadení, testoch vody a úhynoch si veď v [zdravotnom pase](/poradna/digitalny-zdravotny-pas-pre-psa) — prehľad pomôže odhaliť, či problém súvisí s cyklom, kŕmením alebo preľudnením nádrže."}
+          {"type": "callout", "variant": "tip", "text": "Pri akváriu je história zlato — dátum nasadenia, výsledky testov vody aj úhyny si zapisuj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) a rýchlo uvidíš, kde je chyba."}
         ]
       },
       {
@@ -73,7 +73,7 @@ values
             "Ak ho máš, pridaj **prípravok viažuci amoniak** alebo odchlorovač s detoxikáciou.",
             "**Otestuj vodu**, aby si vedel, čo presne rieši."
           ]},
-          {"type": "paragraph", "text": "Trpezlivosť je pri akváriu tá najlacnejšia poistka. Pár týždňov čakania na zabehnutie ušetrí ryby aj tvoje nervy — a z „prekliateho“ akvária, v ktorom nič neprežije, sa stane stabilný a zdravý domov. A ak si nie si istý hodnotami z testov alebo výberom prvých rýb, poraď sa v akvaristike alebo s veterinárom so zameraním na ryby — pri rozbiehaní nádrže sa oplatí poradiť skôr, než neskôr ľutovať."}
+          {"type": "paragraph", "text": "Trpezlivosť je pri akváriu tá najlacnejšia poistka. Pár týždňov čakania na zabehnutie ušetrí ryby aj tvoje nervy — a z „prekliateho“ akvária, v ktorom nič neprežije, sa stane stabilný a zdravý domov. A ešte rada pre začiatočníkov: prvé ryby voľ otužilé, nenáročné druhy a nasaď len zopár kusov — ušetríš tým citlivejšie ryby, kým sa nádrž ešte len usádza."}
         ]
       }
     ]'::jsonb,

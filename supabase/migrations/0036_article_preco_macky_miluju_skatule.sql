@@ -49,7 +49,7 @@ values
             "Rozmiestni **viac úkrytov** po byte, nech má mačka vždy kam ustúpiť.",
             "Ak sa mačka zrazu prestane skrývať alebo naopak skrýva neustále, sleduj aj ostatné správanie."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Výrazné zmeny v správaní (náhle stále skrývanie, strata chuti do jedla) si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pomôžu veterinárovi odlíšiť pohodu od stresu či bolesti."}
+          {"type": "callout", "variant": "tip", "text": "Ak sa mačka zrazu skrýva nonstop alebo prestane žrať, taký obrat si zapíš do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pomôže odlíšiť bežnú pohodu od stresu či bolesti."}
         ]
       },
       {

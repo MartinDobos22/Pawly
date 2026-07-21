@@ -54,7 +54,7 @@ values
             "**Spokojné pradenie:** uvoľnené telo, privreté oči, prípadne „šliapanie“ labkami.",
             "**Varovné pradenie:** mačka sa skrýva, nežerie, je apatická alebo pradie pri zjavnej bolesti."
           ]},
-          {"type": "callout", "variant": "tip", "text": "Zmeny v správaní a chuti do jedla si zaznamenaj do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — pri návšteve veterinára pomôžu odlíšiť spokojné pradenie od signálu, že niečo nie je v poriadku."},
+          {"type": "callout", "variant": "tip", "text": "Keď mačka pradie inak než zvyčajne, poznač si to spolu so zmenou chuti do jedla do [zdravotného pasu](/poradna/digitalny-zdravotny-pas-pre-psa) — veterinár potom ľahšie odlíši spokojné pradenie od bolesti."},
           {"type": "paragraph", "text": "Nabudúce, keď sa mačka rozpradie, vypočuj si nielen ten zvuk, ale aj to, čo ti ním hovorí."}
         ]
       },
