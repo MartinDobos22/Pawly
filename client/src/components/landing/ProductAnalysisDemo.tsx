@@ -142,7 +142,7 @@ export default function ProductAnalysisDemo() {
                 onClick={() => handleSelect(sample.id)}
                 color={selected ? 'primary' : 'default'}
                 variant={selected ? 'filled' : 'outlined'}
-                sx={{ fontWeight: 600 }}
+                sx={{ fontWeight: 600, height: 34, '& .MuiChip-label': { px: 1.75 } }}
               />
             );
           })}
@@ -150,8 +150,8 @@ export default function ProductAnalysisDemo() {
 
         <Box
           sx={{
-            p: { xs: 2, md: 3.5 },
-            borderRadius: 5,
+            p: { xs: 2.5, md: 4 },
+            borderRadius: 4,
             bgcolor: alpha(theme.palette.background.paper, 0.6),
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
@@ -231,8 +231,9 @@ export default function ProductAnalysisDemo() {
                     bgcolor: alpha(tone, 0.16),
                     color: tone,
                     fontWeight: 700,
-                    height: 22,
+                    height: 24,
                     fontSize: '0.7rem',
+                    '& .MuiChip-label': { px: 1 },
                   }}
                 />
               </Stack>
@@ -250,7 +251,13 @@ export default function ProductAnalysisDemo() {
                 icon={<PetsIcon sx={{ fontSize: 15 }} />}
                 label={`${t('productDemo.profileLabel')} · ${t('productDemo.profileName')}`}
                 variant="outlined"
-                sx={{ alignSelf: 'flex-start', mt: 0.25, height: 24, fontSize: '0.7rem' }}
+                sx={{
+                  alignSelf: 'flex-start',
+                  mt: 0.25,
+                  height: 28,
+                  fontSize: '0.7rem',
+                  '& .MuiChip-label': { px: 1.25 },
+                }}
               />
             </Stack>
           </Stack>
@@ -259,8 +266,8 @@ export default function ProductAnalysisDemo() {
             <Box
               sx={{
                 mt: 2.5,
-                p: 1.75,
-                borderRadius: 3,
+                p: 2,
+                borderRadius: 2,
                 display: 'flex',
                 gap: 1.25,
                 alignItems: 'flex-start',
@@ -311,7 +318,12 @@ export default function ProductAnalysisDemo() {
                         }}
                       />
                     }
-                    sx={{ fontWeight: 500, borderColor: alpha(color, 0.4) }}
+                    sx={{
+                      fontWeight: 500,
+                      borderColor: alpha(color, 0.4),
+                      height: 30,
+                      '& .MuiChip-label': { px: 1.25 },
+                    }}
                   />
                 );
               })}
