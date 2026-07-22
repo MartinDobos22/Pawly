@@ -31,6 +31,7 @@ import PublicHeaderNav from '../components/public/PublicHeaderNav';
 import PawTrail from '../components/landing/PawTrail';
 import LandingHero from '../components/landing/LandingHero';
 import HowItWorks from '../components/landing/HowItWorks';
+import ProductAnalysisDemo from '../components/landing/ProductAnalysisDemo';
 import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
@@ -42,6 +43,7 @@ import FinalCta from '../components/landing/FinalCta';
 import LandingFooter from '../components/landing/LandingFooter';
 import PawlyLogo from '../components/PawlyLogo';
 import Seo from '../components/Seo';
+import { track } from '../utils/analytics';
 
 interface Props {
   darkMode: boolean;
@@ -152,7 +154,10 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                     <Button
                       variant="text"
                       size="small"
-                      onClick={() => navigate('/login')}
+                      onClick={() => {
+                        track('cta_login', { location: 'header' });
+                        navigate('/login');
+                      }}
                       sx={{ whiteSpace: 'nowrap' }}
                     >
                       {tLanding('hero.navLogin')}
@@ -160,7 +165,10 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                     <Button
                       variant="contained"
                       size="small"
-                      onClick={() => navigate('/register')}
+                      onClick={() => {
+                        track('cta_register', { location: 'header' });
+                        navigate('/register');
+                      }}
                       sx={{ whiteSpace: 'nowrap' }}
                     >
                       {tLanding('hero.navRegister')}
@@ -179,7 +187,10 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => navigate(user ? '/prehlad' : '/register')}
+                  onClick={() => {
+                    if (!user) track('cta_register', { location: 'header' });
+                    navigate(user ? '/prehlad' : '/register');
+                  }}
                   sx={{ whiteSpace: 'nowrap' }}
                 >
                   {user ? tLanding('hero.navEnter') : tLanding('hero.navRegister')}
@@ -219,6 +230,7 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
                 <MenuItem
                   onClick={() => {
                     closeMenu();
+                    track('cta_login', { location: 'header' });
                     navigate('/login');
                   }}
                 >
@@ -264,6 +276,9 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         <LandingHero />
         <RevealOnScroll>
           <HowItWorks />
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <ProductAnalysisDemo />
         </RevealOnScroll>
         <RevealOnScroll>
           <InteractiveAiDemo />

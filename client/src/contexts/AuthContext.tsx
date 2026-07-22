@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   getRedirectResult,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -14,6 +15,7 @@ import { auth, googleProvider } from '../config/firebase';
 import { clearUserSpecificLocalStorage } from '../hooks/useLocalStorage';
 import { clearQuickVisitClinicSuggestions } from '../utils/quickVisitClinicMemory';
 import { logger } from '../utils/logger';
+import { track } from '../utils/analytics';
 import i18n from '../i18n';
 import {
   requestPasswordReset,
@@ -84,6 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             uid: result.user.uid,
             email: result.user.email ?? undefined,
           });
+          if (getAdditionalUserInfo(result)?.isNewUser) {
+            track('sign_up', { method: 'google' });
+          }
         }
       })
       .catch((err) => {
@@ -160,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           reason: sendErr instanceof Error ? sendErr.message : String(sendErr),
         });
       }
+      track('sign_up', { method: 'email' });
     } catch (err) {
       throw mapFirebaseAuthError(err);
     }
@@ -194,7 +200,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = useCallback(async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const cred = await signInWithPopup(auth, googleProvider);
+      if (getAdditionalUserInfo(cred)?.isNewUser) {
+        track('sign_up', { method: 'google' });
+      }
     } catch (err) {
       const code = err instanceof FirebaseError ? err.code : '';
       const userCancelled =

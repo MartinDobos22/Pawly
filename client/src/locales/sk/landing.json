@@ -209,7 +209,7 @@
   },
   "cta": {
     "title": "Daj zdravie svojho miláčika do poriadku ešte dnes",
-    "subtitle": "Zadarmo a bez reklám. Pridáš profil a môžeš hneď začať.",
+    "subtitle": "Aplikácia je zadarmo a bez reklám. Pridáš profil a môžeš hneď začať.",
     "btnStart": "Vstúpiť do aplikácie",
     "btnProfile": "Vytvoriť profil",
     "vetPhotoAlt": "Veterinárna kontrola domáceho zvieraťa"
@@ -229,7 +229,7 @@
       { "label": "hlavných funkcií" },
       { "label": "druhov zvierat" },
       { "label": "na pridanie profilu" },
-      { "label": "zadarmo, bez reklám" }
+      { "label": "zadarmo" }
     ]
   },
   "appPreview": {
@@ -372,8 +372,261 @@
         "verdict": "SAFE",
         "short": "Áno, ale len varený a bez kostí.",
         "explanation": "Losos je výborný zdroj omega-3 mastných kyselín. Surový môže obsahovať parazity."
+      },
+      "arašidy": {
+        "verdict": "CAUTION",
+        "short": "Nesolené a bez škrupiny áno, s mierou.",
+        "explanation": "Pražené nesolené arašidy bez škrupiny sú v malom množstve v poriadku. Pri arašidovom masle over, že neobsahuje sladidlo xylitol.",
+        "warnings": ["Len nesolené a bez škrupiny", "Arašidové maslo musí byť bez xylitolu"]
+      },
+      "vajce": {
+        "verdict": "SAFE",
+        "short": "Áno, varené vajce je skvelý zdroj bielkovín.",
+        "explanation": "Uvarené vajce je bezpečné a výživné. Surové podávaj opatrne kvôli riziku salmonely."
+      },
+      "paradajka": {
+        "verdict": "CAUTION",
+        "short": "Zrelá dužina áno, zelené časti nie.",
+        "explanation": "Zrelá paradajka v malom množstve je ok. Vňať a nezrelé zelené plody obsahujú solanín, ktorý je toxický.",
+        "warnings": ["Žiadne zelené časti ani vňať"]
+      },
+      "zemiaky": {
+        "verdict": "CAUTION",
+        "short": "Len varené, nikdy surové.",
+        "explanation": "Varené zemiaky bez soli sú v poriadku. Surové a zelené obsahujú solanín.",
+        "warnings": ["Nikdy surové ani zelené"]
+      },
+      "cesnak": {
+        "verdict": "UNSAFE",
+        "short": "Nie, cesnak poškodzuje červené krvinky.",
+        "explanation": "Cesnak a cibuľa obsahujú látky, ktoré rozkladajú červené krvinky a môžu spôsobiť anémiu.",
+        "alternatives": ["varené mäso bez korenia"]
+      },
+      "tuniak": {
+        "verdict": "CAUTION",
+        "short": "Občas a s mierou.",
+        "explanation": "Malé množstvo vareného tuniaka je ok, ale obsahuje ortuť. Nedávaj často a nie slaný z konzervy v oleji.",
+        "warnings": ["Nie slaný ani v oleji", "Len občas kvôli ortuti"]
+      },
+      "hovädzie": {
+        "verdict": "SAFE",
+        "short": "Áno, chudé varené hovädzie je výborné.",
+        "explanation": "Kvalitný zdroj bielkovín. Podávaj bez korenia a nadmerného tuku."
+      },
+      "ryža": {
+        "verdict": "SAFE",
+        "short": "Áno, varená ryža je ľahko stráviteľná.",
+        "explanation": "Biela varená ryža pomáha pri tráviacich ťažkostiach. Podávaj bez soli a korenia."
+      },
+      "chlieb": {
+        "verdict": "CAUTION",
+        "short": "Malý kúsok občas neuškodí.",
+        "explanation": "Obyčajný pšeničný chlieb v malom je neškodný, ale nemá výživovú hodnotu. Nikdy nedávaj surové cesto.",
+        "warnings": ["Žiadne surové kysnuté cesto"]
+      },
+      "uhorka": {
+        "verdict": "SAFE",
+        "short": "Áno, uhorka je nízkokalorický snack.",
+        "explanation": "Uhorka je zdravá a hydratačná, ideálna ako ľahká odmena."
+      },
+      "brokolica": {
+        "verdict": "CAUTION",
+        "short": "V malom množstve áno.",
+        "explanation": "Brokolica je zdravá, ale vo väčšom množstve dráždi žalúdok. Podávaj len ako malý doplnok.",
+        "warnings": ["Len malé množstvo"]
+      },
+      "tekvica": {
+        "verdict": "SAFE",
+        "short": "Áno, varená tekvica podporuje trávenie.",
+        "explanation": "Tekvica je bohatá na vlákninu a pomáha pri hnačke aj zápche."
+      },
+      "melón": {
+        "verdict": "SAFE",
+        "short": "Áno, ale bez kôry a jadierok.",
+        "explanation": "Dužina melónu je osviežujúca a bezpečná. Odstráň kôru a jadierka.",
+        "warnings": ["Bez kôry a jadierok"]
+      },
+      "jahody": {
+        "verdict": "SAFE",
+        "short": "Áno, jahody sú v poriadku s mierou.",
+        "explanation": "Obsahujú vitamíny a vlákninu. Kvôli cukru podávaj len v malom množstve."
+      },
+      "čučoriedky": {
+        "verdict": "SAFE",
+        "short": "Áno, čučoriedky sú výborný antioxidant.",
+        "explanation": "Nízkokalorické, plné antioxidantov — skvelá zdravá odmena."
+      },
+      "pomaranč": {
+        "verdict": "CAUTION",
+        "short": "Malý kúsok dužiny áno.",
+        "explanation": "Dužina bez kôry a jadierok je ok v malom množstve, ale kyslé ovocie nemusí každému sadnúť.",
+        "warnings": ["Bez kôry a jadierok"]
+      },
+      "hruška": {
+        "verdict": "SAFE",
+        "short": "Áno, ale bez jadierok.",
+        "explanation": "Hruška je zdravá a šťavnatá. Jadierka odstráň, obsahujú stopy kyanidu.",
+        "warnings": ["Odstráň jadierka"]
+      },
+      "orechy": {
+        "verdict": "UNSAFE",
+        "short": "Radšej nie, najmä makadamové.",
+        "explanation": "Makadamové a vlašské orechy môžu byť toxické a vysoký obsah tuku hrozí zápalom pankreasu.",
+        "alternatives": ["nesolené arašidy s mierou"]
+      },
+      "mandle": {
+        "verdict": "CAUTION",
+        "short": "Nie sú toxické, ale nevhodné.",
+        "explanation": "Mandle zvieratá dobre nestrávia, hrozí podráždenie žalúdka aj udusenie. Radšej sa vyhni.",
+        "warnings": ["Riziko udusenia a tráviacich ťažkostí"]
+      },
+      "med": {
+        "verdict": "CAUTION",
+        "short": "Malé množstvo občas áno.",
+        "explanation": "Med je bezpečný v malom množstve, ale je to čistý cukor. Nie pre šteňatá a diabetikov.",
+        "warnings": ["Len malé množstvo"]
+      },
+      "ananás": {
+        "verdict": "SAFE",
+        "short": "Áno, čerstvý ananás s mierou.",
+        "explanation": "Čerstvá dužina je zdroj vitamínov. Kvôli cukru len v malom množstve."
+      },
+      "káva": {
+        "verdict": "UNSAFE",
+        "short": "Nie, kofeín je pre zvieratá toxický.",
+        "explanation": "Káva, čaj aj energetické nápoje obsahujú kofeín, ktorý spôsobuje búšenie srdca, triašku a kŕče.",
+        "alternatives": ["čistá voda"]
+      },
+      "alkohol": {
+        "verdict": "UNSAFE",
+        "short": "Nikdy, aj malé množstvo je nebezpečné.",
+        "explanation": "Alkohol spôsobuje otravu, zvracanie a útlm dýchania už pri malej dávke.",
+        "alternatives": ["čistá voda"]
+      },
+      "cesto": {
+        "verdict": "UNSAFE",
+        "short": "Nie, surové kysnuté cesto je nebezpečné.",
+        "explanation": "Kvasnice v ceste kvasia v žalúdku, produkujú alkohol a plyn — hrozí nafúknutie a otrava.",
+        "alternatives": ["upečený kúsok chleba"]
+      },
+      "hrozienka": {
+        "verdict": "UNSAFE",
+        "short": "Nie, hrozienka môžu zlyhať obličky.",
+        "explanation": "Rovnako ako hrozno, aj hrozienka môžu spôsobiť akútne zlyhanie obličiek.",
+        "alternatives": ["čučoriedky", "kúsok jablka"]
+      },
+      "šunka": {
+        "verdict": "CAUTION",
+        "short": "Radšej nie, je príliš slaná.",
+        "explanation": "Šunka a údeniny majú veľa soli a tuku — zaťažujú obličky a pankreas.",
+        "warnings": ["Vysoký obsah soli"]
+      },
+      "zmrzlina": {
+        "verdict": "CAUTION",
+        "short": "Radšej nie kvôli cukru a laktóze.",
+        "explanation": "Mlieko a cukor v zmrzline mnohým zvieratám nesadnú. Ak už, tak psí nanuk bez cukru.",
+        "warnings": ["Laktóza a cukor"]
+      },
+      "jogurt": {
+        "verdict": "CAUTION",
+        "short": "Biely nesladený v malom áno.",
+        "explanation": "Nesladený biely jogurt s probiotikami je ok v malom množstve, ak zviera znáša laktózu.",
+        "warnings": ["Len nesladený", "Pozor na laktózu"]
+      },
+      "huby": {
+        "verdict": "CAUTION",
+        "short": "Kupované áno, divé nikdy.",
+        "explanation": "Pestované jedlé huby sú neškodné, ale divo rastúce môžu byť smrteľne jedovaté.",
+        "warnings": ["Nikdy divo rastúce huby"]
+      },
+      "kukurica": {
+        "verdict": "SAFE",
+        "short": "Áno, ale bez kukuričného klasu.",
+        "explanation": "Varené kukuričné zrná sú neškodné. Nikdy nedávaj celý klas — hrozí nepriechodnosť čriev.",
+        "warnings": ["Nikdy celý klas"]
+      },
+      "hrášok": {
+        "verdict": "SAFE",
+        "short": "Áno, hrášok je zdravý doplnok.",
+        "explanation": "Čerstvý alebo mrazený hrášok obsahuje vitamíny a vlákninu."
+      },
+      "špenát": {
+        "verdict": "CAUTION",
+        "short": "V malom množstve občas.",
+        "explanation": "Špenát obsahuje oxaláty, ktoré vo väčšom množstve zaťažujú obličky. Len malé množstvo.",
+        "warnings": ["Len malé množstvo"]
+      },
+      "broskyňa": {
+        "verdict": "CAUTION",
+        "short": "Dužina áno, kôstku nikdy.",
+        "explanation": "Zrelá dužina je ok, ale kôstka obsahuje kyanid a hrozí ňou udusenie.",
+        "warnings": ["Odstráň kôstku"]
       }
     }
+  },
+  "productDemo": {
+    "badge": "UKÁŽKA ANALÝZY",
+    "title": "Pozri, čo AI vytiahne z obalu krmiva",
+    "subtitle": "Vyber vzorové krmivo a uvidíš presne to, čo dostaneš v aplikácii — skóre kvality, rozbor zložiek aj upozornenie na alergén podľa profilu tvojho zvieraťa.",
+    "profileLabel": "Napojené na profil",
+    "profileName": "Nalina · alergia na kuracie",
+    "ingredientsLabel": "Kľúčové zložky",
+    "allergenLabel": "Upozornenie na alergén",
+    "prosLabel": "Plusy",
+    "consLabel": "Mínusy",
+    "analyzingLabel": "Analyzujem…",
+    "cta": "Analyzovať vlastné krmivo",
+    "ctaNote": "Zadarmo, stačí založiť profil zvieraťa.",
+    "samples": [
+      {
+        "id": "salmon",
+        "name": "Losos & sladké zemiaky",
+        "tagline": "bezobilné, prémiová trieda",
+        "score": 88,
+        "summary": "Kvalitné bezobilné krmivo s jasným zdrojom bielkovín na prvom mieste. Vhodné aj pre psy s citlivým trávením.",
+        "ingredients": [
+          { "name": "Losos 32 %", "quality": "excellent" },
+          { "name": "Sladké zemiaky", "quality": "good" },
+          { "name": "Hrachový proteín", "quality": "good" },
+          { "name": "Ľanové semienko", "quality": "good" }
+        ],
+        "pros": ["Konkrétny zdroj mäsa na prvom mieste", "Bez obilnín a umelých farbív"],
+        "cons": ["Vyššia cena za kilogram", "Nižší obsah vlákniny"]
+      },
+      {
+        "id": "economy",
+        "name": "Kuracie granule",
+        "tagline": "ekonomická trieda",
+        "score": 26,
+        "summary": "Prevažujú obilniny a nekonkrétne mäsové múčky. Nízky podiel kvalitných živočíšnych bielkovín.",
+        "ingredients": [
+          { "name": "Kukurica", "quality": "poor" },
+          { "name": "Mäsová múčka (nekonkrétna)", "quality": "poor" },
+          { "name": "Kuracie mäso", "quality": "average" },
+          { "name": "Živočíšny tuk", "quality": "average" }
+        ],
+        "allergen": {
+          "message": "Obsahuje kuracie mäso — Nalina má naň v profile zapísanú alergiu."
+        },
+        "pros": ["Nízka cena"],
+        "cons": ["Obilnina na prvom mieste", "Nekonkrétna „mäsová múčka“"]
+      },
+      {
+        "id": "midrange",
+        "name": "Hovädzie & ryža",
+        "tagline": "stredná trieda",
+        "score": 58,
+        "summary": "Slušný pomer ceny a kvality. Obsahuje obilniny, no s konkrétnym druhom mäsa a pridanými probiotikami.",
+        "ingredients": [
+          { "name": "Hovädzie 20 %", "quality": "good" },
+          { "name": "Ryža", "quality": "average" },
+          { "name": "Repný rezok", "quality": "good" },
+          { "name": "Kuracia múčka", "quality": "average" }
+        ],
+        "pros": ["Konkrétny druh mäsa", "Pridané probiotiká"],
+        "cons": ["Obsahuje obilniny", "Priemerný obsah bielkovín"]
+      }
+    ]
   },
   "notifications": {
     "title": "Notifikácie",

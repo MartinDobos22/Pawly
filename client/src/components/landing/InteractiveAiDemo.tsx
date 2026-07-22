@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { track } from '../../utils/analytics';
 
 type Verdict = 'SAFE' | 'CAUTION' | 'UNSAFE';
 
@@ -61,8 +62,12 @@ export default function InteractiveAiDemo() {
     setResult(null);
     setTimeout(() => {
       const key = q.toLowerCase();
-      const matched = Object.keys(responses).find((k) => key.includes(k));
+      // Match longer, more specific keys first ("pineapple" before "apple").
+      const matched = Object.keys(responses)
+        .sort((a, b) => b.length - a.length)
+        .find((k) => key.includes(k));
       const data = matched ? responses[matched] : fallback;
+      track('food_query', { query: key.slice(0, 40), hit: matched ? 'yes' : 'no' });
       setResult({ query: q, data });
       setLoading(false);
     }, 380);
@@ -312,7 +317,10 @@ export default function InteractiveAiDemo() {
           <Button
             variant="text"
             endIcon={<ArrowIcon />}
-            onClick={() => navigate('/analyza')}
+            onClick={() => {
+              track('cta_analyze', { location: 'food_demo' });
+              navigate('/analyza');
+            }}
             sx={{ color: 'primary.main' }}
           >
             {t('demo.continueBtn')}

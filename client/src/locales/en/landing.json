@@ -209,7 +209,7 @@
   },
   "cta": {
     "title": "Get your pet's health in order today",
-    "subtitle": "Free and ad-free. Add a profile and you can start right away.",
+    "subtitle": "The app is free and ad-free. Add a profile and you can start right away.",
     "btnStart": "Open app",
     "btnProfile": "Create profile",
     "vetPhotoAlt": "Veterinary check-up of a pet"
@@ -229,7 +229,7 @@
       { "label": "main features" },
       { "label": "supported species" },
       { "label": "to add a profile" },
-      { "label": "free, no ads" }
+      { "label": "free" }
     ]
   },
   "appPreview": {
@@ -375,8 +375,261 @@
         "verdict": "SAFE",
         "short": "Yes, but only cooked and boneless.",
         "explanation": "Salmon is an excellent source of omega-3 fatty acids. Raw salmon may contain parasites."
+      },
+      "peanuts": {
+        "verdict": "CAUTION",
+        "short": "Unsalted and shelled, in moderation.",
+        "explanation": "Roasted unsalted shelled peanuts are fine in small amounts. With peanut butter, check that it does not contain the sweetener xylitol.",
+        "warnings": ["Only unsalted and shelled", "Peanut butter must be xylitol-free"]
+      },
+      "egg": {
+        "verdict": "SAFE",
+        "short": "Yes, a cooked egg is a great protein source.",
+        "explanation": "A cooked egg is safe and nutritious. Feed raw with caution due to the salmonella risk."
+      },
+      "tomato": {
+        "verdict": "CAUTION",
+        "short": "Ripe flesh yes, green parts no.",
+        "explanation": "Ripe tomato in small amounts is fine. The leaves and unripe green fruit contain solanine, which is toxic.",
+        "warnings": ["No green parts or leaves"]
+      },
+      "potato": {
+        "verdict": "CAUTION",
+        "short": "Only cooked, never raw.",
+        "explanation": "Cooked, unsalted potato is fine. Raw and green potatoes contain solanine.",
+        "warnings": ["Never raw or green"]
+      },
+      "garlic": {
+        "verdict": "UNSAFE",
+        "short": "No, garlic damages red blood cells.",
+        "explanation": "Garlic and onion contain compounds that break down red blood cells and can cause anemia.",
+        "alternatives": ["plain cooked meat"]
+      },
+      "tuna": {
+        "verdict": "CAUTION",
+        "short": "Occasionally and in moderation.",
+        "explanation": "A small amount of cooked tuna is okay, but it contains mercury. Don't feed often, and not salted or canned in oil.",
+        "warnings": ["Not salted or in oil", "Only occasionally due to mercury"]
+      },
+      "beef": {
+        "verdict": "SAFE",
+        "short": "Yes, lean cooked beef is excellent.",
+        "explanation": "A quality protein source. Serve without seasoning or excess fat."
+      },
+      "rice": {
+        "verdict": "SAFE",
+        "short": "Yes, cooked rice is easy to digest.",
+        "explanation": "Plain cooked white rice helps with digestive upset. Serve without salt or seasoning."
+      },
+      "bread": {
+        "verdict": "CAUTION",
+        "short": "A small piece now and then is fine.",
+        "explanation": "Plain wheat bread in small amounts is harmless but has no nutritional value. Never feed raw dough.",
+        "warnings": ["No raw yeast dough"]
+      },
+      "cucumber": {
+        "verdict": "SAFE",
+        "short": "Yes, cucumber is a low-calorie snack.",
+        "explanation": "Cucumber is healthy and hydrating, ideal as a light treat."
+      },
+      "broccoli": {
+        "verdict": "CAUTION",
+        "short": "In small amounts, yes.",
+        "explanation": "Broccoli is healthy, but in larger amounts it irritates the stomach. Serve only as a small addition.",
+        "warnings": ["Small amounts only"]
+      },
+      "pumpkin": {
+        "verdict": "SAFE",
+        "short": "Yes, cooked pumpkin aids digestion.",
+        "explanation": "Pumpkin is rich in fiber and helps with both diarrhea and constipation."
+      },
+      "watermelon": {
+        "verdict": "SAFE",
+        "short": "Yes, but no rind or seeds.",
+        "explanation": "Watermelon flesh is refreshing and safe. Remove the rind and seeds.",
+        "warnings": ["No rind or seeds"]
+      },
+      "strawberries": {
+        "verdict": "SAFE",
+        "short": "Yes, strawberries are fine in moderation.",
+        "explanation": "They contain vitamins and fiber. Due to the sugar, feed only in small amounts."
+      },
+      "blueberries": {
+        "verdict": "SAFE",
+        "short": "Yes, blueberries are a great antioxidant.",
+        "explanation": "Low in calories and full of antioxidants — a great healthy treat."
+      },
+      "orange": {
+        "verdict": "CAUTION",
+        "short": "A small piece of flesh, yes.",
+        "explanation": "Peeled, seedless flesh is okay in small amounts, but acidic fruit doesn't suit every pet.",
+        "warnings": ["No peel or seeds"]
+      },
+      "pear": {
+        "verdict": "SAFE",
+        "short": "Yes, but without the seeds.",
+        "explanation": "Pear is healthy and juicy. Remove the seeds, as they contain traces of cyanide.",
+        "warnings": ["Remove the seeds"]
+      },
+      "nuts": {
+        "verdict": "UNSAFE",
+        "short": "Better not, especially macadamia.",
+        "explanation": "Macadamia and walnuts can be toxic, and the high fat content risks pancreatitis.",
+        "alternatives": ["unsalted peanuts in moderation"]
+      },
+      "almonds": {
+        "verdict": "CAUTION",
+        "short": "Not toxic, but unsuitable.",
+        "explanation": "Pets don't digest almonds well; they risk stomach upset and choking. Best avoided.",
+        "warnings": ["Choking and digestive risk"]
+      },
+      "honey": {
+        "verdict": "CAUTION",
+        "short": "A small amount occasionally, yes.",
+        "explanation": "Honey is safe in small amounts, but it's pure sugar. Not for puppies or diabetics.",
+        "warnings": ["Small amounts only"]
+      },
+      "pineapple": {
+        "verdict": "SAFE",
+        "short": "Yes, fresh pineapple in moderation.",
+        "explanation": "Fresh flesh is a source of vitamins. Due to the sugar, only in small amounts."
+      },
+      "coffee": {
+        "verdict": "UNSAFE",
+        "short": "No, caffeine is toxic to pets.",
+        "explanation": "Coffee, tea and energy drinks contain caffeine, which causes a racing heart, tremors and seizures.",
+        "alternatives": ["clean water"]
+      },
+      "alcohol": {
+        "verdict": "UNSAFE",
+        "short": "Never — even a small amount is dangerous.",
+        "explanation": "Alcohol causes poisoning, vomiting and respiratory depression even at a small dose.",
+        "alternatives": ["clean water"]
+      },
+      "dough": {
+        "verdict": "UNSAFE",
+        "short": "No, raw yeast dough is dangerous.",
+        "explanation": "Yeast ferments in the stomach, producing alcohol and gas — risking bloat and poisoning.",
+        "alternatives": ["a baked piece of bread"]
+      },
+      "raisins": {
+        "verdict": "UNSAFE",
+        "short": "No, raisins can cause kidney failure.",
+        "explanation": "Like grapes, raisins can cause acute kidney failure.",
+        "alternatives": ["blueberries", "a piece of apple"]
+      },
+      "ham": {
+        "verdict": "CAUTION",
+        "short": "Better not — it's too salty.",
+        "explanation": "Ham and cured meats are high in salt and fat, straining the kidneys and pancreas.",
+        "warnings": ["High salt content"]
+      },
+      "ice cream": {
+        "verdict": "CAUTION",
+        "short": "Better not, due to sugar and lactose.",
+        "explanation": "The milk and sugar in ice cream don't suit many pets. If anything, a sugar-free dog popsicle.",
+        "warnings": ["Lactose and sugar"]
+      },
+      "yogurt": {
+        "verdict": "CAUTION",
+        "short": "Plain unsweetened, in small amounts, yes.",
+        "explanation": "Plain unsweetened yogurt with probiotics is okay in small amounts if the pet tolerates lactose.",
+        "warnings": ["Unsweetened only", "Watch for lactose"]
+      },
+      "mushrooms": {
+        "verdict": "CAUTION",
+        "short": "Store-bought yes, wild never.",
+        "explanation": "Cultivated edible mushrooms are harmless, but wild ones can be deadly poisonous.",
+        "warnings": ["Never wild mushrooms"]
+      },
+      "corn": {
+        "verdict": "SAFE",
+        "short": "Yes, but not on the cob.",
+        "explanation": "Cooked corn kernels are harmless. Never feed the whole cob — it risks an intestinal blockage.",
+        "warnings": ["Never the whole cob"]
+      },
+      "peas": {
+        "verdict": "SAFE",
+        "short": "Yes, peas are a healthy addition.",
+        "explanation": "Fresh or frozen peas contain vitamins and fiber."
+      },
+      "spinach": {
+        "verdict": "CAUTION",
+        "short": "In small amounts, occasionally.",
+        "explanation": "Spinach contains oxalates, which strain the kidneys in larger amounts. Small amounts only.",
+        "warnings": ["Small amounts only"]
+      },
+      "peach": {
+        "verdict": "CAUTION",
+        "short": "Flesh yes, never the pit.",
+        "explanation": "Ripe flesh is okay, but the pit contains cyanide and is a choking hazard.",
+        "warnings": ["Remove the pit"]
       }
     }
+  },
+  "productDemo": {
+    "badge": "ANALYSIS PREVIEW",
+    "title": "See what the AI pulls from a food label",
+    "subtitle": "Pick a sample food and see exactly what you get inside the app — a quality score, an ingredient breakdown, and an allergen warning based on your pet's profile.",
+    "profileLabel": "Linked to profile",
+    "profileName": "Nalina · chicken allergy",
+    "ingredientsLabel": "Key ingredients",
+    "allergenLabel": "Allergen warning",
+    "prosLabel": "Pros",
+    "consLabel": "Cons",
+    "analyzingLabel": "Analyzing…",
+    "cta": "Analyze your own food",
+    "ctaNote": "Free — just create a pet profile.",
+    "samples": [
+      {
+        "id": "salmon",
+        "name": "Salmon & sweet potato",
+        "tagline": "grain-free, premium",
+        "score": 88,
+        "summary": "A quality grain-free food with a clear protein source listed first. Suitable even for dogs with sensitive digestion.",
+        "ingredients": [
+          { "name": "Salmon 32%", "quality": "excellent" },
+          { "name": "Sweet potato", "quality": "good" },
+          { "name": "Pea protein", "quality": "good" },
+          { "name": "Flaxseed", "quality": "good" }
+        ],
+        "pros": ["A named meat source listed first", "No grains or artificial colours"],
+        "cons": ["Higher price per kilogram", "Lower fibre content"]
+      },
+      {
+        "id": "economy",
+        "name": "Chicken kibble",
+        "tagline": "economy class",
+        "score": 26,
+        "summary": "Grains and unnamed meat meals dominate. A low share of quality animal protein.",
+        "ingredients": [
+          { "name": "Corn", "quality": "poor" },
+          { "name": "Meat meal (unnamed)", "quality": "poor" },
+          { "name": "Chicken", "quality": "average" },
+          { "name": "Animal fat", "quality": "average" }
+        ],
+        "allergen": {
+          "message": "Contains chicken — Nalina has a chicken allergy recorded in the profile."
+        },
+        "pros": ["Low price"],
+        "cons": ["A grain listed first", "Unnamed “meat meal”"]
+      },
+      {
+        "id": "midrange",
+        "name": "Beef & rice",
+        "tagline": "mid range",
+        "score": 58,
+        "summary": "A decent price-to-quality ratio. Contains grains, but with a named meat source and added probiotics.",
+        "ingredients": [
+          { "name": "Beef 20%", "quality": "good" },
+          { "name": "Rice", "quality": "average" },
+          { "name": "Beet pulp", "quality": "good" },
+          { "name": "Chicken meal", "quality": "average" }
+        ],
+        "pros": ["A named meat source", "Added probiotics"],
+        "cons": ["Contains grains", "Average protein content"]
+      }
+    ]
   },
   "notifications": {
     "title": "Notifications",

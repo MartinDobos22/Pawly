@@ -16,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { track } from '../../utils/analytics';
 import PawlyLogo from '../PawlyLogo';
 
 const HERO_PHOTO =
@@ -185,7 +186,10 @@ export default function LandingHero() {
                 variant="contained"
                 size="large"
                 endIcon={<ArrowIcon />}
-                onClick={() => navigate('/analyza')}
+                onClick={() => {
+                  track('cta_start', { location: 'hero' });
+                  navigate('/analyza');
+                }}
                 sx={{
                   px: 3,
                   py: 1.25,
