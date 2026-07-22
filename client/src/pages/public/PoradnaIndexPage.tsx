@@ -9,20 +9,16 @@ import {
   CardActionArea,
   Chip,
   Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Pagination,
-  Select,
   Stack,
   Typography,
   useTheme,
 } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
 import { ArrowForward as ArrowIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
 import Seo from '../../components/Seo';
 import BlogLayout from '../../components/public/BlogLayout';
 import ArticleCard from '../../components/public/ArticleCard';
+import ArticleFilterBar from '../../components/public/ArticleFilterBar';
 import { collectionJsonLd } from '../../utils/seoSchema';
 import { articleReadingMinutes } from '../../utils/readingTime';
 import { CATEGORY_COLORS, CATEGORY_LABELS, articles } from '../../content/poradna/articles';
@@ -48,12 +44,6 @@ export const seo = {
     ],
   }),
 };
-
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'Všetko' },
-  { value: 'krmivo', label: CATEGORY_LABELS.krmivo },
-  { value: 'zdravie', label: CATEGORY_LABELS.zdravie },
-];
 
 const ARTICLES_PER_PAGE = 9;
 
@@ -121,18 +111,19 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
 
   const ordered = useMemo(
     () => [...articles].sort((a, b) => b.updated.localeCompare(a.updated)),
-    [],
+    []
   );
   const availableSpecies = useMemo(
     () => Array.from(new Set(ordered.flatMap((a) => a.species ?? []))),
-    [ordered],
+    [ordered]
   );
   const isDefault = filter === 'all' && speciesFilter === 'all';
   const featured = ordered[0];
   const gridArticles = useMemo(() => {
     let list = isDefault ? ordered.slice(1) : ordered;
     if (filter !== 'all') list = list.filter((a) => a.category === filter);
-    if (speciesFilter !== 'all') list = list.filter((a) => (a.species ?? []).includes(speciesFilter));
+    if (speciesFilter !== 'all')
+      list = list.filter((a) => (a.species ?? []).includes(speciesFilter));
     return list;
   }, [filter, speciesFilter, ordered, isDefault]);
 
@@ -144,7 +135,7 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
   const safePage = Math.min(page, Math.max(1, pageCount));
   const pagedArticles = useMemo(
     () => gridArticles.slice((safePage - 1) * ARTICLES_PER_PAGE, safePage * ARTICLES_PER_PAGE),
-    [gridArticles, safePage],
+    [gridArticles, safePage]
   );
 
   const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
@@ -152,8 +143,9 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleSpeciesChange = (event: SelectChangeEvent) => {
-    setSpeciesFilter(event.target.value as 'all' | AnimalType);
+  const handleReset = () => {
+    setFilter('all');
+    setSpeciesFilter('all');
   };
 
   return (
@@ -174,7 +166,11 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
           <Typography variant="h2" component="h1" sx={{ mb: theme.spacing(2), maxWidth: 720 }}>
             Praktické rady o domácich zvieratách
           </Typography>
-          <Typography variant="h6" component="p" sx={{ fontWeight: 400, opacity: 0.9, maxWidth: 640 }}>
+          <Typography
+            variant="h6"
+            component="p"
+            sx={{ fontWeight: 400, opacity: 0.9, maxWidth: 640 }}
+          >
             Krmivo, zdravie a prevencia — aby si sa o svojho miláčika staral s istotou.
           </Typography>
         </Container>
@@ -185,45 +181,16 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
 
         <Box ref={resultsRef} sx={{ scrollMarginTop: theme.spacing(2) }} />
 
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={theme.spacing(2)}
-          alignItems={{ xs: 'stretch', md: 'center' }}
-          justifyContent="space-between"
-          sx={{ mb: theme.spacing(4) }}
-        >
-          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }} useFlexGap>
-            {FILTERS.map((f) => (
-              <Chip
-                key={f.value}
-                label={f.label}
-                onClick={() => setFilter(f.value)}
-                color={filter === f.value ? 'primary' : 'default'}
-                variant={filter === f.value ? 'filled' : 'outlined'}
-              />
-            ))}
-          </Stack>
-
-          {availableSpecies.length > 0 && (
-            <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 240 } }}>
-              <InputLabel id="poradna-species-filter-label">Druh zvieraťa</InputLabel>
-              <Select
-                labelId="poradna-species-filter-label"
-                id="poradna-species-filter"
-                label="Druh zvieraťa"
-                value={speciesFilter}
-                onChange={handleSpeciesChange}
-              >
-                <MenuItem value="all">Všetky druhy</MenuItem>
-                {availableSpecies.map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {speciesLabels[s] ?? s}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </Stack>
+        <ArticleFilterBar
+          category={filter}
+          species={speciesFilter}
+          availableSpecies={availableSpecies}
+          speciesLabels={speciesLabels}
+          resultCount={gridArticles.length}
+          onCategoryChange={setFilter}
+          onSpeciesChange={setSpeciesFilter}
+          onReset={handleReset}
+        />
 
         <Box
           sx={{
@@ -238,7 +205,9 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
         </Box>
 
         {gridArticles.length === 0 && (
-          <Typography color="text.secondary">V tejto kategórii zatiaľ nie sú ďalšie články.</Typography>
+          <Typography color="text.secondary">
+            V tejto kategórii zatiaľ nie sú ďalšie články.
+          </Typography>
         )}
 
         {pageCount > 1 && (
