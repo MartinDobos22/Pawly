@@ -631,6 +631,76 @@
       }
     ]
   },
+  "passportScan": {
+    "badge": "AI PASSPORT SCAN",
+    "title": "Photograph the old passport, AI does the rest",
+    "subtitle": "From a photo of the vaccination passport, AI pulls out vaccinations, dewormings and dates — no manual retyping.",
+    "documentTitle": "VACCINATION PASSPORT",
+    "photoTag": "PHOTO",
+    "documentLines": [
+      { "raw": "Rabies / Besnota ...... 12.03.2024  b.4521A" },
+      { "raw": "Parvovirosis .......... 12.03.2024" },
+      { "raw": "Deworming Milbemax .... 08.01.2024" },
+      { "raw": "Dr. Horvath — Vet Nitra" }
+    ],
+    "resultTitle": "AI recognized",
+    "idleHint": "Click and AI reads the passport for you.",
+    "scanning": "AI is reading the passport…",
+    "scanBtn": "Run AI recognition",
+    "scanningBtn": "Recognizing…",
+    "records": [
+      {
+        "type": "Vaccination",
+        "name": "Rabies",
+        "date": "12 Mar 2024",
+        "validUntil": "valid until 12 Mar 2025"
+      },
+      { "type": "Vaccination", "name": "Parvovirosis", "date": "12 Mar 2024" },
+      { "type": "Deworming", "name": "Milbemax", "date": "8 Jan 2024" }
+    ],
+    "again": "Try again",
+    "cta": "Scan your own passport",
+    "ctaNote": "Free — just take a photo."
+  },
+  "vetCard": {
+    "badge": "VET CARD",
+    "title": "Everything essential on one card",
+    "subtitle": "Show it on your phone or print it before the visit — the vet has the full picture instantly.",
+    "printTag": "PDF / print",
+    "none": "none known",
+    "microchip": "Microchip",
+    "breed": "Breed",
+    "sections": {
+      "identity": "Identification",
+      "vaccinations": "Vaccinations",
+      "allergies": "Allergies",
+      "conditions": "Chronic conditions & meds"
+    },
+    "cta": "Create your pet's card",
+    "ctaNote": "Free — ready to print or show on mobile.",
+    "pets": [
+      {
+        "id": "nalina",
+        "name": "Nalina",
+        "meta": "dog · 4 years · 9.2 kg",
+        "microchip": "941 000 024 680 135",
+        "breed": "mixed breed",
+        "vaccinations": ["Rabies — valid until 3/2025", "Parvovirosis — 3/2024"],
+        "allergies": ["chicken"],
+        "conditions": []
+      },
+      {
+        "id": "rex",
+        "name": "Rex",
+        "meta": "dog · 7 years · 28 kg",
+        "microchip": "941 000 012 345 678",
+        "breed": "Labrador",
+        "vaccinations": ["Rabies — valid until 6/2025", "Distemper — 6/2024"],
+        "allergies": [],
+        "conditions": ["arthrosis (Cartrophen)"]
+      }
+    ]
+  },
   "reminders": {
     "badge": "REMINDERS",
     "title": "Never miss a vaccination or deworming",

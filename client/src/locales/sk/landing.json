@@ -628,6 +628,76 @@
       }
     ]
   },
+  "passportScan": {
+    "badge": "AI SKEN PREUKAZU",
+    "title": "Odfoť starý preukaz, zvyšok spraví AI",
+    "subtitle": "Z fotky očkovacieho preukazu AI vytiahne očkovania, odčervenia aj termíny — nič neprepisuješ ručne.",
+    "documentTitle": "OČKOVACÍ PREUKAZ",
+    "photoTag": "FOTO",
+    "documentLines": [
+      { "raw": "Besnota / Rabies ...... 12.03.2024  š.4521A" },
+      { "raw": "Parvoviróza ........... 12.03.2024" },
+      { "raw": "Odčervenie Milbemax ... 08.01.2024" },
+      { "raw": "MVDr. Horváth — Vet Nitra" }
+    ],
+    "resultTitle": "AI rozpoznalo",
+    "idleHint": "Klikni a AI prečíta preukaz za teba.",
+    "scanning": "AI číta preukaz…",
+    "scanBtn": "Spustiť AI rozpoznanie",
+    "scanningBtn": "Rozpoznávam…",
+    "records": [
+      {
+        "type": "Očkovanie",
+        "name": "Besnota",
+        "date": "12. 3. 2024",
+        "validUntil": "platné do 12. 3. 2025"
+      },
+      { "type": "Očkovanie", "name": "Parvoviróza", "date": "12. 3. 2024" },
+      { "type": "Odčervenie", "name": "Milbemax", "date": "8. 1. 2024" }
+    ],
+    "again": "Skúsiť znova",
+    "cta": "Naskenovať vlastný preukaz",
+    "ctaNote": "Zadarmo, stačí odfotiť."
+  },
+  "vetCard": {
+    "badge": "KARTA PRE VETERINÁRA",
+    "title": "Všetko podstatné na jednej karte",
+    "subtitle": "Pred návštevou ju ukážeš na mobile alebo vytlačíš — veterinár má hneď kompletný prehľad.",
+    "printTag": "PDF / tlač",
+    "none": "žiadne známe",
+    "microchip": "Mikročip",
+    "breed": "Plemeno",
+    "sections": {
+      "identity": "Identifikácia",
+      "vaccinations": "Očkovania",
+      "allergies": "Alergie",
+      "conditions": "Chronické stavy a lieky"
+    },
+    "cta": "Vytvoriť kartu zvieraťa",
+    "ctaNote": "Zadarmo, pripravená na tlač aj do mobilu.",
+    "pets": [
+      {
+        "id": "nalina",
+        "name": "Nalina",
+        "meta": "pes · 4 roky · 9,2 kg",
+        "microchip": "941 000 024 680 135",
+        "breed": "kríženec",
+        "vaccinations": ["Besnota — platné do 3/2025", "Parvoviróza — 3/2024"],
+        "allergies": ["kuracie mäso"],
+        "conditions": []
+      },
+      {
+        "id": "rex",
+        "name": "Rex",
+        "meta": "pes · 7 rokov · 28 kg",
+        "microchip": "941 000 012 345 678",
+        "breed": "Labrador",
+        "vaccinations": ["Besnota — platné do 6/2025", "Psinka — 6/2024"],
+        "allergies": [],
+        "conditions": ["artróza (Cartrophen)"]
+      }
+    ]
+  },
   "reminders": {
     "badge": "PRIPOMIENKY",
     "title": "Nezabudneš na očkovanie ani odčervenie",
