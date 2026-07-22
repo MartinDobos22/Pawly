@@ -1,6 +1,6 @@
 -- AnimalPassport — nový článok poradne: "Seno, nie mrkva, je základ jedálnička králika"
 -- Prvý článok o králikoch — rozširuje poradňu na ďalšie druhy.
--- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu.
+-- cover_image: reálna fotka z fotobanky Pexels (voľná licencia).
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 (species) + 0024 (cover_alt) + 0022 (status).
 
 insert into articles
@@ -82,9 +82,9 @@ values
       {"q": "Čo robiť, keď králik prestane žrať?", "a": "Konaj rýchlo — aj pár hodín bez žrania a trusu môže znamenať zástavu čriev. Bezodkladne kontaktuj veterinára."}
     ]'::jsonb,
     array['morca-a-vitamin-c']::text[],
-    'https://pawly.sk/branding/pawly-banner.png',
-    'Pawly – poradňa pre chovateľov zvierat',
-    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
+    'https://images.pexels.com/photos/4588071/pexels-photo-4588071.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'Portrét domáceho králika',
+    'Foto: Pexels',
     'passport',
     null,
     '[
