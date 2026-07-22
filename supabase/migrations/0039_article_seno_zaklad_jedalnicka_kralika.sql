@@ -23,7 +23,7 @@ values
             "Žuvanie sena **obrusuje zuby**, ktoré králikovi rastú celý život.",
             "Seno ho **zamestnáva** a znižuje nudu aj stres."
           ]},
-          {"type": "callout", "variant": "warning", "text": "Ak králik prestane žrať a káľať čo i len na pár hodín, môže ísť o zástavu čriev (GI stáza) — život ohrozujúci stav. Neodkladaj návštevu veterinára."}
+          {"type": "callout", "variant": "warning", "text": "Ak králik prestane žrať a trúsiť čo i len na pár hodín, môže ísť o zástavu čriev (GI stáza) — život ohrozujúci stav. Neodkladaj návštevu veterinára."}
         ]
       },
       {
@@ -53,7 +53,7 @@ values
         "heading": "Signály, že niečo nie je v poriadku",
         "blocks": [
           {"type": "bullets", "items": [
-            "Králik nežerie alebo nekáľa (menej alebo žiadne bobky).",
+            "Králik nežerie alebo netrúsi (menej alebo žiadne bobky).",
             "Mäkká stolica, hnačka alebo zalepené okolie zadku.",
             "Chudnutie, apatia alebo prehnané slinenie (možný zubný problém)."
           ]},
@@ -71,7 +71,7 @@ values
             "**Ľudské maškrty** — pečivo, sušienky ani tyčinky s obilím a cukrom do misky nepatria.",
             "**Málo sena** — ak seno zvlhne alebo zapáchne, králik ho odmietne; dopĺňaj ho čerstvé a dbaj na kvalitu."
           ]},
-          {"type": "paragraph", "text": "Zdravý králik strávi väčšinu dňa prežúvaním sena a pravidelne kálľa množstvo malých, tuhých bobkov. Práve stály prísun vlákniny a pestrá čerstvá zelenina sú tajomstvom dlhého a zdravého králičieho života — nie plná miska granúl. A ešte jedno: seno musí byť naozaj kvalitné a voňavé — zaprášené či zapáchnuté ho králik odmieta a rovno tým trpí aj jeho trávenie, takže na kvalite základnej suroviny sa neoplatí šetriť."}
+          {"type": "paragraph", "text": "Zdravý králik strávi väčšinu dňa prežúvaním sena a pravidelne trúsi množstvo malých, tuhých bobkov. Práve stály prísun vlákniny a pestrá čerstvá zelenina sú tajomstvom dlhého a zdravého králičieho života — nie plná miska granúl. A ešte jedno: seno musí byť naozaj kvalitné a voňavé — zaprášené či zapáchnuté ho králik odmieta a rovno tým trpí aj jeho trávenie, takže na kvalite základnej suroviny sa neoplatí šetriť."}
         ]
       }
     ]'::jsonb,

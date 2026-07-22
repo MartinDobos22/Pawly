@@ -16,7 +16,7 @@ values
       {
         "heading": "Tvor stvorený pre šero a noc",
         "blocks": [
-          {"type": "paragraph", "text": "Škrečky sú prevažne nočné a súmračné zvieratá — najaktívnejšie sú za šera a v noci. Nie je to rozmar. Sýrsky škrečok pochádza zo suchých, horúcich oblastí, kde je cez deň nebezpečne aj horúco. Nočný režim ho chráni pred predátormi aj pred pálivým slnkom."},
+          {"type": "paragraph", "text": "Škrečky sú prevažne nočné a súmračné zvieratá — najaktívnejšie sú za šera a v noci. Nie je to rozmar. Sýrsky škrečok pochádza zo suchých, horúcich oblastí, kde je cez deň horúco a nebezpečno. Nočný režim ho chráni pred predátormi aj pred pálivým slnkom."},
           {"type": "callout", "variant": "info", "text": "Preto škrečok nie je ideálny maznáčik pre malé deti, ktoré sa chcú hrať poobede — vtedy práve tvrdo spí."}
         ]
       },

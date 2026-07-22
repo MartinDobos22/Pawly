@@ -21,7 +21,7 @@ values
           {"type": "bullets", "items": [
             "Takzvané **nadané** psy, ktoré si dokázali zapamätať názvy hračiek, nakláňali hlavu oveľa častejšie.",
             "Náklon prišiel najmä vtedy, keď pes počul **známe, zmysluplné slovo** — napríklad názov konkrétnej hračky.",
-            "U bežných psov, ktorí si názvy nezapamätali, bolo naklánanie **zriedkavé**."
+            "U bežných psov, ktoré si názvy nezapamätali, bolo naklánanie **zriedkavé**."
           ]},
           {"type": "paragraph", "text": "Vedci preto naznačujú, že naklonenie hlavy môže súvisieť so spracovaním významovej, pre psa dôležitej informácie — akýmsi sústredením sa na to, čo počuje."}
         ]

@@ -23,7 +23,7 @@ values
       {
         "heading": "Čo spôsobí nedostatok",
         "blocks": [
-          {"type": "paragraph", "text": "Dlhodobý nedostatok vitamínu C vedie k skorbutu (kurdějam). Vitamín C je totiž nevyhnutný pre tvorbu kolagénu — stavebnej látky kĺbov, ciev a kože:"},
+          {"type": "paragraph", "text": "Dlhodobý nedostatok vitamínu C vedie k skorbutu. Vitamín C je totiž nevyhnutný pre tvorbu kolagénu — stavebnej látky kĺbov, ciev a kože:"},
           {"type": "bullets", "items": [
             "Apatia, neochota pohybovať sa, stuhnutá chôdza.",
             "Opuchnuté, bolestivé kĺby a krívanie.",
@@ -65,7 +65,7 @@ values
             "**Malé množstvo kvalitných peliet** pre morčatá — doplnok, nie hlavné jedlo."
           ]},
           {"type": "paragraph", "text": "K tomu vždy čerstvá voda. Čomu sa vyhnúť: ovocie len ako vzácna maškrta (veľa cukru), žiadne pečivo, sladkosti ani mliečne výrobky — morčatá sú výhradne bylinožravce."},
-          {"type": "paragraph", "text": "Rovnako dôležité ako strava je pravidelné pozorovanie. Morčatá sú korisť a inštinktívne skrývajú slabosť, takže príznaky choroby si všimneš neskoro. Sleduj preto denne, či morča normálne žerie, pije a kálľa a či je čulé. Náhla strata chuti do jedla, chudnutie alebo skrývanie sú varovné signály — a keďže tieto zvieratá chátrajú rýchlo, oplatí sa reagovať skôr než neskôr. Drobná rada na záver: morčatá sú spoločenské a v samote strádajú, preto sa takmer vždy chovajú aspoň vo dvojici — vo dvojici morča lepšie žerie, je čulejšie a jeho zdravie sa ľahšie ustráži."}
+          {"type": "paragraph", "text": "Rovnako dôležité ako strava je pravidelné pozorovanie. Morčatá sú korisť a inštinktívne skrývajú slabosť, takže príznaky choroby si všimneš neskoro. Sleduj preto denne, či morča normálne žerie, pije a trúsi a či je čulé. Náhla strata chuti do jedla, chudnutie alebo skrývanie sú varovné signály — a keďže tieto zvieratá chátrajú rýchlo, oplatí sa reagovať skôr než neskôr. Drobná rada na záver: morčatá sú spoločenské a v samote strádajú, preto sa takmer vždy chovajú aspoň vo dvojici — vo dvojici morča lepšie žerie, je čulejšie a jeho zdravie sa ľahšie ustráži."}
         ]
       }
     ]'::jsonb,
