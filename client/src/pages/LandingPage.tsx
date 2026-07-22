@@ -36,6 +36,7 @@ import InteractiveAiDemo from '../components/landing/InteractiveAiDemo';
 import StatsBand from '../components/landing/StatsBand';
 import FeatureGrid from '../components/landing/FeatureGrid';
 import ComparisonSection from '../components/landing/ComparisonSection';
+import HealthRemindersDemo from '../components/landing/HealthRemindersDemo';
 import PetSpeciesShowcase from '../components/landing/PetSpeciesShowcase';
 import RevealOnScroll from '../components/landing/RevealOnScroll';
 import AppPreview from '../components/landing/AppPreview';
@@ -291,6 +292,9 @@ export default function LandingPage({ darkMode, onToggleTheme }: Props) {
         </RevealOnScroll>
         <RevealOnScroll>
           <ComparisonSection />
+        </RevealOnScroll>
+        <RevealOnScroll>
+          <HealthRemindersDemo />
         </RevealOnScroll>
         <RevealOnScroll>
           <AppPreview />

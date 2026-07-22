@@ -628,6 +628,83 @@
       }
     ]
   },
+  "reminders": {
+    "badge": "PRIPOMIENKY",
+    "title": "Nezabudneš na očkovanie ani odčervenie",
+    "subtitle": "Pawly stráži termíny za teba a včas ti pripomenie, čo sa blíži — pri každom zvierati zvlášť.",
+    "footerNote": "Pripomenieme ti e-mailom vopred, podľa tvojho nastavenia.",
+    "cta": "Vytvoriť profil zvieraťa",
+    "ctaNote": "Zadarmo, prvý pas máš za pár minút.",
+    "statusLabels": { "overdue": "po termíne", "soon": "čoskoro", "ok": "v poriadku" },
+    "pets": [
+      {
+        "id": "nalina",
+        "name": "Nalina",
+        "meta": "pes · 4 roky",
+        "items": [
+          {
+            "type": "ecto",
+            "label": "Antiparazitiká · Bravecto",
+            "due": "26 dní po termíne",
+            "status": "overdue"
+          },
+          {
+            "type": "vaccine",
+            "label": "Očkovanie · Besnota",
+            "due": "o 3 týždne",
+            "status": "soon"
+          },
+          {
+            "type": "deworm",
+            "label": "Odčervenie · Milbemax",
+            "due": "o 2 mesiace",
+            "status": "ok"
+          },
+          { "type": "vet", "label": "Kontrola u veterinára", "due": "o 5 mesiacov", "status": "ok" }
+        ]
+      },
+      {
+        "id": "mina",
+        "name": "Mína",
+        "meta": "mačka · 2 roky",
+        "items": [
+          {
+            "type": "vaccine",
+            "label": "Očkovanie · Mačacia trojkombinácia",
+            "due": "o 6 dní",
+            "status": "soon"
+          },
+          { "type": "deworm", "label": "Odčervenie", "due": "o 7 týždňov", "status": "ok" },
+          { "type": "ecto", "label": "Antiparazitiká", "due": "o 1 mesiac", "status": "ok" }
+        ]
+      },
+      {
+        "id": "rex",
+        "name": "Rex",
+        "meta": "pes · 7 rokov",
+        "items": [
+          {
+            "type": "vet",
+            "label": "Kontrola u veterinára",
+            "due": "12 dní po termíne",
+            "status": "overdue"
+          },
+          {
+            "type": "deworm",
+            "label": "Odčervenie · Drontal",
+            "due": "o 10 dní",
+            "status": "soon"
+          },
+          {
+            "type": "vaccine",
+            "label": "Očkovanie · Besnota",
+            "due": "o 4 mesiace",
+            "status": "ok"
+          }
+        ]
+      }
+    ]
+  },
   "notifications": {
     "title": "Notifikácie",
     "description": "Upozorníme ťa, keď sa blíži termín očkovaní, odčervenia, antiparazitík, kontroly u veterinára alebo koniec liečby liekom.",

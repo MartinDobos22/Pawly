@@ -631,6 +631,83 @@
       }
     ]
   },
+  "reminders": {
+    "badge": "REMINDERS",
+    "title": "Never miss a vaccination or deworming",
+    "subtitle": "Pawly keeps track of the dates for you and reminds you in time what's coming up — for each pet separately.",
+    "footerNote": "We'll remind you by email in advance, based on your settings.",
+    "cta": "Create a pet profile",
+    "ctaNote": "Free — your first passport in minutes.",
+    "statusLabels": { "overdue": "overdue", "soon": "soon", "ok": "on track" },
+    "pets": [
+      {
+        "id": "nalina",
+        "name": "Nalina",
+        "meta": "dog · 4 years",
+        "items": [
+          {
+            "type": "ecto",
+            "label": "Anti-parasitics · Bravecto",
+            "due": "26 days overdue",
+            "status": "overdue"
+          },
+          {
+            "type": "vaccine",
+            "label": "Vaccination · Rabies",
+            "due": "in 3 weeks",
+            "status": "soon"
+          },
+          {
+            "type": "deworm",
+            "label": "Deworming · Milbemax",
+            "due": "in 2 months",
+            "status": "ok"
+          },
+          { "type": "vet", "label": "Vet check-up", "due": "in 5 months", "status": "ok" }
+        ]
+      },
+      {
+        "id": "mina",
+        "name": "Mína",
+        "meta": "cat · 2 years",
+        "items": [
+          {
+            "type": "vaccine",
+            "label": "Vaccination · Feline trivalent",
+            "due": "in 6 days",
+            "status": "soon"
+          },
+          { "type": "deworm", "label": "Deworming", "due": "in 7 weeks", "status": "ok" },
+          { "type": "ecto", "label": "Anti-parasitics", "due": "in 1 month", "status": "ok" }
+        ]
+      },
+      {
+        "id": "rex",
+        "name": "Rex",
+        "meta": "dog · 7 years",
+        "items": [
+          {
+            "type": "vet",
+            "label": "Vet check-up",
+            "due": "12 days overdue",
+            "status": "overdue"
+          },
+          {
+            "type": "deworm",
+            "label": "Deworming · Drontal",
+            "due": "in 10 days",
+            "status": "soon"
+          },
+          {
+            "type": "vaccine",
+            "label": "Vaccination · Rabies",
+            "due": "in 4 months",
+            "status": "ok"
+          }
+        ]
+      }
+    ]
+  },
   "notifications": {
     "title": "Notifications",
     "description": "We'll remind you when vaccinations, deworming, antiparasitic treatments, vet check-ups, or medication end dates are approaching.",
