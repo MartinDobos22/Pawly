@@ -90,7 +90,7 @@ export default function InteractiveAiDemo() {
         sx={{
           mt: 3,
           p: { xs: 2, md: 2.5 },
-          borderRadius: 4,
+          borderRadius: 2,
           bgcolor: alpha(tone, theme.palette.mode === 'light' ? 0.08 : 0.16),
           border: `1px solid ${alpha(tone, 0.35)}`,
           animation: 'demo-fade-in 350ms ease',
@@ -247,8 +247,8 @@ export default function InteractiveAiDemo() {
 
         <Box
           sx={{
-            p: { xs: 2, md: 3 },
-            borderRadius: 5,
+            p: { xs: 2.5, md: 3 },
+            borderRadius: 4,
             bgcolor: alpha(theme.palette.background.paper, 0.6),
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
@@ -266,7 +266,7 @@ export default function InteractiveAiDemo() {
               onKeyDown={handleKeyDown}
               disabled={loading}
               InputProps={{
-                sx: { borderRadius: 3, bgcolor: 'background.paper' },
+                sx: { borderRadius: 2, bgcolor: 'background.paper' },
                 startAdornment: (
                   <SearchIcon sx={{ fontSize: 22, color: 'text.secondary', mr: 1 }} />
                 ),
