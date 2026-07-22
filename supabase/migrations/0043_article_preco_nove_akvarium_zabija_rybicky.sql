@@ -1,7 +1,7 @@
 -- AnimalPassport — nový článok poradne: "Prečo nové akvárium zabíja rybičky"
 -- Prvý článok o rybičkách (species = fish).
--- cover_image je zatiaľ NULL (chýba overený obrázok — Unsplash je z prostredia
--- blokovaný); doplniť pri redakčnej kontrole.
+-- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu
+-- (Unsplash sa z prostredia nedal overiť). Alt aj kredit sú nastavené.
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 + 0024 + 0022.
 
 insert into articles
@@ -84,9 +84,9 @@ values
       {"q": "Prečo sa nemá filter umývať pod vodovodom?", "a": "Chlór z vodovodnej vody zabije užitočné baktérie vo filtri. Filtračnú hmotu preto preplachuj len v odobratej akváriovej vode."}
     ]'::jsonb,
     array[]::text[],
-    null,
-    null,
-    null,
+    'https://pawly.sk/branding/pawly-banner.png',
+    'Pawly – poradňa pre chovateľov zvierat',
+    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
     'passport',
     null,
     '[

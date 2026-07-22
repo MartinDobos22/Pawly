@@ -1,5 +1,5 @@
 -- AnimalPassport — nový článok poradne: "Prečo je škrečok v noci aktívny?"
--- cover_image je zatiaľ NULL (chýba overený obrázok) — doplniť pri redakčnej kontrole.
+-- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu.
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 + 0024 + 0022.
 
 insert into articles
@@ -76,9 +76,9 @@ values
       {"q": "Je normálne, že je škrečok nehybný a studený?", "a": "Za chladu môže upadnúť do stavu podobného spánku (torpor), keď pôsobí ako mŕtvy. Zohrej ho postupne a poraď sa s veterinárom; sleduj aj chuť do jedla a aktivitu."}
     ]'::jsonb,
     array[]::text[],
-    null,
-    null,
-    null,
+    'https://pawly.sk/branding/pawly-banner.png',
+    'Pawly – poradňa pre chovateľov zvierat',
+    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
     'passport',
     null,
     '[

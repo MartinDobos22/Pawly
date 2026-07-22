@@ -1,7 +1,7 @@
 -- AnimalPassport — nový článok poradne: "Prečo sa chinčila kúpe v prachu?"
 -- Prvý článok o chinčilách.
--- cover_image je zatiaľ NULL (chýba overený obrázok — Unsplash je z prostredia
--- blokovaný); doplniť pri redakčnej kontrole.
+-- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu
+-- (Unsplash sa z prostredia nedal overiť). Alt aj kredit sú nastavené.
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 + 0024 + 0022.
 
 insert into articles
@@ -82,9 +82,9 @@ values
       {"q": "Znáša chinčila teplo?", "a": "Zle. Pochádza z chladných And a prehreje sa už nad približne 25 °C. Potrebuje chladné a suché prostredie; vysoká vlhkosť jej srsti škodí podobne ako voda."}
     ]'::jsonb,
     array[]::text[],
-    null,
-    null,
-    null,
+    'https://pawly.sk/branding/pawly-banner.png',
+    'Pawly – poradňa pre chovateľov zvierat',
+    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
     'passport',
     null,
     '[

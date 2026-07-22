@@ -1,7 +1,7 @@
 -- AnimalPassport — nový článok poradne: "Prečo plaz potrebuje teplo a UVB svetlo"
 -- Prvý článok o plazoch (korytnačky, agamy, gekóny, …).
--- cover_image je zatiaľ NULL (chýba overený obrázok — Unsplash je z prostredia
--- blokovaný); doplniť pri redakčnej kontrole.
+-- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu
+-- (Unsplash sa z prostredia nedal overiť). Alt aj kredit sú nastavené.
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 + 0024 + 0022.
 
 insert into articles
@@ -85,9 +85,9 @@ values
       {"q": "Čo je metabolické ochorenie kostí u plazov?", "a": "Je to porucha z nedostatku vápnika a D3, pri ktorej mäknú a deformujú sa kosti a pancier. Býva dôsledkom chýbajúceho UVB alebo zlej stravy a v pokročilom štádiu je nezvratné."}
     ]'::jsonb,
     array[]::text[],
-    null,
-    null,
-    null,
+    'https://pawly.sk/branding/pawly-banner.png',
+    'Pawly – poradňa pre chovateľov zvierat',
+    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
     'passport',
     null,
     '[

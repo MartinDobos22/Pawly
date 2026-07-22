@@ -1,5 +1,5 @@
 -- AnimalPassport — nový článok poradne: "Prečo papagáje rozprávajú?"
--- cover_image je zatiaľ NULL (chýba overený obrázok) — doplniť pri redakčnej kontrole.
+-- cover_image je dočasný Pawly banner (placeholder) — nahradiť fotografiou druhu.
 -- Idempotentné: re-run aktualizuje článok podľa slug. Vyžaduje 0018 + 0028 + 0024 + 0022.
 
 insert into articles
@@ -67,9 +67,9 @@ values
       {"q": "Prečo môj papagáj nerozpráva?", "a": "Je to individuálne — nie každý jedinec rozpráva a netreba to vynucovať. Ak však prestal byť aktívny alebo si škube perie, môže ísť o stres či zdravotný problém."}
     ]'::jsonb,
     array[]::text[],
-    null,
-    null,
-    null,
+    'https://pawly.sk/branding/pawly-banner.png',
+    'Pawly – poradňa pre chovateľov zvierat',
+    'Dočasný obrázok Pawly – nahradiť fotografiou druhu',
     'passport',
     null,
     '[
