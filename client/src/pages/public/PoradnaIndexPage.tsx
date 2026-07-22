@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import type { AnimalType } from '../../constants/animalSpecies';
@@ -8,10 +9,16 @@ import {
   CardActionArea,
   Chip,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
   Stack,
   Typography,
   useTheme,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import { ArrowForward as ArrowIcon, Schedule as ScheduleIcon } from '@mui/icons-material';
 import Seo from '../../components/Seo';
 import BlogLayout from '../../components/public/BlogLayout';
@@ -47,6 +54,8 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: 'krmivo', label: CATEGORY_LABELS.krmivo },
   { value: 'zdravie', label: CATEGORY_LABELS.zdravie },
 ];
+
+const ARTICLES_PER_PAGE = 9;
 
 function FeaturedCard({ article }: { article: Article }) {
   const theme = useTheme();
@@ -107,6 +116,8 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
   const speciesLabels = t('profiles.species', { returnObjects: true }) as Record<string, string>;
   const [filter, setFilter] = useState<Filter>('all');
   const [speciesFilter, setSpeciesFilter] = useState<'all' | AnimalType>('all');
+  const [page, setPage] = useState(1);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const ordered = useMemo(
     () => [...articles].sort((a, b) => b.updated.localeCompare(a.updated)),
@@ -124,6 +135,26 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
     if (speciesFilter !== 'all') list = list.filter((a) => (a.species ?? []).includes(speciesFilter));
     return list;
   }, [filter, speciesFilter, ordered, isDefault]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, speciesFilter]);
+
+  const pageCount = Math.ceil(gridArticles.length / ARTICLES_PER_PAGE);
+  const safePage = Math.min(page, Math.max(1, pageCount));
+  const pagedArticles = useMemo(
+    () => gridArticles.slice((safePage - 1) * ARTICLES_PER_PAGE, safePage * ARTICLES_PER_PAGE),
+    [gridArticles, safePage],
+  );
+
+  const handlePageChange = (_event: ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleSpeciesChange = (event: SelectChangeEvent) => {
+    setSpeciesFilter(event.target.value as 'all' | AnimalType);
+  };
 
   return (
     <BlogLayout darkMode={darkMode} onToggleTheme={onToggleTheme}>
@@ -152,42 +183,47 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {isDefault && featured && <FeaturedCard article={featured} />}
 
-        <Stack direction="row" spacing={1} sx={{ mb: theme.spacing(2), flexWrap: 'wrap' }} useFlexGap>
-          {FILTERS.map((f) => (
-            <Chip
-              key={f.value}
-              label={f.label}
-              onClick={() => setFilter(f.value)}
-              color={filter === f.value ? 'primary' : 'default'}
-              variant={filter === f.value ? 'filled' : 'outlined'}
-            />
-          ))}
-        </Stack>
+        <Box ref={resultsRef} sx={{ scrollMarginTop: theme.spacing(2) }} />
 
-        {availableSpecies.length > 0 && (
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ mb: theme.spacing(3), flexWrap: 'wrap' }}
-            useFlexGap
-          >
-            <Chip
-              label="Všetky druhy"
-              onClick={() => setSpeciesFilter('all')}
-              color={speciesFilter === 'all' ? 'primary' : 'default'}
-              variant={speciesFilter === 'all' ? 'filled' : 'outlined'}
-            />
-            {availableSpecies.map((s) => (
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={theme.spacing(2)}
+          alignItems={{ xs: 'stretch', md: 'center' }}
+          justifyContent="space-between"
+          sx={{ mb: theme.spacing(4) }}
+        >
+          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }} useFlexGap>
+            {FILTERS.map((f) => (
               <Chip
-                key={s}
-                label={speciesLabels[s] ?? s}
-                onClick={() => setSpeciesFilter(s)}
-                color={speciesFilter === s ? 'primary' : 'default'}
-                variant={speciesFilter === s ? 'filled' : 'outlined'}
+                key={f.value}
+                label={f.label}
+                onClick={() => setFilter(f.value)}
+                color={filter === f.value ? 'primary' : 'default'}
+                variant={filter === f.value ? 'filled' : 'outlined'}
               />
             ))}
           </Stack>
-        )}
+
+          {availableSpecies.length > 0 && (
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', md: 240 } }}>
+              <InputLabel id="poradna-species-filter-label">Druh zvieraťa</InputLabel>
+              <Select
+                labelId="poradna-species-filter-label"
+                id="poradna-species-filter"
+                label="Druh zvieraťa"
+                value={speciesFilter}
+                onChange={handleSpeciesChange}
+              >
+                <MenuItem value="all">Všetky druhy</MenuItem>
+                {availableSpecies.map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {speciesLabels[s] ?? s}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+        </Stack>
 
         <Box
           sx={{
@@ -196,13 +232,25 @@ export default function PoradnaIndexPage({ darkMode, onToggleTheme }: Props) {
             gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
           }}
         >
-          {gridArticles.map((article) => (
+          {pagedArticles.map((article) => (
             <ArticleCard key={article.slug} article={article} />
           ))}
         </Box>
 
         {gridArticles.length === 0 && (
           <Typography color="text.secondary">V tejto kategórii zatiaľ nie sú ďalšie články.</Typography>
+        )}
+
+        {pageCount > 1 && (
+          <Stack alignItems="center" sx={{ mt: theme.spacing(5) }}>
+            <Pagination
+              count={pageCount}
+              page={safePage}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+            />
+          </Stack>
         )}
       </Container>
     </BlogLayout>
