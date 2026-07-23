@@ -3,6 +3,7 @@ import {
   Alert,
   AlertTitle,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -57,13 +58,91 @@ export default function AiRecordsReview({
     );
   }
 
+  const skippedCount = records.filter((r) => r.targetType === 'SKIP').length;
+  const toSaveCount = records.length - skippedCount;
+  const needsVerifyCount = records.filter(
+    (r) => r.targetType !== 'SKIP' && r.sourceConfidence !== 'high'
+  ).length;
+
+  // Triedenie iba pre zobrazenie: záznamy na overenie navrch, preskočené naspodok.
+  const rank = (r: AiDetectedDraftRecord): number => {
+    if (r.targetType === 'SKIP') return 2;
+    return r.sourceConfidence !== 'high' ? 0 : 1;
+  };
+  const sorted = records
+    .map((record, index) => ({ record, index }))
+    .sort((a, b) => rank(a.record) - rank(b.record) || a.index - b.index)
+    .map((entry) => entry.record);
+
+  const includeAll = () => {
+    records.forEach((r) => {
+      if (r.targetType === 'SKIP') {
+        onChange(r.id, { targetType: r.suggestedType ?? 'NOTE' });
+      }
+    });
+  };
+  const skipAll = () => {
+    records.forEach((r) => {
+      if (r.targetType !== 'SKIP') {
+        onChange(r.id, { targetType: 'SKIP' });
+      }
+    });
+  };
+
   return (
     <Stack spacing={1.5}>
       <Alert severity="info" icon={<FactCheckIcon />}>
         <AlertTitle sx={{ fontWeight: 600 }}>{t('aiRecordsReview.headerTitle')}</AlertTitle>
         {t('aiRecordsReview.hint')}
       </Alert>
-      {records.map((record) => {
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 1,
+          justifyContent: 'space-between',
+        }}
+      >
+        <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
+          <Chip
+            size="small"
+            color="success"
+            variant="outlined"
+            label={t('aiRecordsReview.summaryToSave', { count: toSaveCount })}
+          />
+          {needsVerifyCount > 0 && (
+            <Chip
+              size="small"
+              color="warning"
+              variant="outlined"
+              label={t('aiRecordsReview.summaryNeedsVerify', { count: needsVerifyCount })}
+            />
+          )}
+          {skippedCount > 0 && (
+            <Chip
+              size="small"
+              variant="outlined"
+              label={t('aiRecordsReview.summarySkipped', { count: skippedCount })}
+            />
+          )}
+        </Stack>
+        <Stack direction="row" spacing={0.75}>
+          {skippedCount > 0 && (
+            <Button size="small" onClick={includeAll}>
+              {t('aiRecordsReview.includeAll')}
+            </Button>
+          )}
+          {toSaveCount > 0 && (
+            <Button size="small" color="inherit" onClick={skipAll}>
+              {t('aiRecordsReview.skipAll')}
+            </Button>
+          )}
+        </Stack>
+      </Box>
+
+      {sorted.map((record) => {
         const needsVerify = record.sourceConfidence !== 'high';
         return (
           <Card

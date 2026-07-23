@@ -15,6 +15,9 @@ export interface AiDetectedDraftRecord {
   sourceConfidence: 'high' | 'medium' | 'low';
   sourceDisease?: string;
   targetType: AiDetectedRecordType;
+  // Navrhnutý typ pred prípadným SKIP rozhodnutím — umožňuje nestratovo
+  // zaradiť späť záznam, ktorý bol auto-preskočený (duplicita/historické).
+  suggestedType?: Exclude<AiDetectedRecordType, 'SKIP'>;
   productName: string;
   date: string;
   validUntil: string;
