@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
+import type {
+  PassportInterpretation,
+  PassportPetIdentifiers,
+  PassportHealthFlags,
+} from '../../../services/api';
 import { uploadHealthAttachment } from '../../../services/healthApi';
 import { downscaleImage } from '../../../utils/imageDownscale';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
@@ -192,6 +197,47 @@ async function prepareAttachment(file: File): Promise<PreparedAttachment> {
   return { previewUrl, base64, mimeType: file.type };
 }
 
+function mergeIdentifiers(list: PassportInterpretation[]): PassportPetIdentifiers | undefined {
+  let out: PassportPetIdentifiers | undefined;
+  for (const it of list) {
+    const p = it.petIdentifiers;
+    if (!p) continue;
+    out = {
+      name: out?.name || p.name,
+      breed: out?.breed || p.breed,
+      dateOfBirth: out?.dateOfBirth || p.dateOfBirth,
+      sex: out?.sex || p.sex,
+      microchipNumber: out?.microchipNumber || p.microchipNumber,
+      passportNumber: out?.passportNumber || p.passportNumber,
+    };
+  }
+  return out;
+}
+
+function mergeHealthFlags(list: PassportInterpretation[]): PassportHealthFlags | undefined {
+  const allergies = new Map<string, string>();
+  const chronic = new Map<string, string>();
+  let seen = false;
+  for (const it of list) {
+    const f = it.healthFlags;
+    if (!f) continue;
+    seen = true;
+    for (const a of f.allergies ?? []) {
+      const key = a.trim().toLowerCase();
+      if (key) allergies.set(key, a.trim());
+    }
+    for (const c of f.chronicConditions ?? []) {
+      const key = c.trim().toLowerCase();
+      if (key) chronic.set(key, c.trim());
+    }
+  }
+  if (!seen) return undefined;
+  return {
+    allergies: [...allergies.values()],
+    chronicConditions: [...chronic.values()],
+  };
+}
+
 interface BuildContext {
   petId: string;
   examType?: string;
@@ -345,20 +391,40 @@ export function useAiImport(petId: string) {
         return;
       }
 
-      dispatch({
-        type: 'SET_ANALYZE_PROGRESS',
-        progress: {
-          done: state.attachments.length,
-          total: state.attachments.length,
-          stage: 'interpret',
-        },
-      });
+      // Per-dokument interpretácia: každú stranu interpretujeme zvlášť, nie
+      // ako jeden spojený text. Bráni to orezaniu dlhého textu na serveri
+      // (limit dĺžky) a izoluje chybu — jedna nečitateľná strana nezhodí
+      // extrakciu ostatných.
+      const interpretations: PassportInterpretation[] = [];
+      for (let i = 0; i < texts.length; i++) {
+        dispatch({
+          type: 'SET_ANALYZE_PROGRESS',
+          progress: { done: i, total: texts.length, stage: 'interpret' },
+        });
+        try {
+          interpretations.push(await interpretPassportText(texts[i], state.aiProcessingConsent));
+        } catch {
+          // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+        }
+      }
 
-      const combined = texts.join('\n\n---\n\n');
-      const interpretation = await interpretPassportText(combined, state.aiProcessingConsent);
-      const { records, petIdentifiers, healthFlags, summary } = interpretation;
+      if (interpretations.length === 0) {
+        dispatch({
+          type: 'SET_ANALYZE_ERROR',
+          message: t('addRecord.aiImport.analyzeFailed'),
+        });
+        return;
+      }
 
-      dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary: summary ?? '' });
+      const records = interpretations.flatMap((it) => it.records ?? []);
+      const petIdentifiers = mergeIdentifiers(interpretations);
+      const healthFlags = mergeHealthFlags(interpretations);
+      const summary = interpretations
+        .map((it) => it.summary?.trim())
+        .filter((s): s is string => Boolean(s))
+        .join('\n\n');
+
+      dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary });
 
       const patch: PetProfilePatch | null =
         (petIdentifiers &&
