@@ -246,6 +246,40 @@ export async function interpretPassportText(
   return payload;
 }
 
+export async function interpretPassportImage(
+  attachment: {
+    fileName: string;
+    mimeType: string;
+    base64Data: string;
+  },
+  aiProcessingConsent = false
+): Promise<PassportInterpretation> {
+  logger.info('Odosielam obrázok dokumentu na AI vision interpretáciu', {
+    fileName: attachment.fileName,
+    mimeType: attachment.mimeType,
+    base64Length: attachment.base64Data.length,
+  });
+
+  const res = await fetch(`${BASE_URL}/api/interpret-passport`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeader()) },
+    body: JSON.stringify({ attachment, aiProcessingConsent }),
+  });
+
+  if (!res.ok) {
+    await handleUnauthorized(res.status, res);
+    logger.error('Vision interpretácia pasu zlyhala', { status: res.status });
+    const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+    throw new Error(body?.error?.message ?? `Chyba servera (${res.status})`);
+  }
+
+  const payload = (await res.json()) as PassportInterpretation;
+  logger.info('Vision interpretácia dokumentu prijatá', {
+    recordsCount: payload.records?.length ?? 0,
+  });
+  return payload;
+}
+
 interface SimilarSummaryRequest {
   symptomTitle: string;
   symptomDescription: string;

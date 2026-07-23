@@ -35,6 +35,7 @@ Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default
 | `MODEL_EXAM_ANALYSIS` | `gpt-4o` | Analýza vyšetrenia z OCR textu (`analyzeExamDocumentWithOpenAI`) |
 | `MODEL_VET_FILE` | `gpt-4o` | Multi-image vakc. preukaz (`analyzeVetFile`) |
 | `MODEL_PASSPORT_INTERPRET` | `gpt-4o` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`). Kľúčový krok pre kvalitu extrahovaných zdravotných záznamov — default je plný `gpt-4o` (nie mini) kvôli presnosti dátumov, typov záznamov a identifikátorov. Pre lacnejšiu prevádzku možno prepnúť na `gpt-4o-mini`. |
+| `MODEL_PASSPORT_VISION` | `gpt-4.1` | Jednokrokové vision volanie: obrázok dokumentu → štruktúrované záznamy (`interpretHealthPassportFromImage`), bez samostatného OCR kroku. Aktívne len keď klient beží v `VITE_EXTRACTION_MODE=vision`. Musí to byť model s vision podporou. |
 | `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
 | `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
 | `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
@@ -50,6 +51,7 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 | Premenná | Povinná | Default | Popis |
 |---|---|---|---|
 | `VITE_API_URL` | nie (dev) | `''` (relatívne, cez Vite proxy na `:3001`) | Plná base URL pre API v produkcii (napr. `https://api.example.com`). Konzumuje sa v `client/src/services/api.ts`. |
+| `VITE_EXTRACTION_MODE` | nie | prázdne (`ocr`) | Režim AI importu zdravotného pasu. `vision` = obrázok dokumentu ide priamo do modelu (`POST /api/interpret-passport` s `attachment`), jedno volanie na dokument, bez samostatného OCR kroku — presnejšie na husté tabuľky a miešaný tlačený+ručný text, menej AI volaní. Čokoľvek iné (default) = klasická OCR → text → interpret cesta. Konzumuje sa v `components/healthPassport/AddRecord/useAiImport.ts`. Serverový model pre vision je `MODEL_PASSPORT_VISION`. |
 | `VITE_FIREBASE_API_KEY` | áno (auth) | — | Firebase Web App apiKey. |
 | `VITE_FIREBASE_AUTH_DOMAIN` | áno (auth) | — | Firebase authDomain (`<projekt>.firebaseapp.com`). |
 | `VITE_FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID. |

@@ -2,7 +2,11 @@ import { useCallback, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
-import { extractTextFromImage, interpretPassportText } from '../../../services/api';
+import {
+  extractTextFromImage,
+  interpretPassportText,
+  interpretPassportImage,
+} from '../../../services/api';
 import type {
   PassportInterpretation,
   PassportPetIdentifiers,
@@ -32,6 +36,10 @@ import type {
 } from './formTypes';
 
 const MAX_ATTACHMENTS = 20;
+
+// Extrakčný režim: 'vision' = obrázok priamo do modelu (1 volanie/dokument),
+// inak klasická OCR → text → interpret cesta. Default OCR (bez zmeny správania).
+const EXTRACTION_MODE_VISION = import.meta.env.VITE_EXTRACTION_MODE === 'vision';
 
 const INITIAL_VISIT_DRAFT: AiVisitDraftValues = {
   date: today(),
@@ -370,41 +378,60 @@ export function useAiImport(petId: string) {
     dispatch({ type: 'SET_ANALYZE_ERROR', message: '' });
 
     try {
-      const texts: string[] = [];
-      for (let i = 0; i < state.attachments.length; i++) {
-        dispatch({
-          type: 'SET_ANALYZE_PROGRESS',
-          progress: { done: i, total: state.attachments.length, stage: 'ocr' },
-        });
-        const { extractedText } = await extractTextFromImage(
-          state.attachments[i].pending,
-          state.aiProcessingConsent
-        );
-        if (extractedText.trim()) texts.push(extractedText.trim());
-      }
-
-      if (texts.length === 0) {
-        dispatch({
-          type: 'SET_ANALYZE_ERROR',
-          message: t('addRecord.aiImport.noTextExtracted'),
-        });
-        return;
-      }
-
-      // Per-dokument interpretácia: každú stranu interpretujeme zvlášť, nie
-      // ako jeden spojený text. Bráni to orezaniu dlhého textu na serveri
-      // (limit dĺžky) a izoluje chybu — jedna nečitateľná strana nezhodí
-      // extrakciu ostatných.
       const interpretations: PassportInterpretation[] = [];
-      for (let i = 0; i < texts.length; i++) {
-        dispatch({
-          type: 'SET_ANALYZE_PROGRESS',
-          progress: { done: i, total: texts.length, stage: 'interpret' },
-        });
-        try {
-          interpretations.push(await interpretPassportText(texts[i], state.aiProcessingConsent));
-        } catch {
-          // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+
+      if (EXTRACTION_MODE_VISION) {
+        // Vision režim: obrázok priamo do modelu, bez samostatného OCR kroku.
+        // Presnejšie na husté tabuľky a miešaný tlačený+ručný text.
+        for (let i = 0; i < state.attachments.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: state.attachments.length, stage: 'interpret' },
+          });
+          try {
+            interpretations.push(
+              await interpretPassportImage(state.attachments[i].pending, state.aiProcessingConsent)
+            );
+          } catch {
+            // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+          }
+        }
+      } else {
+        const texts: string[] = [];
+        for (let i = 0; i < state.attachments.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: state.attachments.length, stage: 'ocr' },
+          });
+          const { extractedText } = await extractTextFromImage(
+            state.attachments[i].pending,
+            state.aiProcessingConsent
+          );
+          if (extractedText.trim()) texts.push(extractedText.trim());
+        }
+
+        if (texts.length === 0) {
+          dispatch({
+            type: 'SET_ANALYZE_ERROR',
+            message: t('addRecord.aiImport.noTextExtracted'),
+          });
+          return;
+        }
+
+        // Per-dokument interpretácia: každú stranu interpretujeme zvlášť, nie
+        // ako jeden spojený text. Bráni to orezaniu dlhého textu na serveri
+        // (limit dĺžky) a izoluje chybu — jedna nečitateľná strana nezhodí
+        // extrakciu ostatných.
+        for (let i = 0; i < texts.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: texts.length, stage: 'interpret' },
+          });
+          try {
+            interpretations.push(await interpretPassportText(texts[i], state.aiProcessingConsent));
+          } catch {
+            // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+          }
         }
       }
 
