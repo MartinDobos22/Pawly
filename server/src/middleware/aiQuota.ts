@@ -3,7 +3,10 @@ import { getSupabase } from '../config/supabase';
 import { logger } from '../utils/logger';
 
 const ENV_LIMIT = Number(process.env.AI_DAILY_LIMIT);
-const DEFAULT_DAILY_LIMIT = Number.isFinite(ENV_LIMIT) && ENV_LIMIT > 0 ? ENV_LIMIT : 50;
+// Default 200/deň: prvý user si pri onboardingu nahráva celú históriu z pasu
+// naraz (mnoho strán × OCR + per-dokument interpret) — 50 by ho zablokovalo
+// uprostred prvého importu. Botnet/abuse chráni globálny cap (AI_GLOBAL_DAILY_CAP).
+const DEFAULT_DAILY_LIMIT = Number.isFinite(ENV_LIMIT) && ENV_LIMIT > 0 ? ENV_LIMIT : 200;
 
 const ENV_GLOBAL_LIMIT = Number(process.env.AI_GLOBAL_DAILY_CAP);
 const DEFAULT_GLOBAL_DAILY_CAP =

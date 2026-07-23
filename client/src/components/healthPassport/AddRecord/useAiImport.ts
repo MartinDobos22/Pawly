@@ -2,8 +2,18 @@ import { useCallback, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHealthData } from '../../../hooks/useHealthData';
-import { extractTextFromImage, interpretPassportText } from '../../../services/api';
+import {
+  extractTextFromImage,
+  interpretPassportText,
+  interpretPassportImage,
+} from '../../../services/api';
+import type {
+  PassportInterpretation,
+  PassportPetIdentifiers,
+  PassportHealthFlags,
+} from '../../../services/api';
 import { uploadHealthAttachment } from '../../../services/healthApi';
+import { downscaleImage } from '../../../utils/imageDownscale';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
 import type { AiDetectedDraftRecord, AiDetectedRecordType, AiDraftSkipReason } from '../hpTypes';
@@ -25,7 +35,11 @@ import type {
   AnalyzeProgress,
 } from './formTypes';
 
-const MAX_ATTACHMENTS = 8;
+const MAX_ATTACHMENTS = 20;
+
+// Extrakčný režim: 'vision' = obrázok priamo do modelu (1 volanie/dokument),
+// inak klasická OCR → text → interpret cesta. Default OCR (bez zmeny správania).
+const EXTRACTION_MODE_VISION = import.meta.env.VITE_EXTRACTION_MODE === 'vision';
 
 const INITIAL_VISIT_DRAFT: AiVisitDraftValues = {
   date: today(),
@@ -51,6 +65,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   detectedProfilePatch: null,
   detectedProfileAvailable: false,
   documentSummary: '',
+  importAllHistory: false,
 };
 
 type AiAction =
@@ -72,6 +87,7 @@ type AiAction =
   | { type: 'SET_FEEDBACK'; message: string | null }
   | { type: 'SET_PROFILE_PATCH'; patch: PetProfilePatch | null }
   | { type: 'SET_DOCUMENT_SUMMARY'; summary: string }
+  | { type: 'SET_IMPORT_ALL_HISTORY'; value: boolean }
   | { type: 'RESET' };
 
 function reducer(state: AiFormState, action: AiAction): AiFormState {
@@ -137,6 +153,8 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
       };
     case 'SET_DOCUMENT_SUMMARY':
       return { ...state, documentSummary: action.summary };
+    case 'SET_IMPORT_ALL_HISTORY':
+      return { ...state, importAllHistory: action.value };
     case 'RESET':
       return { ...INITIAL_AI_STATE, visitDraft: { ...INITIAL_VISIT_DRAFT, date: today() } };
     default: {
@@ -161,6 +179,72 @@ const readFileAsBase64 = (file: File) =>
     reader.onerror = () => reject(new Error('FILE_LOAD_FAILED'));
     reader.readAsDataURL(file);
   });
+
+const OCR_MAX_WIDTH = 2000;
+
+interface PreparedAttachment {
+  previewUrl: string;
+  base64: string;
+  mimeType: string;
+}
+
+async function prepareAttachment(file: File): Promise<PreparedAttachment> {
+  if (file.type.startsWith('image/')) {
+    const { dataUrl, mimeType } = await downscaleImage(file, {
+      maxWidth: OCR_MAX_WIDTH,
+      mimeType: 'image/jpeg',
+      quality: 0.9,
+      enhanceForOcr: true,
+    });
+    const base64 = dataUrl.split(',')[1] ?? '';
+    if (!base64) throw new Error('FILE_LOAD_FAILED');
+    return { previewUrl: dataUrl, base64, mimeType };
+  }
+
+  const { previewUrl, base64 } = await readFileAsBase64(file);
+  return { previewUrl, base64, mimeType: file.type };
+}
+
+function mergeIdentifiers(list: PassportInterpretation[]): PassportPetIdentifiers | undefined {
+  let out: PassportPetIdentifiers | undefined;
+  for (const it of list) {
+    const p = it.petIdentifiers;
+    if (!p) continue;
+    out = {
+      name: out?.name || p.name,
+      breed: out?.breed || p.breed,
+      dateOfBirth: out?.dateOfBirth || p.dateOfBirth,
+      sex: out?.sex || p.sex,
+      microchipNumber: out?.microchipNumber || p.microchipNumber,
+      passportNumber: out?.passportNumber || p.passportNumber,
+    };
+  }
+  return out;
+}
+
+function mergeHealthFlags(list: PassportInterpretation[]): PassportHealthFlags | undefined {
+  const allergies = new Map<string, string>();
+  const chronic = new Map<string, string>();
+  let seen = false;
+  for (const it of list) {
+    const f = it.healthFlags;
+    if (!f) continue;
+    seen = true;
+    for (const a of f.allergies ?? []) {
+      const key = a.trim().toLowerCase();
+      if (key) allergies.set(key, a.trim());
+    }
+    for (const c of f.chronicConditions ?? []) {
+      const key = c.trim().toLowerCase();
+      if (key) chronic.set(key, c.trim());
+    }
+  }
+  if (!seen) return undefined;
+  return {
+    allergies: [...allergies.values()],
+    chronicConditions: [...chronic.values()],
+  };
+}
 
 interface BuildContext {
   petId: string;
@@ -205,8 +289,8 @@ export function useAiImport(petId: string) {
           continue;
         }
         try {
-          const { previewUrl, base64 } = await readFileAsBase64(file);
-          const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
+          const { previewUrl, base64, mimeType } = await prepareAttachment(file);
+          const pending = { fileName: file.name, mimeType, base64Data: base64 };
           const attachment = await uploadHealthAttachment({
             petId: petId,
             ...pending,
@@ -277,6 +361,10 @@ export function useAiImport(petId: string) {
     (value: boolean) => dispatch({ type: 'SET_AI_PROCESSING_CONSENT', value }),
     []
   );
+  const setImportAllHistory = useCallback(
+    (value: boolean) => dispatch({ type: 'SET_IMPORT_ALL_HISTORY', value }),
+    []
+  );
 
   const setVisitDraftField = useCallback(
     (field: keyof AiVisitDraftValues, value: string) =>
@@ -290,41 +378,80 @@ export function useAiImport(petId: string) {
     dispatch({ type: 'SET_ANALYZE_ERROR', message: '' });
 
     try {
-      const texts: string[] = [];
-      for (let i = 0; i < state.attachments.length; i++) {
-        dispatch({
-          type: 'SET_ANALYZE_PROGRESS',
-          progress: { done: i, total: state.attachments.length, stage: 'ocr' },
-        });
-        const { extractedText } = await extractTextFromImage(
-          state.attachments[i].pending,
-          state.aiProcessingConsent
-        );
-        if (extractedText.trim()) texts.push(extractedText.trim());
+      const interpretations: PassportInterpretation[] = [];
+
+      if (EXTRACTION_MODE_VISION) {
+        // Vision režim: obrázok priamo do modelu, bez samostatného OCR kroku.
+        // Presnejšie na husté tabuľky a miešaný tlačený+ručný text.
+        for (let i = 0; i < state.attachments.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: state.attachments.length, stage: 'interpret' },
+          });
+          try {
+            interpretations.push(
+              await interpretPassportImage(state.attachments[i].pending, state.aiProcessingConsent)
+            );
+          } catch {
+            // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+          }
+        }
+      } else {
+        const texts: string[] = [];
+        for (let i = 0; i < state.attachments.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: state.attachments.length, stage: 'ocr' },
+          });
+          const { extractedText } = await extractTextFromImage(
+            state.attachments[i].pending,
+            state.aiProcessingConsent
+          );
+          if (extractedText.trim()) texts.push(extractedText.trim());
+        }
+
+        if (texts.length === 0) {
+          dispatch({
+            type: 'SET_ANALYZE_ERROR',
+            message: t('addRecord.aiImport.noTextExtracted'),
+          });
+          return;
+        }
+
+        // Per-dokument interpretácia: každú stranu interpretujeme zvlášť, nie
+        // ako jeden spojený text. Bráni to orezaniu dlhého textu na serveri
+        // (limit dĺžky) a izoluje chybu — jedna nečitateľná strana nezhodí
+        // extrakciu ostatných.
+        for (let i = 0; i < texts.length; i++) {
+          dispatch({
+            type: 'SET_ANALYZE_PROGRESS',
+            progress: { done: i, total: texts.length, stage: 'interpret' },
+          });
+          try {
+            interpretations.push(await interpretPassportText(texts[i], state.aiProcessingConsent));
+          } catch {
+            // Stranu, ktorú sa nepodarilo interpretovať, preskočíme.
+          }
+        }
       }
 
-      if (texts.length === 0) {
+      if (interpretations.length === 0) {
         dispatch({
           type: 'SET_ANALYZE_ERROR',
-          message: t('addRecord.aiImport.noTextExtracted'),
+          message: t('addRecord.aiImport.analyzeFailed'),
         });
         return;
       }
 
-      dispatch({
-        type: 'SET_ANALYZE_PROGRESS',
-        progress: {
-          done: state.attachments.length,
-          total: state.attachments.length,
-          stage: 'interpret',
-        },
-      });
+      const records = interpretations.flatMap((it) => it.records ?? []);
+      const petIdentifiers = mergeIdentifiers(interpretations);
+      const healthFlags = mergeHealthFlags(interpretations);
+      const summary = interpretations
+        .map((it) => it.summary?.trim())
+        .filter((s): s is string => Boolean(s))
+        .join('\n\n');
 
-      const combined = texts.join('\n\n---\n\n');
-      const interpretation = await interpretPassportText(combined, state.aiProcessingConsent);
-      const { records, petIdentifiers, healthFlags, summary } = interpretation;
-
-      dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary: summary ?? '' });
+      dispatch({ type: 'SET_DOCUMENT_SUMMARY', summary });
 
       const patch: PetProfilePatch | null =
         (petIdentifiers &&
@@ -377,6 +504,15 @@ export function useAiImport(petId: string) {
         return d.toISOString().slice(0, 10);
       })();
 
+      // Pri prvom nahrávaní (prázdny profil) NECHCEME auto-skipovať staré
+      // záznamy — nový user si nahráva celú históriu z pasu a všetko je staré.
+      // 6-mesačný cutoff aplikujeme len ak už nejaké záznamy existujú, alebo
+      // ak to používateľ explicitne nevypol cez "import celej histórie".
+      const hasAnyExistingForPet =
+        existingVaccinations.some((r) => r.petId === petId) ||
+        existingDewormings.some((r) => r.petId === petId) ||
+        existingEctos.some((r) => r.petId === petId);
+
       const drafts: AiDetectedDraftRecord[] = (records ?? []).map((item, index) => {
         const disease = item.disease ?? '';
         const recordType: AiDetectedRecordType = validTypes.includes(
@@ -393,6 +529,7 @@ export function useAiImport(petId: string) {
             sourceConfidence: item.confidence,
             sourceDisease: disease,
             targetType: 'SKIP' as AiDetectedRecordType,
+            suggestedType: recordType as Exclude<AiDetectedRecordType, 'SKIP'>,
             productName,
             date: '',
             validUntil: '',
@@ -419,11 +556,14 @@ export function useAiImport(petId: string) {
           });
 
         const latestExisting = latestDateFor(recordType);
+        const isVaccineLike =
+          recordType === 'VACCINATION' ||
+          recordType === 'DEWORMING' ||
+          recordType === 'ECTOPARASITE';
         const isHistorical =
-          (recordType === 'VACCINATION' ||
-            recordType === 'DEWORMING' ||
-            recordType === 'ECTOPARASITE') &&
-          (normalizedDate < historicalCutoff ||
+          isVaccineLike &&
+          !state.importAllHistory &&
+          ((hasAnyExistingForPet && normalizedDate < historicalCutoff) ||
             (latestExisting !== null && normalizedDate < latestExisting));
 
         const comparisonNote =
@@ -442,6 +582,7 @@ export function useAiImport(petId: string) {
           sourceConfidence: item.confidence,
           sourceDisease: disease,
           targetType: shouldSkip ? ('SKIP' as AiDetectedRecordType) : recordType,
+          suggestedType: recordType as Exclude<AiDetectedRecordType, 'SKIP'>,
           productName,
           date: normalizedDate,
           validUntil,
@@ -464,6 +605,7 @@ export function useAiImport(petId: string) {
   }, [
     state.attachments,
     state.aiProcessingConsent,
+    state.importAllHistory,
     petId,
     existingVaccinations,
     existingDewormings,
@@ -542,6 +684,7 @@ export function useAiImport(petId: string) {
     setSubcategory,
     updateAiRecord,
     setAiProcessingConsent,
+    setImportAllHistory,
     setVisitDraftField,
     analyze,
     buildBundle,

@@ -1,3 +1,4 @@
+import * as zlib from 'node:zlib';
 import type OpenAI from 'openai';
 import { getOpenAIClient } from '../config/openai';
 import { AnalysisResult, FileExtractionResult, Ingredient, PetProfile } from '../types';
@@ -22,7 +23,8 @@ const MODELS = {
   documentContext: process.env.MODEL_DOC_CONTEXT ?? 'gpt-4o-mini',
   examAnalysis: process.env.MODEL_EXAM_ANALYSIS ?? 'gpt-4o',
   vetFileVision: process.env.MODEL_VET_FILE ?? 'gpt-4o',
-  passportInterpret: process.env.MODEL_PASSPORT_INTERPRET ?? 'gpt-4o-mini',
+  passportInterpret: process.env.MODEL_PASSPORT_INTERPRET ?? 'gpt-4o',
+  passportVision: process.env.MODEL_PASSPORT_VISION ?? 'gpt-4.1',
   episodeSummary: process.env.MODEL_EPISODE_SUMMARY ?? 'gpt-4o-mini',
   foodSafety: process.env.MODEL_FOOD_SAFETY ?? 'gpt-4o-mini',
   feedAnalysis: process.env.MODEL_FEED_ANALYSIS ?? 'gpt-4o',
@@ -213,18 +215,76 @@ function decodeBase64(base64Data: string): Buffer {
   return Buffer.from(base64Data.replace(/^data:.*;base64,/, ''), 'base64');
 }
 
-function extractTextFromPdfBuffer(buffer: Buffer): string {
-  const rawText = buffer.toString('latin1');
-  const chunks = [...rawText.matchAll(/\(([^)]{3,})\)\s*Tj/g)].map((m) => m[1]);
-  const text = chunks
-    .join(' ')
-    .replace(/\\n/g, ' ')
-    .replace(/\\r/g, ' ')
-    .replace(/\\t/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+function tryInflate(bytes: Buffer): Buffer | null {
+  try {
+    return zlib.inflateSync(bytes);
+  } catch {
+    // niektoré PDF používajú raw deflate bez zlib hlavičky
+  }
+  try {
+    return zlib.inflateRawSync(bytes);
+  } catch {
+    return null;
+  }
+}
 
-  return text;
+function decodePdfString(value: string): string {
+  return value
+    .replace(/\\(\d{1,3})/g, (_, oct: string) => String.fromCharCode(parseInt(oct, 8) & 0xff))
+    .replace(/\\[nrtbf]/g, ' ')
+    .replace(/\\([()\\])/g, '$1');
+}
+
+function extractTextOperators(content: string): string {
+  const parts: string[] = [];
+
+  const tjArrayRe = /\[((?:[^[\]]|\\[[\]])*)\]\s*TJ/g;
+  let arrMatch: RegExpExecArray | null;
+  while ((arrMatch = tjArrayRe.exec(content)) !== null) {
+    const strings = [...arrMatch[1].matchAll(/\(((?:[^()\\]|\\.)*)\)/g)].map((m) =>
+      decodePdfString(m[1])
+    );
+    if (strings.length > 0) parts.push(strings.join(''));
+  }
+
+  const showRe = /\(((?:[^()\\]|\\.)*)\)\s*(?:Tj|'|")/g;
+  let showMatch: RegExpExecArray | null;
+  while ((showMatch = showRe.exec(content)) !== null) {
+    parts.push(decodePdfString(showMatch[1]));
+  }
+
+  return parts.join(' ');
+}
+
+function extractTextFromPdfBuffer(buffer: Buffer): string {
+  const raw = buffer.toString('latin1');
+  let decoded = '';
+
+  const streamRe = /stream\r?\n/g;
+  let streamMatch: RegExpExecArray | null;
+  while ((streamMatch = streamRe.exec(raw)) !== null) {
+    const dataStart = streamMatch.index + streamMatch[0].length;
+    const endIdx = raw.indexOf('endstream', dataStart);
+    if (endIdx === -1) continue;
+
+    let dataEnd = endIdx;
+    if (raw[dataEnd - 1] === '\n') dataEnd--;
+    if (raw[dataEnd - 1] === '\r') dataEnd--;
+
+    const dictWindow = raw.slice(Math.max(0, streamMatch.index - 300), streamMatch.index);
+    const isImage = /\/(DCT|CCITT|JBIG2|JPX)Decode|\/Subtype\s*\/Image/.test(dictWindow);
+    if (isImage) continue;
+
+    if (dictWindow.includes('/FlateDecode')) {
+      const inflated = tryInflate(buffer.subarray(dataStart, dataEnd));
+      if (inflated) decoded += inflated.toString('latin1') + '\n';
+    } else {
+      decoded += raw.slice(dataStart, dataEnd) + '\n';
+    }
+  }
+
+  const source = decoded || raw;
+  return extractTextOperators(source).replace(/\s+/g, ' ').trim();
 }
 
 async function extractTextFromImageWithGoogleVision(
@@ -764,6 +824,141 @@ Ak údaj v texte chýba, použi prázdny string alebo pole.`,
   } catch (error) {
     if (error instanceof InvalidAiInputError) throw error;
     console.error('[AI Service] Health passport interpretation failed:', error);
+    return null;
+  }
+}
+
+// Zdieľaná schéma + pravidlá pre extrakciu — rovnaký JSON tvar ako textová cesta.
+const PASSPORT_JSON_SCHEMA_AND_RULES = `Vráť iba JSON v tvare:
+{
+  "summary": "stručné zhrnutie čo dokument obsahuje (1-3 vety)",
+  "aiUnderstanding": "ako AI chápe čo je dokument a prečo (2-4 vety)",
+  "records": [
+    {
+      "type": "VACCINATION | DEWORMING | ECTOPARASITE | MEDICATION | NOTE",
+      "name": "názov vakcíny/lieku/produktu, alebo krátky nadpis poznámky",
+      "disease": "proti čomu / dôvod / diagnóza (ak relevantné)",
+      "date": "YYYY-MM-DD alebo pôvodný dátum",
+      "validUntil": "YYYY-MM-DD alebo text (ak relevantné)",
+      "batchNumber": "šarža (ak je)",
+      "dose": "dávkovanie (pre lieky, ak je)",
+      "frequency": "frekvencia podávania (pre lieky, ak je)",
+      "veterinarian": "veterinár/klinika (ak je)",
+      "manufacturer": "výrobca (ak je)",
+      "confidence": "high|medium|low",
+      "notes": "doplňujúca poznámka"
+    }
+  ],
+  "petIdentifiers": {
+    "name": "meno zvieraťa",
+    "breed": "plemeno",
+    "dateOfBirth": "YYYY-MM-DD",
+    "sex": "MALE|FEMALE|UNKNOWN",
+    "microchipNumber": "len číslice/písmená mikročipu",
+    "passportNumber": "číslo pasu"
+  },
+  "healthFlags": {
+    "allergies": ["alergén 1", "alergén 2"],
+    "chronicConditions": ["chronický stav 1"]
+  }
+}
+
+PRAVIDLÁ PRE ZÁZNAMY (records):
+- Klasifikuj každý záznam správnym "type": očkovanie → VACCINATION, odčervenie/antihelmintiká → DEWORMING, antiparazitiká/kliešte/blchy → ECTOPARASITE, predpísané/podané lieky → MEDICATION.
+- Diagnózy, nálezy, odporúčania a iný voľný text (vrátane zhrnutia laboratórnych výsledkov) daj ako jeden alebo viac záznamov typu NOTE (názov = krátky nadpis, "notes" = detail).
+- Extrahuj LEN to, čo je v dokumente reálne uvedené. Nedomýšľaj. Ak dokument neobsahuje žiadne záznamy, vráť "records": [].
+
+PRAVIDLÁ PRE IDENTIFIKÁTORY A ZDRAVOTNÉ PRÍZNAKY:
+- Extrahuj LEN ak je údaj v dokumente EXPLICITNE uvedený. Nedomýšľaj.
+- Ak chýba pole identifikátora, použi prázdny string "".
+- Pre "sex" akceptuj len MALE/FEMALE/UNKNOWN; iné hodnoty vráť ako "".
+- Pre chronicConditions extrahuj len keď je v dokumente sekcia "chronické ochorenia" a podobne. Ak nič, vráť prázdne pole [].
+- allergies: pri alergologickom KRVNOM TESTE (napr. IgE panel s alergénmi a triedou/AU·ml) vráť LEN POZITÍVNE alergény — tie s triedou ≥ 1, resp. hodnotou AU·ml ≥ 0.35. Negatívne (Trieda 0 / hodnota < 0.35) IGNORUJ. V inom dokumente extrahuj alergie len keď je sekcia "alergie"/"intolerancie". Ak nič, vráť [].
+- Pre dateOfBirth striktne YYYY-MM-DD; ak je dátum nejasný, vráť "".
+Ak údaj chýba, použi prázdny string alebo pole.`;
+
+const PASSPORT_VISION_SYSTEM_PROMPT = `Si veterinárny asistent. Na priloženom obrázku je fotka JEDNEJ strany veterinárneho dokumentu (zdravotný pas, laboratórny výsledok, správa od veterinára, recept, účtenka za odčervenie/antiparazitiká…). Prečítaj z obrázka údaje a extrahuj štruktúrované zdravotné záznamy o zvierati.
+
+VALIDÁCIA VSTUPU: Ak obrázok NEVYZERÁ ako veterinárny dokument (napr. fotka jedla, náhodná fotka, prázdna strana, iný neveterinárny dokument), vráť VÝHRADNE tento JSON:
+{ "isValidInput": false, "rejectionReason": "Krátka hláška v slovenčine prečo dokument nie je veterinárny." }
+Inak pokračuj normálne s plnou interpretáciou.
+
+Čítaj pozorne aj rukou písané časti a drobné číslice (dátumy, šarže, hodnoty v tabuľkách). Ak si niečím nie si istý, priraď nižšiu "confidence" (medium/low) namiesto vymýšľania údaja.
+
+${PASSPORT_JSON_SCHEMA_AND_RULES}`;
+
+// Jednokrokové vision volanie: obrázok dokumentu → štruktúrované záznamy,
+// bez samostatného OCR kroku. Presnejšie na husté tabuľky a miešaný
+// tlačený+ručný text a menej AI volaní (1 na dokument namiesto OCR + interpret).
+export async function interpretHealthPassportFromImage(
+  attachment: AttachmentInput,
+  privacy?: PrivacyGuardContext
+): Promise<HealthPassportInterpretation | null> {
+  const client = getOpenAIClient();
+  if (!client) return null;
+
+  const providerAttachment = makeProviderAttachment(attachment);
+  assertPrivacyGuard(withHealthPrivacy(privacy), providerAttachment);
+
+  try {
+    const dataUrl = `data:${providerAttachment.mimeType};base64,${providerAttachment.base64Data}`;
+    const response = await client.chat.completions.create(
+      {
+        model: MODELS.passportVision,
+        temperature: 0,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: PASSPORT_VISION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'Prečítaj tento veterinárny dokument a vráť JSON podľa inštrukcií.',
+              },
+              { type: 'image_url', image_url: { url: dataUrl, detail: 'high' } },
+            ],
+          },
+        ],
+      },
+      { timeout: OPENAI_ANALYSIS_TIMEOUT_MS }
+    );
+
+    auditAiProcessing({
+      userId: privacy?.userId,
+      operation: 'health_passport.interpret_vision',
+      provider: 'openai',
+      payloadSizeBytes: estimatePayloadSizeBytes(providerAttachment),
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) return null;
+    const parsed = JSON.parse(content) as Record<string, unknown>;
+
+    if (parsed?.isValidInput === false) {
+      const reason =
+        typeof parsed.rejectionReason === 'string' && parsed.rejectionReason.trim().length > 0
+          ? parsed.rejectionReason.trim()
+          : 'Dokument nevyzerá ako veterinárny záznam. Skús prosím nahrať fotku/PDF veterinárneho dokumentu.';
+      throw new InvalidAiInputError(reason);
+    }
+
+    return {
+      summary:
+        typeof parsed.summary === 'string'
+          ? parsed.summary
+          : 'Z dokumentu sa nepodarilo spoľahlivo vytvoriť zhrnutie.',
+      aiUnderstanding:
+        typeof parsed.aiUnderstanding === 'string'
+          ? parsed.aiUnderstanding
+          : 'AI rozpoznala zdravotný dokument z obrázka.',
+      records: parseHealthRecords(parsed.records),
+      petIdentifiers: parsePetIdentifiers(parsed.petIdentifiers),
+      healthFlags: parseHealthFlags(parsed.healthFlags),
+    };
+  } catch (error) {
+    if (error instanceof InvalidAiInputError) throw error;
+    console.error('[AI Service] Health passport vision interpretation failed:', error);
     return null;
   }
 }

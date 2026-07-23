@@ -1,21 +1,79 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { interpretHealthPassportWithOpenAI, InvalidAiInputError } from '../services/aiService';
+import {
+  interpretHealthPassportWithOpenAI,
+  interpretHealthPassportFromImage,
+  InvalidAiInputError,
+} from '../services/aiService';
 import { logger } from '../utils/logger';
 
 const router = Router();
 
 const MIN_TEXT_LENGTH = 50;
 const MAX_TEXT_LENGTH = 50000;
+const MAX_BASE64_LENGTH = Math.ceil((5 * 1024 * 1024 * 4) / 3);
 
 interface InterpretBody {
   text?: unknown;
   aiProcessingConsent?: unknown;
+  attachment?: {
+    fileName?: unknown;
+    mimeType?: unknown;
+    base64Data?: unknown;
+  };
 }
 
 router.post(
   '/',
   async (req: Request<object, object, InterpretBody>, res: Response, next: NextFunction) => {
     try {
+      const rawAttachment = req.body?.attachment;
+
+      // Vision cesta: obrázok dokumentu → štruktúrované záznamy v jednom volaní.
+      if (rawAttachment && typeof rawAttachment === 'object') {
+        const mimeType =
+          typeof rawAttachment.mimeType === 'string' ? rawAttachment.mimeType : '';
+        const base64Data =
+          typeof rawAttachment.base64Data === 'string' ? rawAttachment.base64Data : '';
+        const fileName =
+          typeof rawAttachment.fileName === 'string' ? rawAttachment.fileName : '';
+
+        if (!base64Data || !mimeType) {
+          res.status(400).json({ error: { message: 'Neplatná príloha.' } });
+          return;
+        }
+        if (base64Data.length > MAX_BASE64_LENGTH) {
+          res.status(400).json({ error: { message: 'Súbor je príliš veľký (max 5 MB).' } });
+          return;
+        }
+
+        logger.info('Backend prijal interpret-passport (vision) požiadavku', {
+          mimeType,
+          base64Length: base64Data.length,
+        });
+
+        const visionResult = await interpretHealthPassportFromImage(
+          { fileName, mimeType, base64Data },
+          {
+            userId: req.appUserId ?? req.user?.uid,
+            aiProcessingConsent: req.body?.aiProcessingConsent === true,
+            processesHealthData: true,
+          }
+        );
+
+        if (!visionResult) {
+          res.status(502).json({
+            error: { message: 'Interpretácia dokumentu zlyhala. Skús to znova.' },
+          });
+          return;
+        }
+
+        logger.info('Interpretácia pasu (vision) dokončená', {
+          recordsCount: visionResult.records?.length ?? 0,
+        });
+        res.json(visionResult);
+        return;
+      }
+
       const text = typeof req.body?.text === 'string' ? req.body.text : '';
 
       if (!text || text.length < MIN_TEXT_LENGTH) {

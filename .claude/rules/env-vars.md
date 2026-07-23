@@ -14,7 +14,7 @@
 | `FIREBASE_PRIVATE_KEY` | áno (auth) | — | Service Account privátny kľúč; novelines ako `\n` v úvodzovkách (`config/firebase.ts` ich nahradí). Z Firebase Console → Project Settings → Service Accounts → Generate new private key. |
 | `SUPABASE_URL` | áno (DB) | — | URL Supabase projektu. Z Supabase Dashboard → Project Settings → API. |
 | `SUPABASE_SERVICE_ROLE_KEY` | áno (DB) | — | **TAJOMSTVO** — service_role kľúč (obchádza RLS). Výhradne server-side, NIKDY do klienta. Z Supabase Dashboard → Project Settings → API. Číta `config/supabase.ts`. |
-| `AI_DAILY_LIMIT` | nie | `50` | Maximum AI volaní (analyze, OCR, interpret-passport, food-safety, similar-summary) na používateľa za kalendárny deň (UTC). Cost safety net — chráni pred power-userom/botom ktorý by vyžral OpenAI/Vision kredit. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_ai_quota`. Pri prekročení vracia 429 s `code: "DAILY_AI_LIMIT"`. |
+| `AI_DAILY_LIMIT` | nie | `200` | Maximum AI volaní (analyze, OCR, interpret-passport, food-safety, similar-summary) na používateľa za kalendárny deň (UTC). Cost safety net — chráni pred power-userom/botom ktorý by vyžral OpenAI/Vision kredit. Default je `200`, aby nový user pri onboardingu (nahratie celej histórie z pasu = mnoho strán × OCR + per-dokument interpret) nenarazil na limit uprostred prvého importu; kolektívny abuse chráni `AI_GLOBAL_DAILY_CAP`. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_ai_quota`. Pri prekročení vracia 429 s `code: "DAILY_AI_LIMIT"`. |
 | `AI_GLOBAL_DAILY_CAP` | nie | `5000` | Globálny kolektívny denný strop AI volaní naprieč všetkými usermi. Kill switch ak by trending alebo botnet vystrelil OpenAI faktúru. Vynucuje `middleware/aiQuota.ts` cez Supabase RPC `app_increment_global_ai_quota` (migrácia `0011_global_ai_quota.sql`). Pri 80% prahu loguje WARN; pri prekročení limitu vracia 503 s `code: "AI_GLOBAL_CAP_EXCEEDED"`. |
 | `ADMIN_EMAILS` | nie (povinné pre admin) | prázdne (žiadny admin) | Comma-separated zoznam e-mailov s admin oprávnením (správa článkov poradne). Porovnáva sa case-insensitive proti `req.user.email` z Firebase tokenu. Vynucuje `middleware/requireAdmin.ts` na `/api/admin/articles` (write). `GET /api/admin/status` vráti `{ isAdmin }`. Bez nastavenia nemá admin práva nikto. |
 | `NETLIFY_BUILD_HOOK_URL` | nie (povinné pre „Publikovať na web") | prázdne (feature vráti 503) | URL Netlify build hooku. `POST /api/admin/articles/publish` ho zavolá → spustí rebuild webu (prerender z DB). Vytvor v Netlify → Site settings → Build & deploy → Build hooks. Je to secret (kto pozná URL, spustí build) — nikdy ho neloguj. Bez neho admin tlačidlo „Publikovať" vráti 503 `PUBLISH_NOT_CONFIGURED`. |
@@ -34,7 +34,8 @@ Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default
 | `MODEL_DOC_CONTEXT` | `gpt-4o-mini` | Document type detection (`analyzeDocumentContextWithOpenAI`) |
 | `MODEL_EXAM_ANALYSIS` | `gpt-4o` | Analýza vyšetrenia z OCR textu (`analyzeExamDocumentWithOpenAI`) |
 | `MODEL_VET_FILE` | `gpt-4o` | Multi-image vakc. preukaz (`analyzeVetFile`) |
-| `MODEL_PASSPORT_INTERPRET` | `gpt-4o-mini` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`) |
+| `MODEL_PASSPORT_INTERPRET` | `gpt-4o` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`). Kľúčový krok pre kvalitu extrahovaných zdravotných záznamov — default je plný `gpt-4o` (nie mini) kvôli presnosti dátumov, typov záznamov a identifikátorov. Pre lacnejšiu prevádzku možno prepnúť na `gpt-4o-mini`. |
+| `MODEL_PASSPORT_VISION` | `gpt-4.1` | Jednokrokové vision volanie: obrázok dokumentu → štruktúrované záznamy (`interpretHealthPassportFromImage`), bez samostatného OCR kroku. Aktívne len keď klient beží v `VITE_EXTRACTION_MODE=vision`. Musí to byť model s vision podporou. |
 | `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
 | `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
 | `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
@@ -50,6 +51,7 @@ Vite env premenné MUSIA mať prefix `VITE_` aby boli dostupné v kóde.
 | Premenná | Povinná | Default | Popis |
 |---|---|---|---|
 | `VITE_API_URL` | nie (dev) | `''` (relatívne, cez Vite proxy na `:3001`) | Plná base URL pre API v produkcii (napr. `https://api.example.com`). Konzumuje sa v `client/src/services/api.ts`. |
+| `VITE_EXTRACTION_MODE` | nie | prázdne (`ocr`) | Režim AI importu zdravotného pasu. `vision` = obrázok dokumentu ide priamo do modelu (`POST /api/interpret-passport` s `attachment`), jedno volanie na dokument, bez samostatného OCR kroku — presnejšie na husté tabuľky a miešaný tlačený+ručný text, menej AI volaní. Čokoľvek iné (default) = klasická OCR → text → interpret cesta. Konzumuje sa v `components/healthPassport/AddRecord/useAiImport.ts`. Serverový model pre vision je `MODEL_PASSPORT_VISION`. |
 | `VITE_FIREBASE_API_KEY` | áno (auth) | — | Firebase Web App apiKey. |
 | `VITE_FIREBASE_AUTH_DOMAIN` | áno (auth) | — | Firebase authDomain (`<projekt>.firebaseapp.com`). |
 | `VITE_FIREBASE_PROJECT_ID` | áno (auth) | — | Firebase projekt ID. |
