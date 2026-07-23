@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useHealthData } from '../../../hooks/useHealthData';
 import { extractTextFromImage, interpretPassportText } from '../../../services/api';
 import { uploadHealthAttachment } from '../../../services/healthApi';
+import { downscaleImage } from '../../../utils/imageDownscale';
 import { VetVisitHelper, type VisitBundle } from '../../../utils/vetVisitHelper';
 import type { PetProfilePatch } from '../../../utils/petProfileMerge';
 import type { AiDetectedDraftRecord, AiDetectedRecordType, AiDraftSkipReason } from '../hpTypes';
@@ -162,6 +163,31 @@ const readFileAsBase64 = (file: File) =>
     reader.readAsDataURL(file);
   });
 
+const OCR_MAX_WIDTH = 2000;
+
+interface PreparedAttachment {
+  previewUrl: string;
+  base64: string;
+  mimeType: string;
+}
+
+async function prepareAttachment(file: File): Promise<PreparedAttachment> {
+  if (file.type.startsWith('image/')) {
+    const { dataUrl, mimeType } = await downscaleImage(file, {
+      maxWidth: OCR_MAX_WIDTH,
+      mimeType: 'image/jpeg',
+      quality: 0.9,
+      enhanceForOcr: true,
+    });
+    const base64 = dataUrl.split(',')[1] ?? '';
+    if (!base64) throw new Error('FILE_LOAD_FAILED');
+    return { previewUrl: dataUrl, base64, mimeType };
+  }
+
+  const { previewUrl, base64 } = await readFileAsBase64(file);
+  return { previewUrl, base64, mimeType: file.type };
+}
+
 interface BuildContext {
   petId: string;
   examType?: string;
@@ -205,8 +231,8 @@ export function useAiImport(petId: string) {
           continue;
         }
         try {
-          const { previewUrl, base64 } = await readFileAsBase64(file);
-          const pending = { fileName: file.name, mimeType: file.type, base64Data: base64 };
+          const { previewUrl, base64, mimeType } = await prepareAttachment(file);
+          const pending = { fileName: file.name, mimeType, base64Data: base64 };
           const attachment = await uploadHealthAttachment({
             petId: petId,
             ...pending,

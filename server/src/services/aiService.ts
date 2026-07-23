@@ -1,3 +1,4 @@
+import * as zlib from 'node:zlib';
 import type OpenAI from 'openai';
 import { getOpenAIClient } from '../config/openai';
 import { AnalysisResult, FileExtractionResult, Ingredient, PetProfile } from '../types';
@@ -22,7 +23,7 @@ const MODELS = {
   documentContext: process.env.MODEL_DOC_CONTEXT ?? 'gpt-4o-mini',
   examAnalysis: process.env.MODEL_EXAM_ANALYSIS ?? 'gpt-4o',
   vetFileVision: process.env.MODEL_VET_FILE ?? 'gpt-4o',
-  passportInterpret: process.env.MODEL_PASSPORT_INTERPRET ?? 'gpt-4o-mini',
+  passportInterpret: process.env.MODEL_PASSPORT_INTERPRET ?? 'gpt-4o',
   episodeSummary: process.env.MODEL_EPISODE_SUMMARY ?? 'gpt-4o-mini',
   foodSafety: process.env.MODEL_FOOD_SAFETY ?? 'gpt-4o-mini',
   feedAnalysis: process.env.MODEL_FEED_ANALYSIS ?? 'gpt-4o',
@@ -213,18 +214,76 @@ function decodeBase64(base64Data: string): Buffer {
   return Buffer.from(base64Data.replace(/^data:.*;base64,/, ''), 'base64');
 }
 
-function extractTextFromPdfBuffer(buffer: Buffer): string {
-  const rawText = buffer.toString('latin1');
-  const chunks = [...rawText.matchAll(/\(([^)]{3,})\)\s*Tj/g)].map((m) => m[1]);
-  const text = chunks
-    .join(' ')
-    .replace(/\\n/g, ' ')
-    .replace(/\\r/g, ' ')
-    .replace(/\\t/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+function tryInflate(bytes: Buffer): Buffer | null {
+  try {
+    return zlib.inflateSync(bytes);
+  } catch {
+    // niektoré PDF používajú raw deflate bez zlib hlavičky
+  }
+  try {
+    return zlib.inflateRawSync(bytes);
+  } catch {
+    return null;
+  }
+}
 
-  return text;
+function decodePdfString(value: string): string {
+  return value
+    .replace(/\\(\d{1,3})/g, (_, oct: string) => String.fromCharCode(parseInt(oct, 8) & 0xff))
+    .replace(/\\[nrtbf]/g, ' ')
+    .replace(/\\([()\\])/g, '$1');
+}
+
+function extractTextOperators(content: string): string {
+  const parts: string[] = [];
+
+  const tjArrayRe = /\[((?:[^[\]]|\\[[\]])*)\]\s*TJ/g;
+  let arrMatch: RegExpExecArray | null;
+  while ((arrMatch = tjArrayRe.exec(content)) !== null) {
+    const strings = [...arrMatch[1].matchAll(/\(((?:[^()\\]|\\.)*)\)/g)].map((m) =>
+      decodePdfString(m[1])
+    );
+    if (strings.length > 0) parts.push(strings.join(''));
+  }
+
+  const showRe = /\(((?:[^()\\]|\\.)*)\)\s*(?:Tj|'|")/g;
+  let showMatch: RegExpExecArray | null;
+  while ((showMatch = showRe.exec(content)) !== null) {
+    parts.push(decodePdfString(showMatch[1]));
+  }
+
+  return parts.join(' ');
+}
+
+function extractTextFromPdfBuffer(buffer: Buffer): string {
+  const raw = buffer.toString('latin1');
+  let decoded = '';
+
+  const streamRe = /stream\r?\n/g;
+  let streamMatch: RegExpExecArray | null;
+  while ((streamMatch = streamRe.exec(raw)) !== null) {
+    const dataStart = streamMatch.index + streamMatch[0].length;
+    const endIdx = raw.indexOf('endstream', dataStart);
+    if (endIdx === -1) continue;
+
+    let dataEnd = endIdx;
+    if (raw[dataEnd - 1] === '\n') dataEnd--;
+    if (raw[dataEnd - 1] === '\r') dataEnd--;
+
+    const dictWindow = raw.slice(Math.max(0, streamMatch.index - 300), streamMatch.index);
+    const isImage = /\/(DCT|CCITT|JBIG2|JPX)Decode|\/Subtype\s*\/Image/.test(dictWindow);
+    if (isImage) continue;
+
+    if (dictWindow.includes('/FlateDecode')) {
+      const inflated = tryInflate(buffer.subarray(dataStart, dataEnd));
+      if (inflated) decoded += inflated.toString('latin1') + '\n';
+    } else {
+      decoded += raw.slice(dataStart, dataEnd) + '\n';
+    }
+  }
+
+  const source = decoded || raw;
+  return extractTextOperators(source).replace(/\s+/g, ' ').trim();
 }
 
 async function extractTextFromImageWithGoogleVision(

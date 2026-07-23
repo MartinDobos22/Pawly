@@ -34,7 +34,7 @@ Voliteľné — slúžia na A/B testing kvality vs ceny bez code change. Default
 | `MODEL_DOC_CONTEXT` | `gpt-4o-mini` | Document type detection (`analyzeDocumentContextWithOpenAI`) |
 | `MODEL_EXAM_ANALYSIS` | `gpt-4o` | Analýza vyšetrenia z OCR textu (`analyzeExamDocumentWithOpenAI`) |
 | `MODEL_VET_FILE` | `gpt-4o` | Multi-image vakc. preukaz (`analyzeVetFile`) |
-| `MODEL_PASSPORT_INTERPRET` | `gpt-4o-mini` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`) |
+| `MODEL_PASSPORT_INTERPRET` | `gpt-4o` | JSON extract z passport textu (`interpretHealthPassportWithOpenAI`). Kľúčový krok pre kvalitu extrahovaných zdravotných záznamov — default je plný `gpt-4o` (nie mini) kvôli presnosti dátumov, typov záznamov a identifikátorov. Pre lacnejšiu prevádzku možno prepnúť na `gpt-4o-mini`. |
 | `MODEL_EPISODE_SUMMARY` | `gpt-4o-mini` | Similar-episode summary |
 | `MODEL_FOOD_SAFETY` | `gpt-4o-mini` | Food safety Q&A |
 | `MODEL_FEED_ANALYSIS` | `gpt-4o` | Analýza krmiva (text) |
