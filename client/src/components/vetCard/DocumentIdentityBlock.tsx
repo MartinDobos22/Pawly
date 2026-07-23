@@ -16,26 +16,17 @@ import {
   WatchLater as WeightIcon,
 } from '@mui/icons-material';
 import type { PetProfile } from '../../types';
+import { ageInYears } from '../../utils/petAge';
 
 // Fixed brand teal scrim for the slim hero — stays dark in light AND dark mode so the
 // white hero text is legible; intentionally not theme-derived (matches the dashboard hero).
 const HERO_SCRIM = '#0F4C5C';
 
-const ageInYears = (dog: PetProfile): number | null => {
-  if (dog.dateOfBirth) {
-    const y = Math.floor(
-      (Date.now() - new Date(dog.dateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
-    );
-    if (!Number.isNaN(y)) return y;
-  }
-  return dog.ageYears ?? null;
-};
-
-const formatDob = (iso?: string): string | null => {
+const formatDob = (iso: string | undefined, lang: string): string | null => {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(lang, { day: 'numeric', month: 'numeric', year: 'numeric' });
 };
 
 interface Props {
@@ -57,8 +48,9 @@ export default function DocumentIdentityBlock({
   selectedDogId,
   onSelectDog,
 }: Props) {
-  const { t } = useTranslation('vetCard');
+  const { t, i18n } = useTranslation('vetCard');
   const theme = useTheme();
+  const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
   const age = ageInYears(dog);
 
   const sexLabel =
@@ -88,7 +80,7 @@ export default function DocumentIdentityBlock({
       label: t('fields.passport'),
       value: dog.passportNumber,
     });
-  const dob = formatDob(dog.dateOfBirth);
+  const dob = formatDob(dog.dateOfBirth, lang);
   if (dob)
     identifiers.push({ icon: <CalendarIcon />, label: t('identity.dateOfBirth'), value: dob });
   if (dog.weightKg)

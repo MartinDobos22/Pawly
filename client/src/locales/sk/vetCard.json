@@ -50,6 +50,15 @@
     "switchPet": "Prepnúť zviera",
     "dateOfBirth": "Dátum narodenia"
   },
+  "safetyAlert": {
+    "title": "Dôležité upozornenie pre veterinára",
+    "allergies": "Alergie",
+    "intolerances": "Intolerancie"
+  },
+  "weightTrend": {
+    "title": "Vývoj hmotnosti",
+    "stable": "Bez zmeny"
+  },
   "healthProfile": {
     "title": "Zdravotný profil",
     "empty": "Žiadne špeciálne zdravotné záznamy",
@@ -64,7 +73,18 @@
     "sectionsAria": "Sekcie pre export",
     "printPreview": "Náhľad tlače",
     "exportPdf": "Export PDF",
-    "note": "Vybrané sekcie sa zahrnú do PDF aj tlače.",
+    "note": "Vybrané sekcie a časové obdobie sa zahrnú do PDF.",
+    "dateRange": {
+      "label": "Časové obdobie",
+      "from": "Od",
+      "to": "Do",
+      "clear": "Zrušiť",
+      "presets": {
+        "last6m": "Posledných 6 mes.",
+        "last12m": "Posledných 12 mes.",
+        "thisYear": "Tento rok"
+      }
+    },
     "sections": {
       "identity": "Identita",
       "conditions": "Diagnózy",
