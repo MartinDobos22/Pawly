@@ -64,7 +64,13 @@
     "sectionsAria": "Sections for export",
     "printPreview": "Print preview",
     "exportPdf": "Export PDF",
-    "note": "Selected sections will be included in the PDF and print.",
+    "note": "Selected sections and date range will be included in the PDF.",
+    "dateRange": {
+      "label": "Date range",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear"
+    },
     "sections": {
       "identity": "Identity",
       "conditions": "Diagnoses",

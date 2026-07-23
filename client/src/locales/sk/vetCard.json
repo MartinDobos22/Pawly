@@ -64,7 +64,13 @@
     "sectionsAria": "Sekcie pre export",
     "printPreview": "Náhľad tlače",
     "exportPdf": "Export PDF",
-    "note": "Vybrané sekcie sa zahrnú do PDF aj tlače.",
+    "note": "Vybrané sekcie a časové obdobie sa zahrnú do PDF.",
+    "dateRange": {
+      "label": "Časové obdobie",
+      "from": "Od",
+      "to": "Do",
+      "clear": "Zrušiť"
+    },
     "sections": {
       "identity": "Identita",
       "conditions": "Diagnózy",

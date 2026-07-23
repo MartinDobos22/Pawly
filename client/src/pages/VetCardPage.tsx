@@ -12,7 +12,10 @@ import {
 } from '../components/vetCard/ExportSectionsToolbar';
 import DocumentIdentityBlock from '../components/vetCard/DocumentIdentityBlock';
 import HealthProfileChips from '../components/vetCard/HealthProfileChips';
-import VetCardActionBar from '../components/vetCard/VetCardActionBar';
+import VetCardActionBar, {
+  EMPTY_DATE_RANGE,
+  type DateRange,
+} from '../components/vetCard/VetCardActionBar';
 import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
 import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
@@ -25,6 +28,14 @@ import { VACCINE_TYPE_ORDER } from '../utils/vaccineTypes';
 type PdfLang = 'sk' | 'en';
 
 const today = () => new Date().toISOString().slice(0, 10);
+
+const isWithinRange = (date: string | undefined, from: string, to: string): boolean => {
+  if (!date) return true;
+  const day = date.slice(0, 10);
+  if (from && day < from) return false;
+  if (to && day > to) return false;
+  return true;
+};
 
 const PRINT_STYLES = `
   @page { size: A4; margin: 14mm; }
@@ -95,6 +106,19 @@ const PRINT_STYLES = `
     height: 28px;
     margin: 0 0 6px;
     background-color: transparent;
+  }
+
+  .doc-period {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin-bottom: 10px;
   }
 
   .pet-name {
@@ -387,6 +411,7 @@ export default function VetCardPage() {
   const [exportSections, setExportSections] =
     useState<ExportSectionsState>(DEFAULT_EXPORT_SECTIONS);
   const [pdfLang, setPdfLang] = useState<PdfLang>('sk');
+  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE);
 
   const dog = dogProfiles.find((p) => p.id === selectedDogId) ?? dogProfiles[0];
   const petId = dog?.id;
@@ -525,6 +550,9 @@ export default function VetCardPage() {
 
   const handlePrint = () => {
     if (!dog || !data) return;
+
+    const { from: rangeFrom, to: rangeTo } = dateRange;
+    const inRange = (date: string | undefined) => isWithinRange(date, rangeFrom, rangeTo);
 
     // Lokalizácia exportu — nezávislá od UI jazyka
     const t = i18n.getFixedT(pdfLang, 'healthPassport');
@@ -769,7 +797,11 @@ export default function VetCardPage() {
           : undefined,
         date: x.startedAt,
       })),
-    ].sort((a, b) => b.date.localeCompare(a.date));
+    ]
+      .filter((item) => inRange(item.date))
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    const rangedVisits = data.significantVisits.filter((v) => inRange(v.date));
 
     const statusColorVar = (cls: string) =>
       cls === 'badge-valid'
@@ -856,8 +888,8 @@ export default function VetCardPage() {
       .join('');
 
     const aiBadgeHtml = `<span class="b-ai">${esc(t('vetPage.aiImportBadge'))}</span>`;
-    const hasAiVisits = data.significantVisits.some((v) => Boolean(v.aiExtractedText));
-    const visitCards = data.significantVisits
+    const hasAiVisits = rangedVisits.some((v) => Boolean(v.aiExtractedText));
+    const visitCards = rangedVisits
       .map(
         (v) => `
         <div class="visit">
@@ -918,6 +950,14 @@ export default function VetCardPage() {
       dog.passportNumber ? t('vetPage.metaPassport', { passport: dog.passportNumber }) : '',
     ].filter(Boolean);
 
+    const periodLabel =
+      rangeFrom || rangeTo
+        ? t('vetPage.periodRange', {
+            from: rangeFrom ? fmtDate(rangeFrom) : t('vetPage.periodOpenStart'),
+            to: rangeTo ? fmtDate(rangeTo) : t('vetPage.periodOpenEnd'),
+          })
+        : '';
+
     const html = `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
@@ -935,6 +975,7 @@ export default function VetCardPage() {
       <span class="label">${t('vetPage.docLabel')}</span>
       <span>${new Date().toLocaleDateString(lang)}</span>
     </div>
+    ${periodLabel ? `<div class="doc-period">${periodLabel}</div>` : ''}
     <h1 class="pet-name">${dog.name}</h1>
     ${
       sections.identity
@@ -1055,7 +1096,7 @@ export default function VetCardPage() {
   }
 
   ${
-    sections.visits && data.significantVisits.length
+    sections.visits && rangedVisits.length
       ? `
   <section class="block">
     <h2 class="block-title">${t('vetPage.sectionVisits')}</h2>
@@ -1066,10 +1107,10 @@ export default function VetCardPage() {
   }
 
   ${
-    sections.history && data.timeline.length
+    sections.history && pdfTimeline.length
       ? `
   <section class="block">
-    <h2 class="block-title">${t('vetPage.sectionHistory', { count: data.timeline.length })}</h2>
+    <h2 class="block-title">${t('vetPage.sectionHistory', { count: pdfTimeline.length })}</h2>
     <table class="data">
       <thead>
         <tr>
@@ -1208,6 +1249,8 @@ export default function VetCardPage() {
         onPrintPreview={() => window.print()}
         pdfLang={pdfLang}
         onChangePdfLang={setPdfLang}
+        dateRange={dateRange}
+        onChangeDateRange={setDateRange}
       />
 
       <Stack spacing={1.5}>

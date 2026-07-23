@@ -4,10 +4,13 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControlLabel,
   IconButton,
+  Link,
   Menu,
   Stack,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -19,6 +22,13 @@ import { Print as PrintIcon, Tune as TuneIcon, PictureAsPdf as PdfIcon } from '@
 import type { ExportSectionId, ExportSectionsState } from './ExportSectionsToolbar';
 
 export type PdfLang = 'sk' | 'en';
+
+export interface DateRange {
+  from: string;
+  to: string;
+}
+
+export const EMPTY_DATE_RANGE: DateRange = { from: '', to: '' };
 
 const ORDER: ExportSectionId[] = [
   'identity',
@@ -36,6 +46,8 @@ interface Props {
   onPrintPreview: () => void;
   pdfLang: PdfLang;
   onChangePdfLang: (next: PdfLang) => void;
+  dateRange: DateRange;
+  onChangeDateRange: (next: DateRange) => void;
 }
 
 export default function VetCardActionBar({
@@ -45,6 +57,8 @@ export default function VetCardActionBar({
   onPrintPreview,
   pdfLang,
   onChangePdfLang,
+  dateRange,
+  onChangeDateRange,
 }: Props) {
   const { t } = useTranslation('vetCard');
   const { t: tHp } = useTranslation('healthPassport');
@@ -53,6 +67,7 @@ export default function VetCardActionBar({
   const open = Boolean(anchor);
   const enabledCount = Object.values(exportSections).filter(Boolean).length;
   const canExport = enabledCount > 0;
+  const hasDateRange = Boolean(dateRange.from || dateRange.to);
 
   const handleOpen = (e: MouseEvent<HTMLElement>) => setAnchor(e.currentTarget);
   const handleClose = () => setAnchor(null);
@@ -118,7 +133,7 @@ export default function VetCardActionBar({
             onClick={handleOpen}
             aria-label={t('actionBar.sectionsAria')}
             size="small"
-            sx={{ color: open ? 'primary.main' : 'text.secondary' }}
+            sx={{ color: open || hasDateRange ? 'primary.main' : 'text.secondary' }}
           >
             <TuneIcon fontSize="small" />
           </IconButton>
@@ -194,6 +209,53 @@ export default function VetCardActionBar({
               />
             ))}
           </Stack>
+
+          <Divider sx={{ my: 1.5 }} />
+
+          <Stack direction="row" alignItems="baseline" justifyContent="space-between" sx={{ mb: 1 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {t('actionBar.dateRange.label')}
+            </Typography>
+            {hasDateRange && (
+              <Link
+                component="button"
+                type="button"
+                variant="caption"
+                underline="hover"
+                onClick={() => onChangeDateRange(EMPTY_DATE_RANGE)}
+                sx={{ color: 'primary.main' }}
+              >
+                {t('actionBar.dateRange.clear')}
+              </Link>
+            )}
+          </Stack>
+          <Stack direction="row" spacing={1}>
+            <TextField
+              type="date"
+              size="small"
+              label={t('actionBar.dateRange.from')}
+              value={dateRange.from}
+              onChange={(e) => onChangeDateRange({ ...dateRange, from: e.target.value })}
+              slotProps={{
+                inputLabel: { shrink: true },
+                htmlInput: { max: dateRange.to || undefined },
+              }}
+              sx={{ flex: 1, '& input': { fontSize: '0.8rem' } }}
+            />
+            <TextField
+              type="date"
+              size="small"
+              label={t('actionBar.dateRange.to')}
+              value={dateRange.to}
+              onChange={(e) => onChangeDateRange({ ...dateRange, to: e.target.value })}
+              slotProps={{
+                inputLabel: { shrink: true },
+                htmlInput: { min: dateRange.from || undefined },
+              }}
+              sx={{ flex: 1, '& input': { fontSize: '0.8rem' } }}
+            />
+          </Stack>
+
           <Typography
             variant="caption"
             sx={{
