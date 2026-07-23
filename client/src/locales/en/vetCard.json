@@ -50,6 +50,15 @@
     "switchPet": "Switch pet",
     "dateOfBirth": "Date of birth"
   },
+  "safetyAlert": {
+    "title": "Important alert for the veterinarian",
+    "allergies": "Allergies",
+    "intolerances": "Intolerances"
+  },
+  "weightTrend": {
+    "title": "Weight trend",
+    "stable": "No change"
+  },
   "healthProfile": {
     "title": "Health profile",
     "empty": "No special health records",

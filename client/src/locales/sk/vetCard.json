@@ -50,6 +50,15 @@
     "switchPet": "Prepnúť zviera",
     "dateOfBirth": "Dátum narodenia"
   },
+  "safetyAlert": {
+    "title": "Dôležité upozornenie pre veterinára",
+    "allergies": "Alergie",
+    "intolerances": "Intolerancie"
+  },
+  "weightTrend": {
+    "title": "Vývoj hmotnosti",
+    "stable": "Bez zmeny"
+  },
   "healthProfile": {
     "title": "Zdravotný profil",
     "empty": "Žiadne špeciálne zdravotné záznamy",

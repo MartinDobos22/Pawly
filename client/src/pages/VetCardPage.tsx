@@ -1,6 +1,6 @@
 import { Box, Card, Skeleton, Stack, Typography } from '@mui/material';
 import { Description as DescriptionIcon } from '@mui/icons-material';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../hooks/useActivePet';
 import { useHealthData } from '../hooks/useHealthData';
@@ -18,11 +18,15 @@ import VetCardActionBar, {
 } from '../components/vetCard/VetCardActionBar';
 import VetCardStatusOverview from '../components/vetCard/VetCardStatusOverview';
 import ActiveMedicationsCard from '../components/vetCard/ActiveMedicationsCard';
+import SafetyAlertBanner from '../components/vetCard/SafetyAlertBanner';
+import WeightTrendCard from '../components/vetCard/WeightTrendCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
 import type { TimelineEvent, VaccinationRecord, VaccineType } from '../types/petHealth';
 import { dedupList, subtractList } from '../utils/healthProfileDedup';
+import { ageInYears } from '../utils/petAge';
+import { computeWeightTrend, sparklinePath } from '../utils/weightTrend';
 import { VACCINE_TYPE_ORDER } from '../utils/vaccineTypes';
 
 type PdfLang = 'sk' | 'en';
@@ -161,6 +165,80 @@ const PRINT_STYLES = `
     padding-bottom: 4px;
     border-bottom: 1px solid var(--rule);
   }
+
+  /* ── SAFETY ALERT ───────────────────────── */
+  .alert-banner {
+    border: 1.5px solid var(--expired);
+    border-radius: 4px;
+    background: #fef2f2;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+  }
+
+  .alert-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--expired);
+    margin-bottom: 6px;
+  }
+
+  .alert-row {
+    font-size: 12px;
+    line-height: 1.8;
+    margin-top: 2px;
+  }
+
+  .alert-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-right: 6px;
+  }
+
+  .alert-chip {
+    display: inline-block;
+    border: 1px solid var(--expired);
+    color: var(--expired);
+    font-weight: 600;
+    padding: 1px 8px;
+    border-radius: 3px;
+    margin: 0 4px 4px 0;
+    font-size: 11px;
+  }
+
+  .alert-chip--amber {
+    border-color: var(--warning);
+    color: var(--warning);
+  }
+
+  /* ── WEIGHT TREND ───────────────────────── */
+  .weight-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .weight-figure { display: flex; flex-direction: column; }
+
+  .weight-latest {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .weight-delta {
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .weight-spark { flex-shrink: 0; }
 
   .sub-label {
     font-size: 10px;
@@ -385,12 +463,15 @@ const PRINT_STYLES = `
 export default function VetCardPage() {
   const { t, i18n } = useTranslation('healthPassport');
   const lang = i18n.language === 'en' ? 'en-US' : 'sk-SK';
-  const fmtDateShort = (value?: string) => {
-    if (!value) return '–';
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
-  };
+  const fmtDateShort = useCallback(
+    (value?: string) => {
+      if (!value) return '–';
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
+    },
+    [lang]
+  );
   const {
     petProfiles: dogProfiles,
     activePetId: selectedDogId,
@@ -405,6 +486,7 @@ export default function VetCardPage() {
     visits,
     medications,
     dietEntries,
+    weightLogs,
     loading: healthLoading,
   } = useHealthData();
 
@@ -428,6 +510,7 @@ export default function VetCardPage() {
       (x) => x.petId === petId && (x.longTerm || !x.endDate || x.endDate >= today())
     );
     const dogDiet = dietEntries.filter((x) => x.petId === petId);
+    const weightTrend = computeWeightTrend(weightLogs.filter((x) => x.petId === petId));
 
     const latestVaccineByType = new Map<VaccineType, VaccinationRecord>();
     [...dogVaccines]
@@ -534,6 +617,7 @@ export default function VetCardPage() {
       activeMeds,
       significantVisits,
       timeline,
+      weightTrend,
     };
   }, [
     petId,
@@ -544,6 +628,7 @@ export default function VetCardPage() {
     visits,
     medications,
     dietEntries,
+    weightLogs,
     t,
     fmtDateShort,
   ]);
@@ -715,11 +800,7 @@ export default function VetCardPage() {
       return out.join('\n');
     };
 
-    const age = dog.dateOfBirth
-      ? Math.floor(
-          (Date.now() - new Date(dog.dateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 365.25)
-        )
-      : dog.ageYears;
+    const age = ageInYears(dog);
 
     const dew = statusBadge(data.lastDeworming?.nextDueDate, data.lastDeworming?.dateGiven, 7);
     const ecto = statusBadge(data.lastEcto?.nextDueDate, data.lastEcto?.dateGiven, 7);
@@ -958,6 +1039,66 @@ export default function VetCardPage() {
           })
         : '';
 
+    // Safety alert — allergies/intolerances are the most decision-critical facts for a vet,
+    // so they lead the document regardless of which sections the user toggled.
+    const alertBannerHtml =
+      allergyList.length || intoleranceList.length
+        ? `
+  <section class="alert-banner">
+    <div class="alert-title">${esc(t('vetPage.alertTitle'))}</div>
+    ${
+      allergyList.length
+        ? `<div class="alert-row"><span class="alert-label">${esc(t('vetPage.labelAllergies'))}</span>${allergyList
+            .map((a) => `<span class="alert-chip">${esc(a)}</span>`)
+            .join('')}</div>`
+        : ''
+    }
+    ${
+      intoleranceList.length
+        ? `<div class="alert-row"><span class="alert-label">${esc(t('vetPage.labelIntolerances'))}</span>${intoleranceList
+            .map((a) => `<span class="alert-chip alert-chip--amber">${esc(a)}</span>`)
+            .join('')}</div>`
+        : ''
+    }
+  </section>`
+        : '';
+
+    const wt = data.weightTrend;
+    const weightTrendHtml = wt
+      ? (() => {
+          const nf = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
+          const path = sparklinePath(
+            wt.points.map((p) => p.kg),
+            120,
+            32
+          );
+          const sign = wt.deltaKg > 0 ? '+' : '';
+          const deltaTxt =
+            wt.direction === 'flat'
+              ? t('vetPage.weightStable')
+              : `${sign}${nf.format(wt.deltaKg)} kg (${sign}${nf.format(wt.deltaPct)} %)`;
+          const color =
+            wt.direction === 'down'
+              ? 'var(--expired)'
+              : wt.direction === 'up'
+                ? 'var(--warning)'
+                : 'var(--valid)';
+          return `
+  <section class="block weight-block">
+    <h2 class="block-title">${t('vetPage.sectionWeight')}</h2>
+    <div class="weight-row">
+      <div class="weight-figure">
+        <span class="weight-latest">${nf.format(wt.latest)} kg</span>
+        <span class="weight-delta" style="color:${color}">${deltaTxt}</span>
+      </div>
+      <svg class="weight-spark" viewBox="0 0 120 32" width="120" height="32">
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </section>`;
+        })()
+      : '';
+
     const html = `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
@@ -985,6 +1126,10 @@ export default function VetCardPage() {
         : ''
     }
   </header>
+
+  ${alertBannerHtml}
+
+  ${weightTrendHtml}
 
   ${
     sections.conditions
@@ -1246,7 +1391,7 @@ export default function VetCardPage() {
         exportSections={exportSections}
         onChangeSections={setExportSections}
         onExportPdf={handlePrint}
-        onPrintPreview={() => window.print()}
+        onPrintPreview={handlePrint}
         pdfLang={pdfLang}
         onChangePdfLang={setPdfLang}
         dateRange={dateRange}
@@ -1254,6 +1399,11 @@ export default function VetCardPage() {
       />
 
       <Stack spacing={1.5}>
+        <SafetyAlertBanner
+          allergies={dedupList(dog.allergies)}
+          intolerances={subtractList(dedupList(dog.allergies), dog.intolerances)}
+        />
+
         <DocumentIdentityBlock
           dog={dog}
           dogProfiles={dogProfiles}
@@ -1269,6 +1419,8 @@ export default function VetCardPage() {
           deworming={dewormingStatus}
           ecto={ectoStatus}
         />
+
+        {data.weightTrend && <WeightTrendCard trend={data.weightTrend} />}
 
         <Box
           sx={{
