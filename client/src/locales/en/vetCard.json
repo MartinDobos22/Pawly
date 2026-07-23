@@ -78,7 +78,12 @@
       "label": "Date range",
       "from": "From",
       "to": "To",
-      "clear": "Clear"
+      "clear": "Clear",
+      "presets": {
+        "last6m": "Last 6 months",
+        "last12m": "Last 12 months",
+        "thisYear": "This year"
+      }
     },
     "sections": {
       "identity": "Identity",

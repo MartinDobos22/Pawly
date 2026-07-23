@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   Divider,
   FormControlLabel,
   IconButton,
@@ -29,6 +30,27 @@ export interface DateRange {
 }
 
 export const EMPTY_DATE_RANGE: DateRange = { from: '', to: '' };
+
+const toIso = (d: Date) => d.toISOString().slice(0, 10);
+
+const monthsAgoRange = (months: number): DateRange => {
+  const to = new Date();
+  const from = new Date();
+  from.setMonth(from.getMonth() - months);
+  return { from: toIso(from), to: toIso(to) };
+};
+
+const DATE_PRESETS: { key: string; compute: () => DateRange }[] = [
+  { key: 'last6m', compute: () => monthsAgoRange(6) },
+  { key: 'last12m', compute: () => monthsAgoRange(12) },
+  {
+    key: 'thisYear',
+    compute: () => {
+      const to = new Date();
+      return { from: toIso(new Date(to.getFullYear(), 0, 1)), to: toIso(to) };
+    },
+  },
+];
 
 const ORDER: ExportSectionId[] = [
   'identity',
@@ -212,7 +234,12 @@ export default function VetCardActionBar({
 
           <Divider sx={{ my: 1.5 }} />
 
-          <Stack direction="row" alignItems="baseline" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Stack
+            direction="row"
+            alignItems="baseline"
+            justifyContent="space-between"
+            sx={{ mb: 1 }}
+          >
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {t('actionBar.dateRange.label')}
             </Typography>
@@ -228,6 +255,18 @@ export default function VetCardActionBar({
                 {t('actionBar.dateRange.clear')}
               </Link>
             )}
+          </Stack>
+          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
+            {DATE_PRESETS.map((p) => (
+              <Chip
+                key={p.key}
+                label={t(`actionBar.dateRange.presets.${p.key}` as never)}
+                size="small"
+                variant="outlined"
+                clickable
+                onClick={() => onChangeDateRange(p.compute())}
+              />
+            ))}
           </Stack>
           <Stack direction="row" spacing={1}>
             <TextField

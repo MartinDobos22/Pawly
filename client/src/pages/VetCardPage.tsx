@@ -1,5 +1,8 @@
-import { Box, Card, Skeleton, Stack, Typography } from '@mui/material';
-import { Description as DescriptionIcon } from '@mui/icons-material';
+import { Box, Card, Chip, Skeleton, Stack, Typography } from '@mui/material';
+import {
+  Description as DescriptionIcon,
+  FilterAltOutlined as FilterIcon,
+} from '@mui/icons-material';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useActivePet } from '../hooks/useActivePet';
@@ -23,9 +26,10 @@ import WeightTrendCard from '../components/vetCard/WeightTrendCard';
 import PreventiveCareCard, { type PreventiveItem } from '../components/vetCard/PreventiveCareCard';
 import RecentVisitsCard from '../components/vetCard/RecentVisitsCard';
 import { vetStatusFor } from '../components/vetCard/vetCardStatusUtils';
-import type { TimelineEvent, VaccinationRecord, VaccineType } from '../types/petHealth';
+import type { VaccinationRecord, VaccineType } from '../types/petHealth';
 import { dedupList, subtractList } from '../utils/healthProfileDedup';
 import { ageInYears } from '../utils/petAge';
+import { buildClinicalTimeline } from '../utils/vetCardTimeline';
 import { computeWeightTrend, sparklinePath } from '../utils/weightTrend';
 import { VACCINE_TYPE_ORDER } from '../utils/vaccineTypes';
 
@@ -535,76 +539,20 @@ export default function VetCardPage() {
       .filter((x) => x.diagnosis || x.findings || x.recommendations || x.aiExtractedText)
       .sort((a, b) => b.date.localeCompare(a.date));
 
-    const timeline: TimelineEvent[] = [
-      ...dogVaccines.map((x) => ({
-        id: `vac-${x.id}`,
+    const timeline = buildClinicalTimeline(
+      {
         petId,
-        type: 'VACCINATION' as const,
-        title: t('timeline.titleVaccination', { name: x.name }),
-        subtitle: x.validUntil
-          ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) })
-          : undefined,
-        date: x.dateApplied,
-      })),
-      ...dogDeworm.map((x) => ({
-        id: `dew-${x.id}`,
-        petId,
-        type: 'DEWORMING' as const,
-        title: t('timeline.titleDeworming', { product: x.productName }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogEctos.map((x) => ({
-        id: `ect-${x.id}`,
-        petId,
-        type: 'ECTOPARASITE' as const,
-        title: t('timeline.titleEcto', { product: x.productName }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogTreatments.map((x) => ({
-        id: `trt-${x.id}`,
-        petId,
-        type: 'TREATMENT' as const,
-        title: t('timeline.titleTreatment', { name: x.name }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogVisits.map((x) => ({
-        id: `vis-${x.id}`,
-        petId,
-        type: 'VET_VISIT' as const,
-        title: t('timeline.titleVisit', { clinic: x.clinicName }),
-        subtitle: x.reason,
-        date: x.date,
-      })),
-      ...activeMeds.map((x) => ({
-        id: `med-${x.id}`,
-        petId,
-        type: 'MEDICATION' as const,
-        title: t('timeline.titleMedication', { name: x.name }),
-        subtitle: `${x.dose} · ${x.frequency}`,
-        date: x.startDate,
-      })),
-      ...dogDiet.map((x) => ({
-        id: `diet-${x.id}`,
-        petId,
-        type: 'DIET' as const,
-        title: t('timeline.titleDiet', { food: x.foodName }),
-        subtitle: x.suitabilityStatus
-          ? (t(`vetPage.dietSuitability${x.suitabilityStatus}` as never, {
-              defaultValue: x.suitabilityStatus,
-            }) as string)
-          : undefined,
-        date: x.startedAt,
-      })),
-    ].sort((a, b) => b.date.localeCompare(a.date));
+        vaccines: dogVaccines,
+        dewormings: dogDeworm,
+        ectos: dogEctos,
+        treatments: dogTreatments,
+        visits: dogVisits,
+        activeMeds,
+        diet: dogDiet,
+      },
+      (key, opts) => String(t(key as never, opts as never)),
+      fmtDateShort
+    );
 
     return {
       rabies,
@@ -822,65 +770,20 @@ export default function VetCardPage() {
     const dogVisitsAll = visits.filter((x) => x.petId === petId);
     const dogDietAll = dietEntries.filter((x) => x.petId === petId);
 
-    const pdfTimeline = [
-      ...dogVaccinesAll.map((x) => ({
-        type: 'VACCINATION' as const,
-        title: t('timeline.titleVaccination', { name: x.name }),
-        subtitle: x.validUntil
-          ? t('timeline.subtitleValidUntil', { date: fmtDateShort(x.validUntil) })
-          : undefined,
-        date: x.dateApplied,
-      })),
-      ...dogDewormAll.map((x) => ({
-        type: 'DEWORMING' as const,
-        title: t('timeline.titleDeworming', { product: x.productName }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogEctosAll.map((x) => ({
-        type: 'ECTOPARASITE' as const,
-        title: t('timeline.titleEcto', { product: x.productName }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogTreatmentsAll.map((x) => ({
-        type: 'TREATMENT' as const,
-        title: t('timeline.titleTreatment', { name: x.name }),
-        subtitle: x.nextDueDate
-          ? t('timeline.subtitleNextDue', { date: fmtDateShort(x.nextDueDate) })
-          : undefined,
-        date: x.dateGiven,
-      })),
-      ...dogVisitsAll.map((x) => ({
-        type: 'VET_VISIT' as const,
-        title: t('timeline.titleVisit', { clinic: x.clinicName }),
-        subtitle: x.reason,
-        date: x.date,
-        isAi: Boolean(x.aiExtractedText),
-      })),
-      ...data.activeMeds.map((x) => ({
-        type: 'MEDICATION' as const,
-        title: t('timeline.titleMedication', { name: x.name }),
-        subtitle: `${x.dose} · ${x.frequency}`,
-        date: x.startDate,
-      })),
-      ...dogDietAll.map((x) => ({
-        type: 'DIET' as const,
-        title: t('timeline.titleDiet', { food: x.foodName }),
-        subtitle: x.suitabilityStatus
-          ? (t(`vetPage.dietSuitability${x.suitabilityStatus}` as never, {
-              defaultValue: x.suitabilityStatus,
-            }) as string)
-          : undefined,
-        date: x.startedAt,
-      })),
-    ]
-      .filter((item) => inRange(item.date))
-      .sort((a, b) => b.date.localeCompare(a.date));
+    const pdfTimeline = buildClinicalTimeline(
+      {
+        petId: dog.id,
+        vaccines: dogVaccinesAll,
+        dewormings: dogDewormAll,
+        ectos: dogEctosAll,
+        treatments: dogTreatmentsAll,
+        visits: dogVisitsAll,
+        activeMeds: data.activeMeds,
+        diet: dogDietAll,
+      },
+      (key, opts) => String(t(key as never, opts as never)),
+      fmtDateShort
+    ).filter((item) => inRange(item.date));
 
     const rangedVisits = data.significantVisits.filter((v) => inRange(v.date));
 
@@ -1384,6 +1287,20 @@ export default function VetCardPage() {
     });
   });
 
+  const hasDateFilter = Boolean(dateRange.from || dateRange.to);
+  const screenTimeline = hasDateFilter
+    ? data.timeline.filter((e) => isWithinRange(e.date, dateRange.from, dateRange.to))
+    : data.timeline;
+  const screenVisits = hasDateFilter
+    ? data.significantVisits.filter((v) => isWithinRange(v.date, dateRange.from, dateRange.to))
+    : data.significantVisits;
+  const periodChipLabel = hasDateFilter
+    ? t('vetPage.periodRange', {
+        from: dateRange.from ? fmtDateShort(dateRange.from) : t('vetPage.periodOpenStart'),
+        to: dateRange.to ? fmtDateShort(dateRange.to) : t('vetPage.periodOpenEnd'),
+      })
+    : '';
+
   return (
     <Box sx={{ maxWidth: '100%', overflowX: 'clip' }}>
       <FeatureIntro featureKey="vetCard" icon={<DescriptionIcon />} hideOnPrint />
@@ -1397,6 +1314,26 @@ export default function VetCardPage() {
         dateRange={dateRange}
         onChangeDateRange={setDateRange}
       />
+
+      {hasDateFilter && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            mb: 1,
+            '@media print': { display: 'none' },
+          }}
+        >
+          <Chip
+            size="small"
+            color="primary"
+            variant="outlined"
+            icon={<FilterIcon />}
+            label={periodChipLabel}
+            onDelete={() => setDateRange(EMPTY_DATE_RANGE)}
+          />
+        </Box>
+      )}
 
       <Stack spacing={1.5}>
         <SafetyAlertBanner
@@ -1441,7 +1378,7 @@ export default function VetCardPage() {
           <ActiveMedicationsCard medications={data.activeMeds} />
         </Box>
 
-        <RecentVisitsCard visits={data.significantVisits} />
+        <RecentVisitsCard visits={screenVisits} />
 
         <Card
           variant="outlined"
@@ -1456,7 +1393,7 @@ export default function VetCardPage() {
             overflow: 'hidden',
           }}
         >
-          <ClinicalHistory timeline={data.timeline} />
+          <ClinicalHistory timeline={screenTimeline} />
         </Card>
 
         <Typography

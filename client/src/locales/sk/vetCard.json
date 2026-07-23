@@ -78,7 +78,12 @@
       "label": "Časové obdobie",
       "from": "Od",
       "to": "Do",
-      "clear": "Zrušiť"
+      "clear": "Zrušiť",
+      "presets": {
+        "last6m": "Posledných 6 mes.",
+        "last12m": "Posledných 12 mes.",
+        "thisYear": "Tento rok"
+      }
     },
     "sections": {
       "identity": "Identita",
