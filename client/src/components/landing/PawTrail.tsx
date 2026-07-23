@@ -64,7 +64,7 @@ export default function PawTrail() {
     }
 
     const vh = window.innerHeight;
-    const stepGap = vh * 0.14; // väčší rozostup, menej odtlačkov
+    const stepGap = vh * 0.28; // väčší rozostup, menej odtlačkov
     const lateral = 4.5;
     const pruneMargin = vh * 0.45;
     xRef.current = rand(35, 65);
