@@ -155,4 +155,5 @@ export interface AiFormState {
   detectedProfilePatch: import('../../../utils/petProfileMerge').PetProfilePatch | null;
   detectedProfileAvailable: boolean;
   documentSummary: string;
+  importAllHistory: boolean;
 }

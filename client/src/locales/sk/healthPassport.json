@@ -232,6 +232,8 @@
       "analyzing": "Analyzujem…",
       "analyze": "Analyzovať",
       "saveRecords": "Uložiť záznamy",
+      "importAllHistory": "Nahrávam celú históriu z pasu",
+      "importAllHistoryHint": "Zapni pri prvom nahrávaní, keď importuješ všetky staršie záznamy naraz — AI potom nevynechá staré záznamy ako „historické“.",
       "maxPages": "Maximálne {{count}} strán dokumentu.",
       "maxPagesExceeded": "Maximum {{count}} strán dokumentu — nadbytočné súbory boli ignorované.",
       "unsupportedFile": "Nepodporovaný typ súboru: {{fileName}}",

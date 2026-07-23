@@ -26,7 +26,7 @@ import type {
   AnalyzeProgress,
 } from './formTypes';
 
-const MAX_ATTACHMENTS = 8;
+const MAX_ATTACHMENTS = 20;
 
 const INITIAL_VISIT_DRAFT: AiVisitDraftValues = {
   date: today(),
@@ -52,6 +52,7 @@ export const INITIAL_AI_STATE: AiFormState = {
   detectedProfilePatch: null,
   detectedProfileAvailable: false,
   documentSummary: '',
+  importAllHistory: false,
 };
 
 type AiAction =
@@ -73,6 +74,7 @@ type AiAction =
   | { type: 'SET_FEEDBACK'; message: string | null }
   | { type: 'SET_PROFILE_PATCH'; patch: PetProfilePatch | null }
   | { type: 'SET_DOCUMENT_SUMMARY'; summary: string }
+  | { type: 'SET_IMPORT_ALL_HISTORY'; value: boolean }
   | { type: 'RESET' };
 
 function reducer(state: AiFormState, action: AiAction): AiFormState {
@@ -138,6 +140,8 @@ function reducer(state: AiFormState, action: AiAction): AiFormState {
       };
     case 'SET_DOCUMENT_SUMMARY':
       return { ...state, documentSummary: action.summary };
+    case 'SET_IMPORT_ALL_HISTORY':
+      return { ...state, importAllHistory: action.value };
     case 'RESET':
       return { ...INITIAL_AI_STATE, visitDraft: { ...INITIAL_VISIT_DRAFT, date: today() } };
     default: {
@@ -303,6 +307,10 @@ export function useAiImport(petId: string) {
     (value: boolean) => dispatch({ type: 'SET_AI_PROCESSING_CONSENT', value }),
     []
   );
+  const setImportAllHistory = useCallback(
+    (value: boolean) => dispatch({ type: 'SET_IMPORT_ALL_HISTORY', value }),
+    []
+  );
 
   const setVisitDraftField = useCallback(
     (field: keyof AiVisitDraftValues, value: string) =>
@@ -403,6 +411,15 @@ export function useAiImport(petId: string) {
         return d.toISOString().slice(0, 10);
       })();
 
+      // Pri prvom nahrávaní (prázdny profil) NECHCEME auto-skipovať staré
+      // záznamy — nový user si nahráva celú históriu z pasu a všetko je staré.
+      // 6-mesačný cutoff aplikujeme len ak už nejaké záznamy existujú, alebo
+      // ak to používateľ explicitne nevypol cez "import celej histórie".
+      const hasAnyExistingForPet =
+        existingVaccinations.some((r) => r.petId === petId) ||
+        existingDewormings.some((r) => r.petId === petId) ||
+        existingEctos.some((r) => r.petId === petId);
+
       const drafts: AiDetectedDraftRecord[] = (records ?? []).map((item, index) => {
         const disease = item.disease ?? '';
         const recordType: AiDetectedRecordType = validTypes.includes(
@@ -445,11 +462,14 @@ export function useAiImport(petId: string) {
           });
 
         const latestExisting = latestDateFor(recordType);
+        const isVaccineLike =
+          recordType === 'VACCINATION' ||
+          recordType === 'DEWORMING' ||
+          recordType === 'ECTOPARASITE';
         const isHistorical =
-          (recordType === 'VACCINATION' ||
-            recordType === 'DEWORMING' ||
-            recordType === 'ECTOPARASITE') &&
-          (normalizedDate < historicalCutoff ||
+          isVaccineLike &&
+          !state.importAllHistory &&
+          ((hasAnyExistingForPet && normalizedDate < historicalCutoff) ||
             (latestExisting !== null && normalizedDate < latestExisting));
 
         const comparisonNote =
@@ -490,6 +510,7 @@ export function useAiImport(petId: string) {
   }, [
     state.attachments,
     state.aiProcessingConsent,
+    state.importAllHistory,
     petId,
     existingVaccinations,
     existingDewormings,
@@ -568,6 +589,7 @@ export function useAiImport(petId: string) {
     setSubcategory,
     updateAiRecord,
     setAiProcessingConsent,
+    setImportAllHistory,
     setVisitDraftField,
     analyze,
     buildBundle,

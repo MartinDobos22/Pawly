@@ -38,6 +38,7 @@ export default function AiImportBody() {
     setMainCategory,
     setSubcategory,
     setAiProcessingConsent,
+    setImportAllHistory,
     updateAiRecord,
     setVisitDraftField,
     clearProfilePatch,
@@ -132,6 +133,21 @@ export default function AiImportBody() {
               }
               label={t('addRecord.aiImport.aiProcessingConsent')}
             />
+
+            <Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.importAllHistory}
+                    onChange={(event) => setImportAllHistory(event.target.checked)}
+                  />
+                }
+                label={t('addRecord.aiImport.importAllHistory')}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', pl: 4 }}>
+                {t('addRecord.aiImport.importAllHistoryHint')}
+              </Typography>
+            </Box>
 
             <AttachmentUpload
               attachments={state.attachments}
