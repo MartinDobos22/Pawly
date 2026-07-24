@@ -134,6 +134,7 @@
     "subtitle": "Vakcíny, návštevy, lieky a preventívne ošetrenia v jednom prehľade.",
     "searchPlaceholder": "Hľadať…",
     "clearAria": "Vyčistiť",
+    "filterLabel": "Typ záznamu",
     "noRecords": "Zatiaľ žiadne klinické záznamy.",
     "noRecordsFilter": "Pre zvolený filter sa nenašli žiadne záznamy.",
     "rangeOf": "{{start}}–{{end}} z {{total}} záznamov",

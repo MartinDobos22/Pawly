@@ -134,6 +134,11 @@ export default function HealthMetricCard({
           >
             {headline}
           </Typography>
+          {!isEmpty && nextDate && rel && (
+            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+              {formatDateShort(nextDate)}
+            </Typography>
+          )}
         </Box>
       </Stack>
 

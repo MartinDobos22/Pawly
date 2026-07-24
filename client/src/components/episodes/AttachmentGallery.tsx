@@ -70,7 +70,14 @@ export default function AttachmentGallery({
         }
 
         try {
-          const downscaled = await downscaleImage(file, 1024);
+          let downscaled;
+          try {
+            downscaled = await downscaleImage(file, 1024);
+          } catch {
+            // Veľké fotky z mobilu môžu vyčerpať pamäť plátna na 1024 px —
+            // skús automaticky menšie rozlíšenie, nech to používateľ nemusí riešiť ručne.
+            downscaled = await downscaleImage(file, { maxWidth: 640, quality: 0.7 });
+          }
           const uploaded = await uploadHealthAttachment({
             petId: petId,
             fileName: file.name,

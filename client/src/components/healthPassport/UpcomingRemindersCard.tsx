@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Card, Stack, Typography, alpha, useTheme } from '@mui/material';
 import { EventAvailable as UpcomingIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 
-import { relativeDate } from '../../utils/relativeDate';
+import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 
 const COLLAPSED_LIMIT = 4;
 
@@ -74,7 +74,7 @@ export default function UpcomingRemindersCard({ items }: Props) {
                 onClick={item.onClick}
                 sx={{
                   display: 'flex',
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
                   gap: 1.5,
                   py: 1,
                   px: 1,
@@ -103,25 +103,42 @@ export default function UpcomingRemindersCard({ items }: Props) {
                   {item.icon}
                 </Box>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {item.label}
                   </Typography>
                   {item.detail && (
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        color: 'text.secondary',
+                      }}
+                    >
                       {item.detail}
                     </Typography>
                   )}
                 </Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: 700,
-                    color: overdue ? 'error.main' : 'text.primary',
-                    flexShrink: 0,
-                  }}
-                >
-                  {item.rel.text}
-                </Typography>
+                <Box sx={{ flexShrink: 0, textAlign: 'right' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 700,
+                      color: overdue ? 'error.main' : 'text.primary',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.rel.text}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}
+                  >
+                    {formatDateShort(item.date)}
+                  </Typography>
+                </Box>
               </Box>
             );
           })}

@@ -134,6 +134,7 @@
     "subtitle": "Vaccines, visits, medications and preventive treatments in one overview.",
     "searchPlaceholder": "Search…",
     "clearAria": "Clear",
+    "filterLabel": "Record type",
     "noRecords": "No clinical records yet.",
     "noRecordsFilter": "No records found for the selected filter.",
     "rangeOf": "{{start}}–{{end}} of {{total}} records",

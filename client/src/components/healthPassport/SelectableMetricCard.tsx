@@ -15,7 +15,7 @@ import {
 
 import { HistoryOutlined as HistoryIcon } from '@mui/icons-material';
 
-import { relativeDate } from '../../utils/relativeDate';
+import { relativeDate, formatDateShort } from '../../utils/relativeDate';
 import { statusByDate } from './utils.ts';
 import HelpHint from '../HelpHint';
 
@@ -135,6 +135,11 @@ export default function SelectableMetricCard({
           >
             {headline}
           </Typography>
+          {!isEmpty && selected?.dueDate && rel && (
+            <Typography variant="caption" sx={{ color: 'text.secondary' }} noWrap>
+              {formatDateShort(selected.dueDate)}
+            </Typography>
+          )}
         </Box>
       </Stack>
 

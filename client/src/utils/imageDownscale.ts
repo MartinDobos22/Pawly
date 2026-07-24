@@ -45,7 +45,16 @@ export async function downscaleImage(
   }
   ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
 
+  // Uvoľni dekódovaný bitmap hneď — bez toho sa pri dávke veľkých fotiek z mobilu
+  // nahromadí pamäť a ďalšie createImageBitmap/toDataURL volania zlyhajú.
+  if (typeof ImageBitmap !== 'undefined' && bitmap instanceof ImageBitmap) {
+    bitmap.close();
+  }
+
   const dataUrl = canvas.toDataURL(options.mimeType, options.quality);
+  // Uvoľni plátno (niektoré mobilné prehliadače držia GPU pamäť inak dlho).
+  canvas.width = 0;
+  canvas.height = 0;
   const bytes = estimateDataUrlBytes(dataUrl);
 
   return { dataUrl, bytes, mimeType: options.mimeType };

@@ -6,6 +6,7 @@ import {
   FormControl,
   IconButton,
   InputAdornment,
+  InputLabel,
   MenuItem,
   Pagination,
   Select,
@@ -173,37 +174,23 @@ export default function ClinicalHistory({ timeline }: ClinicalHistoryProps) {
         />
       </Stack>
 
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 0.75,
-          mb: 2,
-          overflowX: 'auto',
-          flexWrap: 'nowrap',
-          maskImage:
-            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
-          WebkitMaskImage:
-            'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
-          '&::-webkit-scrollbar': { height: 0 },
-          scrollbarWidth: 'none',
-          '& > *': { flexShrink: 0 },
-        }}
-      >
-        {FILTER_VALUES.map((v) => {
-          const active = filter === v;
-          return (
-            <Chip
-              key={v}
-              label={t(`filter.${v}` as never)}
-              size="small"
-              clickable
-              variant={active ? 'filled' : 'outlined'}
-              color={active ? 'primary' : 'default'}
-              onClick={() => setFilter(v)}
-            />
-          );
-        })}
-      </Box>
+      <FormControl size="small" sx={{ mb: 2, width: { xs: '100%', sm: 240 } }}>
+        <InputLabel id="clinical-history-filter-label">
+          {tVc('clinicalHistory.filterLabel')}
+        </InputLabel>
+        <Select
+          labelId="clinical-history-filter-label"
+          label={tVc('clinicalHistory.filterLabel')}
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as Filter)}
+        >
+          {FILTER_VALUES.map((v) => (
+            <MenuItem key={v} value={v}>
+              {t(`filter.${v}` as never)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       {visible.length === 0 ? (
         <Box
