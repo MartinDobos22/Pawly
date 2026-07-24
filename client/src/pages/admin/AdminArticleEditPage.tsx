@@ -351,11 +351,15 @@ export default function AdminArticleEditPage() {
     setError(null);
     try {
       await updateAdminArticle(slug, cleanedPayload());
-      const updated = await changeArticleStatus(slug, target, opts);
+      const { article: updated, buildTriggered } = await changeArticleStatus(slug, target, opts);
       setForm(updated);
       savedSnapshotRef.current = JSON.stringify(updated);
       setLatestVersion((v) => (v == null ? v : v + 1));
-      setNotice(`Stav: ${STATUS_LABELS[target]}.`);
+      setNotice(
+        buildTriggered
+          ? `Stav: ${STATUS_LABELS[target]}. Spustil sa build webu — zmeny budú online o pár minút.`
+          : `Stav: ${STATUS_LABELS[target]}.`
+      );
       loadValidation();
     } catch (e) {
       setError((e as Error).message);
