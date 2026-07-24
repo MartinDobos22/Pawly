@@ -365,6 +365,9 @@
     "currentValue": "aktuálne: {{value}}",
     "preserved": "(zachované, ak nezatrhneš)",
     "allergies": "Nové alergie",
+    "allergiesEditPlaceholder": "Pridať alergén",
+    "allergiesEditHint": "Skontroluj a oprav zle prečítané alergény. Klikni na × pre odstránenie, alebo dopíš vlastný.",
+    "allergiesAlreadyInProfile": "Alergény z dokumentu, ktoré už v profile máš (počet: {{count}}), tu znova neukazujeme — vidíš len nové alebo upravené.",
     "chronic": "Nové chronické stavy",
     "skip": "Preskočiť",
     "apply": "Pridať do profilu",
@@ -597,7 +600,13 @@
       "Kukurica",
       "Sója"
     ],
-    "intoleranceSuggestions": ["Lepok", "Laktóza", "Kukurica", "Sója", "Obilniny"],
+    "intoleranceSuggestions": [
+      "Lepok",
+      "Laktóza",
+      "Kukurica",
+      "Sója",
+      "Obilniny"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Problémy s obličkami",
