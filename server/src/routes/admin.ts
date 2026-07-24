@@ -17,8 +17,8 @@ import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
 import {
   isPublishConfigured,
+  requestNetlifyRedeploy,
   triggerNetlifyBuild,
-  triggerNetlifyBuildSafe,
 } from '../services/netlifyPublishService';
 import {
   getArticleVersion,
@@ -189,9 +189,10 @@ articles.post('/:slug/status', async (req: Request, res: Response, next: NextFun
       changeSummary: `Stav: ${target}${note}`,
     });
 
-    // Publikovanie článku premietneme na web hneď — spustíme rebuild. Zlyhanie
-    // buildu nesmie zhodiť už uloženú zmenu statusu (preto safe variant).
-    const buildTriggered = target === 'published' ? await triggerNetlifyBuildSafe({ slug }) : false;
+    // Publikovanie článku premietneme na web — throttled rebuild (viac publikovaní
+    // za sebou sa zlieva do jedného buildu). Nikdy nezhodí uloženú zmenu statusu.
+    const buildTriggered =
+      target === 'published' ? requestNetlifyRedeploy({ slug }) !== 'skipped' : false;
 
     res.json({ article, buildTriggered });
   } catch (err) {

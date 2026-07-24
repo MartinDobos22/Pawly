@@ -2,7 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import { timingSafeEqual } from 'node:crypto';
 import { runSweep } from '../services/notificationsService';
 import { runArticleSchedule } from '../services/articleScheduleService';
-import { triggerNetlifyBuildSafe } from '../services/netlifyPublishService';
+import { requestNetlifyRedeploy } from '../services/netlifyPublishService';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -53,7 +53,8 @@ router.post(
       let buildTriggered = false;
       if (summary.published || summary.unpublished) {
         logger.info('Cron: naplánované články spracované', summary);
-        buildTriggered = await triggerNetlifyBuildSafe({ source: 'articles-schedule', ...summary });
+        buildTriggered =
+          requestNetlifyRedeploy({ source: 'articles-schedule', ...summary }) !== 'skipped';
       }
       res.json({ ...summary, buildTriggered });
     } catch (err) {
