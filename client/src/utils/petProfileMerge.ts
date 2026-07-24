@@ -103,30 +103,24 @@ export function mergePetProfile(
     });
   }
 
-  if (acceptance.allergies.length > 0 && patch.allergies && patch.allergies.length > 0) {
-    const accepted = patch.allergies.filter((a) =>
-      acceptance.allergies.some((sel) => sel.trim().toLowerCase() === a.trim().toLowerCase())
+  // `acceptance.allergies` je autoritatívny zoznam — používateľ ho mohol v AI
+  // kontrole upraviť (opraviť zle prečítaný alergén), preto nefiltrujeme podľa
+  // pôvodného `patch.allergies`.
+  if (acceptance.allergies.length > 0) {
+    const { merged: nextAllergies, added } = dedupStrings(
+      existing.allergies ?? [],
+      acceptance.allergies
     );
-    const { merged: nextAllergies, added } = dedupStrings(existing.allergies ?? [], accepted);
     merged.allergies = nextAllergies;
     if (added.length > 0) {
       changedFields.push(`${added.length} ${added.length === 1 ? 'alergia' : 'alergie'}`);
     }
   }
 
-  if (
-    acceptance.chronicConditions.length > 0 &&
-    patch.chronicConditions &&
-    patch.chronicConditions.length > 0
-  ) {
-    const accepted = patch.chronicConditions.filter((c) =>
-      acceptance.chronicConditions.some(
-        (sel) => sel.trim().toLowerCase() === c.trim().toLowerCase()
-      )
-    );
+  if (acceptance.chronicConditions.length > 0) {
     const { merged: nextConditions, added } = dedupChronicConditions(
       existing.chronicConditions ?? [],
-      accepted
+      acceptance.chronicConditions
     );
     merged.chronicConditions = nextConditions;
     if (added.length > 0) {

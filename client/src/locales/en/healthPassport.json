@@ -359,6 +359,9 @@
     "currentValue": "current: {{value}}",
     "preserved": "(kept if unchecked)",
     "allergies": "New allergies",
+    "allergiesEditPlaceholder": "Add allergen",
+    "allergiesEditHint": "Check and fix any misread allergens. Click × to remove one, or type your own.",
+    "allergiesAlreadyInProfile": "Allergens from the document already in the profile (count: {{count}}) are not shown again here — you only see new or edited ones.",
     "chronic": "New chronic conditions",
     "skip": "Skip",
     "apply": "Add to profile",
@@ -580,8 +583,23 @@
     "recordAnalyses": "Food analyses",
     "saveCreate": "Add",
     "saveUpdate": "Save",
-    "allergySuggestions": ["Chicken", "Beef", "Lamb", "Fish", "Eggs", "Wheat", "Corn", "Soy"],
-    "intoleranceSuggestions": ["Gluten", "Lactose", "Corn", "Soy", "Grains"],
+    "allergySuggestions": [
+      "Chicken",
+      "Beef",
+      "Lamb",
+      "Fish",
+      "Eggs",
+      "Wheat",
+      "Corn",
+      "Soy"
+    ],
+    "intoleranceSuggestions": [
+      "Gluten",
+      "Lactose",
+      "Corn",
+      "Soy",
+      "Grains"
+    ],
     "healthSuggestions": [
       "Diabetes",
       "Kidney problems",

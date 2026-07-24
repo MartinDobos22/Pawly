@@ -2,12 +2,15 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   Card,
   Checkbox,
+  Chip,
   FormControlLabel,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
@@ -71,6 +74,19 @@ export default function AiProfileMergeReview({ petId, patch, onDone, onSkip }: P
       .filter((a) => !existing.has(a.toLowerCase()));
   }, [patch.allergies, profile]);
 
+  const allergiesAlreadyInProfile = useMemo(() => {
+    if (!patch.allergies) return 0;
+    const existing = new Set((profile?.allergies ?? []).map((a) => a.trim().toLowerCase()));
+    const incoming = new Set(
+      patch.allergies.map((a) => a.trim().toLowerCase()).filter((a) => a !== '')
+    );
+    let count = 0;
+    incoming.forEach((key) => {
+      if (existing.has(key)) count += 1;
+    });
+    return count;
+  }, [patch.allergies, profile]);
+
   const chronicEntries = useMemo(() => {
     if (!patch.chronicConditions) return [];
     const existing = new Set(
@@ -101,17 +117,15 @@ export default function AiProfileMergeReview({ petId, patch, onDone, onSkip }: P
   }
 
   const hasAnything =
-    identifierEntries.length > 0 || allergyEntries.length > 0 || chronicEntries.length > 0;
+    identifierEntries.length > 0 ||
+    allergyEntries.length > 0 ||
+    chronicEntries.length > 0 ||
+    allergiesAlreadyInProfile > 0;
 
   if (!hasAnything) return null;
 
   const toggleIdentifier = (key: IdentifierKey) =>
     setIdentifierAccept((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  const toggleAllergy = (value: string) =>
-    setAllergyAccept((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
-    );
 
   const toggleChronic = (value: string) =>
     setChronicAccept((prev) =>
@@ -146,6 +160,12 @@ export default function AiProfileMergeReview({ petId, patch, onDone, onSkip }: P
         <Typography variant="body2" color="text.secondary">
           {t('aiProfileMerge.description')}
         </Typography>
+
+        {allergiesAlreadyInProfile > 0 && (
+          <Alert severity="info" sx={{ py: 0.5 }}>
+            {t('aiProfileMerge.allergiesAlreadyInProfile', { count: allergiesAlreadyInProfile })}
+          </Alert>
+        )}
 
         {identifierEntries.length > 0 && (
           <Box>
@@ -200,26 +220,42 @@ export default function AiProfileMergeReview({ petId, patch, onDone, onSkip }: P
           </Box>
         )}
 
-        {allergyEntries.length > 0 && (
+        {(allergyEntries.length > 0 || allergyAccept.length > 0) && (
           <Box>
             <Typography variant="overline" color="text.secondary">
               {t('aiProfileMerge.allergies')}
             </Typography>
-            <Stack>
-              {allergyEntries.map((a) => (
-                <FormControlLabel
-                  key={a}
-                  control={
-                    <Checkbox
-                      size="small"
-                      checked={allergyAccept.includes(a)}
-                      onChange={() => toggleAllergy(a)}
-                    />
-                  }
-                  label={<Typography variant="body2">{a}</Typography>}
+            <Autocomplete
+              multiple
+              freeSolo
+              size="small"
+              options={[] as string[]}
+              value={allergyAccept}
+              onChange={(_e, newValue) =>
+                setAllergyAccept(
+                  newValue.map((v) => v.trim()).filter((v, i, arr) => v !== '' && arr.indexOf(v) === i)
+                )
+              }
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={`${option}-${index}`}
+                    size="small"
+                    variant="outlined"
+                    label={option}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder={t('aiProfileMerge.allergiesEditPlaceholder')}
+                  helperText={t('aiProfileMerge.allergiesEditHint')}
                 />
-              ))}
-            </Stack>
+              )}
+            />
           </Box>
         )}
 
