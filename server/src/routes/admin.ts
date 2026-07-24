@@ -16,6 +16,11 @@ import { listAiGenerations } from '../services/articleAiService';
 import type { ArticleStatus } from '../types/article';
 import { uploadArticleImage } from '../services/articleImageService';
 import {
+  isPublishConfigured,
+  requestNetlifyRedeploy,
+  triggerNetlifyBuild,
+} from '../services/netlifyPublishService';
+import {
   getArticleVersion,
   listArticleVersions,
   recordArticleVersionBySlug,
@@ -23,7 +28,6 @@ import {
   restoreArticleVersion,
   snapshotPublishedArticles,
 } from '../services/articleVersionService';
-import { logger } from '../utils/logger';
 
 // /api/admin/* — vyžaduje Firebase auth (globálny firebaseAuth) + ensureUser
 // (mount v index.ts). `status` je dostupný každému prihlásenému (vráti isAdmin);
@@ -105,24 +109,11 @@ articles.post('/upload-image', async (req: Request, res: Response, next: NextFun
 // Spustí Netlify build hook → rebuild verejného webu (prerender z DB).
 articles.post('/publish', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const hookUrl = process.env.NETLIFY_BUILD_HOOK_URL;
-    if (!hookUrl) {
+    if (!isPublishConfigured()) {
       throw httpError(503, 'Publikovanie nie je nakonfigurované.', 'PUBLISH_NOT_CONFIGURED');
     }
     await snapshotPublishedArticles(req.user?.email ?? null);
-    let ok = false;
-    let status = 0;
-    try {
-      const hookRes = await fetch(hookUrl, { method: 'POST', signal: AbortSignal.timeout(15000) });
-      ok = hookRes.ok;
-      status = hookRes.status;
-    } catch {
-      throw httpError(502, 'Spustenie buildu zlyhalo.', 'PUBLISH_FAILED');
-    }
-    if (!ok) {
-      logger.error('Netlify build hook vrátil chybu', { status });
-      throw httpError(502, 'Spustenie buildu zlyhalo.', 'PUBLISH_FAILED');
-    }
+    await triggerNetlifyBuild();
     res.json({ triggered: true });
   } catch (err) {
     next(err);
@@ -198,7 +189,12 @@ articles.post('/:slug/status', async (req: Request, res: Response, next: NextFun
       changeSummary: `Stav: ${target}${note}`,
     });
 
-    res.json({ article });
+    // Publikovanie článku premietneme na web — throttled rebuild (viac publikovaní
+    // za sebou sa zlieva do jedného buildu). Nikdy nezhodí uloženú zmenu statusu.
+    const buildTriggered =
+      target === 'published' ? requestNetlifyRedeploy({ slug }) !== 'skipped' : false;
+
+    res.json({ article, buildTriggered });
   } catch (err) {
     next(err);
   }

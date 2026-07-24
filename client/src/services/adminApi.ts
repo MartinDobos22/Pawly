@@ -59,7 +59,10 @@ export async function createAdminArticle(article: AdminArticle): Promise<AdminAr
   return data.article;
 }
 
-export async function updateAdminArticle(slug: string, article: AdminArticle): Promise<AdminArticle> {
+export async function updateAdminArticle(
+  slug: string,
+  article: AdminArticle
+): Promise<AdminArticle> {
   const data = await request<{ article: AdminArticle }>(`/articles/${encodeURIComponent(slug)}`, {
     method: 'PUT',
     body: JSON.stringify(article),
@@ -127,15 +130,15 @@ export async function changeArticleStatus(
   slug: string,
   status: AdminArticle['status'],
   opts?: { note?: string; scheduledFor?: string }
-): Promise<AdminArticle> {
-  const data = await request<{ article: AdminArticle }>(
+): Promise<{ article: AdminArticle; buildTriggered: boolean }> {
+  const data = await request<{ article: AdminArticle; buildTriggered?: boolean }>(
     `/articles/${encodeURIComponent(slug)}/status`,
     {
       method: 'POST',
       body: JSON.stringify({ status, note: opts?.note, scheduledFor: opts?.scheduledFor }),
     }
   );
-  return data.article;
+  return { article: data.article, buildTriggered: Boolean(data.buildTriggered) };
 }
 
 export async function autosaveArticle(

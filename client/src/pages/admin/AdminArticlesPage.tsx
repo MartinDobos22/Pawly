@@ -121,8 +121,12 @@ export default function AdminArticlesPage() {
       return;
     }
     try {
-      await changeArticleStatus(article.slug, target);
-      setNotice(`„${article.title}" → ${STATUS_LABELS[target]}.`);
+      const { buildTriggered } = await changeArticleStatus(article.slug, target);
+      setNotice(
+        buildTriggered
+          ? `„${article.title}" → ${STATUS_LABELS[target]}. Spustil sa build webu.`
+          : `„${article.title}" → ${STATUS_LABELS[target]}.`
+      );
       load();
     } catch (e) {
       setError((e as Error).message);
@@ -174,7 +178,9 @@ export default function AdminArticlesPage() {
       >
         {FILTERS.map((f) => {
           const count =
-            f.value === 'all' ? articles.length : articles.filter((a) => a.status === f.value).length;
+            f.value === 'all'
+              ? articles.length
+              : articles.filter((a) => a.status === f.value).length;
           return (
             <ToggleButton key={f.value} value={f.value} sx={{ borderRadius: 2 }}>
               {f.label} ({count})
