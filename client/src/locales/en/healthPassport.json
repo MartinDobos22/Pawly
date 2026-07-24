@@ -248,7 +248,9 @@
       "suitabilityCheckAllergens": "Check ingredients against allergens",
       "importRecordCount": "AI records imported: {{count}}",
       "privacyNotice": "AI import processes health data from the document. Before sending it to OCR/AI providers, we minimise the payload and audit only metadata (user, operation, provider, size, time), not document content.",
-      "aiProcessingConsent": "I consent to AI/OCR processing of health data from this document for importing records."
+      "aiProcessingConsent": "I consent to AI/OCR processing of health data from this document for importing records.",
+      "optionalSettings": "Optional settings",
+      "analyzeDisabledHint": "The “Analyze” button activates once you upload at least one page and confirm consent."
     },
     "modeQuick": "Quick",
     "modeManual": "Manual visit",

@@ -16,6 +16,7 @@ interface AttachmentUploadProps {
   error: string;
   label: string;
   maxFiles: number;
+  showLabelField?: boolean;
   onLabelChange: (value: string) => void;
   onAddFiles: (files: File[]) => void;
   onRemove: (id: string) => void;
@@ -32,6 +33,7 @@ export default function AttachmentUpload({
   error,
   label,
   maxFiles,
+  showLabelField = true,
   onLabelChange,
   onAddFiles,
   onRemove,
@@ -53,14 +55,16 @@ export default function AttachmentUpload({
 
   return (
     <Stack spacing={1.5}>
-      <TextField
-        size="small"
-        label={t('attachmentUpload.docLabel')}
-        placeholder={t('attachmentUpload.docPlaceholder')}
-        value={label}
-        onChange={(e) => onLabelChange(e.target.value)}
-        fullWidth
-      />
+      {showLabelField && (
+        <TextField
+          size="small"
+          label={t('attachmentUpload.docLabel')}
+          placeholder={t('attachmentUpload.docPlaceholder')}
+          value={label}
+          onChange={(e) => onLabelChange(e.target.value)}
+          fullWidth
+        />
+      )}
 
       <input
         ref={imageInputRef}

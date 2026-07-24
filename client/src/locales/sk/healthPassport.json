@@ -253,7 +253,9 @@
       "suitabilityCheckAllergens": "Skontrolovať zloženie voči alergénom",
       "importRecordCount": "AI import záznamov: {{count}}",
       "privacyNotice": "AI import spracúva zdravotné údaje z dokumentu. Pred odoslaním do OCR/AI služieb minimalizujeme payload a auditujeme len metadáta (používateľ, operácia, provider, veľkosť, čas), nie obsah dokumentu.",
-      "aiProcessingConsent": "Súhlasím s AI/OCR spracovaním zdravotných údajov z dokumentu pre účely importu záznamov."
+      "aiProcessingConsent": "Súhlasím s AI/OCR spracovaním zdravotných údajov z dokumentu pre účely importu záznamov.",
+      "optionalSettings": "Voliteľné nastavenia",
+      "analyzeDisabledHint": "Tlačidlo „Analyzovať“ sa aktivuje po nahratí aspoň jednej strany a potvrdení súhlasu."
     },
     "modeQuick": "Rýchly",
     "modeManual": "Manuálna návšteva",
